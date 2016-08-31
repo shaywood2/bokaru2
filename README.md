@@ -30,10 +30,30 @@ Do this once:
     1. In VM's command line navigate to directory `/home/vagrant/bokaru/mysite`
     2. Run command `python3 manage.py createsuperuser`
     3. Enter user's name, email and password
-11. Start the development server `python3 manage.py runserver 0.0.0.0:8000`
-12. Navigate to [admin panel](http://localhost:8000/admin/) on the host machine
 
 Done!
+
+Starting the server
+-------------------
+1. Start the VM: `vagrant up`
+2. SSH into the VM: `vagrant ssh`
+3. Navigate to the project directory `cd bokaru/mysite/`
+4. Start the development server `python3 manage.py runserver 0.0.0.0:8000`
+5. Navigate to the [admin panel](http://localhost:8000/admin/) on the host machine
+
+Vagrant Commands
+----------------
+`vagrant up`: Start up an existing Vagrant machine or provision a new one in the current directory.
+
+`vagrant ssh`: Login to a Vagrant machine
+
+`vagrant halt`: Shut down a Vagrant machine for use later
+
+`vagrant provision`: Re-provision an existing Vagrant machine.
+
+`vagrant destroy`: Delete a Vagrant machine.
+
+`vagrant global-status`: See the status and installation directory of all Vagrant machines on your computer.
 
 Changing models
 ---------------
