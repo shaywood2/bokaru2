@@ -23,7 +23,7 @@ Vagrant.configure(2) do |config|
   # within the machine from a port on the host machine. In the example below,
   # accessing "localhost:8080" will access port 80 on the guest machine.
   config.vm.network "forwarded_port", guest: 8000, host: 8000,
-    auto_correct: true
+  auto_correct: true
 
   # Create a private network, which allows host-only access to the machine
   # using a specific IP.
@@ -40,7 +40,7 @@ Vagrant.configure(2) do |config|
   # argument is a set of non-required options.
   # config.vm.synced_folder "../data", "/vagrant_data"
   # config.vm.synced_folder ".", "/home/vagrant/avalon",mount_options: ["dmode=777", "fmode=777"]
-  config.vm.synced_folder ".", "/home/vagrant/polls"
+  config.vm.synced_folder ".", "/home/vagrant/bokaru"
 
   config.ssh.forward_agent = true
 
@@ -67,11 +67,26 @@ Vagrant.configure(2) do |config|
   # Puppet, Chef, Ansible, Salt, and Docker are also available. Please see the
   # documentation for more information about their specific syntax and use.
   config.vm.provision "shell", inline: <<-SHELL
+    # Install updates
     sudo apt-get update
-  
+
+    # Install dependencies
     sudo apt-get install -y postgresql-contrib
-        sudo apt-get install -y virtualenvwrapper
+    #sudo apt-get install -y virtualenvwrapper
     sudo apt-get build-dep -y psycopg2
-        sudo apt-get build-dep -y git
+    sudo apt-get install -y python3-pip
+    #sudo apt-get build-dep -y git
+
+    # Install Python dependencies
+    sudo pip3 install -r /home/vagrant/bokaru/requirements.txt
+
+    # Create Postgres user and DB
+    sudo -u postgres psql -c "CREATE ROLE bokaru WITH LOGIN SUPERUSER PASSWORD 'bokaru123'"
+    sudo -u postgres psql -c "CREATE DATABASE bokaru WITH OWNER bokaru"
+
+    # Create and run migrations
+    python3 /home/vagrant/bokaru/mysite/manage.py makemigrations
+    python3 /home/vagrant/bokaru/mysite/manage.py migrate
+
     SHELL
 end
