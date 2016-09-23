@@ -27,19 +27,24 @@ Do this once:
     3. Save the file
     4. Restart your console window
 10. Create Django superuser
-    1. In VM's command line navigate to directory `/home/vagrant/bokaru/mysite`
+    1. In VM's command line navigate to directory `/home/vagrant/bokaru/bokaru`
     2. Run command `python3 manage.py createsuperuser`
-    3. Enter user's name, email and password
+    3. Enter user's name, email and password (e.g. bokaru, bokaru@bokaru.com, password123)
 
 Done!
 
-Starting the server
--------------------
+Starting the development server
+-------------------------------
 1. Start the VM: `vagrant up`
 2. SSH into the VM: `vagrant ssh`
-3. Navigate to the project directory `cd bokaru/mysite/`
-4. Start the development server `python3 manage.py runserver 0.0.0.0:8000`
-5. Navigate to the [admin panel](http://localhost:8000/admin/) on the host machine
+3. Start the development server `python3 /home/vagrant/bokaru/bokaru/manage.py runserver 0.0.0.0:8000`
+4. Navigate to the [admin panel](http://localhost:8000/admin/) on the host machine
+
+Starting the production server (gunicorn)
+-----------------------------------------
+1. Collect the static files by running command `python3 /home/vagrant/bokaru/bokaru/manage.py collectstatic --noinput`
+2. Navigate to the project directory `cd bokaru/bokaru`
+3. Start the server by running command `gunicorn -b 0.0.0.0:8000 bokaru.wsgi`
 
 Vagrant Commands
 ----------------
@@ -59,6 +64,6 @@ Changing models
 ---------------
 Do this whenever models are added or modified:
 
-- Change your models (in models.py).
-- Run python manage.py makemigrations to create migrations for those changes
-- Run python manage.py migrate to apply those changes to the database.
+1. Change your models (in models.py).
+2. Run python manage.py makemigrations to create migrations for those changes
+3. Run python manage.py migrate to apply those changes to the database.
