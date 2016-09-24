@@ -84,13 +84,5 @@ Vagrant.configure(2) do |config|
     sudo -u postgres psql -c "CREATE ROLE bokaru WITH LOGIN SUPERUSER PASSWORD 'bokaru123'"
     sudo -u postgres psql -c "CREATE DATABASE bokaru WITH OWNER bokaru"
 
-    # Set environment variables
-    export DATABASE_URL="postgres://localhost/bokaru?user=bokaru&password=bokaru123"
-
-    # Create and run migrations
-    python3 /home/vagrant/bokaru/bokaru/manage.py makemigrations
-    python3 /home/vagrant/bokaru/bokaru/manage.py migrate
-    python3 /home/vagrant/bokaru/bokaru/manage.py collectstatic --noinput
-
     SHELL
 end
