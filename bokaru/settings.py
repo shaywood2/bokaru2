@@ -31,6 +31,7 @@ DEBUG = True
 # Application definition
 
 INSTALLED_APPS = [
+    'web.apps.WebConfig',
     'chat.apps.ChatConfig',
     'polls.apps.PollsConfig',
     'django.contrib.admin',
