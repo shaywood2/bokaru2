@@ -72,7 +72,6 @@ Vagrant.configure(2) do |config|
 
     # Install dependencies
     sudo apt-get install -y postgresql-contrib
-    #sudo apt-get install -y virtualenvwrapper
     sudo apt-get build-dep -y psycopg2
     sudo apt-get install -y python3-pip
     #sudo apt-get build-dep -y git

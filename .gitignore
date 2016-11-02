@@ -52,7 +52,6 @@ coverage.xml
 # Django stuff:
 *.log
 venv
-*.pyc
 staticfiles
 
 # Sphinx documentation
@@ -65,4 +64,4 @@ target/
 # Vagrant
 .vagrant/
 
-polls/
+*.orig

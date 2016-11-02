@@ -1,19 +1,39 @@
-{{ test }}
-<br />
-<a href="{% url 'web:login' %}">Login</a>
-<br />
-<a href="{% url 'web:register' %}">Register</a>
-<br />
-<a href="{% url 'web:search' %}">Search</a>
-<br />
-<a href="{% url 'account:summary' %}">My Account</a>
-<br />
-<a href="{% url 'web:matches' %}">My Matches</a>
-<br />
-<a href="{% url 'web:myevents' %}">My Events</a>
-<br />
-<a href="{% url 'web:termsofuse' %}">Terms of Use</a>
-<br />
-<a href="{% url 'web:privacypolicy' %}">Privacy Policy</a>
-<br />
-<a href="{% url 'web:howitworks' %}">How it Works</a>
+{% extends 'web/base.html' %}
+
+{% block content %}
+
+<div class="container">
+    <div class="row">
+        <div class="jumbotron">
+            <h1>Hello</h1>
+            <p>You are on your Dashboard</p>
+
+            {% if  not user.is_authenticated %}
+            <p><a href="/login">Login</a><br/></p>
+            {% else %}
+            <p><a href="/account">Your account</a></p>
+            {% endif %}
+            
+            {{ test }}
+            <br />
+            <a href="{% url 'web:login' %}">Login</a>
+            <br />
+            <a href="{% url 'web:register' %}">Register</a>
+            <br />
+            <a href="{% url 'web:search' %}">Search</a>
+            <br />
+            <a href="{% url 'account:summary' %}">My Account</a>
+            <br />
+            <a href="{% url 'web:matches' %}">My Matches</a>
+            <br />
+            <a href="{% url 'web:myevents' %}">My Events</a>
+            <br />
+            <a href="{% url 'web:termsofuse' %}">Terms of Use</a>
+            <br />
+            <a href="{% url 'web:privacypolicy' %}">Privacy Policy</a>
+            <br />
+            <a href="{% url 'web:howitworks' %}">How it Works</a>
+        </div>
+    </div>
+</div>
+{% endblock %}

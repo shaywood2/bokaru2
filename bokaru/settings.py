@@ -34,7 +34,6 @@ INSTALLED_APPS = [
     'web.apps.WebConfig',
     'account.apps.AccountConfig',
     'chat.apps.ChatConfig',
-    'polls.apps.PollsConfig',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -91,7 +90,7 @@ DATABASES = {
 }
 
 # Password validation
-# https://docs.djangoproject.com/en/1.9/ref/settings/#auth-password-validators
+# https://docs.djangoproject.com/en/1.10/topics/auth/passwords/#module-django.contrib.auth.password_validation
 
 AUTH_PASSWORD_VALIDATORS = [
     {
@@ -108,6 +107,11 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
+# TODO: switch to the recommended password hash algorithm
+# https://docs.djangoproject.com/en/1.10/topics/auth/passwords/#using-argon2-with-django
+
+# TODO: set up email backend
+EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 
 # Internationalization
 # https://docs.djangoproject.com/en/1.9/topics/i18n/
@@ -134,8 +138,6 @@ ALLOWED_HOSTS = ['*']
 
 
 # Static files (CSS, JavaScript, Images)
-# https://docs.djangoproject.com/en/1.9/howto/static-files/
-
 STATIC_ROOT = os.path.join(PROJECT_ROOT, 'staticfiles')
 STATIC_URL = '/static/'
 
@@ -147,3 +149,5 @@ STATICFILES_DIRS = [
 # Simplified static file serving.
 # https://warehouse.python.org/project/whitenoise/
 STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
+
+LOGIN_REDIRECT_URL = '/'
