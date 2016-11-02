@@ -90,7 +90,7 @@ DATABASES = {
 }
 
 # Password validation
-# https://docs.djangoproject.com/en/1.9/ref/settings/#auth-password-validators
+# https://docs.djangoproject.com/en/1.10/topics/auth/passwords/#module-django.contrib.auth.password_validation
 
 AUTH_PASSWORD_VALIDATORS = [
     {
@@ -107,6 +107,11 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
+# TODO: switch to the recommended password hash algorithm
+# https://docs.djangoproject.com/en/1.10/topics/auth/passwords/#using-argon2-with-django
+
+# TODO: set up email backend
+EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 
 # Internationalization
 # https://docs.djangoproject.com/en/1.9/topics/i18n/
