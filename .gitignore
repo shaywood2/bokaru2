@@ -64,4 +64,4 @@ target/
 # Vagrant
 .vagrant/
 
-polls/
+*.orig

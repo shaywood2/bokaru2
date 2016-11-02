@@ -34,7 +34,6 @@ INSTALLED_APPS = [
     'web.apps.WebConfig',
     'account.apps.AccountConfig',
     'chat.apps.ChatConfig',
-    'polls.apps.PollsConfig',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
