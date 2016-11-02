@@ -9,6 +9,7 @@ urlpatterns = [
     url(r'^$', views.index, name='index'),
     url(r'^account/$', views.account, name='account'),
     url(r'^auth/$', views.authenticate, name='auth'),
+
     # Authentication views
     url(r'^login/$', auth_views.login, {'template_name': 'web/login.html'}, name='login'),
     url(r'^logout/$', auth_views.logout, {'next_page': '/'}, name='logout'),
@@ -29,4 +30,19 @@ urlpatterns = [
         name='password_reset_confirm'),
     url(r'^reset/done/$', auth_views.password_reset_complete, {'template_name': 'web/password_reset_complete.html'},
         name='password_reset_complete'),
+
+    # Pages
+    url(r'^test/$', views.test, name='test'),
+    url(r'^register/$', views.register, name='register'),
+    url(r'^search/$', views.search, name='search'),
+    url(r'^results/$', views.results, name='results'),
+    url(r'^event/$', views.event, name='event'),
+    url(r'^event/create', views.eventcreate, name='eventcreate'),
+    url(r'^event/participants/$', views.participants, name='participants'),
+    url(r'^event/joined/$', views.eventjoined, name='eventjoined'),
+    url(r'^matches/$', views.matches, name='matches'),
+    url(r'^myevents/$', views.myevents, name='myevents'),
+    url(r'^termsofuse/$', views.termsofuse, name='termsofuse'),
+    url(r'^howitworks/$', views.howitworks, name='howitworks'),
+    url(r'^privacypolicy/$', views.privacypolicy, name='privacypolicy'),
 ]
