@@ -248,7 +248,6 @@
 	margin: -75px auto 20px;
 	border-radius: 140px !important;
 	font-weight: normal !important;
-	background: #fff url("../../img/breadcrumbs.png") !important;
 }
 .pricing-rounded .pricing-head h4 i{
 	margin-right: 2px;
@@ -279,8 +278,6 @@
 	transition:box-shadow 0.2s ease-in-out;
 }
 .pricing-zoom .pricing-head h4 {
-	background: url("../../img/breadcrumbs.png")
-	repeat scroll 0 0 rgba(0, 0, 0, 0) !important;
 }
 .pricing-zoom .price-active .pricing-head h4,
 .pricing-zoom .pricing:hover .pricing-head h4 {
@@ -308,8 +305,7 @@
 	color: #888;
 	text-shadow: none;
 	font-weight: normal !important;
-	border-bottom: 1px solid #ddd !important; 
-	background: #fff url("../../img/breadcrumbs.png") !important;
+	border-bottom: 1px solid #ddd !important;
 
 }
 .pricing-light .pricing .rating li {
@@ -339,7 +335,6 @@
 	border-top: 1px solid #ddd;
 	border-bottom: 1px solid #ddd;
 	font-weight: normal !important;
-	background: #fff url("../../img/breadcrumbs.png") !important;
 
 
 }
@@ -388,8 +383,7 @@ background-color: #717984!important;
 	color: #717984;
 	text-shadow: none;
 	font-weight: normal !important;
-	border-bottom: 2px solid #eee !important; 
-	background: #fff url("../../img/breadcrumbs.png") !important;
+	border-bottom: 2px solid #eee !important;
 }
 .pricing-medium-light .pricing .rating {
 	text-align: center;
@@ -424,7 +418,6 @@ background-color: #717984!important;
 	margin: -2px 0 20px;
 	margin-bottom: 20px;
 	font-weight: normal !important;
-	background: #fff url("../../img/breadcrumbs.png") !important;
 
 }
 .pricing-medium-light .pricing-footer h4 i {
@@ -505,7 +498,6 @@ background-color: #717984!important;
 	font-weight: normal;
 	margin: -2px 0 20px;
 	font-weight: normal !important;
-	background: #fff url("../../img/breadcrumbs.png") !important;
 }
 .pricing-medium-dark .pricing-footer h4 i {
 	top: -8px;
@@ -571,8 +563,7 @@ background-color: #717984!important;
 	color: #717984;
 	text-shadow: none;
 	font-weight: normal !important;
-	border-bottom: 2px solid #eee !important; 
-	background: #fff url("../../img/breadcrumbs.png") !important;
+	border-bottom: 2px solid #eee !important;
 }
 .pricing-dark .pricing-content span {
 	float: right;
@@ -592,7 +583,6 @@ background-color: #717984!important;
 	margin: -2px 0 20px;
 	margin-bottom: 20px;
 	font-weight: normal !important;
-	background: #fff url("../../img/breadcrumbs.png") !important;
 }
 .pricing-dark .pricing-footer h4 i {
 	top: -8px;

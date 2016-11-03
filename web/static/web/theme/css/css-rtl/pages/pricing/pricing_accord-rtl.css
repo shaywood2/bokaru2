@@ -148,9 +148,7 @@
 	text-shadow: none;
 	font-weight: normal !important;
 	border-bottom: 1px solid #ddd ;
-	border-top: 1px solid #ddd; 
-	background: url("../../img/breadcrumbs.png")
-	repeat scroll 0 0 rgba(0, 0, 0, 0) !important;
+	border-top: 1px solid #ddd;
 }
 .pricing-accord-inner .pricing .rating li {
 	padding: 0;
@@ -187,8 +185,6 @@
 	border-top: 1px solid #ddd;
 	border-bottom: 1px solid #ddd;
 	font-weight: normal !important;
-	background: url("../../img/breadcrumbs.png")
-	repeat scroll 0 0 rgba(0, 0, 0, 0) !important;
 
 }
 .pricing-accord-inner .pricing-footer h4 i {

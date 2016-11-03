@@ -249,7 +249,6 @@
   overflow: hidden;
   padding: 10px 0 6px;
   border-bottom: solid 1px #eee;
-  background: url(../img/patterns/breadcrumbs.png) repeat;
 }
 
 .video-business-img1 {
@@ -6314,7 +6313,6 @@
 .purchase {
 	padding: 25px 0 30px;
 	border-bottom: solid 1px #eee;
-	background: url(../img/patterns/breadcrumbs.png) repeat;
 }
 
 .purchase p {
@@ -6791,7 +6789,6 @@ a.thumbnail {
 	padding: 40px 0;
 	border-top: 1px solid #eee;
 	border-bottom: 1px solid #eee;
-	background: url(../img/breadcrumbs.png) repeat;
 }
 
 /*Gallery Page
@@ -6991,7 +6988,6 @@ ul.blog-tags a:hover i {
 
 .slider-promo-info-bg {
 	padding: 25px 20px 20px;
-	background: url(../img/bg-black.png) repeat;
 }
 
 .slider-promo-info span.big-size {
