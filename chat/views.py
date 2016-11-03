@@ -7,7 +7,7 @@ api_secret = "8b928a5fcc3d59f30bd1e8577171cef2676edecf"
 # Initialize API
 opentok = OpenTok(api_key, api_secret)
 # Create a shared session
-session = opentok.create_session(media_mode=MediaModes.routed)
+#session = opentok.create_session(media_mode=MediaModes.routed)
 
 
 def sessionCreate(request):
