@@ -4,7 +4,7 @@ from . import views
 
 app_name = 'account'
 urlpatterns = [
-    # ex: /chat/session
+    # ex: /account
     url(r'^$', views.summary, name='summary'),
     url(r'^subscription$', views.subscription, name='subscription'),
     url(r'^view$', views.view, name='view'),

@@ -1,0 +1,7 @@
+Welcome to the site {{site}}.
+{{ activation_key }}
+Follow the link below:
+https://{{ site }}{% url 'registration_activate' activation_key=activation_key %}
+{{ expiration_days}}
+{{ user }}
+YOU NOOB!

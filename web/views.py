@@ -1,5 +1,4 @@
 from django.http import HttpResponse
-from django.contrib.auth.decorators import login_required
 from django.contrib.auth import authenticate, login
 from django.shortcuts import render
 
@@ -24,36 +23,12 @@ def authenticate(request):
         return HttpResponse('false')
 
 
-@login_required(login_url="web:login")
-def account(request):
-    context = {
-        'user': request.user,
-    }
-    return render(request, 'web/account.html', context)
-
-
 def test(request):
     context = {
         'test': "Test Page",
     }
 
     return render(request, 'web/test.html', context)
-
-
-def login(request):
-    context = {
-        'test': "Login Page",
-    }
-
-    return render(request, 'web/login.html', context)
-
-
-def register(request):
-    context = {
-        'test': "Register Page",
-    }
-
-    return render(request, 'web/register.html', context)
 
 
 def search(request):
