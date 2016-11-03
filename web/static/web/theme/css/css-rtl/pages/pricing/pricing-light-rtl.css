@@ -166,7 +166,6 @@
 	font-family: inherit;
 	text-shadow: none !important;
 	border-bottom: 1px solid #ddd !important;
-	background: #fff url("../../img/breadcrumbs.png") !important;
 
 }
 .pricing-light .pricing .rating li {
@@ -196,7 +195,6 @@
 	border-top: 1px solid #ddd;
 	border-bottom: 1px solid #ddd;
 	font-weight: normal !important;
-	background: #fff url("../../img/breadcrumbs.png") !important;
 
 }
 .pricing-light .pricing-footer h4 i {

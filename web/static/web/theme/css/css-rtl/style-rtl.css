@@ -74,7 +74,6 @@ a:hover {
 .purchase {
 	padding: 25px 0 30px;
 	border-bottom: solid 1px #eee;
-	background: url(../../img/patterns/breadcrumbs.png) repeat;
 }
 .purchase p {
 	margin-bottom: 0;
@@ -584,7 +583,6 @@ a.thumbnail {
 	padding: 40px 0; 	
 	border-top: 1px solid #eee;
 	border-bottom: 1px solid #eee;
-	background: url(../../img/breadcrumbs.png) repeat;
 }
 
 /*Gallery Page
@@ -791,7 +789,6 @@ ul.blog-tags a:hover i {
 
 .slider-promo-info-bg {
 	padding: 25px 20px 20px;
-	background: url(../../img/bg-black.png) repeat;
 }
 
 .slider-promo-info span.big-size { 
