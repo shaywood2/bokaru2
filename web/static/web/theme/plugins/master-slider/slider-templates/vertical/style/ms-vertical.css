@@ -13,7 +13,7 @@
 .ms-tabs-vertical-template .ms-nav-next {
     top: 10px;
     left: 50%;
-    background: url(arrow.png) no-repeat;
+    /*background: url(arrow.png) no-repeat;*/
     background-position: -11px -6px;
     width: 40px;
     height: 30px;
@@ -78,7 +78,7 @@
 	top: 0;
 	height: 15px;
 	cursor: pointer;
-	background: url(arrow.png) no-repeat;
+	/*background: url(arrow.png) no-repeat;*/
 	
     background-position: 50% -106px;
 }

@@ -184,8 +184,7 @@
 	color: #717984;
 	text-shadow: none;
 	font-weight: normal !important;
-	border-bottom: 2px solid #eee !important; 
-	background: #fff url("../../img/breadcrumbs.png") !important;
+	border-bottom: 2px solid #eee !important;
 }
 
 .pricing-dark .pricing-content li {
@@ -210,7 +209,6 @@
 	margin-bottom: 20px;
 	color: #717984 !important;
 	font-weight: normal !important;
-	background: #fff url("../../img/breadcrumbs.png") !important;
 }
 .pricing-dark .pricing-footer h4 i {
 	top: -8px;
