@@ -1,142 +1,160 @@
 <!DOCTYPE html>
-        <!--[if IE 8]> <html lang="en" class="ie8"> <![endif]-->
-<!--[if IE 9]> <html lang="en" class="ie9"> <![endif]-->
-<!--[if !IE]><!--> <html lang="en"> <!--<![endif]-->
+<!--[if IE 8]>
+<html lang="en" class="ie8"> <![endif]-->
+<!--[if IE 9]>
+<html lang="en" class="ie9"> <![endif]-->
+<!--[if !IE]><!-->
+<html lang="en"> <!--<![endif]-->
 
 {% load static %}
 
 <head>
-	<title>Regsitration 2 | Unify - Responsive Website Template</title>
+    <title>Regsitration 2 | Unify - Responsive Website Template</title>
 
-	<!-- Meta -->
-	<meta charset="utf-8">
-	<meta name="viewport" content="width=device-width, initial-scale=1.0">
-	<meta name="description" content="">
-	<meta name="author" content="">
+    <!-- Meta -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="">
+    <meta name="author" content="">
 
-	<!-- Favicon -->
-	<link rel="shortcut icon" href="favicon.ico">
+    <!-- Favicon -->
+    <link rel="shortcut icon" href="favicon.ico">
 
-	<!-- Web Fonts -->
-	<link rel="stylesheet" type="text/css" href="//fonts.googleapis.com/css?family=Open+Sans:400,300,700&amp;subset=cyrillic,latin">
+    <!-- Web Fonts -->
+    <link rel="stylesheet" type="text/css"
+          href="//fonts.googleapis.com/css?family=Open+Sans:400,300,700&amp;subset=cyrillic,latin">
 
-	<!-- CSS Global Compulsory -->
-	<link rel="stylesheet" href="{% static 'web/theme/plugins/bootstrap/css/bootstrap.min.css' %}">
+    <!-- CSS Global Compulsory -->
+    <link rel="stylesheet" href="{% static 'web/theme/plugins/bootstrap/css/bootstrap.min.css' %}">
 
-	<link rel="stylesheet" href="{% static 'web/theme/css/style.css' %}">
-
-
-	<!-- CSS Implementing Plugins -->
-	<link rel="stylesheet" href="{% static 'web/theme/plugins/animate.css' %}">
-
-	<link rel="stylesheet" href="{% static 'web/theme/plugins/line-icons/line-icons.css' %}">
-
-	<link rel="stylesheet" href="{% static 'web/theme/plugins/font-awesome/css/font-awesome.min.css' %}">
+    <link rel="stylesheet" href="{% static 'web/theme/css/style.css' %}">
 
 
-	<!-- CSS Page Style -->
-	<link rel="stylesheet" href="{% static 'web/theme/css/pages/page_log_reg_v4.css' %}">
+    <!-- CSS Implementing Plugins -->
+    <link rel="stylesheet" href="{% static 'web/theme/plugins/animate.css' %}">
+
+    <link rel="stylesheet" href="{% static 'web/theme/plugins/line-icons/line-icons.css' %}">
+
+    <link rel="stylesheet" href="{% static 'web/theme/plugins/font-awesome/css/font-awesome.min.css' %}">
+
+
+    <!-- CSS Page Style -->
+    <link rel="stylesheet" href="{% static 'web/theme/css/pages/page_log_reg_v4.css' %}">
 
 
     <!-- CSS Theme -->
-	<link rel="stylesheet" href="{% static 'web/theme/css/theme-colors/red.css' %}">
+    <link rel="stylesheet" href="{% static 'web/theme/css/theme-colors/red.css' %}">
 
-	<!-- CSS Customization -->
-	<link rel="stylesheet" href="{% static 'web/theme/css/custom.css' %}">
+    <!-- CSS Customization -->
+    <link rel="stylesheet" href="{% static 'web/theme/css/custom.css' %}">
 
 </head>
 
 <body>
-	<!--=== Content Part ===-->
-	<div class="container-fluid">
-		<div class="row equal-height-columns">
-			<div class="col-md-6 col-sm-6 hidden-xs image-block equal-height-column"></div>
+<!--=== Content Part ===-->
+<div class="container-fluid">
+    <div class="row equal-height-columns">
+        <div class="col-md-6 col-sm-6 hidden-xs image-block equal-height-column"></div>
 
-			<div class="col-md-6 col-sm-6 form-block equal-height-column">
-				<div class="reg-block" style="border-top: none">
-					<a href="index.html">
-						<img src="{% static 'web/theme/img/bokaru-logo.png' %}" alt="">
+        <div class="col-md-6 col-sm-6 form-block equal-height-column">
+            <div class="reg-block" style="border-top: none">
+                <a href="{% url 'web:index' %}">
+                    <img src="{% static 'web/theme/img/bokaru-logo.png' %}" alt="">
 
-					</a>
-					<h2 class="margin-bottom-30">Create new account</h2>
+                </a>
+                <h2 class="margin-bottom-30">Create new account</h2>
 
-					<div class="input-group margin-bottom-20">
-						<span class="input-group-addon rounded-left"><i class="icon-pencil color-red"></i></span>
-						<input type="text" class="form-control rounded-right" placeholder="Your name">
-					</div>
+                <form action="{% url 'web:register' %}" method="post">
+                    {% csrf_token %}
+                    <div class="input-group margin-bottom-20">
+                        <span class="input-group-addon rounded-left"><i class="icon-pencil color-red"></i></span>
+                        <input type="text" class="form-control rounded-right" placeholder="Your name">
+                    </div>
 
-					<div class="input-group margin-bottom-20">
-						<span class="input-group-addon rounded-left"><i class="icon-user color-red"></i></span>
-						<input type="text" class="form-control rounded-right" placeholder="Username">
-					</div>
+                    <div class="input-group margin-bottom-20">
+                        <span class="input-group-addon rounded-left"><i class="icon-user color-red"></i></span>
+                        <!--<input type="text" class="form-control rounded-right" placeholder="Username">-->
+                        <span class="form-control rounded-right">{{ form.username }}</span>
+                    </div>
 
-					<div class="input-group margin-bottom-20">
-						<span class="input-group-addon rounded-left"><i class="icon-envelope color-red"></i></span>
-						<input type="email" class="form-control rounded-right" placeholder="Your email">
-					</div>
+                    <div class="input-group margin-bottom-20">
+                        <span class="input-group-addon rounded-left"><i class="icon-envelope color-red"></i></span>
+                        <!--<input type="email" class="form-control rounded-right" placeholder="Your email">-->
+                        <span class="form-control rounded-right">{{ form.email }}</span>
+                    </div>
 
-					<div class="input-group margin-bottom-30">
-						<span class="input-group-addon rounded-left"><i class="icon-lock color-red"></i></span>
-						<input type="password" class="form-control rounded-right" placeholder="Password">
-					</div>
+                    <div class="input-group margin-bottom-30">
+                        <span class="input-group-addon rounded-left"><i class="icon-lock color-red"></i></span>
+                        <!--<input type="password" class="form-control rounded-right" placeholder="Password">-->
+                        <span class="form-control rounded-right">{{ form.password1 }}</span>
+                    </div>
 
-					<div class="checkbox margin-bottom-30">
-						<label>
-							<input type="checkbox"> I agree to terms &amp; conditions
-						</label>
+                    <div class="input-group margin-bottom-30">
+                        <span class="input-group-addon rounded-left"><i class="icon-lock color-red"></i></span>
+                        <!--<input type="password" class="form-control rounded-right" placeholder="Password">-->
+                        <span class="form-control rounded-right">{{ form.password2 }}</span>
+                    </div>
 
-						<label>
-							<input type="checkbox"> Subscribe to our newsletter
-						</label>
-					</div>
+                    <div class="checkbox margin-bottom-30">
+                        <label>
+                            <input type="checkbox"> I agree to terms &amp; conditions
+                        </label>
 
-					<button type="submit" class="btn-u btn-block rounded">Create new</button>
-				</div>
-			</div>
-		</div>
-	</div><!--/container-->
-	<!--=== End Content Part ===-->
+                        <label>
+                            <input type="checkbox"> Subscribe to our newsletter
+                        </label>
+                    </div>
 
-	<!--=== Sticky Footer ===-->
-	<div class="container sticky-footer">
-		<ul class="list-unstyled list-inline social-links margin-bottom-30">
-			<li><a href="#"><i class="icon-custom icon rounded-x icon-bg-u fa fa-facebook"></i></a></li>
-			<li><a href="#"><i class="icon-custom icon rounded-x icon-bg-u fa fa-twitter"></i></a></li>
-			<li><a href="#"><i class="icon-custom icon rounded-x icon-bg-u fa fa-linkedin"></i></a></li>
-		</ul>
-		<p class="copyright-space">
-			2016 &copy; All Rights Reserved. Unify Template by <a href="#">Htmlstream</a>
-		</p>
-	</div>
-	<!--=== End Sticky Footer ===-->
+                    <button type="submit" class="btn-u btn-block rounded">Register</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div><!--/container-->
+<!--=== End Content Part ===-->
 
-	<!-- JS Global Compulsory -->
-	<script src="{% static 'web/theme/plugins/jquery/jquery.min.js' %}"></script>
+<!--=== Sticky Footer ===-->
+<div class="container sticky-footer">
+    <ul class="list-unstyled list-inline social-links margin-bottom-30">
+        <li><a href="#"><i class="icon-custom icon rounded-x icon-bg-u fa fa-facebook"></i></a></li>
+        <li><a href="#"><i class="icon-custom icon rounded-x icon-bg-u fa fa-twitter"></i></a></li>
+        <li><a href="#"><i class="icon-custom icon rounded-x icon-bg-u fa fa-linkedin"></i></a></li>
+    </ul>
+    <p class="copyright-space">
+        2016 &copy; All Rights Reserved. Unify Template by <a href="#">Htmlstream</a>
+    </p>
+</div>
+<!--=== End Sticky Footer ===-->
 
-	<script src="{% static 'web/theme/plugins/jquery/jquery-migrate.min.js' %}"></script>
+<!-- JS Global Compulsory -->
+<script src="{% static 'web/theme/plugins/jquery/jquery.min.js' %}"></script>
 
-	<script src="{% static 'web/theme/plugins/bootstrap/js/bootstrap.min.js' %}"></script>
+<script src="{% static 'web/theme/plugins/jquery/jquery-migrate.min.js' %}"></script>
 
-
-	<!-- JS Implementing Plugins -->
-	<script src="{% static 'web/theme/plugins/back-to-top.js' %}"></script>
-
-	<script src="{% static 'web/theme/plugins/backstretch/jquery.backstretch.min.js' %}"></script>
-
-
-	<!-- JS Customization -->
-	<script src="{% static 'web/theme/js/custom.js' %}"></script>
+<script src="{% static 'web/theme/plugins/bootstrap/js/bootstrap.min.js' %}"></script>
 
 
-	<!-- JS Page Level -->
-	<script src="{% static 'web/theme/js/app.js' %}"></script>
+<!-- JS Implementing Plugins -->
+<script src="{% static 'web/theme/plugins/back-to-top.js' %}"></script>
 
-	<script>
+<script src="{% static 'web/theme/plugins/backstretch/jquery.backstretch.min.js' %}"></script>
+
+
+<!-- JS Customization -->
+<script src="{% static 'web/theme/js/custom.js' %}"></script>
+
+
+<!-- JS Page Level -->
+<script src="{% static 'web/theme/js/app.js' %}"></script>
+
+<script>
 		jQuery(document).ready(function() {
 			App.init();
 		});
-	</script>
-	<script>
+
+
+</script>
+<script>
 		$(".image-block").backstretch([
 			"{% static 'web/theme/img/patterns/5.png' %}",
 			"{% static 'web/theme/img/patterns/5.png' %}",
@@ -144,14 +162,16 @@
 				fade: 1000,
 				duration: 7000
 			});
-	</script>
-	<!--[if lt IE 9]>
-	<script src="{% static 'web/theme/plugins/respond.js' %}"></script>
 
-	<script src="{% static 'web/theme/plugins/html5shiv.js' %}"></script>
 
-	<script src="{% static 'web/theme/plugins/placeholder-IE-fixes.js' %}"></script>
+</script>
+<!--[if lt IE 9]>
+<script src="{% static 'web/theme/plugins/respond.js' %}"></script>
 
-	<![endif]-->
+<script src="{% static 'web/theme/plugins/html5shiv.js' %}"></script>
+
+<script src="{% static 'web/theme/plugins/placeholder-IE-fixes.js' %}"></script>
+
+<![endif]-->
 </body>
 </html>

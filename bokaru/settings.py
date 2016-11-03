@@ -110,6 +110,11 @@ AUTH_PASSWORD_VALIDATORS = [
 # TODO: switch to the recommended password hash algorithm
 # https://docs.djangoproject.com/en/1.10/topics/auth/passwords/#using-argon2-with-django
 
+# Registration settings
+ACCOUNT_ACTIVATION_DAYS = 7
+REGISTRATION_OPEN = True
+REGISTRATION_SALT = 'helloThere!'
+
 # TODO: set up email backend
 EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 

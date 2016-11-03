@@ -1,5 +1,6 @@
 from django.conf.urls import url
 from django.contrib.auth import views as auth_views
+from registration.backends.hmac import views as reg_views
 
 from . import views
 
@@ -31,9 +32,12 @@ urlpatterns = [
     url(r'^reset/done/$', auth_views.password_reset_complete, {'template_name': 'web/password_reset_complete.html'},
         name='password_reset_complete'),
 
+    # Registration views
+    url(r'^register/$', reg_views.RegistrationView, {'template_name': 'web/register.html'}),
+
     # Pages
     url(r'^test/$', views.test, name='test'),
-    url(r'^register/$', views.register, name='register'),
+    # url(r'^register/$', views.register, name='register'),
     url(r'^search/$', views.search, name='search'),
     url(r'^results/$', views.results, name='results'),
     url(r'^event/$', views.event, name='event'),
