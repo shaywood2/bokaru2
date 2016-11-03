@@ -29,13 +29,20 @@ Do this once:
     1. `echo "export DATABASE_URL='postgres://localhost/bokaru?user=bokaru&password=bokaru123'" >> ~/.bashrc`
     2. Exit VM using command `exit` and log in again with `vagrant ssh`
     3. Make sure that variables are set correctly (e.g. `echo $DATABASE_URL` should return the url above)
-11. Create and run migrations
-    1. `python3 /home/vagrant/bokaru/manage.py makemigrations`
-    2. `python3 /home/vagrant/bokaru/manage.py migrate`
-    3. `python3 /home/vagrant/bokaru/manage.py collectstatic --noinput`
-11. Create Django superuser
+11. Run the following commands:
+    1. Make migrations: `python3 /home/vagrant/bokaru/manage.py makemigrations`
+    2. Run migrations: `python3 /home/vagrant/bokaru/manage.py migrate`
+    3. Collect static files: `python3 /home/vagrant/bokaru/manage.py collectstatic --noinput`
+12. Create Django superuser
     1. Run command `python3 /home/vagrant/bokaru/manage.py createsuperuser`
     2. Enter user's name, email and password (e.g. bokaru, bokaru@bokaru.com, password123)
+13. Run commands to create Postrgres extensions _cube_ and _earthdistance_
+    1. Switch to the Postgres user: `sudo su postgres`
+    2. Start the sql editor: `psql`
+    3. Install extensions: `CREATE EXTENSION IF NOT EXISTS cube;` and `CREATE EXTENSION IF NOT EXISTS earthdistance;`
+    4. Run command `\dx` to list all extensions
+    5. Exit sql editor `\q`
+    6. Exit the postgres user: `exit`
 
 Done!
 
@@ -67,6 +74,25 @@ Vagrant Commands
 `vagrant destroy`: Delete a Vagrant machine.
 
 `vagrant global-status`: See the status and installation directory of all Vagrant machines on your computer.
+
+Using Postgres in VM
+--------------------
+To access postgres in your Vagrant VM follow these steps:
+
+1. Open a console window
+2. Login to your Vagrant machine: `vagrant ssh`
+3. Run this command to switch to the Postgres user: `sudo su postgres`
+4. Run this command to access the sql editor: `psql`
+5. Run this command to quit the sql editor: `\q`
+6. Run this command to exit the postgres user: `exit`
+
+Using Django's database API
+---------------------------
+To query the models dynamically use the built-in API:
+
+1. Start the interactive Python shell: `python3 /home/vagrant/bokaru/manage.py shell`
+2. Import required models, for example: `from web.models import User`
+3. Run queries, for example: `User.objects.all()` or `bob = User.objects.get(displayName = 'bob')`
 
 Changing models
 ---------------
