@@ -2,10 +2,8 @@
 
 {% load static %}
 
-<!--[if IE 8]>
-<html lang="en" class="ie8"> <![endif]-->
-<!--[if IE 9]>
-<html lang="en" class="ie9"> <![endif]-->
+<!--[if IE 8]><html lang="en" class="ie8"><![endif]-->
+<!--[if IE 9]><html lang="en" class="ie9"><![endif]-->
 <!--[if !IE]><!-->
 <html lang="en"> <!--<![endif]-->
 <head>
@@ -60,35 +58,35 @@
         <div class="col-md-6 col-sm-6 hidden-xs image-block equal-height-column"></div>
 
         <div class="col-md-6 col-sm-6 form-block equal-height-column">
-            <a href="index.html">
+            <a href="{% url 'web:index' %}">
                 <img src="{% static 'web/theme/img/bokaru-logo.png' %}" alt="">
 
             </a>
             <h2 class="margin-bottom-30">Login To Your Account</h2>
+
             {% if form.errors %}
-            {{form.errors}}
             <ul>
-                {% for error in form.errors.all %}
-                <li>
-                    {{error}}
-                </li>
+                {% for field, errors in form.errors.items %}
+                    {% for error in errors %}
+                    <li><strong>{{ error|escape }}</strong></li>
+                    {% endfor %}
                 {% endfor %}
             </ul>
             {% endif %}
 
-            <form action="{% url 'web:login' %}" method="post">
+            <form method="post">
                 {% csrf_token %}
                 <div class="login-block">
                     <div class="input-group margin-bottom-20">
                         <span class="input-group-addon rounded-left"><i class="icon-user color-red"></i></span>
                         <!--<input type="text" class="form-control rounded-right" placeholder="Username">-->
-                        {{ form.username }}
+                        <span class="form-control rounded-right">{{ form.username }}</span>
                     </div>
 
                     <div class="input-group margin-bottom-20">
                         <span class="input-group-addon rounded-left"><i class="icon-lock color-red"></i></span>
                         <!--<input type="password" class="form-control rounded-right" placeholder="Password">-->
-                        {{ form.password }}
+                        <span class="form-control rounded-right">{{ form.password }}</span>
                     </div>
                     <input type="hidden" name="next" value="{{ next }}"/>
 
@@ -101,7 +99,7 @@
                             </li>
 
                             <li class="pull-right">
-                                <a href="#">Forgot password?</a>
+                                <a href="{% url 'auth_password_reset' %}">Forgot password?</a>
                             </li>
                         </ul>
                     </div>
@@ -160,6 +158,7 @@
 			App.init();
 		});
 
+
 </script>
 <script>
 		$(".image-block").backstretch([
@@ -170,6 +169,7 @@
 				fade: 1000,
 				duration: 7000
 			});
+
 
 </script>
 <!--[if lt IE 9]>

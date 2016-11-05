@@ -9,16 +9,16 @@
             <p>You are on your Dashboard</p>
 
             {% if  not user.is_authenticated %}
-            <p><a href="/login">Login</a><br/></p>
+            <p><a href="{% url 'auth_login' %}">Login</a><br/></p>
             {% else %}
-            <p><a href="/account">Your account</a></p>
+            <p><a href="{% url 'account:summary' %}">Your profile summary</a></p>
+            <p><a href="{% url 'auth_password_change' %}">Change password</a></p>
+            <p><a href="{% url 'auth_logout' %}">Log out</a></p>
             {% endif %}
 
             {{ test }}
             <br />
-            <a href="{% url 'web:login' %}">Login</a>
-            <br />
-            <a href="{% url 'web:register' %}">Register</a>
+            <a href="{% url 'registration_register' %}">Register</a>
             <br />
             <a href="{% url 'web:search' %}">Search</a>
             <br />

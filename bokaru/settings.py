@@ -110,6 +110,16 @@ AUTH_PASSWORD_VALIDATORS = [
 # TODO: switch to the recommended password hash algorithm
 # https://docs.djangoproject.com/en/1.10/topics/auth/passwords/#using-argon2-with-django
 
+# Authentication settings
+LOGIN_URL = '/account/login/'
+LOGIN_REDIRECT_URL = '/'
+LOGOUT_REDIRECT_URL = '/'
+PASSWORD_RESET_TIMEOUT_DAYS = 3
+# Registration settings
+ACCOUNT_ACTIVATION_DAYS = 7
+REGISTRATION_OPEN = True
+REGISTRATION_SALT = 'helloThere!'
+
 # TODO: set up email backend
 EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 
@@ -149,5 +159,3 @@ STATICFILES_DIRS = [
 # Simplified static file serving.
 # https://warehouse.python.org/project/whitenoise/
 STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
-
-LOGIN_REDIRECT_URL = '/'

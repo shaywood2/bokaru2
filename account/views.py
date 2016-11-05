@@ -1,9 +1,12 @@
-from django.shortcuts import get_object_or_404, render
+from django.shortcuts import render
+from django.contrib.auth.decorators import login_required
 
 
+@login_required
 def summary(request):
     context = {
         'test': "Summary Page",
+        'user': request.user,
     }
 
     return render(request, 'account/summary.html', context)
