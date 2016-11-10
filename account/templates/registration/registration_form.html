@@ -76,42 +76,44 @@
 
                 <form method="post">
                     {% csrf_token %}
-                    <div class="input-group margin-bottom-20">
-                        <span class="input-group-addon rounded-left"><i class="icon-pencil color-red"></i></span>
-                        <input type="text" class="form-control rounded-right" placeholder="Your name">
-                    </div>
 
                     <div class="input-group margin-bottom-20">
                         <span class="input-group-addon rounded-left"><i class="icon-user color-red"></i></span>
-                        <!--<input type="text" class="form-control rounded-right" placeholder="Username">-->
-                        <span class="form-control rounded-right">{{ form.username }}</span>
+                        {{ form.username }}
+                    </div>
+
+                    <div class="input-group margin-bottom-20">
+                        <span class="input-group-addon rounded-left"><i class="icon-pencil color-red"></i></span>
+                        {{ form.fullName }}
                     </div>
 
                     <div class="input-group margin-bottom-20">
                         <span class="input-group-addon rounded-left"><i class="icon-envelope color-red"></i></span>
-                        <!--<input type="email" class="form-control rounded-right" placeholder="Your email">-->
-                        <span class="form-control rounded-right">{{ form.email }}</span>
+                        {{ form.email }}
+                    </div>
+
+                    <div class="input-group margin-bottom-20">
+                        <span class="input-group-addon rounded-left"><i class="icon-envelope color-red"></i></span>
+                        {{ form.email2 }}
                     </div>
 
                     <div class="input-group margin-bottom-30">
                         <span class="input-group-addon rounded-left"><i class="icon-lock color-red"></i></span>
-                        <!--<input type="password" class="form-control rounded-right" placeholder="Password">-->
-                        <span class="form-control rounded-right">{{ form.password1 }}</span>
+                        {{ form.password1 }}
                     </div>
 
                     <div class="input-group margin-bottom-30">
                         <span class="input-group-addon rounded-left"><i class="icon-lock color-red"></i></span>
-                        <!--<input type="password" class="form-control rounded-right" placeholder="Password">-->
-                        <span class="form-control rounded-right">{{ form.password2 }}</span>
+                        {{ form.password2 }}
                     </div>
 
                     <div class="checkbox margin-bottom-30">
                         <label>
-                            <input type="checkbox"> I agree to terms &amp; conditions
+                            {{ form.terms }} I agree to Terms of Service & Privacy Policy.
                         </label>
 
                         <label>
-                            <input type="checkbox"> Subscribe to our newsletter
+                            {{ form.newsletter }} Subscribe to our newsletter
                         </label>
                     </div>
 
