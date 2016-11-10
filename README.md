@@ -99,11 +99,15 @@ Changing models
 Do this whenever models are added or modified:
 
 1. Change your models (in models.py).
-2. Run python manage.py makemigrations to create migrations for those changes
-3. Run python manage.py migrate to apply those changes to the database.
+2. Run `python3 /home/vagrant/bokaru/manage.py makemigrations` to create migrations for those changes
+3. Run `python3 /home/vagrant/bokaru/manage.py migrate` to apply those changes to the database.
 
 Static files
 ------------
 Static files are served by [whitenoise](http://whitenoise.evans.io/en/stable/index.html).
 
 Run the following command to collect and process the static files: `python3 /home/vagrant/bokaru/manage.py collectstatic --noinput`
+
+New python dependencies
+-----------------------
+When new python dependencies are added, run the following command to install them: `sudo pip3 install -r /home/vagrant/bokaru/requirements.txt`
