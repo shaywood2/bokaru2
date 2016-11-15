@@ -1,4 +1,4 @@
-{% extends 'web/base.html' %}
+{% extends 'web/auth_base.html' %}
 
 {% block content %}
 
@@ -21,6 +21,8 @@
             <a href="{% url 'registration_register' %}">Register</a>
             <br />
             <a href="{% url 'web:search' %}">Search</a>
+            <br />
+            <a href="{% url 'web:event' %}">Event Details</a>
             <br />
             <a href="{% url 'account:summary' %}">My Account</a>
             <br />

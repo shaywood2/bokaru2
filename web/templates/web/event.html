@@ -1,3 +1,138 @@
-{{ test }}
-<br />
-<a href="{% url 'web:participants' %}">Participants</a>
+{% extends 'web/base.html' %}
+
+
+{% load staticfiles %}
+
+{% block content %}
+<!--=== Profile ===-->
+		<div class="container content profile">
+			<div class="row">
+
+
+				<!-- Profile Content -->
+				<div class="col-md-12">
+					<div class="profile-body">
+						<div class="profile-bio">
+							<div class="row">
+								<div class="col-md-5">
+									<img class="img-responsive md-margin-bottom-10" src="{% static 'web/theme/img/team/img32-md.jpg' %}" alt="">
+
+
+
+
+								</div>
+								<div class="col-md-7">
+									<h2>Event Name</h2>
+									<span><strong>Age Range:</strong> Men: 20-27 &nbsp Women: 22-29</span>
+									<span><strong>Date:</strong> January, 10, 2016 @ 5:00PM</span>
+									<hr>
+									<p>Event description.</p>
+
+
+
+								</div>
+
+							</div>
+						</div><!--/end row-->
+
+
+
+
+
+
+
+						<hr>
+                         <p><a class="btn-u btn-u-lg btn-u-red" href="#">&nbsp &nbsp Join Event &nbsp &nbsp </a></p>
+                        <hr>
+						<div class="row">
+
+
+							<!--Design Skills-->
+							<div class="col-sm-6">
+								<div class="panel panel-profile">
+									<div class="panel-heading overflow-h">
+										<h2 class="panel-title heading-sm pull-left"><i class="fa fa-pencil"></i> Space Left</h2>
+										<a href="#"><i class="fa fa-cog pull-right"></i></a>
+									</div>
+									<div class="panel-body">
+										<div class="row">
+											<div class="p-chart col-sm-6 col-xs-6 sm-margin-bottom-10">
+												<div class="circle margin-bottom-20" id="circle-40"></div>
+												<h3 class="heading-xs">MEN</h3>
+												<p>5 spots left</p>
+											</div>
+											<div class="p-chart col-sm-6 col-xs-6">
+												<div class="circle margin-bottom-20" id="circle-50"></div>
+												<h3 class="heading-xs">WOMEN</h3>
+												<p>8 Spots left</p>
+											</div>
+										</div>
+									</div>
+								</div>
+							</div>
+							<!--End Design Skills-->
+
+                            <!--Social Contacts v2-->
+							<div class="col-sm-6">
+								<div class="panel panel-profile">
+									<div class="panel-heading overflow-h">
+										<h2 class="panel-title heading-sm pull-left"><i class="fa fa-lightbulb-o"></i> Share Event</h2>
+
+									</div>
+									<div class="panel-body">
+										<ul class="list-unstyled social-contacts-v3">
+											<li><i class="rounded-x tw fa fa-twitter"></i> <a href="#">Twitter</a></li>
+											<li><i class="rounded-x fb fa fa-facebook"></i> <a href="#">Facebook</a></li>
+											<li><i class="rounded-x gp fa fa-google-plus"></i> <a href="#">Google Plus</a></li>
+											<li><i class="rounded-x gm icon-envelope"></i> <a href="#">Email</a></li>
+										</ul>
+									</div>
+								</div>
+							</div>
+							<!--End Social Contacts v2-->
+						</div><!--/end row-->
+					</div>
+				</div>
+				<!-- End Profile Content -->
+			</div>
+		</div>
+		<!--=== End Profile ===-->
+{% endblock %}
+
+
+{% block javascript %}
+
+	<script type="text/javascript">
+		jQuery(document).ready(function() {
+
+			CirclesMaster.initCirclesMaster1();
+			 //Circles 4
+		    Circles.create({
+		        id:         'circle-40',
+		        percentage: 90,
+		        radius:     35,
+		        width:      2,
+		        number:     90,
+		        text:       '%',
+		        colors:     ['#eee', '#e74c3c'],
+		        duration:   2000
+		    });
+
+		     Circles.create({
+		        id:         'circle-50',
+		        percentage: 70,
+		        radius:     35,
+		        width:      2,
+		        number:     70,
+		        text:       '%',
+		        colors:     ['#eee', '#e74c3c'],
+		        duration:   2000
+		    });
+
+
+
+
+		});
+	</script>
+
+{% endblock %}

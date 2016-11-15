@@ -72,7 +72,7 @@
 						<div class="navbar-brand">
 							<a href="index.html">
 
-								<img class="shrink-logo" src="{% static 'web/theme/img/test-owl.jpeg' %}" alt="Logo">
+								<img class="shrink-logo" src="{% static 'web/images/outline-owl.jpg' %}" alt="Logo">
 
 							</a>
 						</div>
@@ -101,7 +101,7 @@
 		<!--=== End Header v6 ===-->
 
 		<!-- Promo Block -->
-		<div class="promo-bg-pattern-v1-dark promo-bg-fixed content-xlg parallaxBg">
+		<div class="owl-background-repeat promo-bg-fixed content-xlg parallaxBg">
 			<div class="container text-center" data-start="opacity: 1;" data-320="opacity: 0;">
 
 
@@ -111,7 +111,7 @@
 
 				<div class="animated fadeInUp wow" data-wow-duration="1.2s" data-wow-delay="2s">
 					<a href="#" class="btn-u btn-brd btn-brd-width-2 btn-brd-hover btn-u-light btn-u-block rounded-4x margin-right-10">Sign Up</a>
-					<a href="#" class="btn-u btn-brd btn-brd-width-2 btn-brd-hover btn-u-light btn-u-block rounded-4x">Find Events</a>
+					<a href="{% url 'web:search' %}" class="btn-u btn-brd btn-brd-width-2 btn-brd-hover btn-u-light btn-u-block rounded-4x">Find Events</a>
 				</div>
 			</div>
 		</div>
@@ -121,7 +121,7 @@
 		<div class="container-fluid">
 			<div class="row no-gutter equal-height-columns">
 				<div class="col-sm-4 promo-bg-img-v1">
-					<div class="service-block bg-color-grey no-margin-bottom content-sm equal-height-column">
+					<div class="service-block bg-color-medium-grey no-margin-bottom content-sm equal-height-column">
 						<i class="icon-custom icon-md rounded icon-color-light icon-line icon-magnifier"></i>
 						<h2 class="heading-md font-light">Fun Events</h2>
 						<p class="no-margin-bottom font-light">Find events that match your interests and with people in your city</p>
@@ -135,7 +135,7 @@
 					</div>
 				</div>
 				<div class="col-sm-4 promo-bg-img-v4">
-					<div class="service-block bg-color-grey no-margin-bottom content-sm equal-height-column">
+					<div class="service-block bg-color-medium-grey no-margin-bottom content-sm equal-height-column">
 						<i class="icon-custom icon-md rounded icon-color-light icon-line icon-heart"></i>
 						<h2 class="heading-md font-light">Fast Matches</h2>
 						<p class="no-margin-bottom font-light">Once the event is done you'll get your matches right away, no more waiting for matches to be calculated like at live speed dating events.</p>
@@ -145,20 +145,7 @@
 		</div>
 		<!-- Colorfull Block -->
 
-		<!-- About Section -->
-		<div class="container content-md">
-			<div class="text-center margin-bottom-50">
-				<h2 class="title-v2 title-center">WHAT'S THE MEANING OF THIS</h2>
-				<p class="space-lg-hor">We combine the best of speed dating and online dating to create a unique and fun experience that will help
-					you find the match you've been looking for without all the non-sense you'd find with other dating sites.
 
-
-
-			</div>
-
-
-		</div>
-		<!-- End About Section -->
 
 		<!-- Full Width Section -->
 
@@ -244,7 +231,7 @@
 		<!-- End Services Blocks -->
 
 		<!-- Parallax Counter -->
-		<div class="parallax-counter parallaxBg1">
+		<div class="parallax-counter parallaxBg1 owl-background-repeat">
 			<div class="container content">
 				<div class="row">
 					<div class="col-sm-3 col-xs-6">

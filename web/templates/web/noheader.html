@@ -1,0 +1,115 @@
+{% load staticfiles %}
+
+<!DOCTYPE html>
+
+{% load static %}
+
+<!--[if IE 8]><html lang="en" class="ie8"><![endif]-->
+<!--[if IE 9]><html lang="en" class="ie9"><![endif]-->
+<!--[if !IE]><!-->
+<html lang="en"> <!--<![endif]-->
+<head>
+    <title>bokaru | Login</title>
+
+    <!-- Meta -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+    <!-- Favicon -->
+    <link rel="shortcut icon" href="favicon.ico">
+
+    <!-- Web Fonts -->
+    <link rel="stylesheet" type="text/css"
+          href="//fonts.googleapis.com/css?family=Open+Sans:400,300,700&amp;subset=cyrillic,latin">
+
+    <!-- CSS Global Compulsory -->
+    <link rel="stylesheet" href="{% static 'web/theme/plugins/bootstrap/css/bootstrap.min.css' %}">
+
+    <link rel="stylesheet" href="{% static 'web/theme/css/style.css' %}">
+
+
+    <!-- CSS Implementing Plugins -->
+    <link rel="stylesheet" href="{% static 'web/theme/plugins/animate.css' %}">
+
+    <link rel="stylesheet" href="{% static 'web/theme/plugins/line-icons/line-icons.css' %}">
+
+    <link rel="stylesheet" href="{% static 'web/theme/plugins/font-awesome/css/font-awesome.min.css' %}">
+
+    <link rel="stylesheet" href="{% static 'web/theme/plugins/brand-buttons/brand-buttons.css' %}">
+
+
+    <!-- CSS Page Style -->
+    <link rel="stylesheet" href="{% static 'web/theme/css/pages/page_log_reg_v4.css' %}">
+
+
+    <!-- CSS Theme -->
+    <link rel="stylesheet" href="{% static 'web/theme/css/theme-colors/red.css' %}">
+
+
+    <!-- CSS Customization -->
+    <link rel="stylesheet" href="{% static 'web/theme/css/custom.css' %}">
+
+</head>
+
+<body>
+
+ {% block content %}
+ {% endblock %}
+
+
+
+<!--=== Sticky Footer ===-->
+<div class="container sticky-footer">
+    <ul class="list-unstyled list-inline social-links margin-bottom-20">
+        <li><a href="#"><i class="icon-custom icon rounded-x icon-bg-red fa fa-facebook"></i></a></li>
+        <li><a href="#"><i class="icon-custom icon rounded-x icon-bg-red fa fa-twitter"></i></a></li>
+        <li><a href="#"><i class="icon-custom icon rounded-x icon-bg-red fa fa-google-plus"></i></a></li>
+    </ul>
+    <p class="copyright-space">
+        2016 &copy; All Rights Reserved. Bokaru Inc.
+    </p>
+</div>
+<!--=== End Sticky Footer ===-->
+
+<!-- JS Global Compulsory -->
+<script src="{% static 'web/theme/plugins/jquery/jquery.min.js' %}"></script>
+
+<script src="{% static 'web/theme/plugins/jquery/jquery-migrate.min.js' %}"></script>
+
+<script src="{% static 'web/theme/plugins/bootstrap/js/bootstrap.min.js' %}"></script>
+
+
+<!-- JS Implementing Plugins -->
+<script src="{% static 'web/theme/plugins/back-to-top.js' %}"></script>
+
+
+<script src="{% static 'web/theme/plugins/backstretch/jquery.backstretch.min.js' %}"></script>
+
+
+<!-- JS Customization -->
+<script src="{% static 'web/theme/js/custom.js' %}"></script>
+
+
+<!-- JS Page Level -->
+<script src="{% static 'web/theme/js/app.js' %}"></script>
+
+<script>
+		jQuery(document).ready(function() {
+			App.init();
+		});
+
+
+</script>
+
+<!--[if lt IE 9]>
+<script src="{% static 'web/theme/plugins/respond.js' %}"></script>
+
+<script src="{% static 'web/theme/plugins/html5shiv.js' %}"></script>
+
+<script src="{% static 'web/theme/plugins/placeholder-IE-fixes.js' %}"></script>
+
+<![endif]-->
+</body>
+</html>
