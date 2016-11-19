@@ -8,6 +8,7 @@ urlpatterns = [
     url(r'^$', views.summary, name='summary'),
     url(r'^subscription$', views.subscription, name='subscription'),
     url(r'^view$', views.view, name='view'),
+    url(r'^view/(?P<username>\w+)$', views.view_user, name='view_user'),
     url(r'^edit$', views.edit, name='edit'),
     url(r'^settings$', views.settings, name='settings'),
     url(r'^close$', views.close, name='close'),

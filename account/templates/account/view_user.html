@@ -8,9 +8,5 @@ gender: {{ account.gender }} <br/>
 {{ account.height }} cm<br/>
 {{ account.bodyType }} <br/>
 {{ account.summary }} <br/>
-How matches contact you: {{ account.contactInfo }} <br/>
-
-<br/><br/>
-created: {{ account.created }} <br/>
-updated: {{ account.updated }} <br/>
-<a href="{% url 'account:edit' %}">Edit</a>
+<br/>
+SHOW ONLY TO MATCHES: {{ account.contactInfo }} <br/>

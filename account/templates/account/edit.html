@@ -1,1 +1,5 @@
-{{ test }}
+<form method="post">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button type="submit" class="btn-u btn-block rounded">Update</button>
+</form>
