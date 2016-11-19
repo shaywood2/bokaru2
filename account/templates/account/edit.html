@@ -4,6 +4,15 @@
 {% load staticfiles %}
 
 {% block content %}
+
+<!-- FORM START -->
+<form method="post">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button type="submit" class="btn-u btn-block rounded">Update</button>
+</form>
+<!-- FORM END -->
+
 <div class="container content profile">
 			<div class="row">
 				<!--Left Sidebar-->
