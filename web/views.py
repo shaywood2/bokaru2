@@ -86,6 +86,12 @@ def eventjoined(request):
 
     return render(request, 'web/eventjoined.html', context)
 
+def pay(request):
+    context = {
+        'test': "Event Pay Page",
+    }
+
+    return render(request, 'web/pay.html', context)
 
 def matches(request):
     context = {

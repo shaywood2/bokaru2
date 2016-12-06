@@ -1,0 +1,84 @@
+{% extends 'web/base.html' %}
+
+
+{% load staticfiles %}
+
+
+
+
+{% block header %}
+<script>
+
+    function setActiveLink(node)
+    {
+
+        $(node).addClass("active");
+    }
+
+</script>
+{% endblock %}
+
+{% block content %}
+
+
+
+<div class="container content profile">
+			<div class="row">
+				<!--Left Sidebar-->
+				<div class="col-md-3 md-margin-bottom-40">
+					<img class="img-responsive profile-img margin-bottom-20" src="{% static 'web/theme/img/team/img32-md.jpg' %}" alt="">
+
+
+					<ul class="list-group sidebar-nav-v1 margin-bottom-40" id="sidebar-nav-1">
+						<li id="details_link" class="list-group-item">
+							<a href="{% url 'account:edit' %}"><i class="fa fa-picture-o"></i> Change Details</a>
+						</li>
+						<li id="image_link" class="list-group-item">
+							<a href="page_profile.html"><i class="fa fa-picture-o"></i> Select Image</a>
+						</li>
+						<li id="password_link" class="list-group-item">
+							<a href="{% url 'account:password' %}"><i class="fa fa-picture-o"></i> Change Password</a>
+						</li>
+						<li id="history_link" class="list-group-item">
+							<a href="{% url 'account:history' %}"><i class="fa fa-picture-o"></i> Account History</a>
+						</li>
+						<li id="notifications_link" class="list-group-item">
+							<a href="{% url 'account:notifications' %}"><i class="fa fa-picture-o"></i> Change Notifications</a>
+						</li>
+						<li id="close_link" class="list-group-item">
+							<a href="{% url 'account:closeaccount' %}"><i class="fa fa-picture-o"></i> Close Account</a>
+						</li>
+					</ul>
+
+
+
+
+
+
+					<div class="margin-bottom-50"></div>
+
+
+				</div>
+				<!--End Left Sidebar-->
+
+
+
+				<!-- Profile Content -->
+				<div class="col-md-9">
+					<div class="profile-body margin-bottom-20">
+
+
+
+                        {% block profile_content %}
+                        {% endblock %}
+
+
+
+					</div>
+				</div>
+				<!-- End Profile Content -->
+			</div><!--/end row-->
+		</div>
+		<!--=== End Profile ===-->
+{% endblock %}
+
