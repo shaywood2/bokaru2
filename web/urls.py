@@ -13,6 +13,7 @@ urlpatterns = [
     url(r'^event/create', views.event_create, name='event_create'),
     url(r'^event/participants/$', views.participants, name='participants'),
     url(r'^event/joined/$', views.eventjoined, name='eventjoined'),
+    url(r'^event/pay/$', views.pay, name='pay'),
     url(r'^matches/$', views.matches, name='matches'),
     url(r'^myevents/$', views.myevents, name='myevents'),
     url(r'^termsofuse/$', views.termsofuse, name='termsofuse'),

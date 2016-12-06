@@ -1,0 +1,41 @@
+{% extends 'account/profile_template.html' %}
+
+
+{% load staticfiles %}
+
+
+
+
+{% block profile_content %}
+<form method="post">
+									{% csrf_token %}
+
+
+								<div id="settings" class="profile-edit tab-pane fade active in">
+									<h2 class="heading-md">Manage your Notifications.</h2>
+									<p>Below are the notifications you may manage.</p>
+									<br>
+										<hr>
+										<label class="toggle"><input type="checkbox" checked="" name="checkbox-toggle-1"><i class="no-rounded"></i> Subscribe to our marketing emails</label>
+										<hr>
+										<button type="button" class="btn-u btn-u-default">Reset</button>
+										<button class="btn-u" type="submit">Save Changes</button>
+
+								</div>
+
+
+
+
+								</form>
+
+
+
+{% endblock %}
+
+
+{% block javascript %}
+<script>
+
+setActiveLink($("#notifications_link"));
+</script>
+{% endblock %}
