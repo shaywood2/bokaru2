@@ -1,1 +1,40 @@
-{{ test }}
+{% extends 'account/profile_template.html' %}
+
+
+{% load staticfiles %}
+
+
+
+
+{% block profile_content %}
+<form method="post">
+									{% csrf_token %}
+
+
+								<div id="profile" class="profile-edit tab-pane fade in active">
+									<h2 class="heading-md">Close Account</h2>
+									<p>Do you want to close your account?</p>
+									<br>
+
+									<p style="text-align: center">
+										<button type="submit" class="btn-u rounded">Close Account</button>
+									</p>
+
+								</div>
+
+
+
+
+								</form>
+
+
+
+{% endblock %}
+
+
+{% block javascript %}
+<script>
+
+setActiveLink($("#close_link"));
+</script>
+{% endblock %}
