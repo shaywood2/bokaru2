@@ -84,6 +84,7 @@ def view_user(request, username):
 def edit(request):
     current_user = request.user
     account = Account.objects.get(user=current_user)
+
     if request.method == 'POST':
         form = AccountForm(request.POST, request.FILES, instance=account)
         if form.is_valid():

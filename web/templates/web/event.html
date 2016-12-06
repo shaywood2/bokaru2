@@ -22,16 +22,21 @@
 
 								</div>
 								<div class="col-md-7">
-									<h2>Event Name</h2>
-									<span><strong>Age Range:</strong> Men: 20-27 &nbsp Women: 22-29</span>
-									<span><strong>Date:</strong> January, 10, 2016 @ 5:00PM</span>
+									<h2>{{event.name}}</h2>
+									<span><strong>Location:</strong> {{event.location}}</span>
+									<span><strong>Age Ranges:</strong> {{groups.0}} &amp; {{groups.1}}</span>
+									<span><strong>Date:</strong> {{event.startDateTime}}</span>
 									<hr>
-									<p>Event description.</p>
+									<p>{{event.description}}</p>
+									<p>{{event.startDateTime}}</p>
 
+									<p>Created by: {{event.creator}}</p>
 
+									<br/>
 
+									<p>{{groups.0}} registered {{groups.0.participants.count}} out of {{groups.0.participantsMaxNumber}}</p>
+									<p>{{groups.1}} registered {{groups.1.participants.count}} out of {{groups.1.participantsMaxNumber}}</p>
 								</div>
-
 							</div>
 						</div><!--/end row-->
 
@@ -58,13 +63,13 @@
 										<div class="row">
 											<div class="p-chart col-sm-6 col-xs-6 sm-margin-bottom-10">
 												<div class="circle margin-bottom-20" id="circle-40"></div>
-												<h3 class="heading-xs">MEN</h3>
-												<p>5 spots left</p>
+												<h3 class="heading-xs">{{groups.0}}</h3>
+												<p>{{group1_spots_left}} spots left</p>
 											</div>
 											<div class="p-chart col-sm-6 col-xs-6">
 												<div class="circle margin-bottom-20" id="circle-50"></div>
-												<h3 class="heading-xs">WOMEN</h3>
-												<p>8 Spots left</p>
+												<h3 class="heading-xs">{{groups.1}}</h3>
+												<p>{{group2_spots_left}} Spots left</p>
 											</div>
 										</div>
 									</div>
@@ -300,10 +305,10 @@
 			 //Circles 4
 		    Circles.create({
 		        id:         'circle-40',
-		        percentage: 90,
+		        percentage: {{group1_filled_percentage}},
 		        radius:     35,
 		        width:      2,
-		        number:     90,
+		        number:     {{group1_filled_percentage}},
 		        text:       '%',
 		        colors:     ['#eee', '#e74c3c'],
 		        duration:   2000
@@ -311,10 +316,10 @@
 
 		     Circles.create({
 		        id:         'circle-50',
-		        percentage: 70,
+		        percentage: {{group2_filled_percentage}},
 		        radius:     35,
 		        width:      2,
-		        number:     70,
+		        number:     {{group2_filled_percentage}},
 		        text:       '%',
 		        colors:     ['#eee', '#e74c3c'],
 		        duration:   2000

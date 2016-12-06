@@ -111,3 +111,8 @@ Run the following command to collect and process the static files: `python3 /hom
 New python dependencies
 -----------------------
 When new python dependencies are added, run the following command to install them: `sudo pip3 install -r /home/vagrant/bokaru/requirements.txt`
+
+Testing
+-------
+To run unit test first navigate to the project directory `cd /home/vagrant/bokaru/` and then run all tests with the following command:
+`python3 ./manage.py test`

@@ -4,6 +4,13 @@
 {% load staticfiles %}
 
 {% block content %}
+
+<form method="post">
+{% csrf_token %}
+{{event_form.as_p}}
+	<input type="submit" value="Save">
+</form>
+
 <div class="container content profile">
 			<div class="row">
 				<!--Left Sidebar-->
