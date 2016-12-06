@@ -43,7 +43,7 @@ class Account(models.Model):
         ('curvy', 'Curvy'),
         ('overweight', 'Overweight')
     )
-    user = models.ForeignKey(
+    user = models.OneToOneField(
         settings.AUTH_USER_MODEL,
         on_delete=models.SET(get_sentinel_user)
     )
