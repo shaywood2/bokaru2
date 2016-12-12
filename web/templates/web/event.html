@@ -4,6 +4,13 @@
 {% load staticfiles %}
 
 {% block content %}
+{% if messages %}
+    <ul class="messages">
+        {% for message in messages %}
+            <li {% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
+        {% endfor %}
+    </ul>
+{% endif %}
 <!--=== Profile ===-->
 		<div class="container content profile">
 			<div class="row">
@@ -39,16 +46,6 @@
 								</div>
 							</div>
 						</div><!--/end row-->
-
-
-
-
-
-
-
-						<hr>
-                         <p><a class="btn-u btn-u-lg btn-u-red" href="{% url 'web:pay' %}">&nbsp &nbsp Join Event &nbsp &nbsp </a></p>
-                        <hr>
 						<div class="row">
 
 
@@ -65,11 +62,13 @@
 												<div class="circle margin-bottom-20" id="circle-40"></div>
 												<h3 class="heading-xs">{{groups.0}}</h3>
 												<p>{{group1_spots_left}} spots left</p>
+												<p><a class="btn-u btn-u-lg btn-u-red" href="{% url 'web:event_join' groups.0.id %}">&nbsp; &nbsp; Join Group &nbsp; &nbsp; </a></p>
 											</div>
 											<div class="p-chart col-sm-6 col-xs-6">
 												<div class="circle margin-bottom-20" id="circle-50"></div>
 												<h3 class="heading-xs">{{groups.1}}</h3>
 												<p>{{group2_spots_left}} Spots left</p>
+												<p><a class="btn-u btn-u-lg btn-u-red" href="{% url 'web:event_join' groups.1.id %}">&nbsp; &nbsp; Join Group &nbsp; &nbsp; </a></p>
 											</div>
 										</div>
 									</div>

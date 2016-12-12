@@ -1,6 +1,7 @@
 from django.db import models
 from django.conf import settings
 from django.contrib.auth import get_user_model
+from django.utils.translation import ugettext_lazy as _
 
 
 def get_sentinel_user():
@@ -24,6 +25,17 @@ class Event(models.Model):
     def __str__(self):
         return self.name + ' @ ' + self.location + ', [' + str(self.startDateTime) + ']'
 
+    def get_all_participants(self):
+        participants = []
+        for group in self.eventgroup_set.all():
+            for participant in group.participants.all():
+                participants.append(participant)
+        return participants
+
+    def is_registered(self, user):
+        participants = self.get_all_participants()
+        return user in participants
+
 
 class EventGroup(models.Model):
     event = models.ForeignKey(Event, on_delete=models.CASCADE)
@@ -31,7 +43,17 @@ class EventGroup(models.Model):
     ageMin = models.PositiveSmallIntegerField()
     ageMax = models.PositiveSmallIntegerField()
     participantsMaxNumber = models.PositiveSmallIntegerField()
-    participants = models.ManyToManyField(settings.AUTH_USER_MODEL, blank=True)
+    participants = models.ManyToManyField(settings.AUTH_USER_MODEL)
+
+    def add_participant(self, user):
+        # Groups is full
+        num_participants = self.participants.all().count()
+        if self.participantsMaxNumber <= num_participants:
+            raise Exception(_('Group full'))
+        # User is already registered
+        if self.event is not None and self.event.is_registered(user):
+            raise Exception(_('You are already registered'))
+        self.participants.add(user)
 
     def __str__(self):
         return self.name + ' [' + str(self.ageMin) + ' - ' + str(self.ageMax) + ']'

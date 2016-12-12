@@ -11,7 +11,6 @@ env:
   global:
   - DJANGO_SETTINGS_MODULE="bokaru.settings"
   - PYTHONPATH="/home/travis/build/bokaru/bokaru"
-  - PIP_USE_MIRRORS=true
   - DATABASE_URL="postgres://localhost/bokaru"
 
 install:
