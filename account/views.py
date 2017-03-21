@@ -50,8 +50,10 @@ def subscription(request):
 def view(request):
     current_user = request.user
     account = Account.objects.get(user=current_user)
-    age = calculate_age(account.birthDate)
-    account.age = age
+
+    if account.birthDate is not None:
+        age = calculate_age(account.birthDate)
+        account.age = age
 
     context = {
         'user': current_user,

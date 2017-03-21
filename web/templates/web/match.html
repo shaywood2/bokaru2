@@ -1,0 +1,133 @@
+{% extends 'web/base.html' %}
+
+
+{% load staticfiles %}
+
+{% block content %}
+
+
+<!--=== Content Part ===-->
+		<div class="container content">
+			<div class="row blog-page">
+				<!-- Left Sidebar -->
+				<span class="col-md-12 md-margin-bottom-40">
+
+					<span style="text-align: center;"><h1>30 seconds</h1>
+                    <span style="text-align: center"><h1>Was it a match?</h1>
+
+					<br/>
+					<p><a class="btn-u btn-u-lg rounded">Yes</a> &nbsp &nbsp &nbsp  <a class="btn-u btn-u-lg rounded">No</a></p>
+
+
+						</span>
+					<hr class="margin-bottom-40">
+					<!--Blog Post-->
+					<div class="row blog blog-medium margin-bottom-40">
+						<div class="col-md-5">
+							<img class="img-responsive" src="{% static 'web/theme/img/main/img22.jpg' %}" alt="">
+
+						</div>
+						<div class="col-md-7">
+							<h2><a href="#">User Name</a></h2>
+							<ul class="list-unstyled list-inline blog-info">
+								<li><i class="fa fa-map-marker"></i> Toronto, ON</li>
+
+							</ul>
+							<p>At vero eos et accusamus et iusto odiomolestias dignis simos ducimus qui blandit occaeca bais praesentium voluptatum deleniti atque corrupti quos dolores et quas molestias excepturi sint occaecati cupiditate non provident, similique sunt in culpa qui officia deserunt mollitia animi, id est laborum et dolorum fuga.</p>
+
+						</div>
+					</div>
+					<!--End Blog Post-->
+
+                    <!--Blog Post-->
+					<div id="profileDetails1" class="row blog blog-medium margin-bottom-40">
+
+                        <div class="col-md-5">
+
+                            <div class="panel margin-bottom-40">
+								<div class="panel-heading">
+									<h2>Details</h2>
+								</div>
+								<table class="table table-striped">
+
+									<tbody>
+										<tr>
+
+											<td><b>Location:</b> Toronto, ON</td>
+											<td><b>Age:</b> Toronto, ON</td>
+										</tr>
+                                        <tr>
+
+											<td><b>Gender:</b> Toronto, ON</td>
+											<td><b>Height:</b> Toronto, ON</td>
+										</tr>
+
+                                     <tr>
+
+											<td><b>Body Type:</b> Toronto, ON</td>
+											<td><b>Education:</b> Toronto, ON</td>
+										</tr>
+
+                                        <tr>
+
+											<td><b>Profession:</b> Toronto, ON</td>
+											<td><b>Relationship Type:</b> Toronto, ON</td>
+										</tr>
+
+
+                                    <tr>
+
+											<td><b>Orientation:</b> Toronto, ON</td>
+											<td><b>Identity:</b> Toronto, ON</td>
+										</tr>
+                                        <tr>
+
+											<td><b>Ethnicity:</b> Toronto, ON</td>
+											<td><b>Religion:</b> Toronto, ON</td>
+										</tr>
+
+                                     <tr>
+
+											<td><b>Languages:</b> Toronto, ON</td>
+											<td><b>Kids:</b> Toronto, ON</td>
+										</tr>
+
+                                        <tr>
+
+											<td><b>Vices:</b> Toronto, ON</td>
+											<td><b>Diet:</b> Toronto, ON</td>
+										</tr>
+
+
+
+									</tbody>
+								</table>
+							</div>
+
+
+                        </div>
+
+						<div class="col-md-7">
+							<h2>Notes</h2>
+                        <textarea cols="80" id="id_summary" maxlength="2000" name="summary" rows="15"></textarea>
+
+						</div>
+					</div>
+					<!--End Blog Post-->
+
+
+
+
+
+					<hr class="margin-bottom-40">
+
+
+				</div>
+				<!-- End Left Sidebar -->
+
+
+			</div><!--/row-->
+		</div><!--/container-->
+		<!--=== End Content Part ===-->
+
+{% endblock %}

@@ -1,0 +1,66 @@
+{% extends 'web/base.html' %}
+
+
+{% load staticfiles %}
+
+{% block content %}
+
+<!--=== Container Part ===-->
+		<div class="container">
+			<div class="content">
+				<!-- Magazine Slider -->
+				<div class="carousel slide carousel-v2 margin-bottom-40" id="portfolio-carousel">
+
+
+					<div class="carousel-inner">
+						<div class="item active">
+							<img class="full-width img-responsive" src="{% static 'web/theme/img/mockup/img2.jpg' %}" alt="">
+
+						</div>
+
+
+
+					</div>
+
+
+				</div>
+				<!-- End Magazine Slider -->
+
+				<div class="row margin-bottom-60">
+					<div class="col-sm-8">
+						<div class="headline"><h2>Summary</h2></div>
+						<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vivamus in urna nec risus maximus ultricies. Nam nisi mauris, congue non lacus iaculis, interdum luctus dolor. Maecenas pellentesque sapien nec mauris dictum, et mollis lorem eleifend. In hac habitasse platea dictumst. Fusce nec elit et metus blandit posuere eget id ante. Integer fermentum auctor neque eu venenatis. Praesent diam eros, mollis a mattis sit amet, scelerisque sit amet dui. Morbi sed lectus ut lorem vehicula interdum a nec dui. Nam at placerat risus. Mauris eget faucibus tortor. Sed sed iaculis ligula. Aliquam porttitor viverra sagittis.</p>
+
+						<div class="headline"><h2>Notes</h2></div>
+						<textarea cols="80" id="id_summary" maxlength="2000" name="summary" rows="11"></textarea>
+					</div>
+
+					<div class="col-sm-4">
+						<div class="headline"><h2>Details</h2></div>
+						<ul class="list-unstyled project-details">
+							<li><strong>Location: Test</strong> Web Design</li>
+							<li><strong>Age:</strong> 17 October 2014</li>
+							<li><strong>Gender:</strong>hi</li>
+							<li><strong>Height:</strong>hi</li>
+							<li><strong>Body Type:</strong>hi</li>
+							<li><strong>Education:</strong>hi</li>
+							<li><strong>Profession:</strong>hi</li>
+							<li><strong>Relationship:</strong>hi</li>
+							<li><strong>Orientation:</strong>hi</li>
+							<li><strong>Identity:</strong>hi</li>
+							<li><strong>Ethnicity:</strong>hi</li>
+							<li><strong>Religion:</strong>hi</li>
+							<li><strong>Languages:</strong>hi</li>
+							<li><strong>Kids:</strong>hi</li>
+							<li><strong>Vices:</strong>hi</li>
+							<li><strong>Diet:</strong>hi</li>
+						</ul>
+					</div>
+				</div>
+
+
+			</div>
+		</div>
+		<!--=== End Container Part ===-->
+
+{% endblock %}
