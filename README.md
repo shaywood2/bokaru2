@@ -110,7 +110,7 @@ Run the following command to collect and process the static files: `python3 /hom
 
 New python dependencies
 -----------------------
-When new python dependencies are added, run the following command to install them: `sudo pip3 install -r /home/vagrant/bokaru/requirements.txt`
+When new python dependencies are added, run the following command to install them: `sudo pip3 install --upgrade -r /home/vagrant/bokaru/requirements.txt`
 
 Testing
 -------

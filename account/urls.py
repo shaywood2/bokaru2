@@ -16,4 +16,5 @@ urlpatterns = [
     url(r'^settings$', views.settings, name='settings'),
     url(r'^close$', views.close, name='close'),
     url(r'^payment$', views.payment, name='payment'),
+    url(r'^payment/create', views.payment_create, name='payment_create'),
 ]

@@ -1,8 +1,11 @@
 from django.shortcuts import render, reverse, get_object_or_404
 from django.http import HttpResponseRedirect
+from django.forms.formsets import formset_factory
+from django.contrib import messages
 
 from .forms import EventForm, EventGroupForm
 from .models import Event, EventGroup
+
 
 def index(request):
     context = {
@@ -51,6 +54,8 @@ def event_view(request, event_id):
     group1_filled_percentage = float(event_groups[0].participants.count()) / event_groups[0].participantsMaxNumber * 100
     group1_spots_left = event_groups[0].participantsMaxNumber - event_groups[0].participants.count()
 
+    group2_filled_percentage = 0
+    group2_spots_left = 0
     if num_groups > 1:
         group2_filled_percentage = float(event_groups[1].participants.count())\
                                    / event_groups[1].participantsMaxNumber * 100
@@ -71,17 +76,27 @@ def event_view(request, event_id):
 def event_create(request):
     current_user = request.user
 
+    GroupFormSet = formset_factory(EventGroupForm, extra=1, min_num=1, validate_min=True)
+
     if request.method == 'POST':
-        event_form = EventForm(request.POST, request.FILES, user=current_user)
-        event_group1_form = EventGroupForm(request.POST, request.FILES, user=current_user)
-        if event_form.is_valid():
-            event = event_form.save()
-            return HttpResponseRedirect(reverse('web:event_view', kwargs={'event_id': event.id}))
+        event_form = EventForm(request.POST)
+        group_formset = GroupFormSet(request.POST)
+        if all([event_form.is_valid(), group_formset.is_valid()]):
+            new_event = event_form.save(commit=False)
+            new_event.creator = current_user
+            for inline_form in group_formset:
+                if inline_form.cleaned_data:
+                    group = inline_form.save(commit=False)
+                    group.event = new_event
+                    group.save()
+            return HttpResponseRedirect(reverse('web:event_view', kwargs={'event_id': new_event.id}))
     else:
-        event_form = EventForm(user=current_user)
+        event_form = EventForm()
+        group_formset = GroupFormSet()
 
     context = {
         'event_form': event_form,
+        'group_formset': group_formset,
     }
 
     return render(request, 'web/eventcreate.html', context)
@@ -95,6 +110,21 @@ def eventedit(request):
     return render(request, 'web/eventedit.html', context)
 
 
+def event_join(request, group_id):
+    current_user = request.user
+    selected_group = get_object_or_404(EventGroup, pk=group_id)
+    selected_event = selected_group.event
+
+    # Attempt to add user to the group
+    try:
+        selected_group.add_participant(current_user)
+        return HttpResponseRedirect(reverse('web:event_joined'))
+    except Exception as e:
+        messages.add_message(request, messages.ERROR, str(e))
+
+    return HttpResponseRedirect(reverse('web:event_view', kwargs={'event_id': selected_event.id}))
+
+
 def participants(request):
     context = {
         'test': "Event Participants Page",
@@ -103,19 +133,20 @@ def participants(request):
     return render(request, 'web/participants.html', context)
 
 
-def eventjoined(request):
+def event_joined(request):
     context = {
         'test': "Event Joined Page",
     }
 
     return render(request, 'web/eventjoined.html', context)
 
-def pay(request):
+
+def payment(request):
     context = {
         'test': "Event Pay Page",
     }
 
-    return render(request, 'web/pay.html', context)
+    return render(request, 'web/payment.html', context)
 
 def matches(request):
     context = {}
