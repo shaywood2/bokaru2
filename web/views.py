@@ -118,11 +118,27 @@ def pay(request):
     return render(request, 'web/pay.html', context)
 
 def matches(request):
-    context = {
-        'test': "My Matches Page",
-    }
+    context = {}
 
     return render(request, 'web/matches.html', context)
+
+
+def lobby(request):
+    context = {}
+
+    return render(request, 'web/lobby.html', context)
+
+
+def match(request):
+    context = {}
+
+    return render(request, 'web/match.html', context)
+
+
+def live(request):
+    context = {}
+
+    return render(request, 'web/live.html', context)
 
 
 def myevents(request):

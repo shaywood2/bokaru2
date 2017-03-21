@@ -101,7 +101,7 @@
 						<div class="navbar-brand" style="margin-top: 7px;">
 
 
-								&nbsp &nbsp
+											&nbsp &nbsp
 											<a href="#">
 												HOME
 											</a>
@@ -109,13 +109,27 @@
 
 											&nbsp &nbsp
 											<a href="{% url 'web:search' %}">
-												EVENTS
+												FIND EVENTS
 											</a>
 
 
 											&nbsp &nbsp
 											<a href="{% url 'account:view' %}">
 												PROFILE
+											</a>
+
+											&nbsp &nbsp
+											<a href="{% url 'web:matches' %}">
+												MY MATCHES
+											</a>
+
+											&nbsp &nbsp
+											<a href="{% url 'web:myevents' %}">
+												MY EVENTS
+											</a>
+											&nbsp &nbsp
+											<a href="{% url 'web:myevents' %}">
+												LIVE EVENT
 											</a>
 
 						</div>
@@ -150,7 +164,7 @@
 						<!-- About Us -->
 						<div class="col-md-3 sm-margin-bottom-40">
 							<div class="heading-footer"><h2>About Bokaru</h2></div>
-							<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Duis blandit ut metus a commodo. Pellentesque congue tellus sed enim sollicitudin, id blandit mauris eleifend.</p>
+							<p>A site to date and find your mate.</p>
 						</div>
 						<!-- End About Us -->
 
@@ -178,11 +192,10 @@
 						<div class="col-md-3 sm-margin-bottom-40">
 							<div class="heading-footer"><h2>Links</h2></div>
 							<ul class="list-unstyled footer-link-list">
-								<li><a href="#">About Us</a></li>
-								<li><a href="#">Portfolio</a></li>
-								<li><a href="#">Latest jobs</a></li>
-								<li><a href="#">Community</a></li>
-								<li><a href="#">Contact Us</a></li>
+								<li><a href="#">Find Events</a></li>
+								<li><a href="#">My Matches</a></li>
+								<li><a href="#">My Events</a></li>
+								<li><a href="#">Profile Settings</a></li>
 							</ul>
 						</div>
 						<!-- End Useful Links -->
@@ -191,19 +204,11 @@
 						<div class="col-md-3">
 							<div class="heading-footer"><h2>Contact Us</h2></div>
 							<ul class="list-unstyled contacts">
-								<li>
-									<i class="radius-3x fa fa-map-marker"></i>
-									795 Folsom Ave, Suite 600,
-									San Francisco, CA 94107
-								</li>
-								<li>
-									<i class="radius-3x fa fa-phone"></i>
-									(+123) 456 7890<br>
-									(+123) 456 7891
-								</li>
+
+
 								<li>
 									<i class="radius-3x fa fa-globe"></i>
-									<a href="#">toronto@gmail.com</a><br>
+									<a href="#">webmaster@gmail.com</a><br>
 									<a href="#">www.toronto.com</a>
 								</li>
 							</ul>
@@ -218,11 +223,9 @@
 					<div class="row">
 						<div class="col-md-8 sm-margon-bottom-10">
 							<ul class="list-inline terms-menu">
-								<li class="silver"> &copy; 2016 All right reserved. Unify developed by <a href="https://htmlstream.com" target="_blank">Htmlstream<a href="#"></li>
-								<li><a href="#">Terms of Use</a></li>
-								<li><a href="#">Privacy and Policy</a></li>
-								<li><a href="#">License</a></li>
-								<li><a href="#">Support</a></li>
+								<li class="silver"> &copy; 2016 All right reserved. Bokaru LLP</li>
+								<li><a href="{% url 'web:termsofuse' %}">Terms of Use</a></li>
+								<li><a href="{% url 'web:privacypolicy' %}">Privacy and Policy</a></li>
 							</ul>
 						</div>
 						<div class="col-md-4">
@@ -281,39 +284,7 @@
 		<!--=== End Footer v6 ===-->
 	</div><!--/wrapper-->
 
-	<!-- Sliding Panel -->
-	<div class="sliding-panel bg-color-darker">
-		<div class="sliding-panel-inner sliding-panel-scrollable fullscreen">
-			<ul class="sliding-navigation">
-				<li><a href="index.html">Home</a></li>
-				<li><a href="page_about3.html">Abour Us</a></li>
-				<li><a href="page_services.html">Services</a></li>
-				<li><a href="page_profile.html">Profile</a></li>
-				<li><a href="blog_large_right_sidebar1.html">Blog</a></li>
-				<li><a href="portfolio_3_columns_grid_text.html">Our Work</a></li>
-				<li><a href="page_contact1.html">Contact Us</a></li>
-			</ul>
 
-			<h4>Contacts</h4>
-			<address>
-				58, Lorem Lis Street, Central Ave<br>
-				New York, US<br><br>
-				Phone: 938 334 6049<br>
-				Fax: 938 334 6050<br><br>
-				Email: <a href="mailto:#">info@htmlstream.com</a><br>
-			</address>
-
-			<ul class="list-inline social-icons-v1 social-icons-v1--dark">
-				<li><a href="#"><i class="fa fa-twitter"></i></a></li>
-				<li><a href="#"><i class="fa fa-facebook"></i></a></li>
-				<li><a href="#"><i class="fa fa-google-plus"></i></a></li>
-				<li><a href="#"><i class="fa fa-linkedin"></i></a></li>
-			</ul>
-		</div>
-
-		<a href="javascript:void(0);" class="sliding-panel__close">Close</a>
-	</div>
-	<!-- End Sliding Panel -->
 
 
 
