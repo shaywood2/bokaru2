@@ -57,3 +57,35 @@ class EventGroup(models.Model):
 
     def __str__(self):
         return self.name + ' [' + str(self.ageMin) + ' - ' + str(self.ageMax) + ']'
+
+
+class PickManager(models.Manager):
+    def get_query_set(self):
+        return models.QuerySet(self.model, using=self._db)
+
+    def get_matches(self, user, event):
+        matches = []
+        # Get all picks from an event
+        for users_pick in self.get_query_set().filter(picker=user, event=event):
+            if len(self.get_query_set().filter(picker=users_pick.picked, picked=user, event=event)) > 0:
+                matches.append(users_pick.picked)
+        return matches
+
+
+class Pick(models.Model):
+    picker = models.ForeignKey(settings.AUTH_USER_MODEL, related_name='picked_by')
+    picked = models.ForeignKey(settings.AUTH_USER_MODEL, related_name='picked')
+    event = models.ForeignKey(Event)
+
+    # Automatic timestamps
+    created = models.DateTimeField(auto_now_add=True)
+
+    # def pick(self, picker, picked, event):
+    #     p = Pick(picker=picker, picked=picked, event=event)
+    #     return p
+
+    # Custom manager
+    objects = PickManager()
+
+    def __str__(self):
+        return 'User ' + str(self.picker) + ' picked ' + str(self.picked) + ' at event ' + str(self.event)

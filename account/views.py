@@ -6,9 +6,10 @@ from django.contrib.auth.models import User
 from datetime import date
 
 from registration.backends.hmac.views import RegistrationView as BaseRegistrationView
+import stripe
 
 from .forms import RegistrationForm, AccountForm
-from .models import Account
+from .models import Account, Payment
 
 
 class RegistrationView(BaseRegistrationView):
@@ -47,6 +48,7 @@ def subscription(request):
     return render(request, 'account/subscription.html', context)
 
 
+@login_required
 def view(request):
     current_user = request.user
     account = Account.objects.get(user=current_user)
@@ -83,6 +85,7 @@ def view_user(request, username):
     return render(request, 'account/view_user.html', context)
 
 
+@login_required
 def edit(request):
     current_user = request.user
     account = Account.objects.get(user=current_user)
@@ -139,9 +142,43 @@ def close(request):
     return render(request, 'account/close.html', context)
 
 
+@login_required
 def payment(request):
+    return render(request, 'account/payment.html')
+
+
+@login_required
+def payment_create(request):
+    current_user = request.user
+    stripe.api_key = "sk_test_28uxXqhjVInC6y28EXbq84je"
+
+    # Get the credit card details submitted by the form
+    token = request.POST['stripeToken']
+
+    # Create a Customer
+    customer = stripe.Customer.create(
+        source=token,
+        description=current_user.first_name + ' ' + current_user.last_name,
+        email=current_user.email,
+        metadata={'user_id': current_user.id}
+    )
+
+    # Store the customer id
+    p, created = Payment.objects.get_or_create(
+        user=current_user,
+        defaults={'stripe_customer_id': customer.id}
+    )
+
+    # Create a charge
+    # stripe.Charge.create(
+    #     amount=1500,  # $15.00 this time
+    #     currency="cad",
+    #     customer=customer_id  # Previously stored, then retrieved
+    # )
+
     context = {
-        'test': "Payment Page",
+        'payment': p,
+        'created': created
     }
 
-    return render(request, 'account/payment.html', context)
+    return render(request, 'account/payment_success.html', context)

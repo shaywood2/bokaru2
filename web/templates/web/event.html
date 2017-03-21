@@ -5,291 +5,310 @@
 
 {% block content %}
 {% if messages %}
-    <ul class="messages">
-        {% for message in messages %}
-            <li {% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
-        {% endfor %}
-    </ul>
+<ul class="messages">
+    {% for message in messages %}
+    <li {% if message.tags %} class="{{ message.tags }}" {% endif %}>{{ message }}</li>
+    {% endfor %}
+</ul>
 {% endif %}
 <!--=== Profile ===-->
-		<div class="container content profile">
-			<div class="row">
+<div class="container content profile">
+    <div class="row">
 
 
-				<!-- Profile Content -->
-				<div class="col-md-12">
-					<div class="profile-body">
-						<div class="profile-bio">
-							<div class="row">
-								<div class="col-md-5">
-									<img class="img-responsive md-margin-bottom-10" src="{% static 'web/theme/img/team/img32-md.jpg' %}" alt="">
+        <!-- Profile Content -->
+        <div class="col-md-12">
+            <div class="profile-body">
+                <div class="profile-bio">
+                    <div class="row">
+                        <div class="col-md-5">
+                            <img class="img-responsive md-margin-bottom-10"
+                                 src="{% static 'web/theme/img/team/img32-md.jpg' %}" alt="">
 
 
+                        </div>
+                        <div class="col-md-7">
+                            <h2>{{event.name}}</h2>
+                            <span><strong>Location:</strong> {{event.location}}</span>
+                            <span><strong>Age Ranges:</strong> {{groups.0}} &amp; {{groups.1}}</span>
+                            <span><strong>Date:</strong> {{event.startDateTime}}</span>
+                            <hr>
+                            <p>{{event.description}}</p>
+                            <p>{{event.startDateTime}}</p>
+
+                            <p>Created by: {{event.creator}}</p>
+
+                            <br/>
+
+                            <p>{{groups.0}} registered {{groups.0.participants.count}} out of
+                                {{groups.0.participantsMaxNumber}}</p>
+                            <p>{{groups.1}} registered {{groups.1.participants.count}} out of
+                                {{groups.1.participantsMaxNumber}}</p>
+                        </div>
+                    </div>
+                </div><!--/end row-->
+                <div class="row">
 
 
-								</div>
-								<div class="col-md-7">
-									<h2>{{event.name}}</h2>
-									<span><strong>Location:</strong> {{event.location}}</span>
-									<span><strong>Age Ranges:</strong> {{groups.0}} &amp; {{groups.1}}</span>
-									<span><strong>Date:</strong> {{event.startDateTime}}</span>
-									<hr>
-									<p>{{event.description}}</p>
-									<p>{{event.startDateTime}}</p>
+                    <!--Design Skills-->
+                    <div class="col-sm-6">
+                        <div class="panel panel-profile">
+                            <div class="panel-heading overflow-h">
+                                <h2 class="panel-title heading-sm pull-left"><i class="fa fa-pencil"></i> Space Left
+                                </h2>
+                                <a href="#"><i class="fa fa-cog pull-right"></i></a>
+                            </div>
+                            <div class="panel-body">
+                                <div class="row">
+                                    <div class="p-chart col-sm-6 col-xs-6 sm-margin-bottom-10">
+                                        <div class="circle margin-bottom-20" id="circle-40"></div>
+                                        <h3 class="heading-xs">{{groups.0}}</h3>
+                                        <p>{{group1_spots_left}} spots left</p>
+                                        <p><a class="btn-u btn-u-lg btn-u-red"
+                                              href="{% url 'web:event_join' groups.0.id %}">&nbsp; &nbsp; Join Group
+                                            &nbsp; &nbsp; </a></p>
+                                    </div>
+                                    <div class="p-chart col-sm-6 col-xs-6">
+                                        <div class="circle margin-bottom-20" id="circle-50"></div>
+                                        <h3 class="heading-xs">{{groups.1}}</h3>
+                                        <p>{{group2_spots_left}} Spots left</p>
+                                        <p><a class="btn-u btn-u-lg btn-u-red"
+                                              href="{% url 'web:event_join' groups.1.id %}">&nbsp; &nbsp; Join Group
+                                            &nbsp; &nbsp; </a></p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <!--End Design Skills-->
 
-									<p>Created by: {{event.creator}}</p>
+                    <!--Social Contacts v2-->
+                    <div class="col-sm-6">
+                        <div class="panel panel-profile">
+                            <div class="panel-heading overflow-h">
+                                <h2 class="panel-title heading-sm pull-left"><i class="fa fa-lightbulb-o"></i> Share
+                                    Event</h2>
 
-									<br/>
-
-									<p>{{groups.0}} registered {{groups.0.participants.count}} out of {{groups.0.participantsMaxNumber}}</p>
-									<p>{{groups.1}} registered {{groups.1.participants.count}} out of {{groups.1.participantsMaxNumber}}</p>
-								</div>
-							</div>
-						</div><!--/end row-->
-						<div class="row">
-
-
-							<!--Design Skills-->
-							<div class="col-sm-6">
-								<div class="panel panel-profile">
-									<div class="panel-heading overflow-h">
-										<h2 class="panel-title heading-sm pull-left"><i class="fa fa-pencil"></i> Space Left</h2>
-										<a href="#"><i class="fa fa-cog pull-right"></i></a>
-									</div>
-									<div class="panel-body">
-										<div class="row">
-											<div class="p-chart col-sm-6 col-xs-6 sm-margin-bottom-10">
-												<div class="circle margin-bottom-20" id="circle-40"></div>
-												<h3 class="heading-xs">{{groups.0}}</h3>
-												<p>{{group1_spots_left}} spots left</p>
-												<p><a class="btn-u btn-u-lg btn-u-red" href="{% url 'web:event_join' groups.0.id %}">&nbsp; &nbsp; Join Group &nbsp; &nbsp; </a></p>
-											</div>
-											<div class="p-chart col-sm-6 col-xs-6">
-												<div class="circle margin-bottom-20" id="circle-50"></div>
-												<h3 class="heading-xs">{{groups.1}}</h3>
-												<p>{{group2_spots_left}} Spots left</p>
-												<p><a class="btn-u btn-u-lg btn-u-red" href="{% url 'web:event_join' groups.1.id %}">&nbsp; &nbsp; Join Group &nbsp; &nbsp; </a></p>
-											</div>
-										</div>
-									</div>
-								</div>
-							</div>
-							<!--End Design Skills-->
-
-                            <!--Social Contacts v2-->
-							<div class="col-sm-6">
-								<div class="panel panel-profile">
-									<div class="panel-heading overflow-h">
-										<h2 class="panel-title heading-sm pull-left"><i class="fa fa-lightbulb-o"></i> Share Event</h2>
-
-									</div>
-									<div class="panel-body">
-										<ul class="list-unstyled social-contacts-v3">
-											<li><i class="rounded-x tw fa fa-twitter"></i> <a href="#">Twitter</a></li>
-											<li><i class="rounded-x fb fa fa-facebook"></i> <a href="#">Facebook</a></li>
-											<li><i class="rounded-x gp fa fa-google-plus"></i> <a href="#">Google Plus</a></li>
-											<li><i class="rounded-x gm icon-envelope"></i> <a href="#">Email</a></li>
-										</ul>
-									</div>
-								</div>
-							</div>
-							<!--End Social Contacts v2-->
-						</div><!--/end row-->
-					</div>
-				</div>
-				<!-- End Profile Content -->
-			</div>
+                            </div>
+                            <div class="panel-body">
+                                <ul class="list-unstyled social-contacts-v3">
+                                    <li><i class="rounded-x tw fa fa-twitter"></i> <a href="#">Twitter</a></li>
+                                    <li><i class="rounded-x fb fa fa-facebook"></i> <a href="#">Facebook</a></li>
+                                    <li><i class="rounded-x gp fa fa-google-plus"></i> <a href="#">Google Plus</a></li>
+                                    <li><i class="rounded-x gm icon-envelope"></i> <a href="#">Email</a></li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                    <!--End Social Contacts v2-->
+                </div><!--/end row-->
+            </div>
+        </div>
+        <!-- End Profile Content -->
+    </div>
 
 
+    <!--=== Profile ===-->
+
+    <div class="row">
 
 
-			<!--=== Profile ===-->
+        <!-- Profile Content -->
+        <div class="col-md-12">
 
-			<div class="row">
+            <div class="profile-body margin-bottom-20">
+                <h2>Participants</h2>
+                <!--Profile Blog-->
+                <div class="row margin-bottom-20">
+                    <div class="col-sm-6 sm-margin-bottom-20">
+                        <div class="profile-blog">
+                            <img class="rounded-x" src="{% static 'web/theme/img/testimonials/img1.jpg' %}" alt="">
 
-
-				<!-- Profile Content -->
-				<div class="col-md-12">
-
-					<div class="profile-body margin-bottom-20">
-						<h2>Participants</h2>
-						<!--Profile Blog-->
-						<div class="row margin-bottom-20">
-							<div class="col-sm-6 sm-margin-bottom-20">
-								<div class="profile-blog">
-									<img class="rounded-x" src="{% static 'web/theme/img/testimonials/img1.jpg' %}" alt="">
-
-									<div class="name-location">
-										<strong>Mikel Andrews</strong>
-										<span><i class="fa fa-map-marker"></i><a href="#">California,</a> <a href="#">US</a></span>
-									</div>
-									<div class="clearfix margin-bottom-20"></div>
-									<p>Donec non dignissim eros. Mauris faucibus turpis volutpat sagittis rhoncus. Pellentesque et rhoncus sapien, sed ullamcorper justo.</p>
+                            <div class="name-location">
+                                <strong>Mikel Andrews</strong>
+                                <span><i class="fa fa-map-marker"></i><a href="#">California,</a> <a
+                                        href="#">US</a></span>
+                            </div>
+                            <div class="clearfix margin-bottom-20"></div>
+                            <p>Donec non dignissim eros. Mauris faucibus turpis volutpat sagittis rhoncus. Pellentesque
+                                et rhoncus sapien, sed ullamcorper justo.</p>
 
 
-								</div>
-							</div>
+                        </div>
+                    </div>
 
-							<div class="col-sm-6">
-								<div class="profile-blog">
-									<img class="rounded-x" src="{% static 'web/theme/img/testimonials/user.jpg' %}" alt="">
+                    <div class="col-sm-6">
+                        <div class="profile-blog">
+                            <img class="rounded-x" src="{% static 'web/theme/img/testimonials/user.jpg' %}" alt="">
 
-									<div class="name-location">
-										<strong>Natasha Kolnikova</strong>
-										<span><i class="fa fa-map-marker"></i><a href="#">Moscow,</a> <a href="#">Russia</a></span>
-									</div>
-									<div class="clearfix margin-bottom-20"></div>
-									<p>Donec non dignissim eros. Mauris faucibus turpis volutpat sagittis rhoncus. Pellentesque et rhoncus sapien, sed ullamcorper justo.</p>
+                            <div class="name-location">
+                                <strong>Natasha Kolnikova</strong>
+                                <span><i class="fa fa-map-marker"></i><a href="#">Moscow,</a> <a
+                                        href="#">Russia</a></span>
+                            </div>
+                            <div class="clearfix margin-bottom-20"></div>
+                            <p>Donec non dignissim eros. Mauris faucibus turpis volutpat sagittis rhoncus. Pellentesque
+                                et rhoncus sapien, sed ullamcorper justo.</p>
 
-								</div>
-							</div>
-						</div><!--/end row-->
-						<!--End Profile Blog-->
+                        </div>
+                    </div>
+                </div><!--/end row-->
+                <!--End Profile Blog-->
 
-						<!--Profile Blog-->
-						<div class="row margin-bottom-20">
-							<div class="col-sm-6 sm-margin-bottom-20">
-								<div class="profile-blog">
-									<img class="rounded-x" src="{% static 'web/theme/img/testimonials/img2.jpg' %}" alt="">
+                <!--Profile Blog-->
+                <div class="row margin-bottom-20">
+                    <div class="col-sm-6 sm-margin-bottom-20">
+                        <div class="profile-blog">
+                            <img class="rounded-x" src="{% static 'web/theme/img/testimonials/img2.jpg' %}" alt="">
 
-									<div class="name-location">
-										<strong>Sasha Elli</strong>
-										<span><i class="fa fa-map-marker"></i><a href="#">California,</a> <a href="#">US</a></span>
-									</div>
-									<div class="clearfix margin-bottom-20"></div>
-									<p>Donec non dignissim eros. Mauris faucibus turpis volutpat sagittis rhoncus. Pellentesque et rhoncus sapien, sed ullamcorper justo.</p>
+                            <div class="name-location">
+                                <strong>Sasha Elli</strong>
+                                <span><i class="fa fa-map-marker"></i><a href="#">California,</a> <a
+                                        href="#">US</a></span>
+                            </div>
+                            <div class="clearfix margin-bottom-20"></div>
+                            <p>Donec non dignissim eros. Mauris faucibus turpis volutpat sagittis rhoncus. Pellentesque
+                                et rhoncus sapien, sed ullamcorper justo.</p>
 
-								</div>
-							</div>
+                        </div>
+                    </div>
 
-							<div class="col-sm-6">
-								<div class="profile-blog">
-									<img class="rounded-x" src="{% static 'web/theme/img/testimonials/img3.jpg' %}" alt="">
+                    <div class="col-sm-6">
+                        <div class="profile-blog">
+                            <img class="rounded-x" src="{% static 'web/theme/img/testimonials/img3.jpg' %}" alt="">
 
-									<div class="name-location">
-										<strong>Frank Heller</strong>
-										<span><i class="fa fa-map-marker"></i><a href="#">Moscow,</a> <a href="#">Russia</a></span>
-									</div>
-									<div class="clearfix margin-bottom-20"></div>
-									<p>Donec non dignissim eros. Mauris faucibus turpis volutpat sagittis rhoncus. Pellentesque et rhoncus sapien, sed ullamcorper justo.</p>
+                            <div class="name-location">
+                                <strong>Frank Heller</strong>
+                                <span><i class="fa fa-map-marker"></i><a href="#">Moscow,</a> <a
+                                        href="#">Russia</a></span>
+                            </div>
+                            <div class="clearfix margin-bottom-20"></div>
+                            <p>Donec non dignissim eros. Mauris faucibus turpis volutpat sagittis rhoncus. Pellentesque
+                                et rhoncus sapien, sed ullamcorper justo.</p>
 
-								</div>
-							</div>
-						</div><!--/end row-->
-						<!--End Profile Blog-->
+                        </div>
+                    </div>
+                </div><!--/end row-->
+                <!--End Profile Blog-->
 
-						<!--Profile Blog-->
-						<div class="row margin-bottom-20">
-							<div class="col-sm-6 sm-margin-bottom-20">
-								<div class="profile-blog">
-									<img class="rounded-x" src="{% static 'web/theme/img/testimonials/user.jpg' %}" alt="">
+                <!--Profile Blog-->
+                <div class="row margin-bottom-20">
+                    <div class="col-sm-6 sm-margin-bottom-20">
+                        <div class="profile-blog">
+                            <img class="rounded-x" src="{% static 'web/theme/img/testimonials/user.jpg' %}" alt="">
 
-									<div class="name-location">
-										<strong>John W.A</strong>
-										<span><i class="fa fa-map-marker"></i><a href="#">California,</a> <a href="#">US</a></span>
-									</div>
-									<div class="clearfix margin-bottom-20"></div>
-									<p>Donec non dignissim eros. Mauris faucibus turpis volutpat sagittis rhoncus. Pellentesque et rhoncus sapien, sed ullamcorper justo.</p>
+                            <div class="name-location">
+                                <strong>John W.A</strong>
+                                <span><i class="fa fa-map-marker"></i><a href="#">California,</a> <a
+                                        href="#">US</a></span>
+                            </div>
+                            <div class="clearfix margin-bottom-20"></div>
+                            <p>Donec non dignissim eros. Mauris faucibus turpis volutpat sagittis rhoncus. Pellentesque
+                                et rhoncus sapien, sed ullamcorper justo.</p>
 
-								</div>
-							</div>
+                        </div>
+                    </div>
 
-							<div class="col-sm-6">
-								<div class="profile-blog">
-									<img class="rounded-x" src="{% static 'web/theme/img/testimonials/img5.jpg' %}" alt="">
+                    <div class="col-sm-6">
+                        <div class="profile-blog">
+                            <img class="rounded-x" src="{% static 'web/theme/img/testimonials/img5.jpg' %}" alt="">
 
-									<div class="name-location">
-										<strong>Natalia J.</strong>
-										<span><i class="fa fa-map-marker"></i><a href="#">Moscow,</a> <a href="#">Russia</a></span>
-									</div>
-									<div class="clearfix margin-bottom-20"></div>
-									<p>Donec non dignissim eros. Mauris faucibus turpis volutpat sagittis rhoncus. Pellentesque et rhoncus sapien, sed ullamcorper justo.</p>
+                            <div class="name-location">
+                                <strong>Natalia J.</strong>
+                                <span><i class="fa fa-map-marker"></i><a href="#">Moscow,</a> <a
+                                        href="#">Russia</a></span>
+                            </div>
+                            <div class="clearfix margin-bottom-20"></div>
+                            <p>Donec non dignissim eros. Mauris faucibus turpis volutpat sagittis rhoncus. Pellentesque
+                                et rhoncus sapien, sed ullamcorper justo.</p>
 
-								</div>
-							</div>
-						</div><!--/end row-->
+                        </div>
+                    </div>
+                </div><!--/end row-->
 
-						<!--Profile Blog-->
-						<div class="row margin-bottom-20">
-							<div class="col-sm-6 sm-margin-bottom-20">
-								<div class="profile-blog">
-									<img class="rounded-x" src="{% static 'web/theme/img/testimonials/img4.jpg' %}" alt="">
+                <!--Profile Blog-->
+                <div class="row margin-bottom-20">
+                    <div class="col-sm-6 sm-margin-bottom-20">
+                        <div class="profile-blog">
+                            <img class="rounded-x" src="{% static 'web/theme/img/testimonials/img4.jpg' %}" alt="">
 
-									<div class="name-location">
-										<strong>Pavel Kolnikov</strong>
-										<span><i class="fa fa-map-marker"></i><a href="#">Moscow,</a> <a href="#">Russia</a></span>
-									</div>
-									<div class="clearfix margin-bottom-20"></div>
-									<p>Donec non dignissim eros. Mauris faucibus turpis volutpat sagittis rhoncus. Pellentesque et rhoncus sapien, sed ullamcorper justo.</p>
+                            <div class="name-location">
+                                <strong>Pavel Kolnikov</strong>
+                                <span><i class="fa fa-map-marker"></i><a href="#">Moscow,</a> <a
+                                        href="#">Russia</a></span>
+                            </div>
+                            <div class="clearfix margin-bottom-20"></div>
+                            <p>Donec non dignissim eros. Mauris faucibus turpis volutpat sagittis rhoncus. Pellentesque
+                                et rhoncus sapien, sed ullamcorper justo.</p>
 
-								</div>
-							</div>
+                        </div>
+                    </div>
 
-							<div class="col-sm-6">
-								<div class="profile-blog">
-									<img class="rounded-x" src="{% static 'web/theme/img/testimonials/img6.jpg' %}" alt="">
+                    <div class="col-sm-6">
+                        <div class="profile-blog">
+                            <img class="rounded-x" src="{% static 'web/theme/img/testimonials/img6.jpg' %}" alt="">
 
-									<div class="name-location">
-										<strong>Taylor Lee</strong>
-										<span><i class="fa fa-map-marker"></i><a href="#">California,</a> <a href="#">US</a></span>
-									</div>
-									<div class="clearfix margin-bottom-20"></div>
-									<p>Donec non dignissim eros. Mauris faucibus turpis volutpat sagittis rhoncus. Pellentesque et rhoncus sapien, sed ullamcorper justo.</p>
+                            <div class="name-location">
+                                <strong>Taylor Lee</strong>
+                                <span><i class="fa fa-map-marker"></i><a href="#">California,</a> <a
+                                        href="#">US</a></span>
+                            </div>
+                            <div class="clearfix margin-bottom-20"></div>
+                            <p>Donec non dignissim eros. Mauris faucibus turpis volutpat sagittis rhoncus. Pellentesque
+                                et rhoncus sapien, sed ullamcorper justo.</p>
 
-								</div>
-							</div>
-						</div><!--/end row-->
-						<!--End Profile Blog-->
+                        </div>
+                    </div>
+                </div><!--/end row-->
+                <!--End Profile Blog-->
 
-						<!--Profile Blog-->
-						<div class="row margin-bottom-20">
-							<div class="col-sm-6 sm-margin-bottom-20">
-								<div class="profile-blog">
-									<img class="rounded-x" src="{% static 'web/theme/img/testimonials/img3.jpg' %}" alt="">
+                <!--Profile Blog-->
+                <div class="row margin-bottom-20">
+                    <div class="col-sm-6 sm-margin-bottom-20">
+                        <div class="profile-blog">
+                            <img class="rounded-x" src="{% static 'web/theme/img/testimonials/img3.jpg' %}" alt="">
 
-									<div class="name-location">
-										<strong>Frank Heller</strong>
-										<span><i class="fa fa-map-marker"></i><a href="#">Moscow,</a> <a href="#">Russia</a></span>
-									</div>
-									<div class="clearfix margin-bottom-20"></div>
-									<p>Donec non dignissim eros. Mauris faucibus turpis volutpat sagittis rhoncus. Pellentesque et rhoncus sapien, sed ullamcorper justo.</p>
+                            <div class="name-location">
+                                <strong>Frank Heller</strong>
+                                <span><i class="fa fa-map-marker"></i><a href="#">Moscow,</a> <a
+                                        href="#">Russia</a></span>
+                            </div>
+                            <div class="clearfix margin-bottom-20"></div>
+                            <p>Donec non dignissim eros. Mauris faucibus turpis volutpat sagittis rhoncus. Pellentesque
+                                et rhoncus sapien, sed ullamcorper justo.</p>
 
-								</div>
-							</div>
+                        </div>
+                    </div>
 
-							<div class="col-sm-6">
-								<div class="profile-blog">
-									<img class="rounded-x" src="{% static 'web/theme/img/testimonials/img2.jpg' %}" alt="">
+                    <div class="col-sm-6">
+                        <div class="profile-blog">
+                            <img class="rounded-x" src="{% static 'web/theme/img/testimonials/img2.jpg' %}" alt="">
 
-									<div class="name-location">
-										<strong>Sasha Elli</strong>
-										<span><i class="fa fa-map-marker"></i><a href="#">California,</a> <a href="#">US</a></span>
-									</div>
-									<div class="clearfix margin-bottom-20"></div>
-									<p>Donec non dignissim eros. Mauris faucibus turpis volutpat sagittis rhoncus. Pellentesque et rhoncus sapien, sed ullamcorper justo.</p>
+                            <div class="name-location">
+                                <strong>Sasha Elli</strong>
+                                <span><i class="fa fa-map-marker"></i><a href="#">California,</a> <a
+                                        href="#">US</a></span>
+                            </div>
+                            <div class="clearfix margin-bottom-20"></div>
+                            <p>Donec non dignissim eros. Mauris faucibus turpis volutpat sagittis rhoncus. Pellentesque
+                                et rhoncus sapien, sed ullamcorper justo.</p>
 
-								</div>
-							</div>
-						</div><!--/end row-->
-
-
-						<!--End Profile Blog-->
-					</div>
-				</div>
-				<!-- End Profile Content -->
-			</div><!--/end row-->
-
-		<!--=== End Profile ===-->
-
-
-
-
-
-
-		</div>
-		<!--=== End Profile ===-->
+                        </div>
+                    </div>
+                </div><!--/end row-->
 
 
+                <!--End Profile Blog-->
+            </div>
+        </div>
+        <!-- End Profile Content -->
+    </div><!--/end row-->
+
+    <!--=== End Profile ===-->
+
+
+</div>
+<!--=== End Profile ===-->
 
 
 {% endblock %}
@@ -297,7 +316,7 @@
 
 {% block javascript %}
 
-	<script type="text/javascript">
+<script type="text/javascript">
 		jQuery(document).ready(function() {
 
 			CirclesMaster.initCirclesMaster1();
@@ -328,6 +347,7 @@
 
 
 		});
-	</script>
+
+</script>
 
 {% endblock %}

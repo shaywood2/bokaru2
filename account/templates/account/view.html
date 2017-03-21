@@ -5,80 +5,68 @@
 
 {% block content %}
 
-
-
 <!--=== Profile ===-->
-		<div class="container content profile">
-			<div class="row">
+<div class="container content profile">
+    <div class="row">
+        <!-- Profile Content -->
+        <div class="col-md-12">
+            <div class="profile-body">
+                <div class="profile-bio">
+                    <div class="row">
+                        <div class="col-md-5">
+                            <img class="img-responsive md-margin-bottom-10"
+                                 src="{% static 'web/theme/img/team/img32-md.jpg' %}" alt="">
+                        </div>
+                        <div class="col-md-7">
+                            <h2>{{ account.fullName }}</h2>
+                            <span><strong>Location:</strong> [CITY]</span>
+                            <span><strong>Age:</strong> {{ account.age }} </span>
+                            <span><strong>Gender:</strong> {{ account.gender }} </span>
+                            <span><strong>Height:</strong> {{ account.height }} </span>
+                            <span><strong>Body Type:</strong> {{ account.bodyType }} </span>
+                            <span><strong>Education:</strong> {{ account.education }} </span>
+                            <span><strong>Profession:</strong> [JOB] </span>
+                            <span><strong>Relationship Type:</strong> {{ account.relationshipType }} </span>
+                            <span><strong>Orientation:</strong> {{ account.sexualOrientation }} </span>
+                            <span><strong>Identity:</strong> {{ account.sexualIdentity }} </span>
+                            <span><strong>Ethnicity:</strong> {{ account.ethnicity }} </span>
+                            <span><strong>Religion:</strong> {{ account.religion }} </span>
+                            <span><strong>Languages:</strong> {{ account.languages }} </span>
+                            <span><strong>Kids:</strong> {{ account.kids }} </span>
+                            <span><strong>Vices:</strong> {{ account.vices }} </span>
+                            <span><strong>Diet:</strong> {{ account.diet }} </span>
+                            <hr>
+                            <p>{{ account.summary }}</p>
+                        </div>
+                    </div>
+                </div><!--/end row-->
 
+                <hr>
 
-				<!-- Profile Content -->
-				<div class="col-md-12">
-					<div class="profile-body">
-						<div class="profile-bio">
-							<div class="row">
-								<div class="col-md-5">
-									<img class="img-responsive md-margin-bottom-10" src="{% static 'web/theme/img/team/img32-md.jpg' %}" alt="">
+                <div class="row">
+                    <h4>This information is only shown to your matches:</h4>
+                    <h5>&nbsp How matches contact you: {{ account.contactInfo }} </h5>
 
+                </div><!--/end row-->
 
-								</div>
-								<div class="col-md-7">
-									<h2>{{ account.fullName }}</h2>
-									<span><strong>Location:</strong> [CITY]</span>
-									<span><strong>Age:</strong> {{ account.age }} </span>
-                                    <span><strong>Gender:</strong> {{ account.gender }} </span>
-                                    <span><strong>Height:</strong> {{ account.height }} </span>
-                                    <span><strong>Body Type:</strong> {{ account.bodyType }} </span>
-                                    <span><strong>Education:</strong> {{ account.education }} </span>
-                                    <span><strong>Profession:</strong> [JOB] </span>
-                                    <span><strong>Relationship Type:</strong> {{ account.relationshipType }} </span>
-                                    <span><strong>Orientation:</strong> {{ account.sexualOrientation }} </span>
-                                    <span><strong>Identity:</strong> {{ account.sexualIdentity }} </span>
-                                    <span><strong>Ethnicity:</strong> {{ account.ethnicity }} </span>
-                                    <span><strong>Religion:</strong> {{ account.religion }} </span>
-                                    <span><strong>Languages:</strong> {{ account.languages }} </span>
-                                    <span><strong>Kids:</strong> {{ account.kids }} </span>
-                                    <span><strong>Vices:</strong> {{ account.vices }} </span>
-                                    <span><strong>Diet:</strong> {{ account.diet }} </span>
-									<hr>
-									<p>{{ account.summary }}</p>
-                                </div>
-							</div>
-						</div><!--/end row-->
+                <hr>
 
-						<hr>
+                <div class="row">
+                    <small>&nbsp Account Created: {{ account.created }}</small>
+                    <br/>
+                    <small>&nbsp Account Last Created: {{ account.updated }}</small>
+                </div><!--/end row-->
 
-						<div class="row">
-                        <h4>This information is only shown to your matches:</h4>
-                          <h5>&nbsp How matches contact you: {{ account.contactInfo }} </h5>
+                <hr>
 
-                        </div><!--/end row-->
-
-                        <hr>
-
-                        <div class="row">
-                          <small>&nbsp Account Created: {{ account.created }} </small><br/>
-                          <small>&nbsp Account Last Created: {{ account.updated }} </small>
-                        </div><!--/end row-->
-
-						<hr>
-
-                        <div class="row" style="text-align: center;">
-                            <a class="btn-u btn-u-lg rounded" href="{% url 'account:edit' %}">Edit Profile</a>
-                        </div><!--/end row-->
-
-
-
-
-
-
-					</div>
-
-
-				</div>
-				<!-- End Profile Content -->
-			</div>
-		</div>
-		<!--=== End Profile ===-->
+                <div class="row" style="text-align: center;">
+                    <a class="btn-u btn-u-lg rounded" href="{% url 'account:edit' %}">Edit Profile</a>
+                </div><!--/end row-->
+            </div>
+        </div>
+        <!-- End Profile Content -->
+    </div>
+</div>
+<!--=== End Profile ===-->
 {% endblock %}
 

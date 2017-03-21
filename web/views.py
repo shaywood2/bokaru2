@@ -140,12 +140,13 @@ def event_joined(request):
 
     return render(request, 'web/eventjoined.html', context)
 
-def pay(request):
+
+def payment(request):
     context = {
         'test': "Event Pay Page",
     }
 
-    return render(request, 'web/pay.html', context)
+    return render(request, 'web/payment.html', context)
 
 def matches(request):
     context = {}

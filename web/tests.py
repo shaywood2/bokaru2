@@ -2,8 +2,8 @@ from django.test import TestCase
 from django.contrib.auth.models import User
 from django.utils import timezone
 
-from .models import Event, EventGroup
-from .forms import EventForm, EventGroupForm
+from .models import Event, EventGroup, Pick
+# from .forms import EventForm, EventGroupForm
 
 
 # Test the model Event
@@ -73,6 +73,50 @@ class EventGroupModelCase(TestCase):
             self.group2.add_participant(self.user1)
         with self.assertRaises(Exception):
             self.group2.add_participant(self.user8)
+
+
+# Test model Pick
+class PickModelCase(TestCase):
+    def setUp(self):
+        self.user1 = User.objects.create_user(username='bob1', email='bob1@alice.com', password='top_secret')
+        self.user2 = User.objects.create_user(username='bob2', email='bob2@alice.com', password='top_secret')
+        self.user3 = User.objects.create_user(username='bob3', email='bob3@alice.com', password='top_secret')
+        self.user4 = User.objects.create_user(username='bob4', email='bob4@alice.com', password='top_secret')
+
+        self.event = Event(creator=self.user1, name='test event', location='location', startDateTime=timezone.now())
+        self.event.save()
+
+        self.event2 = Event(creator=self.user4, name='test event 2', location='location', startDateTime=timezone.now())
+        self.event2.save()
+
+        self.pick1 = Pick(picker=self.user1, picked=self.user2, event=self.event)
+        self.pick1.save()
+        self.pick2 = Pick(picker=self.user1, picked=self.user3, event=self.event)
+        self.pick2.save()
+        self.pick3 = Pick(picker=self.user2, picked=self.user1, event=self.event)
+        self.pick3.save()
+        self.pick4 = Pick(picker=self.user2, picked=self.user3, event=self.event)
+        self.pick4.save()
+        self.pick5 = Pick(picker=self.user1, picked=self.user4, event=self.event2)
+        self.pick5.save()
+        self.pick6 = Pick(picker=self.user4, picked=self.user1, event=self.event2)
+        self.pick6.save()
+
+    def test_matches(self):
+        # Get all matches for user1
+        matches = Pick.objects.get_matches(self.user1, self.event)
+        self.assertEqual(len(matches), 1)
+        self.assertTrue(self.user2 in matches)
+
+        # Get all matches for user2
+        matches = Pick.objects.get_matches(self.user2, self.event)
+        self.assertEqual(len(matches), 1)
+        self.assertTrue(self.user1 in matches)
+
+        # Get all matches for user1, event2
+        matches = Pick.objects.get_matches(self.user1, self.event2)
+        self.assertEqual(len(matches), 1)
+        self.assertTrue(self.user4 in matches)
 
 
 # Testing the forms EventForm and EventGroupForm
