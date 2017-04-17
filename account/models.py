@@ -73,9 +73,14 @@ class Account(models.Model):
         return self.fullName
 
 
-class Payment(models.Model):
+class Money(models.Model):
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET(get_sentinel_user))
     stripe_customer_id = models.CharField(max_length=150, blank=True)
+    credit_card_id = models.CharField(max_length=150, blank=True)
+    credit_card_brand = models.CharField(max_length=20, blank=True)
+    credit_card_last_4 = models.CharField(max_length=10, blank=True)
+    credit_card_exp_month = models.SmallIntegerField(blank=True)
+    credit_card_exp_year = models.SmallIntegerField(blank=True)
 
     # Automatic timestamps
     created = models.DateTimeField(auto_now_add=True)
@@ -83,3 +88,16 @@ class Payment(models.Model):
 
     def __str__(self):
         return self.user.first_name + ' ' + self.user.last_name + ' [' + self.stripe_customer_id + ']'
+
+    # Check if the user has a card ID
+    def has_card(self):
+        return self.credit_card_id is not None and len(self.credit_card_id) > 0
+
+    # Delete all card information
+    def delete_card(self):
+        self.credit_card_id = ''
+        self.credit_card_brand = ''
+        self.credit_card_last_4 = ''
+        self.credit_card_exp_month = 0
+        self.credit_card_exp_year = 0
+        self.save()
