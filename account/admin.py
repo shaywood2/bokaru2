@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from .models import Account, Payment
+from .models import Account, Money
 
 admin.site.register(Account)
-admin.site.register(Payment)
+admin.site.register(Money)

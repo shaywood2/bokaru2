@@ -11,8 +11,15 @@
             <div class="profile-body margin-bottom-20">
                 <div class="tab-v1">
                     <div class="tab-content">
+                        {% if credit_card %}
+                        <h1>You have a credit card on file!</h1>
+                        <p>{{ credit_card.brand }} ending in {{ credit_card.last4 }}</p>
+                        <p>Expiration: {{ credit_card.exp_month }}/{{ credit_card.exp_year }}</p>
+                        <p>ID {{ credit_card.id }}</p>
+                        {% else %}
+                        <h1>Bonk, no card</h1>
                         <!-- Do not give names to the payment details form elements! -->
-                        <form method="POST" id="payment-form" action="{% url 'account:payment_create' %}">
+                        <form method="POST" id="payment-form" action="{% url 'account:credit_card_register' %}">
                             {% csrf_token %}
                             <span class="payment-errors"></span>
 
@@ -38,8 +45,10 @@
                                     <input type="text" size="4" data-stripe="cvc">
                                 </label>
                             </div>
-                            <input type="submit" class="submit btn-u rounded" value="Submit Payment" id="payment-form-submit">
+                            <input type="submit" class="submit btn-u rounded" value="Register a credit card" id="payment-form-submit">
+                            <strong>You will not be charged at this point, only when you participate in an event.</strong>
                         </form>
+                        {% endif %}
                     </div>
                 </div>
             </div>
