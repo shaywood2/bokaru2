@@ -49,6 +49,7 @@ else:
 
 INSTALLED_APPS = [
     'web.apps.WebConfig',
+    'money.apps.MoneyConfig',
     'account.apps.AccountConfig',
     'chat.apps.ChatConfig',
     'django.contrib.admin',

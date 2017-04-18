@@ -1,14 +1,14 @@
 import logging
-from datetime import date
 
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 from django.http import HttpResponseRedirect
 from django.shortcuts import get_object_or_404, render
 from django.urls import reverse
+from django.utils import timezone
 from registration.backends.hmac.views import RegistrationView as BaseRegistrationView
 
-from bokaru.payment_service import create_customer, create_charge, retrieve_customer, delete_card, create_card
+from money.payment_service import create_customer, delete_card, create_card
 from .forms import RegistrationForm, AccountForm
 from .models import Account, Money
 
@@ -70,7 +70,7 @@ def view(request):
 
 
 def calculate_age(born):
-    today = date.today()
+    today = timezone.today()
     years_difference = today.year - born.year
     is_before_birthday = (today.month, today.day) < (born.month, born.day)
     elapsed_years = years_difference - int(is_before_birthday)

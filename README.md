@@ -116,3 +116,11 @@ Testing
 -------
 To run unit test first navigate to the project directory `cd /home/vagrant/bokaru/` and then run all tests with the following command:
 `python3 ./manage.py test`
+
+Custom commands
+---------------
+Here is a list of custom commands that can be called using Django admin:
+* Process payments
+  * Selects all attendees of events that will start in in the next 24 hours and charges their credit cards
+  * Scheduled to run hourly
+  * Command: `python3 /home/vagrant/bokaru/manage.py processpayments`
