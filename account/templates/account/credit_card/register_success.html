@@ -14,11 +14,11 @@
                         <h1>Your card is registered successfully.</h1>
                         <strong>existing card found: {{ card_found }}</strong>
 
-                        <p>{{ money.stripe_customer_id }}</p>
-                        <p>{{ money.credit_card_brand }}</p>
-                        <p>{{ money.credit_card_last_4 }}</p>
-                        <p>{{ money.credit_card_exp_month }}</p>
-                        <p>{{ money.credit_card_exp_year }}</p>
+                        <p>{{ payment_info.stripe_customer_id }}</p>
+                        <p>{{ payment_info.credit_card_brand }}</p>
+                        <p>{{ payment_info.credit_card_last_4 }}</p>
+                        <p>{{ payment_info.credit_card_exp_month }}</p>
+                        <p>{{ payment_info.credit_card_exp_year }}</p>
                     </div>
                 </div>
             </div>
