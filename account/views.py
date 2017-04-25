@@ -1,16 +1,17 @@
 import logging
-from datetime import date
 
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 from django.http import HttpResponseRedirect
 from django.shortcuts import get_object_or_404, render
 from django.urls import reverse
+from django.utils import timezone
 from registration.backends.hmac.views import RegistrationView as BaseRegistrationView
 
-from bokaru.payment_service import create_customer, create_charge, retrieve_customer, delete_card, create_card
+from money.payment_service import create_customer, delete_card, create_card
 from .forms import RegistrationForm, AccountForm
-from .models import Account, Money
+from .models import Account
+from money.models import UserPaymentInfo
 
 LOGGER = logging.getLogger(__name__)
 
@@ -70,7 +71,7 @@ def view(request):
 
 
 def calculate_age(born):
-    today = date.today()
+    today = timezone.today()
     years_difference = today.year - born.year
     is_before_birthday = (today.month, today.day) < (born.month, born.day)
     elapsed_years = years_difference - int(is_before_birthday)
@@ -149,24 +150,24 @@ def close(request):
 def credit_card_view(request):
     # Retrieve the payment information for the user
     try:
-        money = Money.objects.get(user=request.user)
-        # stripe_id = money.stripe_customer_id
+        payment_info = UserPaymentInfo.objects.get(user=request.user)
+        # stripe_id = payment_info.stripe_customer_id
         # LOGGER.debug('Creating a test charge')
         # create_charge(12345, 'cad', 'testing', 'cus_AQF6ZlxYXIKq0I')
         # stripe_customer = retrieve_customer(stripe_id)
         # if stripe_customer is not None:
         #    credit_card = stripe_customer.sources.data[0]
-        if money.has_card():
+        if payment_info.has_card():
             credit_card = {
-                'brand': money.credit_card_brand,
-                'last4': money.credit_card_last_4,
-                'exp_month': money.credit_card_exp_month,
-                'exp_year': money.credit_card_exp_year,
-                'id': money.credit_card_id,
+                'brand': payment_info.credit_card_brand,
+                'last4': payment_info.credit_card_last_4,
+                'exp_month': payment_info.credit_card_exp_month,
+                'exp_year': payment_info.credit_card_exp_year,
+                'id': payment_info.credit_card_id,
             }
         else:
             credit_card = None
-    except Money.DoesNotExist:
+    except UserPaymentInfo.DoesNotExist:
         credit_card = None
 
     return render(request, 'account/credit_card/view.html', {'credit_card': credit_card})
@@ -182,20 +183,20 @@ def credit_card_register(request):
 
     try:
         # Retrieve the payment information for the user
-        money = Money.objects.get(user=request.user)
-        if money.has_card():
+        payment_info = UserPaymentInfo.objects.get(user=request.user)
+        if payment_info.has_card():
             card_found = True
         else:
             # Create a card for an existing Customer
-            credit_card = create_card(money.stripe_customer_id, token)
+            credit_card = create_card(payment_info.stripe_customer_id, token)
             # Store the payment info
-            money.credit_card_id = credit_card.id
-            money.credit_card_brand = credit_card.brand
-            money.credit_card_last_4 = credit_card.last4
-            money.credit_card_exp_month = credit_card.exp_month
-            money.credit_card_exp_year = credit_card.exp_year
-            money.save()
-    except Money.DoesNotExist:
+            payment_info.credit_card_id = credit_card.id
+            payment_info.credit_card_brand = credit_card.brand
+            payment_info.credit_card_last_4 = credit_card.last4
+            payment_info.credit_card_exp_month = credit_card.exp_month
+            payment_info.credit_card_exp_year = credit_card.exp_year
+            payment_info.save()
+    except UserPaymentInfo.DoesNotExist:
         # Create a Customer with a credit card
         stripe_customer = create_customer(token, current_user.id, current_user.first_name + ' '
                                           + current_user.last_name, current_user.email)
@@ -203,7 +204,7 @@ def credit_card_register(request):
         credit_card = stripe_customer.sources.data[0]
 
         # Store the payment info
-        money, created = Money.objects.get_or_create(
+        payment_info, created = UserPaymentInfo.objects.get_or_create(
             user=current_user,
             defaults={'stripe_customer_id': stripe_customer.id,
                       'credit_card_id': credit_card.id,
@@ -214,7 +215,7 @@ def credit_card_register(request):
         )
 
     context = {
-        'money': money,
+        'payment_info': payment_info,
         'card_found': card_found
     }
 
@@ -224,17 +225,17 @@ def credit_card_register(request):
 @login_required
 def credit_card_remove(request):
     deleted = False
-    LOGGER.info('here 0')
+
     try:
         # Retrieve the payment information for the user
-        money = Money.objects.get(user=request.user)
-        if money.has_card():
-            deleted = delete_card(money.stripe_customer_id, money.credit_card_id)
-            money.delete_card()
+        payment_info = UserPaymentInfo.objects.get(user=request.user)
+        if payment_info.has_card():
+            deleted = delete_card(payment_info.stripe_customer_id, payment_info.credit_card_id)
+            payment_info.delete_card()
             card_found = True
         else:
             card_found = False
-    except Money.DoesNotExist:
+    except UserPaymentInfo.DoesNotExist:
         card_found = False
 
     return render(request, 'account/credit_card/delete_card.html', {'deleted': deleted, 'card_found': card_found})

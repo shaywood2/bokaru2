@@ -6,7 +6,7 @@ from .models import Event, EventGroup
 class EventForm(ModelForm):
     class Meta:
         model = Event
-        exclude = ['creator']
+        exclude = ['creator', 'product']
 
 
 class EventGroupForm(ModelForm):
