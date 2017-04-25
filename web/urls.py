@@ -20,7 +20,7 @@ urlpatterns = [
     url(r'^match/$', views.match, name='match'),
     url(r'^live/$', views.live, name='live'),
     url(r'^myevents/$', views.myevents, name='myevents'),
-    url(r'^termsofuse/$', views.termsofuse, name='termsofuse'),
-    url(r'^howitworks/$', views.howitworks, name='howitworks'),
-    url(r'^privacypolicy/$', views.privacypolicy, name='privacypolicy'),
+    url(r'^termsofuse/$', views.terms_of_use, name='termsofuse'),
+    url(r'^howitworks/$', views.how_it_works, name='howitworks'),
+    url(r'^privacypolicy/$', views.privacy_policy, name='privacypolicy'),
 ]

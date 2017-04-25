@@ -35,3 +35,13 @@ class UserPaymentInfo(models.Model):
         self.credit_card_exp_month = 0
         self.credit_card_exp_year = 0
         self.save()
+
+
+class Product(models.Model):
+    name = models.CharField(max_length=150)
+    short_code = models.CharField(max_length=50)
+    description = models.CharField(max_length=150, blank=True)
+    amount = models.IntegerField()  # Price in cents
+
+    def __str__(self):
+        return self.name + ' [' + self.short_code + '], ' + str(self.amount)
