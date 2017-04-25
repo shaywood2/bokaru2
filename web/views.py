@@ -86,6 +86,7 @@ def event_create(request):
         if all([event_form.is_valid(), group_formset.is_valid()]):
             new_event = event_form.save(commit=False)
             new_event.creator = current_user
+            # TODO: need to multiply maxParticipantsInGroup by number of groups for correct count
             new_event.product = get_product_by_participant_number(new_event.maxParticipantsInGroup)
             new_event.save()
             for inline_form in group_formset:

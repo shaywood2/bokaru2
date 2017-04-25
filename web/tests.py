@@ -3,7 +3,7 @@ from django.contrib.auth.models import User
 from django.utils import timezone
 
 from .models import Event, EventGroup, Pick
-
+from money.models import Product
 
 # from .forms import EventForm, EventGroupForm
 
@@ -18,8 +18,11 @@ class EventModelTestCase(TestCase):
         self.user5 = User.objects.create_user(username='bob5', email='bob5@alice.com', password='top_secret')
         self.user6 = User.objects.create_user(username='bob6', email='bob6@alice.com', password='top_secret')
 
+        self.product1 = Product(name='product1', short_code='product1', amount=100)
+        self.product1.save()
+
         self.event = Event(creator=self.user1, name='test event', location='location', startDateTime=timezone.now(),
-                           maxParticipantsInGroup=10)
+                           maxParticipantsInGroup=10, product=self.product1)
         self.event.save()
 
         group1 = EventGroup(event=self.event, name='group1', ageMin=20, ageMax=30)
@@ -50,8 +53,11 @@ class EventGroupModelCase(TestCase):
         self.user7 = User.objects.create_user(username='bob7', email='bob7@alice.com', password='top_secret')
         self.user8 = User.objects.create_user(username='bob8', email='bob8@alice.com', password='top_secret')
 
+        self.product1 = Product(name='product1', short_code='product1', amount=100)
+        self.product1.save()
+
         self.event = Event(creator=self.user1, name='test event', location='location', startDateTime=timezone.now(),
-                           maxParticipantsInGroup=3)
+                           maxParticipantsInGroup=3, product=self.product1)
         self.event.save()
 
         self.group1 = EventGroup(event=self.event, name='group1', ageMin=20, ageMax=30)
@@ -84,12 +90,15 @@ class PickModelCase(TestCase):
         self.user3 = User.objects.create_user(username='bob3', email='bob3@alice.com', password='top_secret')
         self.user4 = User.objects.create_user(username='bob4', email='bob4@alice.com', password='top_secret')
 
+        self.product1 = Product(name='product1', short_code='product1', amount=100)
+        self.product1.save()
+
         self.event = Event(creator=self.user1, name='test event', location='location', startDateTime=timezone.now(),
-                           maxParticipantsInGroup=3)
+                           maxParticipantsInGroup=3, product=self.product1)
         self.event.save()
 
         self.event2 = Event(creator=self.user4, name='test event 2', location='location', startDateTime=timezone.now(),
-                            maxParticipantsInGroup=3)
+                            maxParticipantsInGroup=3, product=self.product1)
         self.event2.save()
 
         self.pick1 = Pick(picker=self.user1, picked=self.user2, event=self.event)
