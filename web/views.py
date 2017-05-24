@@ -5,6 +5,7 @@ from django.contrib import messages
 
 from .forms import EventForm, EventGroupForm
 from .models import Event, EventGroup
+from account.models import Account
 
 
 def index(request):
@@ -53,13 +54,15 @@ def event_view(request, event_id):
 
     group1_filled_percentage = float(event_groups[0].participants.count()) / event_groups[0].participantsMaxNumber * 100
     group1_spots_left = event_groups[0].participantsMaxNumber - event_groups[0].participants.count()
-
+    group1_participants = Account.objects.filter(user__in=event_groups[0].participants.all())
+    group2_participants = {}
     group2_filled_percentage = 0
     group2_spots_left = 0
     if num_groups > 1:
-        group2_filled_percentage = float(event_groups[1].participants.count())\
+        group2_filled_percentage = float(event_groups[1].participants.count()) \
                                    / event_groups[1].participantsMaxNumber * 100
         group2_spots_left = event_groups[1].participantsMaxNumber - event_groups[1].participants.count()
+        group2_participants = Account.objects.filter(user__in=event_groups[1].participants.all())
 
     context = {
         'event': selected_event,
@@ -68,7 +71,9 @@ def event_view(request, event_id):
         'group1_filled_percentage': group1_filled_percentage,
         'group2_filled_percentage': group2_filled_percentage,
         'group1_spots_left': group1_spots_left,
-        'group2_spots_left': group2_spots_left
+        'group2_spots_left': group2_spots_left,
+        'group1_participants': group1_participants,
+        'group2_participants': group2_participants,
     }
     return render(request, 'web/event.html', context)
 
@@ -84,11 +89,13 @@ def event_create(request):
         if all([event_form.is_valid(), group_formset.is_valid()]):
             new_event = event_form.save(commit=False)
             new_event.creator = current_user
+            new_event.save()
             for inline_form in group_formset:
                 if inline_form.cleaned_data:
                     group = inline_form.save(commit=False)
                     group.event = new_event
                     group.save()
+
             return HttpResponseRedirect(reverse('web:event_view', kwargs={'event_id': new_event.id}))
     else:
         event_form = EventForm()
@@ -147,6 +154,7 @@ def payment(request):
     }
 
     return render(request, 'web/payment.html', context)
+
 
 def matches(request):
     context = {}

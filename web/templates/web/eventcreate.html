@@ -2,15 +2,95 @@
 
 
 {% load staticfiles %}
+{% load form_tag %}
+
+
+{% block header %}
+
+
+<link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+
+
+<style>
+    .ui-state-highlight, .ui-widget-content .ui-state-highlight, .ui-widget-header .ui-state-highlight
+    {
+        background: #f27568;
+        color: white;
+    }
+
+
+    .ui-state-active, .ui-widget-content .ui-state-active, .ui-widget-header .ui-state-active, a.ui-button:active, .ui-button:active, .ui-button.ui-state-active:hover
+    {
+         background: #c0392b;
+        color: white;
+    }
+
+
+    .ui-state-active, .ui-widget-content .ui-state-active, .ui-widget-header .ui-state-active, a.ui-button:active, .ui-button:active, .ui-button.ui-state-active:hover
+    {
+        border: none;
+    }
+
+
+
+
+
+</style>
+
+{% endblock %}
+
+
+{% block javascript %}
+
+  <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+
+
+<script>
+
+
+function setDate()
+{
+    $("#id_startDateTime_0").val($("#datepicker").datepicker().val());
+}
+
+
+function setTime()
+{
+    var ampm = $("#ampm_selector").val();
+    var time = $("#time_selector").val();
+
+    if (ampm == "AM")
+    {
+        $("#id_startDateTime_1").val($("#time_selector").val() + ":00");
+    }
+    else
+    {
+        $("#id_startDateTime_1").val((parseInt($("#time_selector").val()) + 12) + ":00");
+    }
+}
+
+
+
+  $( function() {
+    $( "#datepicker" ).datepicker({
+    dateFormat: 'd.m.yy',
+    onSelect: setDate});
+
+    $("#id_startDateTime_1").val("20:00");
+  } );
+
+
+
+  </script>
+{% endblock %}
+
 
 {% block content %}
 
 <form method="post">
     {% csrf_token %}
-    {{event_form.as_p}}
-    {{group_formset.as_p}}
-    <input type="submit" value="Save">
-</form>
+
+
 
 <div class="container content profile">
     <div class="row">
@@ -52,13 +132,64 @@
                             <dl class="dl-horizontal">
                                 <dt><strong>Event Name </strong></dt>
                                 <dd>
-                                    Edward Rooster
-
+                                    <div class="col-lg-9">
+                                        {{ event_form.name | addclass:"form-control input-lg" }}
+                                    </div>
                                 </dd>
                                 <hr>
                                 <dt><strong>Description </strong></dt>
                                 <dd>
-                                    FKJ-032440
+                                    <div class="col-lg-9">
+                                        {{ event_form.description | addclass:"form-control input-lg" }}
+                                    </div>
+                                </dd>
+                                <hr>
+                                <dt><strong>Location </strong></dt>
+                                <dd>
+                                     <div class="col-lg-9">
+                                        {{ event_form.location | addclass:"form-control input-lg" }}
+                                     </div>
+
+                                </dd>
+                                <hr>
+
+                                 <dt><strong>Date</strong></dt>
+                                <dd>
+                                        {{ event_form.startDateTime }}
+
+                                    <div class="col-lg-9">
+                                        <input type="text" id="datepicker" class="form-control input-lg">
+                                    </div>
+                                </dd>
+                                <hr>
+                                 <dt><strong>Time</strong></dt>
+                                <dd>
+
+                                    <div class="col-lg-3">
+                                        <select id="time_selector" class="form-control input-lg" onchange="setTime()">
+                                            <option>1</option>
+                                            <option>2</option>
+                                            <option>3</option>
+                                            <option>4</option>
+                                            <option>5</option>
+                                            <option>6</option>
+                                            <option>7</option>
+                                            <option selected>8</option>
+                                            <option>9</option>
+                                            <option>10</option>
+                                            <option>11</option>
+                                            <option>12</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-lg-3">
+                                        <select id="ampm_selector" class="form-control input-lg" onchange="setTime()">
+                                            <option>AM</option>
+                                            <option selected>PM</option>
+
+                                        </select>
+                                    </div>
+
+
 
                                 </dd>
                                 <hr>
@@ -69,24 +200,50 @@
                                     <button type="button" class="btn-u">Two</button>
                                 </dd>
                                 <hr>
+
+                                {{ group_formset.management_form }}
+                                {% for group_form in group_formset %}
                                 <dt><strong>Gender 1 </strong></dt>
                                 <dd>
                                     <div class="funny-boxes funny-boxes-top-red">
                                         <div class="row">
 
-                                            <div class="col-md-8">
+                                            <div class="col-md-12">
                                                 <dl class="dl-horizontal">
                                                     <dt><strong>Group Name </strong></dt>
                                                     <dd>
-                                                        Edward Rooster
+                                                        <div class="col-lg-9">
+                                                            {{ group_form.name | addclass:"form-control input-lg"}}
+                                                        </div>
 
                                                     </dd>
                                                     <hr>
                                                     <dt><strong>Age Range </strong></dt>
                                                     <dd>
-                                                        Edward Rooster
+                                                        <div class="col-lg-4" style="float: left">
+                                                        {{ group_form.ageMin | addclass:"form-control input-lg" }}
+                                                        </div>
 
+                                                         <div class="col-lg-1" style="float: left; line-height: 50px; text-align: center">
+                                                           -
+                                                         </div>
+                                                        <div class="col-lg-4" style="float: left">
+                                                            {{ group_form.ageMax | addclass:"form-control input-lg" }}
+                                                        </div>
                                                     </dd>
+                                                    <hr>
+                                                    <dt><strong>Maximum Participants </strong></dt>
+                                                    <dd>
+                                                        <div class="col-lg-9">
+                                                            {{ group_form.participantsMaxNumber | addclass:"form-control input-lg" }}
+                                                        </div>
+                                                    </dd>
+
+
+
+
+
+
 
                                                 </dl>
                                             </div>
@@ -95,214 +252,22 @@
 
                                 </dd>
                                 <hr>
-                                <dt><strong>Gender 2 </strong></dt>
-                                <dd>
-                                    <div class="funny-boxes funny-boxes-top-red">
-                                        <div class="row">
+                                {% endfor %}
 
-                                            <div class="col-md-8">
-                                                <dl class="dl-horizontal">
-                                                    <dt><strong>Group Name </strong></dt>
-                                                    <dd>
-                                                        Edward Rooster
 
-                                                    </dd>
-                                                    <hr>
-                                                    <dt><strong>Age Range </strong></dt>
-                                                    <dd>
-                                                        Edward Rooster
 
-                                                    </dd>
 
-                                                </dl>
-                                            </div>
-                                        </div>
-                                    </div>
-
-                                </dd>
-                                <hr>
-                                <dt><strong>Date </strong></dt>
-                                <dd>
-                                    (304) 33-2867-499
-
-                                </dd>
-                                <hr>
-                                <dt><strong>Time </strong></dt>
-                                <dd>
-                                    (304) 44-9810-296
-
-                                </dd>
-                                <hr>
-                                <dt><strong>City </strong></dt>
-                                <dd>
-                                    California, US
-
-                                </dd>
-                                <hr>
                             </dl>
 
-                            <button type="button" class="btn-u">Create Event</button>
+                            <input type="submit" class="btn-u" value="Create Event"></input>
+
                         </div>
 
-                        <div id="passwordTab" class="profile-edit tab-pane fade">
-                            <h2 class="heading-md">Manage your Security Settings</h2>
-                            <p>Change your password.</p>
-                            <br>
-                            <form class="sky-form" id="sky-form4" action="#">
-                                <dl class="dl-horizontal">
-                                    <dt>Username</dt>
-                                    <dd>
-                                        <section>
-                                            <label class="input">
-                                                <i class="icon-append fa fa-user"></i>
-                                                <input type="text" placeholder="Username" name="username">
-                                                <b class="tooltip tooltip-bottom-right">Needed to enter the website</b>
-                                            </label>
-                                        </section>
-                                    </dd>
-                                    <dt>Email address</dt>
-                                    <dd>
-                                        <section>
-                                            <label class="input">
-                                                <i class="icon-append fa fa-envelope"></i>
-                                                <input type="email" placeholder="Email address" name="email">
-                                                <b class="tooltip tooltip-bottom-right">Needed to verify your
-                                                    account</b>
-                                            </label>
-                                        </section>
-                                    </dd>
-                                    <dt>Enter your password</dt>
-                                    <dd>
-                                        <section>
-                                            <label class="input">
-                                                <i class="icon-append fa fa-lock"></i>
-                                                <input type="password" id="password" name="password"
-                                                       placeholder="Password">
-                                                <b class="tooltip tooltip-bottom-right">Don't forget your password</b>
-                                            </label>
-                                        </section>
-                                    </dd>
-                                    <dt>Confirm Password</dt>
-                                    <dd>
-                                        <section>
-                                            <label class="input">
-                                                <i class="icon-append fa fa-lock"></i>
-                                                <input type="password" name="passwordConfirm"
-                                                       placeholder="Confirm password">
-                                                <b class="tooltip tooltip-bottom-right">Don't forget your password</b>
-                                            </label>
-                                        </section>
-                                    </dd>
-                                </dl>
-                                <label class="toggle toggle-change"><input type="checkbox" checked=""
-                                                                           name="checkbox-toggle-1"><i
-                                        class="no-rounded"></i>Remember password</label>
-                                <br>
-                                <section>
-                                    <label class="checkbox"><input type="checkbox" id="terms" name="terms"><i></i><a
-                                            href="#">I agree with the Terms and Conditions</a></label>
-                                </section>
-                                <button type="button" class="btn-u btn-u-default">Cancel</button>
-                                <button class="btn-u" type="submit">Save Changes</button>
-                            </form>
-                        </div>
 
-                        <div id="payment" class="profile-edit tab-pane fade">
-                            <h2 class="heading-md">Manage your Payment Settings</h2>
-                            <p>Below are the payment options for your account.</p>
-                            <br>
-                            <form class="sky-form" id="sky-form" action="#">
-                                <!--Checkout-Form-->
-                                <section>
-                                    <div class="inline-group">
-                                        <label class="radio"><input type="radio" checked="" name="radio-inline"><i
-                                                class="rounded-x"></i>Visa</label>
-                                        <label class="radio"><input type="radio" name="radio-inline"><i
-                                                class="rounded-x"></i>MasterCard</label>
-                                        <label class="radio"><input type="radio" name="radio-inline"><i
-                                                class="rounded-x"></i>PayPal</label>
-                                    </div>
-                                </section>
 
-                                <section>
-                                    <label class="input">
-                                        <input type="text" name="name" placeholder="Name on card">
-                                    </label>
-                                </section>
 
-                                <div class="row">
-                                    <section class="col col-10">
-                                        <label class="input">
-                                            <input type="text" name="card" id="card" placeholder="Card number">
-                                        </label>
-                                    </section>
-                                    <section class="col col-2">
-                                        <label class="input">
-                                            <input type="text" name="cvv" id="cvv" placeholder="CVV2">
-                                        </label>
-                                    </section>
-                                </div>
 
-                                <div class="row">
-                                    <label class="label col col-4">Expiration date</label>
-                                    <section class="col col-5">
-                                        <label class="select">
-                                            <select name="month">
-                                                <option disabled="" selected="" value="0">Month</option>
-                                                <option value="1">January</option>
-                                                <option value="1">February</option>
-                                                <option value="3">March</option>
-                                                <option value="4">April</option>
-                                                <option value="5">May</option>
-                                                <option value="6">June</option>
-                                                <option value="7">July</option>
-                                                <option value="8">August</option>
-                                                <option value="9">September</option>
-                                                <option value="10">October</option>
-                                                <option value="11">November</option>
-                                                <option value="12">December</option>
-                                            </select>
-                                            <i></i>
-                                        </label>
-                                    </section>
-                                    <section class="col col-3">
-                                        <label class="input">
-                                            <input type="text" placeholder="Year" id="year" name="year">
-                                        </label>
-                                    </section>
-                                </div>
-                                <button type="button" class="btn-u btn-u-default">Cancel</button>
-                                <button class="btn-u" type="submit">Save Changes</button>
-                                <!--End Checkout-Form-->
-                            </form>
-                        </div>
 
-                        <div id="settings" class="profile-edit tab-pane fade">
-                            <h2 class="heading-md">Manage your Notifications.</h2>
-                            <p>Below are the notifications you may manage.</p>
-                            <br>
-                            <form class="sky-form" id="sky-form3" action="#">
-                                <label class="toggle"><input type="checkbox" checked="" name="checkbox-toggle-1"><i
-                                        class="no-rounded"></i>Email notification</label>
-                                <hr>
-                                <label class="toggle"><input type="checkbox" checked="" name="checkbox-toggle-1"><i
-                                        class="no-rounded"></i>Send me email notification when a user comments on my
-                                    blog</label>
-                                <hr>
-                                <label class="toggle"><input type="checkbox" checked="" name="checkbox-toggle-1"><i
-                                        class="no-rounded"></i>Send me email notification for the latest update</label>
-                                <hr>
-                                <label class="toggle"><input type="checkbox" checked="" name="checkbox-toggle-1"><i
-                                        class="no-rounded"></i>Send me email notification when a user sends me
-                                    message</label>
-                                <hr>
-                                <label class="toggle"><input type="checkbox" checked="" name="checkbox-toggle-1"><i
-                                        class="no-rounded"></i>Receive our monthly newsletter</label>
-                                <hr>
-                                <button type="button" class="btn-u btn-u-default">Reset</button>
-                                <button class="btn-u" type="submit">Save Changes</button>
-                            </form>
-                        </div>
                     </div>
                 </div>
             </div>
@@ -310,6 +275,9 @@
         <!-- End Profile Content -->
     </div><!--/end row-->
 </div>
+</form>
+
+
 <!--=== End Profile ===-->
 {% endblock %}
 
