@@ -71,15 +71,3 @@ class Account(models.Model):
 
     def __str__(self):
         return self.fullName
-
-
-class Payment(models.Model):
-    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET(get_sentinel_user))
-    stripe_customer_id = models.CharField(max_length=150, blank=True)
-
-    # Automatic timestamps
-    created = models.DateTimeField(auto_now_add=True)
-    updated = models.DateTimeField(auto_now=True)
-
-    def __str__(self):
-        return self.user.first_name + ' ' + self.user.last_name + ' [' + self.stripe_customer_id + ']'

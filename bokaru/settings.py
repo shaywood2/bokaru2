@@ -12,11 +12,11 @@ https://docs.djangoproject.com/en/1.9/ref/settings/
 
 import os
 import dj_database_url
+import logging
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 PROJECT_ROOT = os.path.dirname(os.path.abspath(__file__))
-
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/1.9/howto/deployment/checklist/
@@ -27,11 +27,29 @@ SECRET_KEY = 'il3dg4!5!r1sw%&i+%h7(&f4yu(6gog6pfjx()b8c%quwk5se5'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
+# Logging
+if DEBUG:
+    # will output to your console
+    logging.basicConfig(
+        level=logging.DEBUG,
+        format='%(asctime)s %(levelname)s %(message)s',
+        datefmt="[%d/%b/%Y %H:%M:%S]"
+    )
+else:
+    # will output to logging file
+    logging.basicConfig(
+        level=logging.DEBUG,
+        format='%(asctime)s %(levelname)s %(message)s',
+        datefmt="[%d/%b/%Y %H:%M:%S]",
+        filename='/my_log_file.log',
+        filemode='a'
+    )
 
 # Application definition
 
 INSTALLED_APPS = [
     'web.apps.WebConfig',
+    'money.apps.MoneyConfig',
     'account.apps.AccountConfig',
     'chat.apps.ChatConfig',
     'django.contrib.admin',
@@ -77,7 +95,6 @@ TEMPLATES = [
 ]
 
 WSGI_APPLICATION = 'bokaru.wsgi.application'
-
 
 # Database
 # https://docs.djangoproject.com/en/1.9/ref/settings/#databases
@@ -145,7 +162,6 @@ SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
 
 # Allow all host headers
 ALLOWED_HOSTS = ['*']
-
 
 # Static files (CSS, JavaScript, Images)
 STATIC_ROOT = os.path.join(PROJECT_ROOT, 'staticfiles')

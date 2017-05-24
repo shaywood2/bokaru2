@@ -3,7 +3,7 @@ from . import views
 
 app_name = 'account'
 urlpatterns = [
-    # ex: /account
+    # ex: /profile
     url(r'^$', views.summary, name='summary'),
     url(r'^subscription$', views.subscription, name='subscription'),
     url(r'^view$', views.view, name='view'),
@@ -15,6 +15,7 @@ urlpatterns = [
     url(r'^history', views.history, name='history'),
     url(r'^settings$', views.settings, name='settings'),
     url(r'^close$', views.close, name='close'),
-    url(r'^payment$', views.payment, name='payment'),
-    url(r'^payment/create', views.payment_create, name='payment_create'),
+    url(r'^credit_card$', views.credit_card_view, name='credit_card'),
+    url(r'^credit_card/register$', views.credit_card_register, name='credit_card_register'),
+    url(r'^credit_card/remove', views.credit_card_remove, name='credit_card_remove'),
 ]

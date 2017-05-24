@@ -3,6 +3,8 @@ from django.contrib.auth.models import User
 from django.utils import timezone
 
 from .models import Event, EventGroup, Pick
+from money.models import Product
+
 # from .forms import EventForm, EventGroupForm
 
 
@@ -16,17 +18,21 @@ class EventModelTestCase(TestCase):
         self.user5 = User.objects.create_user(username='bob5', email='bob5@alice.com', password='top_secret')
         self.user6 = User.objects.create_user(username='bob6', email='bob6@alice.com', password='top_secret')
 
-        self.event = Event(creator=self.user1, name='test event', location='location', startDateTime=timezone.now())
+        self.product1 = Product(name='product1', short_code='product1', amount=100)
+        self.product1.save()
+
+        self.event = Event(creator=self.user1, name='test event', location='location', startDateTime=timezone.now(),
+                           maxParticipantsInGroup=10, product=self.product1)
         self.event.save()
 
-        group1 = EventGroup(event=self.event, name='group1', ageMin=20, ageMax=30, participantsMaxNumber=10)
+        group1 = EventGroup(event=self.event, name='group1', ageMin=20, ageMax=30)
         group1.save()
         group1.add_participant(self.user1)
         group1.add_participant(self.user2)
         group1.add_participant(self.user3)
         group1.add_participant(self.user4)
 
-        group2 = EventGroup(event=self.event, name='group2', ageMin=20, ageMax=30, participantsMaxNumber=10)
+        group2 = EventGroup(event=self.event, name='group2', ageMin=20, ageMax=30)
         group2.save()
         group2.add_participant(self.user5)
         group2.add_participant(self.user6)
@@ -47,30 +53,31 @@ class EventGroupModelCase(TestCase):
         self.user7 = User.objects.create_user(username='bob7', email='bob7@alice.com', password='top_secret')
         self.user8 = User.objects.create_user(username='bob8', email='bob8@alice.com', password='top_secret')
 
-        self.event = Event(creator=self.user1, name='test event', location='location', startDateTime=timezone.now())
+        self.product1 = Product(name='product1', short_code='product1', amount=100)
+        self.product1.save()
+
+        self.event = Event(creator=self.user1, name='test event', location='location', startDateTime=timezone.now(),
+                           maxParticipantsInGroup=3, product=self.product1)
         self.event.save()
 
-        self.group1 = EventGroup(event=self.event, name='group1', ageMin=20, ageMax=30, participantsMaxNumber=10)
+        self.group1 = EventGroup(event=self.event, name='group1', ageMin=20, ageMax=30)
         self.group1.save()
         self.group1.add_participant(self.user1)
         self.group1.add_participant(self.user2)
         self.group1.add_participant(self.user3)
-        self.group1.add_participant(self.user4)
 
-        self.group2 = EventGroup(event=self.event, name='group2', ageMin=20, ageMax=30, participantsMaxNumber=2)
+        self.group2 = EventGroup(event=self.event, name='group2', ageMin=20, ageMax=30)
         self.group2.save()
         self.group2.add_participant(self.user5)
         self.group2.add_participant(self.user6)
 
     def test_add_participant(self):
-        self.group1.add_participant(self.user7)
-        self.assertEqual(self.group1.participants.all().count(), 5)
-        with self.assertRaises(Exception):
-            self.group1.add_participant(self.user7)
+        self.group2.add_participant(self.user7)
+        self.assertEqual(self.group1.participants.all().count(), 3)
         with self.assertRaises(Exception):
             self.group2.add_participant(self.user7)
         with self.assertRaises(Exception):
-            self.group2.add_participant(self.user1)
+            self.group1.add_participant(self.user1)
         with self.assertRaises(Exception):
             self.group2.add_participant(self.user8)
 
@@ -83,10 +90,15 @@ class PickModelCase(TestCase):
         self.user3 = User.objects.create_user(username='bob3', email='bob3@alice.com', password='top_secret')
         self.user4 = User.objects.create_user(username='bob4', email='bob4@alice.com', password='top_secret')
 
-        self.event = Event(creator=self.user1, name='test event', location='location', startDateTime=timezone.now())
+        self.product1 = Product(name='product1', short_code='product1', amount=100)
+        self.product1.save()
+
+        self.event = Event(creator=self.user1, name='test event', location='location', startDateTime=timezone.now(),
+                           maxParticipantsInGroup=3, product=self.product1)
         self.event.save()
 
-        self.event2 = Event(creator=self.user4, name='test event 2', location='location', startDateTime=timezone.now())
+        self.event2 = Event(creator=self.user4, name='test event 2', location='location', startDateTime=timezone.now(),
+                            maxParticipantsInGroup=3, product=self.product1)
         self.event2.save()
 
         self.pick1 = Pick(picker=self.user1, picked=self.user2, event=self.event)
@@ -117,7 +129,6 @@ class PickModelCase(TestCase):
         matches = Pick.objects.get_matches(self.user1, self.event2)
         self.assertEqual(len(matches), 1)
         self.assertTrue(self.user4 in matches)
-
 
 # Testing the forms EventForm and EventGroupForm
 # class EventForm(TestCase):

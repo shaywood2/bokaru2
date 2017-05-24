@@ -37,14 +37,16 @@
                             <p>{{event.description}}</p>
                             <p>{{event.startDateTime}}</p>
 
+                            <strong>{{event.product}}</strong>
+
                             <p>Created by: {{event.creator}}</p>
 
                             <br/>
 
                             <p>{{groups.0}} registered {{groups.0.participants.count}} out of
-                                {{groups.0.participantsMaxNumber}}</p>
+                                {{event.maxParticipantsInGroup}}</p>
                             <p>{{groups.1}} registered {{groups.1.participants.count}} out of
-                                {{groups.1.participantsMaxNumber}}</p>
+                                {{event.maxParticipantsInGroup}}</p>
                         </div>
                     </div>
                 </div><!--/end row-->

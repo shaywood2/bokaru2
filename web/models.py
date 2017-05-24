@@ -1,7 +1,10 @@
 from django.db import models
 from django.conf import settings
 from django.contrib.auth import get_user_model
+from django.core.validators import MinValueValidator, MaxValueValidator
 from django.utils.translation import ugettext_lazy as _
+
+from money.models import Product
 
 
 def get_sentinel_user():
@@ -16,7 +19,9 @@ class Event(models.Model):
     name = models.CharField(max_length=150)
     location = models.CharField(max_length=150)
     description = models.TextField(max_length=2000, blank=True)
+    maxParticipantsInGroup = models.PositiveSmallIntegerField(validators=[MinValueValidator(5), MaxValueValidator(25)])
     startDateTime = models.DateTimeField()
+    product = models.ForeignKey(Product)
 
     # Automatic timestamps
     created = models.DateTimeField(auto_now_add=True)
@@ -40,15 +45,14 @@ class Event(models.Model):
 class EventGroup(models.Model):
     event = models.ForeignKey(Event, on_delete=models.CASCADE)
     name = models.CharField(max_length=150)
-    ageMin = models.PositiveSmallIntegerField()
-    ageMax = models.PositiveSmallIntegerField()
-    participantsMaxNumber = models.PositiveSmallIntegerField()
+    ageMin = models.PositiveSmallIntegerField(validators=[MinValueValidator(18)])
+    ageMax = models.PositiveSmallIntegerField(validators=[MinValueValidator(18)])
     participants = models.ManyToManyField(settings.AUTH_USER_MODEL)
 
     def add_participant(self, user):
         # Groups is full
         num_participants = self.participants.all().count()
-        if self.participantsMaxNumber <= num_participants:
+        if self.event.maxParticipantsInGroup <= num_participants:
             raise Exception(_('Group full'))
         # User is already registered
         if self.event is not None and self.event.is_registered(user):

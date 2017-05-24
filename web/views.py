@@ -7,6 +7,8 @@ from .forms import EventForm, EventGroupForm
 from .models import Event, EventGroup
 from account.models import Account
 
+from money.billing_logic import get_product_by_participant_number
+
 
 def index(request):
     context = {
@@ -52,18 +54,18 @@ def event_view(request, event_id):
     event_groups = list(selected_event.eventgroup_set.all())
     num_groups = len(event_groups)
 
-    group1_filled_percentage = float(event_groups[0].participants.count()) / event_groups[0].participantsMaxNumber * 100
-    group1_spots_left = event_groups[0].participantsMaxNumber - event_groups[0].participants.count()
+    group1_filled_percentage = float(event_groups[0].participants.count()) / selected_event.maxParticipantsInGroup * 100
+    group1_spots_left = selected_event.maxParticipantsInGroup - event_groups[0].participants.count()
     group1_participants = Account.objects.filter(user__in=event_groups[0].participants.all())
     group2_participants = {}
+
     group2_filled_percentage = 0
     group2_spots_left = 0
     if num_groups > 1:
-        group2_filled_percentage = float(event_groups[1].participants.count()) \
-                                   / event_groups[1].participantsMaxNumber * 100
-        group2_spots_left = event_groups[1].participantsMaxNumber - event_groups[1].participants.count()
+        group2_filled_percentage = float(event_groups[1].participants.count())\
+                                   / selected_event.maxParticipantsInGroup * 100
+        group2_spots_left = selected_event.maxParticipantsInGroup - event_groups[1].participants.count()
         group2_participants = Account.objects.filter(user__in=event_groups[1].participants.all())
-
     context = {
         'event': selected_event,
         'num_groups': num_groups,
@@ -81,25 +83,26 @@ def event_view(request, event_id):
 def event_create(request):
     current_user = request.user
 
-    GroupFormSet = formset_factory(EventGroupForm, extra=1, min_num=1, validate_min=True)
+    group_formset = formset_factory(EventGroupForm, extra=1, min_num=1, validate_min=True)
 
     if request.method == 'POST':
         event_form = EventForm(request.POST)
-        group_formset = GroupFormSet(request.POST)
+        group_formset = group_formset(request.POST)
         if all([event_form.is_valid(), group_formset.is_valid()]):
             new_event = event_form.save(commit=False)
             new_event.creator = current_user
+            # TODO: need to multiply maxParticipantsInGroup by number of groups for correct count
+            new_event.product = get_product_by_participant_number(new_event.maxParticipantsInGroup)
             new_event.save()
             for inline_form in group_formset:
                 if inline_form.cleaned_data:
                     group = inline_form.save(commit=False)
                     group.event = new_event
                     group.save()
-
             return HttpResponseRedirect(reverse('web:event_view', kwargs={'event_id': new_event.id}))
     else:
         event_form = EventForm()
-        group_formset = GroupFormSet()
+        group_formset = group_formset()
 
     context = {
         'event_form': event_form,
@@ -109,7 +112,7 @@ def event_create(request):
     return render(request, 'web/eventcreate.html', context)
 
 
-def eventedit(request):
+def event_edit(request):
     context = {
         'test': "Event Edit Page",
     }
@@ -188,7 +191,7 @@ def myevents(request):
     return render(request, 'web/myevents.html', context)
 
 
-def termsofuse(request):
+def terms_of_use(request):
     context = {
         'test': "Terms of Use Page",
     }
@@ -196,7 +199,7 @@ def termsofuse(request):
     return render(request, 'web/termsofuse.html', context)
 
 
-def howitworks(request):
+def how_it_works(request):
     context = {
         'test': "How It Works Page",
     }
@@ -204,7 +207,7 @@ def howitworks(request):
     return render(request, 'web/howitworks.html', context)
 
 
-def privacypolicy(request):
+def privacy_policy(request):
     context = {
         'test': "Privacy Policy Page",
     }

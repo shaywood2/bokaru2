@@ -9,7 +9,7 @@ from .models import Event, EventGroup
 class EventForm(ModelForm):
     class Meta:
         model = Event
-        exclude = ['creator']
+        exclude = ['creator', 'product']
 
     startDateTime = forms.SplitDateTimeField(widget=forms.SplitHiddenDateTimeWidget(), input_time_formats=['%H:%M'],
                                              input_date_formats=['%d.%m.%Y'])
