@@ -1,12 +1,12 @@
-from django.shortcuts import render, reverse, get_object_or_404
-from django.http import HttpResponseRedirect
-from django.forms.formsets import formset_factory
 from django.contrib import messages
-
-from .forms import EventForm, EventGroupForm
-from .models import Event, EventGroup
+from django.contrib.auth.decorators import login_required
+from django.forms.formsets import formset_factory
+from django.http import HttpResponseRedirect
+from django.shortcuts import render, reverse, get_object_or_404
 
 from money.billing_logic import get_product_by_participant_number
+from .forms import EventForm, EventGroupForm
+from .models import Event, EventGroup
 
 
 def index(request):
@@ -75,6 +75,7 @@ def event_view(request, event_id):
     return render(request, 'web/event.html', context)
 
 
+@login_required
 def event_create(request):
     current_user = request.user
 

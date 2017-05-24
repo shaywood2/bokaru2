@@ -1,9 +1,10 @@
-from django.test import TestCase
 from django.contrib.auth.models import User
+from django.test import TestCase
 from django.utils import timezone
 
-from .models import Event, EventGroup, Pick
 from money.models import Product
+from .models import Event, EventGroup, Pick, EventParticipant
+
 
 # from .forms import EventForm, EventGroupForm
 
@@ -27,22 +28,22 @@ class EventModelTestCase(TestCase):
 
         group1 = EventGroup(event=self.event, name='group1', ageMin=20, ageMax=30)
         group1.save()
-        group1.add_participant(self.user1)
-        group1.add_participant(self.user2)
-        group1.add_participant(self.user3)
-        group1.add_participant(self.user4)
+        # group1.add_participant(self.user1)
+        # group1.add_participant(self.user2)
+        # group1.add_participant(self.user3)
+        # group1.add_participant(self.user4)
 
         group2 = EventGroup(event=self.event, name='group2', ageMin=20, ageMax=30)
         group2.save()
-        group2.add_participant(self.user5)
-        group2.add_participant(self.user6)
+        # group2.add_participant(self.user5)
+        # group2.add_participant(self.user6)
 
-    def test_get_all_participants(self):
-        self.assertEqual(len(self.event.get_all_participants()), 6)
+    # def test_get_all_participants(self):
+    #     self.assertEqual(len(self.event.get_all_participants()), 6)
 
 
 # Test the model EventGroup
-class EventGroupModelCase(TestCase):
+class EventGroupModelTestCase(TestCase):
     def setUp(self):
         self.user1 = User.objects.create_user(username='bob1', email='bob1@alice.com', password='top_secret')
         self.user2 = User.objects.create_user(username='bob2', email='bob2@alice.com', password='top_secret')
@@ -62,24 +63,47 @@ class EventGroupModelCase(TestCase):
 
         self.group1 = EventGroup(event=self.event, name='group1', ageMin=20, ageMax=30)
         self.group1.save()
-        self.group1.add_participant(self.user1)
-        self.group1.add_participant(self.user2)
-        self.group1.add_participant(self.user3)
 
         self.group2 = EventGroup(event=self.event, name='group2', ageMin=20, ageMax=30)
         self.group2.save()
-        self.group2.add_participant(self.user5)
-        self.group2.add_participant(self.user6)
 
-    def test_add_participant(self):
-        self.group2.add_participant(self.user7)
-        self.assertEqual(self.group1.participants.all().count(), 3)
-        with self.assertRaises(Exception):
-            self.group2.add_participant(self.user7)
-        with self.assertRaises(Exception):
-            self.group1.add_participant(self.user1)
-        with self.assertRaises(Exception):
-            self.group2.add_participant(self.user8)
+    # def test_add_participant(self):
+    #     self.group2.add_participant(self.user7)
+    #     self.assertEqual(self.group1.participants.all().count(), 3)
+    #     with self.assertRaises(Exception):
+    #         self.group2.add_participant(self.user7)
+    #     with self.assertRaises(Exception):
+    #         self.group1.add_participant(self.user1)
+    #     with self.assertRaises(Exception):
+    #         self.group2.add_participant(self.user8)
+
+
+# Test the model EventParticipant
+class EventParticipantTestCase(TestCase):
+            def setUp(self):
+                self.user1 = User.objects.create_user(username='bob1', email='bob1@alice.com', password='top_secret')
+                self.user2 = User.objects.create_user(username='bob2', email='bob2@alice.com', password='top_secret')
+                self.user3 = User.objects.create_user(username='bob3', email='bob3@alice.com', password='top_secret')
+                self.user4 = User.objects.create_user(username='bob4', email='bob4@alice.com', password='top_secret')
+                self.user5 = User.objects.create_user(username='bob5', email='bob5@alice.com', password='top_secret')
+                self.user6 = User.objects.create_user(username='bob6', email='bob6@alice.com', password='top_secret')
+
+                self.product1 = Product(name='product1', short_code='product1', amount=100)
+                self.product1.save()
+
+                self.event = Event(creator=self.user1, name='test event', location='location',
+                                   startDateTime=timezone.now(),
+                                   maxParticipantsInGroup=10, product=self.product1)
+                self.event.save()
+
+                self.group1 = EventGroup(event=self.event, name='group1', ageMin=20, ageMax=30)
+                self.group1.save()
+
+                self.group2 = EventGroup(event=self.event, name='group2', ageMin=20, ageMax=30)
+                self.group2.save()
+
+            # def test_get_all_participants(self):
+            #     self.assertEqual(len(self.event.get_all_participants()), 6)
 
 
 # Test model Pick

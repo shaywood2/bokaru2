@@ -1,7 +1,7 @@
-from django.db import models
 from django.conf import settings
 from django.contrib.auth import get_user_model
 from django.core.validators import MinValueValidator, MaxValueValidator
+from django.db import models
 from django.utils.translation import ugettext_lazy as _
 
 from money.models import Product
@@ -47,20 +47,46 @@ class EventGroup(models.Model):
     name = models.CharField(max_length=150)
     ageMin = models.PositiveSmallIntegerField(validators=[MinValueValidator(18)])
     ageMax = models.PositiveSmallIntegerField(validators=[MinValueValidator(18)])
-    participants = models.ManyToManyField(settings.AUTH_USER_MODEL)
 
-    def add_participant(self, user):
-        # Groups is full
-        num_participants = self.participants.all().count()
-        if self.event.maxParticipantsInGroup <= num_participants:
-            raise Exception(_('Group full'))
-        # User is already registered
-        if self.event is not None and self.event.is_registered(user):
-            raise Exception(_('You are already registered'))
-        self.participants.add(user)
+    def get_registered_participants(self):
+        participants = EventParticipant.objects.filter(group=self, status='registered')
+        return participants
+
+    def count_participants(self):
+        participants = EventParticipant.objects.filter(group=self, status='registered')
+        return participants.count()
+
+    # def add_participant(self, user):
+    #     # Group is full
+    #     num_participants = self.participants.all().count()
+    #     if self.event.maxParticipantsInGroup <= num_participants:
+    #         raise Exception(_('Group full'))
+    #     # User is already registered
+    #     if self.event is not None and self.event.is_registered(user):
+    #         raise Exception(_('You are already registered'))
+    #     self.participants.add(user)
 
     def __str__(self):
         return self.name + ' [' + str(self.ageMin) + ' - ' + str(self.ageMax) + ']'
+
+
+class EventParticipant(models.Model):
+    group = models.ForeignKey(EventGroup, on_delete=models.PROTECT)
+    user = models.ForeignKey(settings.AUTH_USER_MODEL)
+    STATUSES = (
+        ('interested', 'interested'),
+        ('registered', 'registered'),
+        ('waiting_list', 'waiting_list'),
+        ('payment_processed', 'payment_processed'),
+        ('payment_failed', 'payment_failed'),
+    )
+    status = models.CharField(max_length=20, choices=STATUSES)
+
+    # Automatic timestamp
+    created = models.DateTimeField(auto_now_add=True)
+
+    def join_group(self, group, user):
+        return None
 
 
 class PickManager(models.Manager):
