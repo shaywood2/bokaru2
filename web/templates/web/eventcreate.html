@@ -199,6 +199,17 @@ function setTime()
                                     &nbsp
                                     <button type="button" class="btn-u">Two</button>
                                 </dd>
+
+                                <hr>
+                                <dt><strong>Max Participants </strong></dt>
+                                <dd>
+                                     <div class="col-lg-9">
+                                        {{ event_form.maxParticipantsInGroup | addclass:"form-control input-lg" }}
+                                     </div>
+
+                                </dd>
+
+
                                 <hr>
 
                                 {{ group_formset.management_form }}
@@ -232,12 +243,7 @@ function setTime()
                                                         </div>
                                                     </dd>
                                                     <hr>
-                                                    <dt><strong>Maximum Participants </strong></dt>
-                                                    <dd>
-                                                        <div class="col-lg-9">
-                                                            {{ group_form.participantsMaxNumber | addclass:"form-control input-lg" }}
-                                                        </div>
-                                                    </dd>
+
 
 
 
