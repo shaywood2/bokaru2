@@ -30,16 +30,19 @@ class Event(models.Model):
     def __str__(self):
         return self.name + ' @ ' + self.location + ', [' + str(self.startDateTime) + ']'
 
-    def get_all_participants(self):
-        participants = []
-        for group in self.eventgroup_set.all():
-            for participant in group.participants.all():
-                participants.append(participant)
-        return participants
-
     def is_registered(self, user):
-        participants = self.get_all_participants()
-        return user in participants
+        try:
+            EventParticipant.objects.get(user=user, group__in=self.eventgroup_set.all(), status='registered')
+            return True
+        except EventParticipant.DoesNotExist:
+            return False
+
+    def is_on_waiting_list(self, user):
+        try:
+            EventParticipant.objects.get(user=user, group__in=self.eventgroup_set.all(), status='waiting_list')
+            return True
+        except EventParticipant.DoesNotExist:
+            return False
 
 
 class EventGroup(models.Model):
@@ -49,11 +52,19 @@ class EventGroup(models.Model):
     ageMax = models.PositiveSmallIntegerField(validators=[MinValueValidator(18)])
 
     def get_registered_participants(self):
-        participants = EventParticipant.objects.filter(group=self, status='registered')
+        participants = EventParticipant.objects.filter(group=self, status='registered').order_by('created')
         return participants
 
-    def count_participants(self):
+    def count_registered_participants(self):
         participants = EventParticipant.objects.filter(group=self, status='registered')
+        return participants.count()
+
+    def get_waiting_list_participants(self):
+        participants = EventParticipant.objects.filter(group=self, status='waiting_list').order_by('created')
+        return participants
+
+    def count_waiting_list_participants(self):
+        participants = EventParticipant.objects.filter(group=self, status='waiting_list')
         return participants.count()
 
     # def add_participant(self, user):
