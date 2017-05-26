@@ -1,3 +1,5 @@
+from datetime import datetime, timedelta
+
 from django.contrib.auth.models import User
 from django.test import TestCase
 from django.utils import timezone
@@ -80,7 +82,8 @@ class EventGroupModelTestCase(TestCase):
         self.product1 = Product(name='product1', short_code='product1', amount=100)
         self.product1.save()
 
-        self.event = Event(creator=self.user1, name='test event', location='location', startDateTime=timezone.now(),
+        self.event = Event(creator=self.user1, name='test event', location='location',
+                           startDateTime=datetime.now(timezone.utc) + timedelta(days=2),
                            maxParticipantsInGroup=3, product=self.product1)
         self.event.save()
 
@@ -110,8 +113,8 @@ class EventGroupModelTestCase(TestCase):
         self.assertEqual(len(self.group1.get_registered_participants()), 2)
 
         # Add another participant
-        ep = EventParticipant(group=self.group1, user=self.user6, status='registered')
-        ep.save()
+        ep6 = EventParticipant(group=self.group1, user=self.user6, status='registered')
+        ep6.save()
 
         # Must be 3 participants in the group 1 now
         participants = self.group1.get_registered_participants()
@@ -119,7 +122,17 @@ class EventGroupModelTestCase(TestCase):
 
         # Check the order of participants
         self.assertEqual(participants[0], self.ep1)
-        self.assertEqual(participants[2], ep)
+        self.assertEqual(participants[2], ep6)
+
+        # Must be 2 participants in the group 2 already
+        self.assertEqual(len(self.group2.get_registered_participants()), 2)
+
+        # Add a participant with payment_processed
+        ep7 = EventParticipant(group=self.group2, user=self.user7, status='registered')
+        ep7.save()
+
+        # Must be 3 participants in the group 2 now
+        self.assertEqual(len(self.group2.get_registered_participants()), 3)
 
     def test_count_registered_participants(self):
         # Must be 2 participants in the group 1
@@ -135,33 +148,34 @@ class EventGroupModelTestCase(TestCase):
         # Must be 2 participants in the group 2
         self.assertEqual(self.group2.count_registered_participants(), 2)
 
+    def test_add_participant(self):
+        # Must be 2 participants in the group 1
+        self.assertEqual(self.group1.count_registered_participants(), 2)
 
-# Test the model EventParticipant
-class EventParticipantTestCase(TestCase):
-    def setUp(self):
-        self.user1 = User.objects.create_user(username='bob1', email='bob1@alice.com', password='top_secret')
-        self.user2 = User.objects.create_user(username='bob2', email='bob2@alice.com', password='top_secret')
-        self.user3 = User.objects.create_user(username='bob3', email='bob3@alice.com', password='top_secret')
-        self.user4 = User.objects.create_user(username='bob4', email='bob4@alice.com', password='top_secret')
-        self.user5 = User.objects.create_user(username='bob5', email='bob5@alice.com', password='top_secret')
-        self.user6 = User.objects.create_user(username='bob6', email='bob6@alice.com', password='top_secret')
+        # Add a new participant
+        self.group1.add_participant(self.user6)
 
-        self.product1 = Product(name='product1', short_code='product1', amount=100)
-        self.product1.save()
+        # Must be 3 participants in the group 1 now
+        self.assertEqual(self.group1.count_registered_participants(), 3)
 
-        self.event = Event(creator=self.user1, name='test event', location='location',
-                           startDateTime=timezone.now(),
-                           maxParticipantsInGroup=10, product=self.product1)
-        self.event.save()
+        # Add the same participant
+        with self.assertRaises(Exception):
+            self.group1.add_participant(self.user6)
 
-        self.group1 = EventGroup(event=self.event, name='group1', ageMin=20, ageMax=30)
-        self.group1.save()
+        # Must be 3 participants in the group 1 now
+        self.assertEqual(self.group1.count_registered_participants(), 3)
 
-        self.group2 = EventGroup(event=self.event, name='group2', ageMin=20, ageMax=30)
-        self.group2.save()
+        # Add the same participant to another group
+        with self.assertRaises(Exception):
+            self.group2.add_participant(self.user6)
 
-        # def test_get_all_participants(self):
-        #     self.assertEqual(len(self.event.get_all_participants()), 6)
+        # Add one too many participants
+        with self.assertRaises(Exception):
+            self.group1.add_participant(self.user7)
+
+        # Add a user on the waiting list
+        with self.assertRaises(Exception):
+            self.group2.add_participant(self.user5)
 
 
 # Test model Pick
