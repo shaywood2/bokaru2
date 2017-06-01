@@ -78,7 +78,6 @@ class EventGroup(models.Model):
         # Check if the event is in the past
         now = datetime.datetime.utcnow().replace(tzinfo=utc)
         if self.event.startDateTime < now:
-            # TODO: process payment right away
             raise Exception(_('The event is in the past'))
 
         # Check if the group is full
@@ -104,16 +103,16 @@ class EventGroup(models.Model):
             raise Exception(_('Pay first'))
 
     def add_participant_to_waiting_list(self, user):
-        return None
+        raise Exception('Function not implemented: add_participant_to_waiting_list')
 
     def remove_participant(self, user):
-        return None
+        raise Exception('Function not implemented: remove_participant')
 
     def remove_participant_from_waiting_list(self, user):
-        return None
+        raise Exception('Function not implemented: remove_participant_from_waiting_list')
 
     def register_participant_from_waiting_list(self, user):
-        return None
+        raise Exception('Function not implemented: register_participant_from_waiting_list')
 
     def __str__(self):
         return self.name + ' [' + str(self.ageMin) + ' - ' + str(self.ageMax) + ']'

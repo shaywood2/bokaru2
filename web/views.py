@@ -4,10 +4,10 @@ from django.forms.formsets import formset_factory
 from django.http import HttpResponseRedirect
 from django.shortcuts import render, reverse, get_object_or_404
 
+from account.models import Account
 from money.billing_logic import get_product_by_participant_number
 from .forms import EventForm, EventGroupForm
 from .models import Event, EventGroup
-from account.models import Account
 
 
 def index(request):
@@ -54,18 +54,33 @@ def event_view(request, event_id):
     event_groups = list(selected_event.eventgroup_set.all())
     num_groups = len(event_groups)
 
-    group1_filled_percentage = float(event_groups[0].participants.count()) / selected_event.maxParticipantsInGroup * 100
-    group1_spots_left = selected_event.maxParticipantsInGroup - event_groups[0].participants.count()
-    group1_participants = Account.objects.filter(user__in=event_groups[0].participants.all())
-    group2_participants = {}
+    # First group info
+    group1_filled_percentage = float(event_groups[0].count_registered_participants()) \
+                               / selected_event.maxParticipantsInGroup * 100
+    group1_spots_left = selected_event.maxParticipantsInGroup - event_groups[0].count_registered_participants()
+    group1_users = []
+    for participant in event_groups[0].get_registered_participants():
+        group1_users.append(participant.user)
+    group1_participants = Account.objects.filter(user__in=group1_users)
 
+    # Second group info
+    group2_participants = {}
     group2_filled_percentage = 0
     group2_spots_left = 0
     if num_groups > 1:
-        group2_filled_percentage = float(event_groups[1].participants.count())\
+        group2_filled_percentage = float(event_groups[1].count_registered_participants()) \
                                    / selected_event.maxParticipantsInGroup * 100
-        group2_spots_left = selected_event.maxParticipantsInGroup - event_groups[1].participants.count()
-        group2_participants = Account.objects.filter(user__in=event_groups[1].participants.all())
+        group2_spots_left = selected_event.maxParticipantsInGroup - event_groups[1].count_registered_participants()
+        group2_users = []
+        for participant in event_groups[1].get_registered_participants():
+            group2_users.append(participant.user)
+        group2_participants = Account.objects.filter(user__in=group2_users)
+
+    # Check if user is registered
+    is_registered = False
+    if request.user.is_authenticated() and request.user is not None:
+        is_registered = selected_event.is_registered(request.user)
+
     context = {
         'event': selected_event,
         'num_groups': num_groups,
@@ -76,6 +91,7 @@ def event_view(request, event_id):
         'group2_spots_left': group2_spots_left,
         'group1_participants': group1_participants,
         'group2_participants': group2_participants,
+        'is_registered': is_registered
     }
     return render(request, 'web/event.html', context)
 
