@@ -15,8 +15,6 @@
 <div class="container content profile">
     <div class="row">
 
-
-
         <!-- Profile Content -->
         <div class="col-md-12">
             <div class="profile-body">
@@ -37,15 +35,16 @@
                             <p>{{event.description}}</p>
                             <p>{{event.startDateTime}}</p>
 
-                            <strong>{{event.product}}</strong>
+                            <strong>DEBUG PRODUCT: {{event.product}}</strong><br>
+                            <strong>DEBUG IS_REGISTERED: {{is_registered}}</strong>
 
                             <p>Created by: {{event.creator}}</p>
 
                             <br/>
 
-                            <p>{{groups.0}} registered {{groups.0.participants.count}} out of
+                            <p>{{groups.0}} registered {{group1_participants.count}} out of
                                 {{event.maxParticipantsInGroup}}</p>
-                            <p>{{groups.1}} registered {{groups.1.participants.count}} out of
+                            <p>{{groups.1}} registered {{group2_participants.count}} out of
                                 {{event.maxParticipantsInGroup}}</p>
                         </div>
                     </div>
@@ -127,20 +126,20 @@
                     {% for participant in group1_participants %}
 
 
-                        <div class="col-sm-6">
-                            <div class="profile-blog margin-bottom-20">
-                                <img class="rounded-x" src="{% static 'web/theme/img/testimonials/user.jpg' %}" alt="">
+                    <div class="col-sm-6">
+                        <div class="profile-blog margin-bottom-20">
+                            <img class="rounded-x" src="{% static 'web/theme/img/testimonials/user.jpg' %}" alt="">
 
-                                <div class="name-location">
-                                    <strong>{{participant.fullName}}</strong>
-                                    <span><i class="fa fa-map-marker"></i><a href="#">Moscow,</a> <a
-                                            href="#">Russia</a></span>
-                                </div>
-                                <div class="clearfix margin-bottom-20"></div>
-                                <p>{{participant.summary}}</p>
-
+                            <div class="name-location">
+                                <strong>{{participant.user.fullName}}</strong>
+                                <span><i class="fa fa-map-marker"></i><a href="#">Moscow,</a> <a
+                                        href="#">Russia</a></span>
                             </div>
+                            <div class="clearfix margin-bottom-20"></div>
+                            <p>{{participant.user.summary}}</p>
+
                         </div>
+                    </div>
                     {% endfor %}
 
 
@@ -152,20 +151,20 @@
                     {% for participant in group2_participants %}
 
 
-                        <div class="col-sm-6">
-                            <div class="profile-blog margin-bottom-20">
-                                <img class="rounded-x" src="{% static 'web/theme/img/testimonials/user.jpg' %}" alt="">
+                    <div class="col-sm-6">
+                        <div class="profile-blog margin-bottom-20">
+                            <img class="rounded-x" src="{% static 'web/theme/img/testimonials/user.jpg' %}" alt="">
 
-                                <div class="name-location">
-                                    <strong>{{participant.fullName}}</strong>
-                                    <span><i class="fa fa-map-marker"></i><a href="#">Moscow,</a> <a
-                                            href="#">Russia</a></span>
-                                </div>
-                                <div class="clearfix margin-bottom-20"></div>
-                                <p>{{participant.summary}}</p>
-
+                            <div class="name-location">
+                                <strong>{{participant.user.fullName}}</strong>
+                                <span><i class="fa fa-map-marker"></i><a href="#">Moscow,</a> <a
+                                        href="#">Russia</a></span>
                             </div>
+                            <div class="clearfix margin-bottom-20"></div>
+                            <p>{{participant.user.summary}}</p>
+
                         </div>
+                    </div>
                     {% endfor %}
 
 
@@ -174,7 +173,6 @@
                 {% endif %}
 
             </div>
-
 
 
         </div>
@@ -224,6 +222,7 @@
 
 
 		});
+
 
 </script>
 

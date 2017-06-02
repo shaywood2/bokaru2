@@ -8,10 +8,10 @@ from django.urls import reverse
 from django.utils import timezone
 from registration.backends.hmac.views import RegistrationView as BaseRegistrationView
 
+from money.models import UserPaymentInfo
 from money.payment_service import create_customer, delete_card, create_card
 from .forms import RegistrationForm, AccountForm
 from .models import Account
-from money.models import UserPaymentInfo
 
 LOGGER = logging.getLogger(__name__)
 

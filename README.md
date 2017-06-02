@@ -43,6 +43,10 @@ Do this once:
     4. Run command `\dx` to list all extensions
     5. Exit sql editor `\q`
     6. Exit the postgres user: `exit`
+14. Create product records:
+    1. Log the dev server and navigate to the admin panel (see instruction below)
+    2. Add 3 products with the following short codes `smallevent`, `mediumevent` and `largeevent`
+    3. Amount and other fields do not matter at this point
 
 Done!
 
