@@ -2,6 +2,9 @@ import datetime
 
 from django.conf import settings
 from django.contrib.auth import get_user_model
+from django.contrib.gis.db import models as gis_models
+from django.contrib.gis.geos import Point
+from django.contrib.gis.measure import D
 from django.core.validators import MinValueValidator, MaxValueValidator
 from django.db import models
 from django.utils.timezone import utc
@@ -14,14 +17,25 @@ def get_sentinel_user():
     return get_user_model().objects.get_or_create(username='deleted')[0]
 
 
+class EventManager(models.Manager):
+    def filter_by_distance(self, lat, long, distance):
+        point = Point(x=lat, y=long, srid=4326)
+        return self.filter(locationCoordinates__distance_lte=(point, D(km=distance)))
+
+
 class Event(models.Model):
+    # The event must be at least 70% full to be confirmed
+    CONFIRMED_MIN_PARTICIPANTS = 0.7
+
     creator = models.ForeignKey(
         settings.AUTH_USER_MODEL,
         on_delete=models.SET(get_sentinel_user)
     )
     name = models.CharField(max_length=150)
-    location = models.CharField(max_length=150)
+    locationName = models.CharField(max_length=150)
+    locationCoordinates = gis_models.PointField(srid=4326, default=Point(0, 0))
     description = models.TextField(max_length=2000, blank=True)
+    numGroups = models.PositiveSmallIntegerField(validators=[MinValueValidator(1), MaxValueValidator(2)])
     maxParticipantsInGroup = models.PositiveSmallIntegerField(validators=[MinValueValidator(5), MaxValueValidator(25)])
     startDateTime = models.DateTimeField()
     product = models.ForeignKey(Product)
@@ -30,9 +44,12 @@ class Event(models.Model):
     created = models.DateTimeField(auto_now_add=True)
     updated = models.DateTimeField(auto_now=True)
 
-    def __str__(self):
-        return self.name + ' @ ' + self.location + ', [' + str(self.startDateTime) + ']'
+    objects = EventManager()
 
+    def __str__(self):
+        return self.name + ' @ ' + self.locationName + ', [' + str(self.startDateTime) + ']'
+
+    # Return True if the user is registered in any group of this event
     def is_registered(self, user):
         try:
             EventParticipant.objects.get(user=user, group__in=self.eventgroup_set.all(),
@@ -41,6 +58,7 @@ class Event(models.Model):
         except EventParticipant.DoesNotExist:
             return False
 
+    # Return True if the user is on the waiting list
     def is_on_waiting_list(self, user):
         try:
             EventParticipant.objects.get(user=user, group__in=self.eventgroup_set.all(),
@@ -48,6 +66,22 @@ class Event(models.Model):
             return True
         except EventParticipant.DoesNotExist:
             return False
+
+    # Return True if the event is going to be held
+    def is_confirmed(self):
+        # The event must start within a day
+        now = datetime.datetime.utcnow().replace(tzinfo=utc)
+        time_diff = self.event.startDateTime - now
+        if time_diff.days < 1:
+            # Check if there are enough participants
+            participants = EventParticipant.objects.filter(group__in=self.eventgroup_set.all(),
+                                                           status__in=[EventParticipant.REGISTERED,
+                                                                       EventParticipant.PAYMENT_SUCCESS])
+            num_participants = participants.count()
+            if num_participants / (self.maxParticipantsInGroup * self.numGroups) >= self.CONFIRMED_MIN_PARTICIPANTS:
+                return True
+
+        return False
 
 
 class EventGroup(models.Model):

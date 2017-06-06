@@ -16,7 +16,7 @@ Do this once:
     1. Set up a virtual machine based on Ubuntu
     2. Forward VM port 8000 to host port 8000
     3. Sync current directory with `/home/vagrant/bokaru` directory in VM
-    4. Install Postgres and Python
+    4. Install Postgres, PostGIS and Python
     5. Install Python project dependencies from file `requirements.txt`
     6. Create Postgres user and database
 8. Once the vagrant provisioning is complete you can access your VM with this command: `vagrant ssh`
@@ -36,10 +36,10 @@ Do this once:
 12. Create Django superuser
     1. Run command `python3 /home/vagrant/bokaru/manage.py createsuperuser`
     2. Enter user's name, email and password (e.g. bokaru, bokaru@bokaru.com, password123)
-13. Run commands to create Postrgres extensions _cube_ and _earthdistance_
+13. Run commands to create Postrgres extensions _postgis_ and _postgis_topology_
     1. Switch to the Postgres user: `sudo su postgres`
     2. Start the sql editor: `psql`
-    3. Install extensions: `CREATE EXTENSION IF NOT EXISTS cube;` and `CREATE EXTENSION IF NOT EXISTS earthdistance;`
+    3. Install extensions: `CREATE EXTENSION IF NOT EXISTS postgis;` and `CREATE EXTENSION IF NOT EXISTS postgis_topology;`
     4. Run command `\dx` to list all extensions
     5. Exit sql editor `\q`
     6. Exit the postgres user: `exit`
