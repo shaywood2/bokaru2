@@ -5,6 +5,7 @@ from django.contrib.auth import get_user_model
 from django.contrib.gis.db import models as gis_models
 from django.contrib.gis.geos import Point
 from django.contrib.gis.measure import D
+from django.contrib.postgres.search import SearchQuery, SearchRank, SearchVector
 from django.core.validators import MinValueValidator, MaxValueValidator
 from django.db import models
 from django.utils.timezone import utc
@@ -22,6 +23,12 @@ class EventManager(models.Manager):
         point = Point(x=lat, y=long, srid=4326)
         return self.filter(locationCoordinates__distance_lte=(point, D(km=distance)))
 
+    def search_text(self, text):
+        vector = SearchVector('name', weight='A') + SearchVector('description', weight='A')
+        query = SearchQuery(text)
+        return self.annotate(rank=SearchRank(vector, query)).order_by('-rank', 'startDateTime')
+        # return self.annotate(rank=SearchRank(vector, query)).filter(rank__gte=0.1).order_by('-rank', 'startDateTime')
+
 
 class Event(models.Model):
     # The event must be at least 70% full to be confirmed
@@ -35,7 +42,7 @@ class Event(models.Model):
     locationName = models.CharField(max_length=150)
     locationCoordinates = gis_models.PointField(srid=4326, default=Point(0, 0))
     description = models.TextField(max_length=2000, blank=True)
-    numGroups = models.PositiveSmallIntegerField(validators=[MinValueValidator(1), MaxValueValidator(2)])
+    numGroups = models.PositiveSmallIntegerField(validators=[MinValueValidator(1), MaxValueValidator(2)], default=2)
     maxParticipantsInGroup = models.PositiveSmallIntegerField(validators=[MinValueValidator(5), MaxValueValidator(25)])
     startDateTime = models.DateTimeField()
     product = models.ForeignKey(Product)

@@ -28,7 +28,7 @@
                         </div>
                         <div class="col-md-7">
                             <h2>{{event.name}}</h2>
-                            <span><strong>Location:</strong> {{event.location}}</span>
+                            <span><strong>Location:</strong> {{event.locationName}}</span>
                             <span><strong>Age Ranges:</strong> {{groups.0}} &amp; {{groups.1}}</span>
                             <span><strong>Date:</strong> {{event.startDateTime}}</span>
                             <hr>
@@ -70,6 +70,7 @@
                                               href="{% url 'web:event_join' groups.0.id %}">&nbsp; &nbsp; Join Group
                                             &nbsp; &nbsp; </a></p>
                                     </div>
+                                    {% if groups.count > 1 %}
                                     <div class="p-chart col-sm-6 col-xs-6">
                                         <div class="circle margin-bottom-20" id="circle-50"></div>
                                         <h3 class="heading-xs">{{groups.1}}</h3>
@@ -78,6 +79,7 @@
                                               href="{% url 'web:event_join' groups.1.id %}">&nbsp; &nbsp; Join Group
                                             &nbsp; &nbsp; </a></p>
                                     </div>
+                                    {% endif %}
                                 </div>
                             </div>
                         </div>
@@ -222,6 +224,7 @@
 
 
 		});
+
 
 
 </script>
