@@ -70,7 +70,7 @@
                                               href="{% url 'web:event_join' groups.0.id %}">&nbsp; &nbsp; Join Group
                                             &nbsp; &nbsp; </a></p>
                                     </div>
-                                    {% if groups.count > 1 %}
+                                    {% if num_groups == 2 %}
                                     <div class="p-chart col-sm-6 col-xs-6">
                                         <div class="circle margin-bottom-20" id="circle-50"></div>
                                         <h3 class="heading-xs">{{groups.1}}</h3>

@@ -1,4 +1,5 @@
 import datetime
+import re
 
 from django.conf import settings
 from django.contrib.auth import get_user_model
@@ -18,14 +19,34 @@ def get_sentinel_user():
     return get_user_model().objects.get_or_create(username='deleted')[0]
 
 
+# Splits the query string in individual keywords, getting rid of unnecessary spaces and grouping quoted words together.
+def normalize_query(query_string,
+                    find_terms=re.compile(r'"([^"]+)"|(\S+)').findall,
+                    norm_space=re.compile(r'\s{2,}').sub):
+    return [norm_space(' ', (t[0] or t[1]).strip()) for t in find_terms(query_string)]
+
+
+# Construct a query based on an input string, basically OR all individual words
+def get_query(query_string):
+    query = None
+    terms = normalize_query(query_string)
+    for term in terms:
+        q = SearchQuery(term)
+        if query is None:
+            query = q
+        else:
+            query = query | q
+    return query
+
+
 class EventManager(models.Manager):
-    def filter_by_distance(self, lat, long, distance):
-        point = Point(x=lat, y=long, srid=4326)
+    def filter_by_distance(self, lat, lon, distance):
+        point = Point(x=lat, y=lon, srid=4326)
         return self.filter(locationCoordinates__distance_lte=(point, D(km=distance)))
 
     def search_text(self, text):
-        vector = SearchVector('name', weight='A') + SearchVector('description', weight='A')
-        query = SearchQuery(text)
+        vector = SearchVector('name', weight='A') + SearchVector('description', weight='B')
+        query = get_query(text)
         return self.annotate(rank=SearchRank(vector, query)).order_by('-rank', 'startDateTime')
         # return self.annotate(rank=SearchRank(vector, query)).filter(rank__gte=0.1).order_by('-rank', 'startDateTime')
 

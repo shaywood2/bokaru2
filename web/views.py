@@ -75,7 +75,6 @@ def event(request):
 def event_view(request, event_id):
     selected_event = get_object_or_404(Event, pk=event_id)
     event_groups = list(selected_event.eventgroup_set.all())
-    num_groups = len(event_groups)
 
     # First group info
     group1_filled_percentage = float(event_groups[0].count_registered_participants()) \
@@ -90,7 +89,7 @@ def event_view(request, event_id):
     group2_participants = {}
     group2_filled_percentage = 0
     group2_spots_left = 0
-    if num_groups > 1:
+    if selected_event.numGroups > 1:
         group2_filled_percentage = float(event_groups[1].count_registered_participants()) \
                                    / selected_event.maxParticipantsInGroup * 100
         group2_spots_left = selected_event.maxParticipantsInGroup - event_groups[1].count_registered_participants()
@@ -106,8 +105,8 @@ def event_view(request, event_id):
 
     context = {
         'event': selected_event,
-        'num_groups': num_groups,
         'groups': event_groups,
+        'num_groups': selected_event.numGroups,
         'group1_filled_percentage': group1_filled_percentage,
         'group2_filled_percentage': group2_filled_percentage,
         'group1_spots_left': group1_spots_left,
