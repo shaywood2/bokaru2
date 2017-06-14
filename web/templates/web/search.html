@@ -5,67 +5,41 @@
 
 {% block header %}
 
-	<link rel="stylesheet" href="{% static 'web/theme/plugins/cube-portfolio/cubeportfolio/css/cubeportfolio.min.css' %}">
+<link rel="stylesheet" href="{% static 'web/theme/plugins/cube-portfolio/cubeportfolio/css/cubeportfolio.min.css' %}">
 
-	<link rel="stylesheet" href="{% static 'web/theme/plugins/cube-portfolio/cubeportfolio/custom/custom-cubeportfolio.css' %}">
+<link rel="stylesheet"
+      href="{% static 'web/theme/plugins/cube-portfolio/cubeportfolio/custom/custom-cubeportfolio.css' %}">
 
 {% endblock %}
 
 
 {% block content %}
-<!--=== Breadcrumbs v3 ===-->
-		<div class="owl-background-repeat breadcrumbs-v3 backimg-v1">
-			<div class="container text-center">
-				<h1>Events</h1>
-				<p>Toronto</p>
+<form method="post">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <input type="submit" value="Submit"/>
+</form>
 
-			</div><!--/end container-->
-		</div>
-		<!--=== End Breadcrumbs v3 ===-->
+<!--=== Cube-Portfdlio ===-->
+<div class="cube-portfolio container margin-bottom-60">
+    {% for event in search_result %}
+    <div class="cbp-title-dark">
+        <div class="cbp-l-grid-agency-title"><a href="{% url 'web:event_view' event.id %}">{{event.name}}</a></div>
+        <div class="cbp-l-grid-agency-desc">{{event.description}}</div>
+        <div class="cbp-l-grid-agency-desc">{{event.locationName}}</div>
+        <div class="cbp-l-grid-agency-desc">{{event.startDateTime}}</div>
+    </div>
+    {% endfor %}
 
-		<!--=== Cube-Portfdlio ===-->
-		<div class="cube-portfolio container margin-bottom-60">
-			<div class="content-xs">
-
-			</div>
-
-			<div id="grid-container" class="cbp-l-grid-agency">
-				<div class="cbp-item graphic">
-					<div class="cbp-caption margin-bottom-20">
-						<div class="cbp-caption-defaultWrap">
-							<img src="{% static 'web/theme/img/main/img12.jpg' %}" alt="">
-						</div>
-						<a href="{% url 'web:event_view' 1 %}">
-						<div class="cbp-caption-activeWrap">
-							<div class="cbp-l-caption-alignCenter">
-								<div class="cbp-l-caption-body">
-									<ul class="link-captions no-bottom-space">
-										<li><i class="rounded-x fa fa-search"></i></li>
-									</ul>
-								</div>
-							</div>
-						</div>
-							</a>
-					</div>
-					<div class="cbp-title-dark">
-						<div class="cbp-l-grid-agency-title">Event Name</div>
-						<div class="cbp-l-grid-agency-desc">Date | Count</div>
-					</div>
-				</div>
-
-
-
-
-
-			</div><!--/end Grid Container-->
-		</div>
-		<!--=== End Cube-Portfdlio ===-->
+</div>
+<!--=== End Cube-Portfdlio ===-->
 {% endblock %}
 
 
 {% block javascript %}
 
-	<script type="text/javascript" src="{% static 'web/theme/plugins/cube-portfolio/cubeportfolio/js/jquery.cubeportfolio.min.js' %}"></script>
-	<script type="text/javascript" src="{% static 'web/theme/js/plugins/cube-portfolio/cube-portfolio-2.js' %}"></script>
+<script type="text/javascript"
+        src="{% static 'web/theme/plugins/cube-portfolio/cubeportfolio/js/jquery.cubeportfolio.min.js' %}"></script>
+<script type="text/javascript" src="{% static 'web/theme/js/plugins/cube-portfolio/cube-portfolio-2.js' %}"></script>
 
 {% endblock %}

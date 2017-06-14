@@ -16,37 +16,32 @@ Do this once:
     1. Set up a virtual machine based on Ubuntu
     2. Forward VM port 8000 to host port 8000
     3. Sync current directory with `/home/vagrant/bokaru` directory in VM
-    4. Install Postgres and Python
+    4. Install Postgres, PostGIS and Python
     5. Install Python project dependencies from file `requirements.txt`
-    6. Create Postgres user and database
+    6. Create Postgres user and database `bokaru`
 8. Once the vagrant provisioning is complete you can access your VM with this command: `vagrant ssh`
-9. **Optional:** Follow these steps to bind the python command to version 3 of python:
-    1. Open ~/.bashrc
-    2. Add an alias like: `alias python=python3`
-    3. Save the file
-    4. Restart your console window
+9. **Optional:** Run the following command to bind the python command to version 3 of python:
+    1. `echo "alias python=python3" >> ~/.bashrc`
+    2. Exit VM using command `exit` and log in again with `vagrant ssh`
 10. Set up the environment variable(s) by running the following command(s):
     1. `echo "export DATABASE_URL='postgres://localhost/bokaru?user=bokaru&password=bokaru123'" >> ~/.bashrc`
     2. Exit VM using command `exit` and log in again with `vagrant ssh`
     3. Make sure that variables are set correctly (e.g. `echo $DATABASE_URL` should return the url above)
-11. Run the following commands:
+11. Run the following commands to initialize up the database and collect static files:
     1. Make migrations: `python3 /home/vagrant/bokaru/manage.py makemigrations`
     2. Run migrations: `python3 /home/vagrant/bokaru/manage.py migrate`
     3. Collect static files: `python3 /home/vagrant/bokaru/manage.py collectstatic --noinput`
 12. Create Django superuser
     1. Run command `python3 /home/vagrant/bokaru/manage.py createsuperuser`
     2. Enter user's name, email and password (e.g. bokaru, bokaru@bokaru.com, password123)
-13. Run commands to create Postrgres extensions _cube_ and _earthdistance_
-    1. Switch to the Postgres user: `sudo su postgres`
-    2. Start the sql editor: `psql`
-    3. Install extensions: `CREATE EXTENSION IF NOT EXISTS cube;` and `CREATE EXTENSION IF NOT EXISTS earthdistance;`
-    4. Run command `\dx` to list all extensions
-    5. Exit sql editor `\q`
-    6. Exit the postgres user: `exit`
-14. Create product records:
+13. Create product records:
     1. Log the dev server and navigate to the admin panel (see instruction below)
     2. Add 3 products with the following short codes `smallevent`, `mediumevent` and `largeevent`
     3. Amount and other fields do not matter at this point
+    4. Stop the server with CTRL+C
+14. Run the tests
+    1. Change directory `cd /home/vagrant/bokaru/`
+    2. Run all tests `python3 ./manage.py test`
 
 Done!
 
@@ -86,9 +81,10 @@ To access postgres in your Vagrant VM follow these steps:
 1. Open a console window
 2. Login to your Vagrant machine: `vagrant ssh`
 3. Run this command to switch to the Postgres user: `sudo su postgres`
-4. Run this command to access the sql editor: `psql`
-5. Run this command to quit the sql editor: `\q`
-6. Run this command to exit the postgres user: `exit`
+4. Run this command to access the sql editor: `psql` or `psql -d bokaru` to connect to database `bokaru`
+5. List all extensions: `\dx` (must contain postgis and postgis_topology)
+6. Run this command to quit the sql editor: `\q`
+7. Run this command to exit the postgres user: `exit`
 
 Using Django's database API
 ---------------------------

@@ -147,7 +147,14 @@ function setTime()
                                 <dt><strong>Location </strong></dt>
                                 <dd>
                                      <div class="col-lg-9">
-                                        {{ event_form.location | addclass:"form-control input-lg" }}
+                                        {{ event_form.locationName | addclass:"form-control input-lg" }}
+                                     </div>
+
+                                </dd>
+                                <dt><strong>Location</strong></dt>
+                                <dd>
+                                     <div class="col-lg-9">
+                                        {{ event_form.locationCoordinates }}
                                      </div>
 
                                 </dd>
@@ -198,6 +205,17 @@ function setTime()
                                     <button type="button" class="btn-u">One</button>
                                     &nbsp
                                     <button type="button" class="btn-u">Two</button>
+                                </dd>
+
+
+
+                                <hr>
+                                <dt><strong>Num groups </strong></dt>
+                                <dd>
+                                     <div class="col-lg-9">
+                                        {{ event_form.numGroups | addclass:"form-control input-lg" }}
+                                     </div>
+
                                 </dd>
 
                                 <hr>

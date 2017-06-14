@@ -1,6 +1,7 @@
 from datetime import datetime, timedelta
 
 from django.contrib.auth.models import User
+from django.contrib.gis.geos import Point
 from django.test import TestCase
 from django.utils import timezone
 
@@ -9,6 +10,34 @@ from .models import Event, EventGroup, Pick, EventParticipant
 
 
 # from .forms import EventForm, EventGroupForm
+
+
+# Test the manager EventManager
+class EventManagerTestCase(TestCase):
+    def test_filter_by_distance(self):
+        self.user1 = User.objects.create_user(username='bob1', email='bob1@alice.com', password='top_secret')
+
+        self.product1 = Product(name='product1', short_code='product1', amount=100)
+        self.product1.save()
+
+        self.event1 = Event(creator=self.user1, name='test event', locationName='location',
+                            locationCoordinates=Point(-0.1192746, 51.5163499), startDateTime=timezone.now(),
+                            maxParticipantsInGroup=10, numGroups=2, product=self.product1)
+        self.event1.save()
+
+        self.event2 = Event(creator=self.user1, name='test event', locationName='location',
+                            locationCoordinates=Point(-0.1194731, 51.5167871), startDateTime=timezone.now(),
+                            maxParticipantsInGroup=10, numGroups=2, product=self.product1)
+        self.event2.save()
+
+        events = Event.objects.filter_by_distance(-0.1209811, 51.5163032, 10)
+        self.assertEqual(events.count(), 2)
+
+        events = Event.objects.filter_by_distance(-0.1209811, 51.5163032, 0.1)
+        self.assertEqual(events.count(), 0)
+
+        events = Event.objects.filter_by_distance(0.1209811, 51.5163032, 10)
+        self.assertEqual(events.count(), 0)
 
 
 # Test the model Event
@@ -24,8 +53,8 @@ class EventModelTestCase(TestCase):
         self.product1 = Product(name='product1', short_code='product1', amount=100)
         self.product1.save()
 
-        self.event = Event(creator=self.user1, name='test event', location='location', startDateTime=timezone.now(),
-                           maxParticipantsInGroup=10, product=self.product1)
+        self.event = Event(creator=self.user1, name='test event', locationName='location', startDateTime=timezone.now(),
+                           maxParticipantsInGroup=10, numGroups=2, product=self.product1)
         self.event.save()
 
         self.group1 = EventGroup(event=self.event, name='group1', ageMin=20, ageMax=30)
@@ -82,9 +111,9 @@ class EventGroupModelTestCase(TestCase):
         self.product1 = Product(name='product1', short_code='product1', amount=100)
         self.product1.save()
 
-        self.event = Event(creator=self.user1, name='test event', location='location',
+        self.event = Event(creator=self.user1, name='test event', locationName='location',
                            startDateTime=datetime.now(timezone.utc) + timedelta(days=2),
-                           maxParticipantsInGroup=3, product=self.product1)
+                           maxParticipantsInGroup=3, numGroups=2, product=self.product1)
         self.event.save()
 
         self.group1 = EventGroup(event=self.event, name='group1', ageMin=20, ageMax=30)
@@ -189,12 +218,13 @@ class PickModelCase(TestCase):
         self.product1 = Product(name='product1', short_code='product1', amount=100)
         self.product1.save()
 
-        self.event = Event(creator=self.user1, name='test event', location='location', startDateTime=timezone.now(),
-                           maxParticipantsInGroup=3, product=self.product1)
+        self.event = Event(creator=self.user1, name='test event', locationName='location', startDateTime=timezone.now(),
+                           maxParticipantsInGroup=3, numGroups=2, product=self.product1)
         self.event.save()
 
-        self.event2 = Event(creator=self.user4, name='test event 2', location='location', startDateTime=timezone.now(),
-                            maxParticipantsInGroup=3, product=self.product1)
+        self.event2 = Event(creator=self.user4, name='test event 2', locationName='location',
+                            startDateTime=timezone.now(),
+                            maxParticipantsInGroup=3, numGroups=2, product=self.product1)
         self.event2.save()
 
         self.pick1 = Pick(picker=self.user1, picked=self.user2, event=self.event)

@@ -1,7 +1,6 @@
-from django.forms import ModelForm
 from django import forms
-from datetime import date
-from django.forms import widgets
+from django.forms import Form
+from django.forms import ModelForm
 
 from .models import Event, EventGroup
 
@@ -21,3 +20,6 @@ class EventGroupForm(ModelForm):
         exclude = ['event', 'participants']
 
 
+class SearchForm(Form):
+    search_term = forms.CharField(label='Search text', max_length=100)
+    distance = forms.IntegerField(label='Distance from your location', max_value=100, required=False)
