@@ -10,7 +10,7 @@ api_secret = "8b928a5fcc3d59f30bd1e8577171cef2676edecf"
 # session = opentok.create_session(media_mode=MediaModes.routed)
 
 
-def sessionCreate(request):
+def session_create(request):
     data = {
         'apiKey': api_key,
         'sessionId': '123',  # session.session_id,
@@ -19,8 +19,9 @@ def sessionCreate(request):
     return JsonResponse(data)
 
 
-def tokenCreate(request, session_id):
+def token_create(request, session_id):
     data = {
         'token': '456'  # opentok.generate_token(session_id)
     }
     return JsonResponse(data)
+
