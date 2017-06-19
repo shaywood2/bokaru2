@@ -1,7 +1,9 @@
 import logging
 import random
 
-from django.core.cache import caches
+from django.core.cache import cache
+
+from web.models import Event
 
 LOGGER = logging.getLogger(__name__)
 
@@ -44,27 +46,49 @@ def generate_date_matrix_two_groups(group_a, group_b):
 
 # Get the date matrix for the specified event
 def get_date_matrix(event_id):
-    # Look up the matrix in cache
-    cache = caches['date_matrices']
     result = cache.get(str(event_id))
 
-    if result is None:
-        LOGGER.debug('Generating a date matrix for event ' + str(event_id))
-        # Generate the matrix
-        result = generate_date_matrix_two_groups(['bill', 'bob', 'bower', 'bottom'], ['alice', 'anna', 'akko'])
-        # Store the matrix in cache
-        cache.set(str(event_id), result, 60 * 60 * 2)
-    else:
+    # Check if the matrix was cached
+    if result is not None:
         LOGGER.debug('Cache hit for event id ' + str(event_id))
+        return result
+
+    LOGGER.debug('Generating a date matrix for event ' + str(event_id))
+
+    # Get the event
+    event = Event.objects.get(pk=event_id)
+    event_groups = list(event.eventgroup_set.all())
+
+    if event.numGroups == 1:
+        # TODO: generate the mapping from one group
+        result = {}
+    elif event.numGroups == 2:
+        # Get group a participants
+        group_a = []
+        for participant in event_groups[0].get_registered_participants():
+            group_a.append(participant.user.id)
+
+        # Get group b participants
+        group_b = []
+        for participant in event_groups[1].get_registered_participants():
+            group_b.append(participant.user.id)
+
+        # Generate the matrix
+        result = generate_date_matrix_two_groups(group_a, group_b)
+    else:
+        result = {}
+
+    # Store the matrix in cache for 2 hours
+    cache.set(str(event_id), result, 60 * 60 * 2)
 
     return result
 
 
-matrix = get_date_matrix(123)
-print(matrix)
-print(matrix['bill'])
-print(matrix['bill'][0])
-print(matrix['bill'][1])
-print(matrix['bill'][2])
-print(matrix['bill'][3])
-print(matrix['alice'][0])
+# matrix = generate_date_matrix_two_groups(['bill', 'bob', 'bower', 'bottom'], ['alice', 'anna', 'akko'])
+# print(matrix)
+# print(matrix['bill'])
+# print(matrix['bill'][0])
+# print(matrix['bill'][1])
+# print(matrix['bill'][2])
+# print(matrix['bill'][3])
+# print(matrix['alice'][0])
