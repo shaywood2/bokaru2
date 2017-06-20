@@ -44,6 +44,50 @@ def generate_date_matrix_two_groups(group_a, group_b):
     return result
 
 
+# Function to generate a matrix of dates based on one list of participants
+def generate_date_matrix_one_group(group):
+    size = len(group)
+    # Pad the group to have even number of participants
+    if size % 2 == 1:
+        size += 1
+        group += ['']
+
+    # Shuffle the group to randomize empty space
+    random.shuffle(group)
+
+    # Use round robin algorithm to generate date matrix
+    round_robin = []
+
+    for step_number in range(size - 1):
+        mid = int(size / 2)
+        l1 = group[:mid]
+        l2 = group[mid:]
+        l2.reverse()
+
+        # Switch sides after each round
+        if step_number % 2 == 1:
+            round_robin = round_robin + [zip(l1, l2)]
+        else:
+            round_robin = round_robin + [zip(l2, l1)]
+
+        group.insert(1, group.pop())
+
+    # Add all participants to the result matrix
+    result = {}
+    for participant in group:
+        result[participant] = {}
+
+    round_number = 0
+    for round_ in round_robin:
+        for match in round_:
+            # Add the pairings to the matrix
+            result[match[0]][round_number] = match[1]
+            result[match[1]][round_number] = match[0]
+        round_number += 1
+
+    return result
+
+
 # Get the date matrix for the specified event
 def get_date_matrix(event_id):
     result = cache.get(str(event_id))
@@ -60,8 +104,12 @@ def get_date_matrix(event_id):
     event_groups = list(event.eventgroup_set.all())
 
     if event.numGroups == 1:
-        # TODO: generate the mapping from one group
-        result = {}
+        # Get group participants
+        group = []
+        for participant in event_groups[0].get_registered_participants():
+            group.append(participant.user.id)
+
+        result = generate_date_matrix_one_group(group)
     elif event.numGroups == 2:
         # Get group a participants
         group_a = []
@@ -92,3 +140,6 @@ def get_date_matrix(event_id):
 # print(matrix['bill'][2])
 # print(matrix['bill'][3])
 # print(matrix['alice'][0])
+
+# matrix = generate_date_matrix_one_group(['a', 'b', 'c', 'd', 'e'])
+# print (matrix)
