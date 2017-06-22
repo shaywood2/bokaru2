@@ -1,7 +1,8 @@
-from django.http import JsonResponse
-from opentok import OpenTok, MediaModes, OutputModes
+# from opentok import OpenTok, MediaModes, OutputModes
 from django.contrib.auth.models import User
+from django.http import JsonResponse
 
+from account.models import Account
 from chat import utils
 
 api_key = "45689752"
@@ -37,9 +38,9 @@ def get_user_dates(request, event_id, user_id):
         result = {}
         for date_num in date_matrix[user_id_int]:
             # Get user
-            # TODO: get account instead of user model
             user = User.objects.get(pk=int(date_matrix[user_id_int][date_num]))
-            result[date_num] = {'username': user.username, 'id': user.id}
+            account = Account.objects.get(user=user)
+            result[date_num] = {'fullName': account.fullName, 'username': user.username, 'id': user.id}
 
         return JsonResponse(result)
     else:
