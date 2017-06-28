@@ -8,10 +8,10 @@ from django.urls import reverse
 from django.utils import timezone
 from registration.backends.hmac.views import RegistrationView as BaseRegistrationView
 
+from money.models import UserPaymentInfo
 from money.payment_service import create_customer, delete_card, create_card
 from .forms import RegistrationForm, AccountForm
 from .models import Account
-from money.models import UserPaymentInfo
 
 LOGGER = logging.getLogger(__name__)
 
@@ -174,7 +174,140 @@ def credit_card_view(request):
 
 
 @login_required
+def credit_card_edit(request):
+    # Retrieve the payment information for the user
+
+    return render(request, 'account/credit_card/edit.html')
+
+
+@login_required
+def event_pay(request, group_id):
+    # Retrieve the payment information for the user
+    try:
+        payment_info = UserPaymentInfo.objects.get(user=request.user)
+        # stripe_id = payment_info.stripe_customer_id
+        # LOGGER.debug('Creating a test charge')
+        # create_charge(12345, 'cad', 'testing', 'cus_AQF6ZlxYXIKq0I')
+        # stripe_customer = retrieve_customer(stripe_id)
+        # if stripe_customer is not None:
+        #    credit_card = stripe_customer.sources.data[0]
+        if payment_info.has_card():
+            credit_card = {
+                'brand': payment_info.credit_card_brand,
+                'last4': payment_info.credit_card_last_4,
+                'exp_month': payment_info.credit_card_exp_month,
+                'exp_year': payment_info.credit_card_exp_year,
+                'id': payment_info.credit_card_id,
+            }
+        else:
+            credit_card = None
+    except UserPaymentInfo.DoesNotExist:
+        credit_card = None
+
+    return render(request, 'account/credit_card/pay.html', {'credit_card': credit_card, 'group_id': group_id})
+
+
+@login_required
 def credit_card_register(request):
+    current_user = request.user
+    card_found = False
+
+    # Get the credit card details submitted by the form
+    token = request.POST['stripeToken']
+
+    try:
+        # Retrieve the payment information for the user
+        payment_info = UserPaymentInfo.objects.get(user=request.user)
+
+        if payment_info.credit_card_id != 0:
+            deleted = delete_card(payment_info.stripe_customer_id, payment_info.credit_card_id)
+
+        # Create a card for an existing Customer
+        credit_card = create_card(payment_info.stripe_customer_id, token)
+        # Store the payment info
+        payment_info.credit_card_id = credit_card.id
+        payment_info.credit_card_brand = credit_card.brand
+        payment_info.credit_card_last_4 = credit_card.last4
+        payment_info.credit_card_exp_month = credit_card.exp_month
+        payment_info.credit_card_exp_year = credit_card.exp_year
+        payment_info.save()
+    except UserPaymentInfo.DoesNotExist:
+        # Create a Customer with a credit card
+        stripe_customer = create_customer(token, current_user.id, current_user.first_name + ' '
+                                          + current_user.last_name, current_user.email)
+
+        credit_card = stripe_customer.sources.data[0]
+
+        # Store the payment info
+        payment_info, created = UserPaymentInfo.objects.get_or_create(
+            user=current_user,
+            defaults={'stripe_customer_id': stripe_customer.id,
+                      'credit_card_id': credit_card.id,
+                      'credit_card_brand': credit_card.brand,
+                      'credit_card_last_4': credit_card.last4,
+                      'credit_card_exp_month': credit_card.exp_month,
+                      'credit_card_exp_year': credit_card.exp_year}
+        )
+
+    card = {
+            'brand': payment_info.credit_card_brand,
+            'last4': payment_info.credit_card_last_4,
+            'exp_month': payment_info.credit_card_exp_month,
+            'exp_year': payment_info.credit_card_exp_year,
+            'id': payment_info.credit_card_id,
+        }
+
+    return HttpResponseRedirect(reverse('account:credit_card'))
+
+
+@login_required
+def credit_card_register_and_pay(request, group_id):
+
+    current_user = request.user
+    card_found = False
+
+    # Get the credit card details submitted by the form
+    token = request.POST['stripeToken']
+
+    try:
+        # Retrieve the payment information for the user
+        payment_info = UserPaymentInfo.objects.get(user=request.user)
+
+        if payment_info.credit_card_id != 0:
+            deleted = delete_card(payment_info.stripe_customer_id, payment_info.credit_card_id)
+
+        # Create a card for an existing Customer
+        credit_card = create_card(payment_info.stripe_customer_id, token)
+        # Store the payment info
+        payment_info.credit_card_id = credit_card.id
+        payment_info.credit_card_brand = credit_card.brand
+        payment_info.credit_card_last_4 = credit_card.last4
+        payment_info.credit_card_exp_month = credit_card.exp_month
+        payment_info.credit_card_exp_year = credit_card.exp_year
+        payment_info.save()
+    except UserPaymentInfo.DoesNotExist:
+        # Create a Customer with a credit card
+        stripe_customer = create_customer(token, current_user.id, current_user.first_name + ' '
+                                          + current_user.last_name, current_user.email)
+
+        credit_card = stripe_customer.sources.data[0]
+
+        # Store the payment info
+        payment_info, created = UserPaymentInfo.objects.get_or_create(
+            user=current_user,
+            defaults={'stripe_customer_id': stripe_customer.id,
+                      'credit_card_id': credit_card.id,
+                      'credit_card_brand': credit_card.brand,
+                      'credit_card_last_4': credit_card.last4,
+                      'credit_card_exp_month': credit_card.exp_month,
+                      'credit_card_exp_year': credit_card.exp_year}
+        )
+
+    return HttpResponseRedirect(reverse('web:event_join', kwargs={'group_id': group_id}))
+
+
+@login_required
+def credit_card_register_orig(request):
     current_user = request.user
     card_found = False
 

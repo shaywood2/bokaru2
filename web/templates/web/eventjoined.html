@@ -27,7 +27,7 @@
 							<div class="row">
 
 								<div class="col-md-12">
-									<h2 style="text-align: center">Event Name</h2>
+									<h2 style="text-align: center">{{event.name}}</h2>
 
 
 
@@ -103,181 +103,77 @@
 
 			<!--=== Profile ===-->
 
-			<div class="row">
+    <div class="row">
 
 
-				<!-- Profile Content -->
-				<div class="col-md-12">
+        <!-- Profile Content -->
+        <div class="col-md-12">
 
-					<div class="profile-body margin-bottom-20">
-						<h2>Participants</h2>
-						<!--Profile Blog-->
-						<div class="row margin-bottom-20">
-							<div class="col-sm-6 sm-margin-bottom-20">
-								<div class="profile-blog">
-									<img class="rounded-x" src="{% static 'web/theme/img/testimonials/img1.jpg' %}" alt="">
+            <div class="profile-body margin-bottom-20">
+                <h2> {{groups.0}} </h2>
+                <!--Profile Blog-->
+                <div class="row">
 
-									<div class="name-location">
-										<strong>Mikel Andrews</strong>
-										<span><i class="fa fa-map-marker"></i><a href="#">California,</a> <a href="#">US</a></span>
-									</div>
-									<div class="clearfix margin-bottom-20"></div>
-									<p>Donec non dignissim eros. Mauris faucibus turpis volutpat sagittis rhoncus. Pellentesque et rhoncus sapien, sed ullamcorper justo.</p>
+                    {% for participant in group1_participants %}
 
 
-								</div>
-							</div>
+                        <div class="col-sm-6">
+                            <div class="profile-blog margin-bottom-20">
+                                <img class="rounded-x" src="{% static 'web/theme/img/testimonials/user.jpg' %}" alt="">
 
-							<div class="col-sm-6">
-								<div class="profile-blog">
-									<img class="rounded-x" src="{% static 'web/theme/img/testimonials/user.jpg' %}" alt="">
+                                <div class="name-location">
+                                    <strong>{{participant.fullName}}</strong>
+                                    <span><i class="fa fa-map-marker"></i><a href="#">Moscow,</a> <a
+                                            href="#">Russia</a></span>
+                                </div>
+                                <div class="clearfix margin-bottom-20"></div>
+                                <p>{{participant.summary}}</p>
 
-									<div class="name-location">
-										<strong>Natasha Kolnikova</strong>
-										<span><i class="fa fa-map-marker"></i><a href="#">Moscow,</a> <a href="#">Russia</a></span>
-									</div>
-									<div class="clearfix margin-bottom-20"></div>
-									<p>Donec non dignissim eros. Mauris faucibus turpis volutpat sagittis rhoncus. Pellentesque et rhoncus sapien, sed ullamcorper justo.</p>
-
-								</div>
-							</div>
-						</div><!--/end row-->
-						<!--End Profile Blog-->
-
-						<!--Profile Blog-->
-						<div class="row margin-bottom-20">
-							<div class="col-sm-6 sm-margin-bottom-20">
-								<div class="profile-blog">
-									<img class="rounded-x" src="{% static 'web/theme/img/testimonials/img2.jpg' %}" alt="">
-
-									<div class="name-location">
-										<strong>Sasha Elli</strong>
-										<span><i class="fa fa-map-marker"></i><a href="#">California,</a> <a href="#">US</a></span>
-									</div>
-									<div class="clearfix margin-bottom-20"></div>
-									<p>Donec non dignissim eros. Mauris faucibus turpis volutpat sagittis rhoncus. Pellentesque et rhoncus sapien, sed ullamcorper justo.</p>
-
-								</div>
-							</div>
-
-							<div class="col-sm-6">
-								<div class="profile-blog">
-									<img class="rounded-x" src="{% static 'web/theme/img/testimonials/img3.jpg' %}" alt="">
-
-									<div class="name-location">
-										<strong>Frank Heller</strong>
-										<span><i class="fa fa-map-marker"></i><a href="#">Moscow,</a> <a href="#">Russia</a></span>
-									</div>
-									<div class="clearfix margin-bottom-20"></div>
-									<p>Donec non dignissim eros. Mauris faucibus turpis volutpat sagittis rhoncus. Pellentesque et rhoncus sapien, sed ullamcorper justo.</p>
-
-								</div>
-							</div>
-						</div><!--/end row-->
-						<!--End Profile Blog-->
-
-						<!--Profile Blog-->
-						<div class="row margin-bottom-20">
-							<div class="col-sm-6 sm-margin-bottom-20">
-								<div class="profile-blog">
-									<img class="rounded-x" src="{% static 'web/theme/img/testimonials/user.jpg' %}" alt="">
-
-									<div class="name-location">
-										<strong>John W.A</strong>
-										<span><i class="fa fa-map-marker"></i><a href="#">California,</a> <a href="#">US</a></span>
-									</div>
-									<div class="clearfix margin-bottom-20"></div>
-									<p>Donec non dignissim eros. Mauris faucibus turpis volutpat sagittis rhoncus. Pellentesque et rhoncus sapien, sed ullamcorper justo.</p>
-
-								</div>
-							</div>
-
-							<div class="col-sm-6">
-								<div class="profile-blog">
-									<img class="rounded-x" src="{% static 'web/theme/img/testimonials/img5.jpg' %}" alt="">
-
-									<div class="name-location">
-										<strong>Natalia J.</strong>
-										<span><i class="fa fa-map-marker"></i><a href="#">Moscow,</a> <a href="#">Russia</a></span>
-									</div>
-									<div class="clearfix margin-bottom-20"></div>
-									<p>Donec non dignissim eros. Mauris faucibus turpis volutpat sagittis rhoncus. Pellentesque et rhoncus sapien, sed ullamcorper justo.</p>
-
-								</div>
-							</div>
-						</div><!--/end row-->
-
-						<!--Profile Blog-->
-						<div class="row margin-bottom-20">
-							<div class="col-sm-6 sm-margin-bottom-20">
-								<div class="profile-blog">
-									<img class="rounded-x" src="{% static 'web/theme/img/testimonials/img4.jpg' %}" alt="">
-
-									<div class="name-location">
-										<strong>Pavel Kolnikov</strong>
-										<span><i class="fa fa-map-marker"></i><a href="#">Moscow,</a> <a href="#">Russia</a></span>
-									</div>
-									<div class="clearfix margin-bottom-20"></div>
-									<p>Donec non dignissim eros. Mauris faucibus turpis volutpat sagittis rhoncus. Pellentesque et rhoncus sapien, sed ullamcorper justo.</p>
-
-								</div>
-							</div>
-
-							<div class="col-sm-6">
-								<div class="profile-blog">
-									<img class="rounded-x" src="{% static 'web/theme/img/testimonials/img6.jpg' %}" alt="">
-
-									<div class="name-location">
-										<strong>Taylor Lee</strong>
-										<span><i class="fa fa-map-marker"></i><a href="#">California,</a> <a href="#">US</a></span>
-									</div>
-									<div class="clearfix margin-bottom-20"></div>
-									<p>Donec non dignissim eros. Mauris faucibus turpis volutpat sagittis rhoncus. Pellentesque et rhoncus sapien, sed ullamcorper justo.</p>
-
-								</div>
-							</div>
-						</div><!--/end row-->
-						<!--End Profile Blog-->
-
-						<!--Profile Blog-->
-						<div class="row margin-bottom-20">
-							<div class="col-sm-6 sm-margin-bottom-20">
-								<div class="profile-blog">
-									<img class="rounded-x" src="{% static 'web/theme/img/testimonials/img3.jpg' %}" alt="">
-
-									<div class="name-location">
-										<strong>Frank Heller</strong>
-										<span><i class="fa fa-map-marker"></i><a href="#">Moscow,</a> <a href="#">Russia</a></span>
-									</div>
-									<div class="clearfix margin-bottom-20"></div>
-									<p>Donec non dignissim eros. Mauris faucibus turpis volutpat sagittis rhoncus. Pellentesque et rhoncus sapien, sed ullamcorper justo.</p>
-
-								</div>
-							</div>
-
-							<div class="col-sm-6">
-								<div class="profile-blog">
-									<img class="rounded-x" src="{% static 'web/theme/img/testimonials/img2.jpg' %}" alt="">
-
-									<div class="name-location">
-										<strong>Sasha Elli</strong>
-										<span><i class="fa fa-map-marker"></i><a href="#">California,</a> <a href="#">US</a></span>
-									</div>
-									<div class="clearfix margin-bottom-20"></div>
-									<p>Donec non dignissim eros. Mauris faucibus turpis volutpat sagittis rhoncus. Pellentesque et rhoncus sapien, sed ullamcorper justo.</p>
-
-								</div>
-							</div>
-						</div><!--/end row-->
+                            </div>
+                        </div>
+                    {% endfor %}
 
 
-						<!--End Profile Blog-->
-					</div>
-				</div>
-				<!-- End Profile Content -->
-			</div><!--/end row-->
+                </div>
+                {% if group2_participants.count > 0 %}
+                <h2> {{groups.1}} </h2>
+                <div class="row">
 
-		<!--=== End Profile ===-->
+                    {% for participant in group2_participants %}
+                        <div class="col-sm-6">
+                            <div class="profile-blog margin-bottom-20">
+                                <img class="rounded-x" src="{% static 'web/theme/img/testimonials/user.jpg' %}" alt="">
+
+                                <div class="name-location">
+                                    <strong>{{participant.fullName}}</strong>
+                                    <span><i class="fa fa-map-marker"></i><a href="#">Moscow,</a> <a
+                                            href="#">Russia</a></span>
+                                </div>
+                                <div class="clearfix margin-bottom-20"></div>
+                                <p>{{participant.summary}}</p>
+
+                            </div>
+                        </div>
+                    {% endfor %}
+
+
+                </div>
+
+                {% endif %}
+
+            </div>
+
+
+
+        </div>
+        <!-- End Profile Content -->
+    </div><!--/end row-->
+
+    <!--=== End Profile ===-->
+
+
+</div>
+<!--=== End Profile ===-->
 
 
 
@@ -292,40 +188,40 @@
 
 {% endblock %}
 
-
 {% block javascript %}
 
-	<script type="text/javascript">
+<script type="text/javascript">
 		jQuery(document).ready(function() {
 
 			CirclesMaster.initCirclesMaster1();
 			 //Circles 4
 		    Circles.create({
 		        id:         'circle-40',
-		        percentage: 90,
+		        percentage: {{group1_filled_percentage}},
 		        radius:     35,
 		        width:      2,
-		        number:     90,
+		        number:     {{group1_filled_percentage}},
 		        text:       '%',
 		        colors:     ['#eee', '#e74c3c'],
-		        duration:   2000
+		        duration:   500
 		    });
 
 		     Circles.create({
 		        id:         'circle-50',
-		        percentage: 70,
+		        percentage: {{group2_filled_percentage}},
 		        radius:     35,
 		        width:      2,
-		        number:     70,
+		        number:     {{group2_filled_percentage}},
 		        text:       '%',
 		        colors:     ['#eee', '#e74c3c'],
-		        duration:   2000
+		        duration:   500
 		    });
 
 
 
 
 		});
-	</script>
+
+</script>
 
 {% endblock %}

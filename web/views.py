@@ -8,13 +8,19 @@ from .models import Event, EventGroup
 from account.models import Account
 
 from money.billing_logic import get_product_by_participant_number
+from .forms import EventForm, EventGroupForm, SearchForm
+from .models import Event, EventGroup
 
 
 def index(request):
     context = {
         'user': request.user,
     }
-    return render(request, 'web/index.html', context)
+
+    if request.user.is_authenticated():
+        return render(request, 'web/index.html', context)
+    else:
+        return render(request, 'web/test.html', context)
 
 
 def test(request):
@@ -26,8 +32,28 @@ def test(request):
 
 
 def search(request):
+    search_result = []
+
+    if request.method == 'POST':
+        form = SearchForm(request.POST)
+        if form.is_valid():
+            # Full text search
+            search_result = Event.objects.search_text(form.cleaned_data['search_term'])
+            # Filter out past events
+            now = datetime.datetime.utcnow().replace(tzinfo=utc)
+            search_result = search_result.filter(startDateTime__gte=now)
+            # TODO: BASED ON USER'S PROFILE:
+            # TODO: select 1 or 2 genders
+            # TODO: select age range
+            # TODO: filter out full events
+            # TODO: search by event size
+            # TODO: search by filled percentage
+    else:
+        form = SearchForm
+
     context = {
-        'test': "Search Page",
+        'search_result': search_result,
+        'form': form
     }
 
     return render(request, 'web/search.html', context)
@@ -52,34 +78,50 @@ def event(request):
 def event_view(request, event_id):
     selected_event = get_object_or_404(Event, pk=event_id)
     event_groups = list(selected_event.eventgroup_set.all())
-    num_groups = len(event_groups)
 
-    group1_filled_percentage = float(event_groups[0].participants.count()) / selected_event.maxParticipantsInGroup * 100
-    group1_spots_left = selected_event.maxParticipantsInGroup - event_groups[0].participants.count()
-    group1_participants = Account.objects.filter(user__in=event_groups[0].participants.all())
+    # First group info
+    group1_filled_percentage = float(event_groups[0].count_registered_participants()) \
+                               / selected_event.maxParticipantsInGroup * 100
+    group1_spots_left = selected_event.maxParticipantsInGroup - event_groups[0].count_registered_participants()
+    group1_users = []
+    for participant in event_groups[0].get_registered_participants():
+        group1_users.append(participant.user)
+    group1_participants = Account.objects.filter(user__in=group1_users)
+
+    # Second group info
     group2_participants = {}
-
     group2_filled_percentage = 0
     group2_spots_left = 0
-    if num_groups > 1:
-        group2_filled_percentage = float(event_groups[1].participants.count())\
+    if selected_event.numGroups > 1:
+        group2_filled_percentage = float(event_groups[1].count_registered_participants()) \
                                    / selected_event.maxParticipantsInGroup * 100
-        group2_spots_left = selected_event.maxParticipantsInGroup - event_groups[1].participants.count()
-        group2_participants = Account.objects.filter(user__in=event_groups[1].participants.all())
+        group2_spots_left = selected_event.maxParticipantsInGroup - event_groups[1].count_registered_participants()
+        group2_users = []
+        for participant in event_groups[1].get_registered_participants():
+            group2_users.append(participant.user)
+        group2_participants = Account.objects.filter(user__in=group2_users)
+
+    # Check if user is registered
+    is_registered = False
+    if request.user.is_authenticated() and request.user is not None:
+        is_registered = selected_event.is_registered(request.user)
+
     context = {
         'event': selected_event,
-        'num_groups': num_groups,
         'groups': event_groups,
+        'num_groups': selected_event.numGroups,
         'group1_filled_percentage': group1_filled_percentage,
         'group2_filled_percentage': group2_filled_percentage,
         'group1_spots_left': group1_spots_left,
         'group2_spots_left': group2_spots_left,
         'group1_participants': group1_participants,
         'group2_participants': group2_participants,
+        'is_registered': is_registered
     }
     return render(request, 'web/event.html', context)
 
 
+@login_required
 def event_create(request):
     current_user = request.user
 
@@ -91,8 +133,8 @@ def event_create(request):
         if all([event_form.is_valid(), group_formset.is_valid()]):
             new_event = event_form.save(commit=False)
             new_event.creator = current_user
-            # TODO: need to multiply maxParticipantsInGroup by number of groups for correct count
-            new_event.product = get_product_by_participant_number(new_event.maxParticipantsInGroup)
+            new_event.product = get_product_by_participant_number(
+                new_event.maxParticipantsInGroup * new_event.numGroups)
             new_event.save()
             for inline_form in group_formset:
                 if inline_form.cleaned_data:
@@ -128,7 +170,7 @@ def event_join(request, group_id):
     # Attempt to add user to the group
     try:
         selected_group.add_participant(current_user)
-        return HttpResponseRedirect(reverse('web:event_joined'))
+        return HttpResponseRedirect(reverse('web:event_joined', kwargs={'event_id': selected_event.id}))
     except Exception as e:
         messages.add_message(request, messages.ERROR, str(e))
 
@@ -143,9 +185,30 @@ def participants(request):
     return render(request, 'web/participants.html', context)
 
 
-def event_joined(request):
+def event_joined(request, event_id):
+
+    selected_event = get_object_or_404(Event, pk=event_id)
+    event_groups = list(selected_event.eventgroup_set.all())
+    num_groups = len(event_groups)
+    group1_participants = Account.objects.filter(user__in=event_groups[0].participants.all())
+    group2_participants = {}
+    group1_filled_percentage = float(event_groups[0].participants.count()) / selected_event.maxParticipantsInGroup * 100
+
+    if num_groups > 1:
+        group2_participants = Account.objects.filter(user__in=event_groups[1].participants.all())
+        group2_filled_percentage = float(event_groups[1].participants.count())\
+                                   / selected_event.maxParticipantsInGroup * 100
+
+
     context = {
         'test': "Event Joined Page",
+        'num_groups': num_groups,
+        'groups': event_groups,
+        'event': selected_event,
+        'group1_participants': group1_participants,
+        'group2_participants': group2_participants,
+        'group1_filled_percentage': group1_filled_percentage,
+        'group2_filled_percentage': group2_filled_percentage,
     }
 
     return render(request, 'web/eventjoined.html', context)

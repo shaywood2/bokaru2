@@ -124,6 +124,7 @@
 					uvalue = element.inputmask("unmaskedvalue"),
 					ccType = helpers.getCreditCardType(uvalue);
 
+                $("#stripe-card-number").val(element.inputmask("unmaskedvalue"));
 				// Let's make sure the card is valid
 				if (ccType === undefined) {
 					$(element)
@@ -198,6 +199,7 @@
 
 					element.addClass("full");
 
+
 				}, opts.animationWait);
 
 				// Setting another timeout so that we can wait for CSS animations to finish.
@@ -208,6 +210,7 @@
 					$("." + opts.fieldsetClass)
 						.find("input:gt(0)")
 						.removeClass("hide");
+
 
 				}, opts.animationWait);
 
@@ -227,11 +230,15 @@
 					});
 
 				if (window.navigator.standalone || !Modernizr.touch) {
+
 					// Focus on the credit card expiration input.
 					$("." + opts.cardExpirationClass).focus().val($.trim($("." + opts.cardExpirationClass).val()));
 
 					// Update instruction message
 					helpers.updateInstruction(opts.messageExpiration);
+
+
+					setTimeout(function() {$(".card-expiration").focus();}, 1000)
 				}
 
 			},
@@ -328,7 +335,7 @@
 							}
 						}
 					})
-					.inputmask({ mask: "99999" });
+					.inputmask({ mask: "******" });
 
 				$("." + opts.fieldsetClass)
 					.addClass('valid');
@@ -460,7 +467,7 @@
 						.end()
 						.find("." + opts.cardZipClass)
 							.inputmask({
-								mask: "99999",
+								mask: "******",
 								oncomplete: helpers.zipComplete
 							})
 							.addClass("hide")
@@ -468,7 +475,7 @@
 
 						if(opts.cardInstruction) {
 							$(this).
-								after("<span class='" + opts.cardInstructionClass + "'>"+ opts.messageEnterCardNumber + "</span>");
+								after("<div class='" + opts.cardInstructionClass + "'>"+ opts.messageEnterCardNumber + "</div>");
 						}
 
 						helpers.matchNumbers($(this).find("." + opts.cardNumberClass).eq(0));
@@ -516,9 +523,10 @@
 		messageCVV : "Please enter the three-digit CVV number found on the back of your card",
 		messageCVVAmEx : "Please enter your four-digit CVV number on the front of your card",
 		messageZip : "Please enter your billing zip code",
-		messageSuccess : "Hooray! You've successfully filled out your credit card information."
+		messageSuccess : "Success! You've now entered your credit card details"
 	};
 
 }(jQuery));
 
 $(".credit-card-group").paymentInfo();
+$(".credit_card_form").removeClass("hide");

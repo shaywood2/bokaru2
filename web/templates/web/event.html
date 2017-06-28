@@ -18,7 +18,7 @@
 
 
         <!-- Profile Content -->
-        <div class="col-md-12">
+        <div class="col-md-12 card_container">
             <div class="profile-body">
                 <div class="profile-bio">
                     <div class="row">
@@ -30,7 +30,7 @@
                         </div>
                         <div class="col-md-7">
                             <h2>{{event.name}}</h2>
-                            <span><strong>Location:</strong> {{event.location}}</span>
+                            <span><strong>Location:</strong> {{event.locationName}}</span>
                             <span><strong>Age Ranges:</strong> {{groups.0}} &amp; {{groups.1}}</span>
                             <span><strong>Date:</strong> {{event.startDateTime}}</span>
                             <hr>
@@ -43,9 +43,9 @@
 
                             <br/>
 
-                            <p>{{groups.0}} registered {{groups.0.participants.count}} out of
+                            <p>{{groups.0}} registered {{group1_participants.count}} out of
                                 {{event.maxParticipantsInGroup}}</p>
-                            <p>{{groups.1}} registered {{groups.1.participants.count}} out of
+                            <p>{{groups.1}} registered {{group2_participants.count}} out of
                                 {{event.maxParticipantsInGroup}}</p>
                         </div>
                     </div>
@@ -68,7 +68,7 @@
                                         <h3 class="heading-xs">{{groups.0}}</h3>
                                         <p>{{group1_spots_left}} spots left</p>
                                         <p><a class="btn-u btn-u-lg btn-u-red"
-                                              href="{% url 'web:event_join' groups.0.id %}">&nbsp; &nbsp; Join Group
+                                              href="{% url 'account:event_pay' groups.0.id %}">&nbsp; &nbsp; Join Group
                                             &nbsp; &nbsp; </a></p>
                                     </div>
                                     <div class="p-chart col-sm-6 col-xs-6">
@@ -76,7 +76,7 @@
                                         <h3 class="heading-xs">{{groups.1}}</h3>
                                         <p>{{group2_spots_left}} Spots left</p>
                                         <p><a class="btn-u btn-u-lg btn-u-red"
-                                              href="{% url 'web:event_join' groups.1.id %}">&nbsp; &nbsp; Join Group
+                                              href="{% url 'account:event_pay' groups.1.id %}">&nbsp; &nbsp; Join Group
                                             &nbsp; &nbsp; </a></p>
                                     </div>
                                 </div>
@@ -127,20 +127,20 @@
                     {% for participant in group1_participants %}
 
 
-                        <div class="col-sm-6">
-                            <div class="profile-blog margin-bottom-20">
-                                <img class="rounded-x" src="{% static 'web/theme/img/testimonials/user.jpg' %}" alt="">
+                    <div class="col-sm-6">
+                        <div class="profile-blog margin-bottom-20">
+                            <img class="rounded-x" src="{% static 'web/theme/img/testimonials/user.jpg' %}" alt="">
 
-                                <div class="name-location">
-                                    <strong>{{participant.fullName}}</strong>
-                                    <span><i class="fa fa-map-marker"></i><a href="#">Moscow,</a> <a
-                                            href="#">Russia</a></span>
-                                </div>
-                                <div class="clearfix margin-bottom-20"></div>
-                                <p>{{participant.summary}}</p>
-
+                            <div class="name-location">
+                                <strong>{{participant.user.fullName}}</strong>
+                                <span><i class="fa fa-map-marker"></i><a href="#">Moscow,</a> <a
+                                        href="#">Russia</a></span>
                             </div>
+                            <div class="clearfix margin-bottom-20"></div>
+                            <p>{{participant.user.summary}}</p>
+
                         </div>
+                    </div>
                     {% endfor %}
 
 
@@ -152,20 +152,20 @@
                     {% for participant in group2_participants %}
 
 
-                        <div class="col-sm-6">
-                            <div class="profile-blog margin-bottom-20">
-                                <img class="rounded-x" src="{% static 'web/theme/img/testimonials/user.jpg' %}" alt="">
+                    <div class="col-sm-6">
+                        <div class="profile-blog margin-bottom-20">
+                            <img class="rounded-x" src="{% static 'web/theme/img/testimonials/user.jpg' %}" alt="">
 
-                                <div class="name-location">
-                                    <strong>{{participant.fullName}}</strong>
-                                    <span><i class="fa fa-map-marker"></i><a href="#">Moscow,</a> <a
-                                            href="#">Russia</a></span>
-                                </div>
-                                <div class="clearfix margin-bottom-20"></div>
-                                <p>{{participant.summary}}</p>
-
+                            <div class="name-location">
+                                <strong>{{participant.user.fullName}}</strong>
+                                <span><i class="fa fa-map-marker"></i><a href="#">Moscow,</a> <a
+                                        href="#">Russia</a></span>
                             </div>
+                            <div class="clearfix margin-bottom-20"></div>
+                            <p>{{participant.user.summary}}</p>
+
                         </div>
+                    </div>
                     {% endfor %}
 
 
@@ -174,7 +174,6 @@
                 {% endif %}
 
             </div>
-
 
 
         </div>
@@ -206,7 +205,7 @@
 		        number:     {{group1_filled_percentage}},
 		        text:       '%',
 		        colors:     ['#eee', '#e74c3c'],
-		        duration:   2000
+		        duration:   500
 		    });
 
 		     Circles.create({
@@ -217,7 +216,7 @@
 		        number:     {{group2_filled_percentage}},
 		        text:       '%',
 		        colors:     ['#eee', '#e74c3c'],
-		        duration:   2000
+		        duration:   500
 		    });
 
 
