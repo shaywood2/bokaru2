@@ -17,7 +17,11 @@ def index(request):
     context = {
         'user': request.user,
     }
-    return render(request, 'web/index.html', context)
+
+    if request.user.is_authenticated():
+        return render(request, 'web/index.html', context)
+    else:
+        return render(request, 'web/test.html', context)
 
 
 def test(request):
@@ -167,7 +171,7 @@ def event_join(request, group_id):
     # Attempt to add user to the group
     try:
         selected_group.add_participant(current_user)
-        return HttpResponseRedirect(reverse('web:event_joined'))
+        return HttpResponseRedirect(reverse('web:event_joined', kwargs={'event_id': selected_event.id}))
     except Exception as e:
         messages.add_message(request, messages.ERROR, str(e))
 
@@ -182,9 +186,37 @@ def participants(request):
     return render(request, 'web/participants.html', context)
 
 
-def event_joined(request):
+def event_joined(request, event_id):
+
+    selected_event = get_object_or_404(Event, pk=event_id)
+    event_groups = list(selected_event.eventgroup_set.all())
+    num_groups = len(event_groups)
+    group1_spots_left = selected_event.maxParticipantsInGroup - event_groups[0].count_registered_participants()
+
+    # group1_participants = Account.objects.filter(user__in=event_groups[0].participants.all())
+    group1_participants = Account.objects.filter(user__in=event_groups[0].get_registered_participants().values_list('user'))
+    group2_participants = {}
+    group1_filled_percentage = float(event_groups[0].get_registered_participants().values_list('user').count()) / \
+        selected_event.maxParticipantsInGroup * 100
+    group2_spots_left = 0
+    if num_groups > 1:
+        group2_participants = Account.objects.filter(user__in=event_groups[1].get_registered_participants().values_list('user'))
+        group2_spots_left = selected_event.maxParticipantsInGroup - event_groups[1].count_registered_participants()
+        group2_filled_percentage = float(event_groups[1].get_registered_participants().values_list('user').count())\
+                                   / selected_event.maxParticipantsInGroup * 100
+
+
     context = {
         'test': "Event Joined Page",
+        'num_groups': num_groups,
+        'groups': event_groups,
+        'event': selected_event,
+        'group1_participants': group1_participants,
+        'group2_participants': group2_participants,
+        'group1_spots_left': group1_spots_left,
+        'group2_spots_left': group2_spots_left,
+        'group1_filled_percentage': group1_filled_percentage,
+        'group2_filled_percentage': group2_filled_percentage,
     }
 
     return render(request, 'web/eventjoined.html', context)
