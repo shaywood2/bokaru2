@@ -15,8 +15,6 @@
 <div class="container content profile">
     <div class="row">
 
-
-
         <!-- Profile Content -->
         <div class="col-md-12 card_container">
             <div class="profile-body">
@@ -37,7 +35,8 @@
                             <p>{{event.description}}</p>
                             <p>{{event.startDateTime}}</p>
 
-                            <strong>{{event.product}}</strong>
+                            <strong>DEBUG PRODUCT: {{event.product}}</strong><br>
+                            <strong>DEBUG IS_REGISTERED: {{is_registered}}</strong>
 
                             <p>Created by: {{event.creator}}</p>
 
@@ -50,7 +49,7 @@
                         </div>
                     </div>
                 </div><!--/end row-->
-                <div class="row">
+                <div class="row margin-top-20">
 
 
                     <!--Design Skills-->
@@ -59,7 +58,7 @@
                             <div class="panel-heading overflow-h">
                                 <h2 class="panel-title heading-sm pull-left"><i class="fa fa-pencil"></i> Space Left
                                 </h2>
-                                <a href="#"><i class="fa fa-cog pull-right"></i></a>
+                                <a href="#"><i class="fa pull-right"></i></a>
                             </div>
                             <div class="panel-body">
                                 <div class="row">
@@ -71,6 +70,7 @@
                                               href="{% url 'account:event_pay' groups.0.id %}">&nbsp; &nbsp; Join Group
                                             &nbsp; &nbsp; </a></p>
                                     </div>
+                                    {% if num_groups == 2 %}
                                     <div class="p-chart col-sm-6 col-xs-6">
                                         <div class="circle margin-bottom-20" id="circle-50"></div>
                                         <h3 class="heading-xs">{{groups.1}}</h3>
@@ -79,6 +79,7 @@
                                               href="{% url 'account:event_pay' groups.1.id %}">&nbsp; &nbsp; Join Group
                                             &nbsp; &nbsp; </a></p>
                                     </div>
+                                    {% endif %}
                                 </div>
                             </div>
                         </div>
@@ -132,12 +133,12 @@
                             <img class="rounded-x" src="{% static 'web/theme/img/testimonials/user.jpg' %}" alt="">
 
                             <div class="name-location">
-                                <strong>{{participant.user.fullName}}</strong>
+                                <strong>{{participant.fullName}}</strong>
                                 <span><i class="fa fa-map-marker"></i><a href="#">Moscow,</a> <a
                                         href="#">Russia</a></span>
                             </div>
                             <div class="clearfix margin-bottom-20"></div>
-                            <p>{{participant.user.summary}}</p>
+                            <p>{{participant.summary}}</p>
 
                         </div>
                     </div>
@@ -157,12 +158,12 @@
                             <img class="rounded-x" src="{% static 'web/theme/img/testimonials/user.jpg' %}" alt="">
 
                             <div class="name-location">
-                                <strong>{{participant.user.fullName}}</strong>
+                                <strong>{{participant.fullName}}</strong>
                                 <span><i class="fa fa-map-marker"></i><a href="#">Moscow,</a> <a
                                         href="#">Russia</a></span>
                             </div>
                             <div class="clearfix margin-bottom-20"></div>
-                            <p>{{participant.user.summary}}</p>
+                            <p>{{participant.summary}}</p>
 
                         </div>
                     </div>
@@ -223,6 +224,8 @@
 
 
 		});
+
+
 
 </script>
 

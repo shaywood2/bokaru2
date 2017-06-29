@@ -65,3 +65,6 @@ target/
 .vagrant/
 
 *.orig
+
+# Migrations (for dev purposes)
+*/migrations/*
