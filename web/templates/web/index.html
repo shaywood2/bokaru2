@@ -1,63 +1,11 @@
 {% extends 'web/base.html' %}
 
-
-{% block javascript %}
-
-
-<script>
+{% load staticfiles %}
 
 
-	function initMap() {
-			var autocomplete = new google.maps.places.Autocomplete(document.getElementById('searchBox'));
+{% block header %}
 
-			var geocoder = new google.maps.Geocoder();
-			document.getElementById('searchButton').addEventListener('click', function() {
-         		 geocodeAddress(geocoder);
-        	});
-
-        }
-
-
-function geocodeAddress(geocoder) {
-
-	var address = document.getElementById('searchBox').value;
-		geocoder.geocode({'address': address}, function(results, status) {
-          if (status === 'OK') {
-
-            console.log("Longitude: " + results[0].geometry.location.lng());
-            console.log("Latitude: " + results[0].geometry.location.lat());
-
-			for (component in results[0].address_components)
-			{
-
-				for (type in results[0].address_components[component].types)
-				{
-					if (results[0].address_components[component].types[type] == 'locality')
-					{
-						console.log("City: " + results[0].address_components[component].long_name);
-					}
-
-					if (results[0].address_components[component].types[type] == 'administrative_area_level_1')
-					{
-						console.log("State: " + results[0].address_components[component].short_name);
-					}
-				}
-			}
-
-          } else {
-            console.log('Geocode was not successful for the following reason: ' + status);
-          }
-        });
-}
-
-
-
-</script>
-
-
-
-<script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBLJqyRqu7Mfr0xJ1OFwFxFxmCZDxX7fxQ&callback=initMap&libraries=places"
-  type="text/javascript"></script>
+<link rel="stylesheet" href="{% static 'web/css/search.css' %}">
 
 
 {% endblock %}
@@ -66,47 +14,105 @@ function geocodeAddress(geocoder) {
 {% block content %}
 
 
-{% load staticfiles %}
 
 
-<div class="container">
-    <div class="row">
-
-
-        <!-- Profile Content -->
-				<div class="col-md-12">
-					<div class="profile-body">
-						<!--Service Block v3-->
-						<div style="height: 1000px" class="row margin-bottom-10">
-							<div class="col-sm-12 sm-margin-bottom-20">
-
-									<div class="margin-bottom-100"></div>
-									<div class="col-sm-12">
-									<h2 class="heading-md">Find Events Near You</h2>
-									</div>
-
-									<div class="col-sm-12" style="">
-										<input style="border: none; border-bottom: 1px solid black; height: 150px; font-size: 80px;" class="form-control input-lg" id="searchBox" type="text"></input>
-									</div>
-									<div class="margin-bottom-20"></div>
-									<div class="col-sm-12">
-										<input id="searchButton" class="btn-u btn-u-lg btn-u-red" type="button" value="Search" style="float: right; width: 20%; min-width: 100px;"></input>
-									</div>
+<div class="container content-md">
 
 
 
 
 
-							</div>
+    <h2 class="heading-md search_title">Find Events Near You</h2>
+     <form method="post" action="{% url 'web:search' %}">
+        <div class="row">
+            <div class="col-md-12 margin-bottom-40" style="text-align: center">
+
+                    {% csrf_token %}
 
 
-						</div><!--/end row-->
-						<!--End Service Block v3-->
+                <input type="text" id="id_search_term" name="search_term" class="search_input" placeholder="{{search_placeholder}}"></input>
+                <select id="id_distance" name="distance" class="distance_input"><option>Distance</option><option>5</option><option>10</option><option>20</option><option>50</option><option>100</option></select>
+            </div>
+        </div>
+
+          <div class="row md-margin-bottom-80">
+            <div class="col-md-12 margin-bottom-80" style="text-align: center">
 
 
+
+                    <input type="submit" class="btn-u btn-u-lg btn-u-red" value="Search"/>
+
+
+            </div>
+        </div>
+      </form>
+
+    <div class="heading heading-v4 margin-bottom-40">
+        <h2>My Events</h2>
+    </div>
+
+
+<div class="row news-v1 margin-bottom-40">
+
+				<div class="col-md-4 md-margin-bottom-40">
+					<div class="news-v1-in">
+						<a href="#"><img class="img-responsive" src="{% static 'web/theme/img/main/img11.jpg' %}" alt=""></a>
+
+						<h3><a href="#">Dog Lovers</a></h3>
+						<p>Event Description</p>
+						<ul class="list-inline news-v1-info">
+							<li><a href="#">Toronto</a></li>
+							<li>|</li>
+							<li><i class="fa fa-clock-o"></i> July 11 @ 8PM</li>
+							<li class="pull-right"><a href="#"><i class="fa fa-comments-o"></i> 14</a></li>
+						</ul>
 					</div>
 				</div>
-				<!-- End Profile Content -->
+
+
+
+			</div>
+
+	<div class="heading heading-v4 margin-bottom-40">
+        <h2>Events Near You</h2>
     </div>
-</div>
+
+
+	<div class="row news-v1">
+
+				<div class="col-md-4 md-margin-bottom-40">
+					<div class="news-v1-in">
+						<a href="#"><img class="img-responsive" src="{% static 'web/theme/img/main/img11.jpg' %}" alt=""></a>
+
+						<h3><a href="#">Runners</a></h3>
+						<p>Event Description</p>
+						<ul class="list-inline news-v1-info">
+							<li><a href="#">Toronto</a></li>
+							<li>|</li>
+							<li><i class="fa fa-clock-o"></i> July 11 @ 8PM</li>
+							<li class="pull-right"><a href="#"><i class="fa fa-comments-o"></i> 14</a></li>
+						</ul>
+					</div>
+				</div>
+
+
+
+			</div>
+
+    </div>
+
+
+
+
+
+
+{% endblock %}
+
+
+{% block javascript %}
+
+<script type="text/javascript"
+        src="{% static 'web/theme/plugins/cube-portfolio/cubeportfolio/js/jquery.cubeportfolio.min.js' %}"></script>
+<script type="text/javascript" src="{% static 'web/theme/js/plugins/cube-portfolio/cube-portfolio-2.js' %}"></script>
+
 {% endblock %}
