@@ -11,6 +11,10 @@ from account.models import Account
 from money.billing_logic import get_product_by_participant_number
 from .forms import EventForm, EventGroupForm, SearchForm
 from .models import Event, EventGroup
+import logging
+# Get an instance of a logger
+logger = logging.getLogger(__name__)
+# logger.error('This is an error')
 
 
 def index(request):
@@ -34,7 +38,7 @@ def test(request):
 
 def search(request):
     search_result = []
-
+    placeholder = "Dog Lovers"
     if request.method == 'POST':
         form = SearchForm(request.POST)
         if form.is_valid():
@@ -43,6 +47,7 @@ def search(request):
             # Filter out past events
             now = datetime.datetime.utcnow().replace(tzinfo=utc)
             search_result = search_result.filter(startDateTime__gte=now)
+            placeholder = form.cleaned_data['search_term']
             # TODO: BASED ON USER'S PROFILE:
             # TODO: select 1 or 2 genders
             # TODO: select age range
@@ -54,7 +59,8 @@ def search(request):
 
     context = {
         'search_result': search_result,
-        'form': form
+        'form': form,
+        'search_placeholder': placeholder,
     }
 
     return render(request, 'web/search.html', context)

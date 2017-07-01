@@ -1,0 +1,20 @@
+.search_input {
+    text-align: center;
+    width: 50%;
+    border: none;
+    border-bottom: 2px solid gray;
+    font-size: 15pt;
+    font-family: 'Open Sans', Arial, sans-serif;
+    font-weight: 200
+}
+
+.distance_input {
+    text-align: center;
+    border: none;
+    border-bottom: 2px solid gray;
+    font-size: 15pt;
+    font-family: 'Open Sans', Arial, sans-serif;
+    font-weight: 200
+    margin-left: 20px;
+    width: 80px;
+}
