@@ -1,5 +1,6 @@
 import datetime
 import re
+from datetime import timedelta
 
 from django.conf import settings
 from django.contrib.auth import get_user_model
@@ -40,15 +41,40 @@ def get_query(query_string):
 
 
 class EventManager(models.Manager):
+    # Filter events based on the distance from the given point
     def filter_by_distance(self, lat, lon, distance):
         point = Point(x=lat, y=lon, srid=4326)
         return self.filter(locationCoordinates__distance_lte=(point, D(km=distance)))
 
+    # Search events by text in name and description
     def search_text(self, text):
         vector = SearchVector('name', weight='A') + SearchVector('description', weight='B')
         query = get_query(text)
         return self.annotate(rank=SearchRank(vector, query)).order_by('-rank', 'startDateTime')
         # return self.annotate(rank=SearchRank(vector, query)).filter(rank__gte=0.1).order_by('-rank', 'startDateTime')
+
+    # Get all events that belong to the given user
+    def get_all_by_user(self, user):
+        return self.filter(eventgroup__eventparticipant__user=user).order_by('startDateTime')
+
+    # Get next event that the user is registered for
+    def get_next(self, user):
+        now = datetime.datetime.utcnow().replace(tzinfo=utc)
+        event = self.get_all_by_user(user).filter(startDateTime__gte=now).order_by('-startDateTime').first()
+        return event
+
+    # Get the event that belongs to the user and is either starting in one hour, running now or ended up to one hour ago
+    def get_current(self, user):
+        now = datetime.datetime.utcnow().replace(tzinfo=utc)
+        hour_from_now = now + timedelta(hours=1)
+        hour_ago = now - timedelta(hours=1)
+        events = self.get_all_by_user(user).order_by('-startDateTime')
+
+        for event in events:
+            if event.startDateTime <= hour_from_now and event.endDateTime >= hour_ago:
+                return event
+
+        return None
 
 
 class Event(models.Model):
@@ -66,11 +92,21 @@ class Event(models.Model):
     numGroups = models.PositiveSmallIntegerField(validators=[MinValueValidator(1), MaxValueValidator(2)], default=2)
     maxParticipantsInGroup = models.PositiveSmallIntegerField(validators=[MinValueValidator(5), MaxValueValidator(25)])
     startDateTime = models.DateTimeField()
+    dateDuration = models.PositiveSmallIntegerField(validators=[MinValueValidator(60 * 3), MaxValueValidator(60 * 10)],
+                                                    default=60 * 5)
+    breakDuration = models.PositiveSmallIntegerField(validators=[MinValueValidator(60 / 2), MaxValueValidator(60 * 5)],
+                                                     default=60)
     product = models.ForeignKey(Product)
 
     # Automatic timestamps
     created = models.DateTimeField(auto_now_add=True)
     updated = models.DateTimeField(auto_now=True)
+
+    # Virtual field
+    @property
+    def endDateTime(self):
+        return self.startDateTime + timedelta(
+            seconds=self.maxParticipantsInGroup * (self.dateDuration + self.breakDuration))
 
     objects = EventManager()
 
@@ -110,6 +146,23 @@ class Event(models.Model):
                 return True
 
         return False
+
+    # Return true if the event is happening right now
+    def is_in_progress(self):
+        now = datetime.datetime.utcnow().replace(tzinfo=utc)
+        return self.startDateTime <= now <= self.endDateTime
+
+    # Return true if the event is starting within one hour
+    def is_starting_soon(self):
+        now = datetime.datetime.utcnow().replace(tzinfo=utc)
+        hour_from_now = now + timedelta(hours=1)
+        return now <= self.startDateTime <= hour_from_now
+
+    # Return true if the event has ended at most one hour ago
+    def is_ended_recently(self):
+        now = datetime.datetime.utcnow().replace(tzinfo=utc)
+        hour_ago = now - timedelta(hours=1)
+        return now >= self.endDateTime >= hour_ago
 
 
 class EventGroup(models.Model):
@@ -177,7 +230,7 @@ class EventGroup(models.Model):
         raise Exception('Function not implemented: register_participant_from_waiting_list')
 
     def __str__(self):
-        return self.name + ' [' + str(self.ageMin) + ' - ' + str(self.ageMax) + ']'
+        return self.name + ' [' + str(self.ageMin) + ' - ' + str(self.ageMax) + '] in event: ' + self.event.name
 
 
 class EventParticipant(models.Model):
@@ -199,6 +252,9 @@ class EventParticipant(models.Model):
 
     # Automatic timestamp
     created = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return self.user.username + ' [' + str(self.user.id) + '] ' + ' in event: ' + self.group.event.name
 
 
 class PickManager(models.Manager):

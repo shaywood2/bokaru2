@@ -99,7 +99,7 @@ Changing models
 Do this whenever models are added or modified:
 
 1. Change your models (in models.py).
-2. Run `python3 /home/vagrant/bokaru/manage.py makemigrations` to create migrations for those changes
+2. Run `python3 /home/vagrant/bokaru/manage.py makemigrations` to create migrations for those changes.
 3. Run `python3 /home/vagrant/bokaru/manage.py migrate` to apply those changes to the database.
 
 Static files

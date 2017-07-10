@@ -1,0 +1,22 @@
+{% extends 'web/base.html' %}
+
+
+{% load staticfiles %}
+
+{% block content %}
+
+<!--=== Container Part ===-->
+<div class="container">
+    <div class="content">
+        <h1>Starting soon.</h1>
+        <h2>Dates:</h2>
+        <ul>
+            {% for date in dates %}
+            <li>{{ date.fullName }} ({{date.id}})</li>
+            {% endfor %}
+        </ul>
+    </div>
+</div>
+<!--=== End Container Part ===-->
+
+{% endblock %}

@@ -1,8 +1,13 @@
+import datetime
 import logging
+import math
 import random
 
+from django.contrib.auth.models import User
 from django.core.cache import cache
+from django.utils.timezone import utc
 
+from account.models import Account
 from web.models import Event
 
 LOGGER = logging.getLogger(__name__)
@@ -131,6 +136,64 @@ def get_date_matrix(event_id):
 
     return result
 
+
+def get_user_dates(user_id, event_id):
+    date_matrix = get_date_matrix(event_id)
+    if user_id in date_matrix:
+        result = {}
+        for date_num in date_matrix[user_id]:
+            date = date_matrix[user_id][date_num]
+            # Check if the date is a gap
+            if date == '':
+                result[date_num] = {'fullName': 'wait', 'username': 'wait', 'id': -1}
+            else:
+                # Get user
+                user = User.objects.get(pk=int(date))
+                account = Account.objects.get(user=user)
+                result[date_num] = {'fullName': account.fullName, 'username': user.username, 'id': user.id}
+
+        return result
+    else:
+        return None
+
+
+# Based on the timing of the event and the provided user, calculate the person they are supposed to talk to now
+def get_current_date(user_id, event_id):
+    try:
+        # Try to find the event
+        event = Event.objects.get(pk=event_id)
+        # Get the time
+        now = datetime.datetime.utcnow().replace(tzinfo=utc)
+        # Check if the event is in progress
+        if event.startDateTime > now or event.endDateTime < now:
+            return None
+        # Get the date matrix
+        date_matrix = get_date_matrix(event_id)
+        # Get number of seconds since the event's start
+        time_diff = now - event.startDateTime
+        time_diff_seconds = time_diff.seconds
+        # Get the duration of a date
+        date_duration = event.dateDuration + event.breakDuration
+        # Get the number of the current date based on the time elapsed since event's start
+        date_num = math.floor(time_diff_seconds / date_duration)
+
+        # Check if the date number is not in the matrix
+        if date_num not in date_matrix[user_id]:
+            return None
+
+        # Get the paired user based on the date matrix
+        date = date_matrix[user_id][date_num]
+        # Check if the date is a gap
+        if date == '':
+            return {'fullName': 'wait', 'username': 'wait', 'id': -1}
+
+        # Get the user
+        user = User.objects.get(pk=int(date))
+        # Get the user's account
+        account = Account.objects.get(user=user)
+        return {'fullName': account.fullName, 'username': user.username, 'id': user.id}
+    except Event.DoesNotExist:
+        return None
 
 # matrix = generate_date_matrix_two_groups(['bill', 'bob', 'bower', 'bottom'], ['alice', 'anna', 'akko'])
 # print(matrix)
