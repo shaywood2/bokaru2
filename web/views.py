@@ -11,13 +11,21 @@ from account.models import Account
 from money.billing_logic import get_product_by_participant_number
 from .forms import EventForm, EventGroupForm, SearchForm
 from .models import Event, EventGroup
+import logging
+# Get an instance of a logger
+logger = logging.getLogger(__name__)
+# logger.error('This is an error')
 
 
 def index(request):
     context = {
         'user': request.user,
     }
-    return render(request, 'web/index.html', context)
+
+    if request.user.is_authenticated():
+        return render(request, 'web/index.html', context)
+    else:
+        return render(request, 'web/test.html', context)
 
 
 def test(request):
@@ -30,7 +38,7 @@ def test(request):
 
 def search(request):
     search_result = []
-
+    placeholder = "Dog Lovers"
     if request.method == 'POST':
         form = SearchForm(request.POST)
         if form.is_valid():
@@ -39,6 +47,7 @@ def search(request):
             # Filter out past events
             now = datetime.datetime.utcnow().replace(tzinfo=utc)
             search_result = search_result.filter(startDateTime__gte=now)
+            placeholder = form.cleaned_data['search_term']
             # TODO: BASED ON USER'S PROFILE:
             # TODO: select 1 or 2 genders
             # TODO: select age range
@@ -50,7 +59,8 @@ def search(request):
 
     context = {
         'search_result': search_result,
-        'form': form
+        'form': form,
+        'search_placeholder': placeholder,
     }
 
     return render(request, 'web/search.html', context)
@@ -167,7 +177,7 @@ def event_join(request, group_id):
     # Attempt to add user to the group
     try:
         selected_group.add_participant(current_user)
-        return HttpResponseRedirect(reverse('web:event_joined'))
+        return HttpResponseRedirect(reverse('web:event_joined', kwargs={'event_id': selected_event.id}))
     except Exception as e:
         messages.add_message(request, messages.ERROR, str(e))
 
@@ -182,9 +192,37 @@ def participants(request):
     return render(request, 'web/participants.html', context)
 
 
-def event_joined(request):
+def event_joined(request, event_id):
+
+    selected_event = get_object_or_404(Event, pk=event_id)
+    event_groups = list(selected_event.eventgroup_set.all())
+    num_groups = len(event_groups)
+    group1_spots_left = selected_event.maxParticipantsInGroup - event_groups[0].count_registered_participants()
+
+    # group1_participants = Account.objects.filter(user__in=event_groups[0].participants.all())
+    group1_participants = Account.objects.filter(user__in=event_groups[0].get_registered_participants().values_list('user'))
+    group2_participants = {}
+    group1_filled_percentage = float(event_groups[0].get_registered_participants().values_list('user').count()) / \
+        selected_event.maxParticipantsInGroup * 100
+    group2_spots_left = 0
+    if num_groups > 1:
+        group2_participants = Account.objects.filter(user__in=event_groups[1].get_registered_participants().values_list('user'))
+        group2_spots_left = selected_event.maxParticipantsInGroup - event_groups[1].count_registered_participants()
+        group2_filled_percentage = float(event_groups[1].get_registered_participants().values_list('user').count())\
+                                   / selected_event.maxParticipantsInGroup * 100
+
+
     context = {
         'test': "Event Joined Page",
+        'num_groups': num_groups,
+        'groups': event_groups,
+        'event': selected_event,
+        'group1_participants': group1_participants,
+        'group2_participants': group2_participants,
+        'group1_spots_left': group1_spots_left,
+        'group2_spots_left': group2_spots_left,
+        'group1_filled_percentage': group1_filled_percentage,
+        'group2_filled_percentage': group2_filled_percentage,
     }
 
     return render(request, 'web/eventjoined.html', context)

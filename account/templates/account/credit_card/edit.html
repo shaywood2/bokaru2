@@ -11,41 +11,32 @@
 
 
 <h2 class="heading-md">Manage your Payment Methods.</h2>
-<h5 class="heading-md">Edit the payment method used to pay for events.</h5>
+<h5 class="heading-md">Enter a new credit card number to pay for events you sign up for.</h5>
 
 
 
 							<div class="profile-body margin-bottom-60">
 
-                                 {% if credit_card %}
-                        <form action="{% url 'account:credit_card_edit' %}" method="post" id="edit-form">
-                            {% csrf_token %}
 
-                            <div class="card_info_container col-md-7">
-                              <div class="card_info">
-                                  <b>{{ credit_card.brand }}</b>&nbsp xxxx xxxx xxxx {{ credit_card.last4 }} &nbsp
-                                  <input type="submit" class="submit btn-u rounded card_button" value="Edit"
-                                         id="payment-form-submit">
-                                  <input type="submit" class="submit btn-u rounded card_button" value="Remove"
-                                         id="payment-form-submit">
-                              </div>
-                            </div>
-                        </form>
-                                   {% else %}
+                                <form action="{% url 'account:credit_card_register' %}" method="post" id="payment-form">
 
-                                 <form action="{% url 'account:credit_card_edit' %}" method="post" id="edit-form">
-                            {% csrf_token %}
+                                       {% csrf_token %}
+                                  <div class="col-md-8 form-row">
+                                    <label for="card-element">
+                                      Credit or debit card
+                                    </label>
+                                    <div id="card-element">
+                                      <!-- a Stripe Element will be inserted here. -->
+                                    </div>
 
-                            <div class="card_info_container col-md-12">
-                              <div class="card_info">
-                                  You do not have a credit card on file. &nbsp
-                                  <input type="submit" class="submit btn-u rounded card_button" value="Enter Credit Card"
-                                         id="payment-form-submit">
-                              </div>
-                            </div>
-                        </form>
+                                    <!-- Used to display form errors -->
+                                    <div id="card-errors" role="alert"></div>
+                                  </div>
 
-                                {% endif %}
+                                  <button>Change Card</button>
+                                </form>
+
+
 					</div>
 
 
