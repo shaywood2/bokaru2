@@ -35,7 +35,18 @@ def live_event(request):
             'date': date
         }
 
-        return render(request, 'chat/live.html', context)
+        if date is None:
+            # No next date, the event should be over
+            # TODO: get results
+            context = {
+                'event': event
+            }
+            return render(request, 'chat/post_live.html', context)
+
+        if date['is_active']:
+            return render(request, 'chat/live.html', context)
+        else:
+            return render(request, 'chat/live_break.html', context)
 
     if event.is_starting_soon():
         dates = utils.get_user_dates(request.user.id, event.id)

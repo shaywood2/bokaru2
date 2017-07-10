@@ -161,6 +161,7 @@ def get_user_dates(user_id, event_id):
 def get_current_date(user_id, event_id):
     try:
         # Try to find the event
+        # TODO: cache the event object since it should be immutable during the date
         event = Event.objects.get(pk=event_id)
         # Get the time
         now = datetime.datetime.utcnow().replace(tzinfo=utc)
@@ -173,9 +174,17 @@ def get_current_date(user_id, event_id):
         time_diff = now - event.startDateTime
         time_diff_seconds = time_diff.seconds
         # Get the duration of a date
-        date_duration = event.dateDuration + event.breakDuration
+        date_and_break_duration = event.dateDuration + event.breakDuration
         # Get the number of the current date based on the time elapsed since event's start
-        date_num = math.floor(time_diff_seconds / date_duration)
+        date_num = math.floor(time_diff_seconds / date_and_break_duration)
+        # Get time passed since the date started
+        time_passed = time_diff_seconds % date_and_break_duration
+        # Is date active or on a break
+        is_active = time_passed < event.dateDuration
+        # Calculate the time until reload must happen
+        time_until_reload = (event.dateDuration - time_passed) * 1000
+        if not is_active:
+            time_until_reload = (date_and_break_duration - time_passed) * 1000
 
         # Check if the date number is not in the matrix
         if date_num not in date_matrix[user_id]:
@@ -185,24 +194,14 @@ def get_current_date(user_id, event_id):
         date = date_matrix[user_id][date_num]
         # Check if the date is a gap
         if date == '':
-            return {'fullName': 'wait', 'username': 'wait', 'id': -1}
+            return {'fullName': 'wait', 'username': 'wait', 'id': -1, 'time_passed': time_passed,
+                    'is_active': is_active, 'time_until_reload': time_until_reload}
 
         # Get the user
         user = User.objects.get(pk=int(date))
         # Get the user's account
         account = Account.objects.get(user=user)
-        return {'fullName': account.fullName, 'username': user.username, 'id': user.id}
+        return {'fullName': account.fullName, 'username': user.username, 'id': user.id, 'time_passed': time_passed,
+                'is_active': is_active, 'time_until_reload': time_until_reload}
     except Event.DoesNotExist:
         return None
-
-# matrix = generate_date_matrix_two_groups(['bill', 'bob', 'bower', 'bottom'], ['alice', 'anna', 'akko'])
-# print(matrix)
-# print(matrix['bill'])
-# print(matrix['bill'][0])
-# print(matrix['bill'][1])
-# print(matrix['bill'][2])
-# print(matrix['bill'][3])
-# print(matrix['alice'][0])
-
-# matrix = generate_date_matrix_one_group(['a', 'b', 'c', 'd', 'e'])
-# print (matrix)

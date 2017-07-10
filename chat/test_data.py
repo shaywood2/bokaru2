@@ -8,6 +8,19 @@ from web.models import Event, EventGroup
 from account.models import Account
 
 
+def make_products():
+    product1 = Product(name='small event', short_code='smallevent', amount=1000)
+    product1.save()
+
+    product2 = Product(name='medium event', short_code='mediumevent', amount=1500)
+    product2.save()
+
+    product3 = Product(name='large event', short_code='largeevent', amount=2000)
+    product3.save()
+
+    print('3 products created')
+
+
 def make_event_two_groups():
     user1 = User.objects.create_user(username='bob1', email='bob1@alice.com', password='top_secret')
     user2 = User.objects.create_user(username='bob2', email='bob2@alice.com', password='top_secret')
