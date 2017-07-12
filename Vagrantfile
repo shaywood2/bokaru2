@@ -75,7 +75,8 @@ Vagrant.configure(2) do |config|
     sudo apt-get install -y postgis postgresql-9.3-postgis-2.1
     sudo apt-get build-dep -y psycopg2
     sudo apt-get install -y python3-pip
-    #sudo apt-get build-dep -y git
+    sudo apt-get install -y memcached
+    #sudo apt-get install libmemcached-dev
 
     # Install Python dependencies
     sudo pip3 install -r /home/vagrant/bokaru/requirements.txt
