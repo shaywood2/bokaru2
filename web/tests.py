@@ -227,34 +227,42 @@ class PickModelCase(TestCase):
                             maxParticipantsInGroup=3, numGroups=2, product=self.product1)
         self.event2.save()
 
-        self.pick1 = Pick(picker=self.user1, picked=self.user2, event=self.event)
-        self.pick1.save()
-        self.pick2 = Pick(picker=self.user1, picked=self.user3, event=self.event)
-        self.pick2.save()
-        self.pick3 = Pick(picker=self.user2, picked=self.user1, event=self.event)
-        self.pick3.save()
-        self.pick4 = Pick(picker=self.user2, picked=self.user3, event=self.event)
-        self.pick4.save()
-        self.pick5 = Pick(picker=self.user1, picked=self.user4, event=self.event2)
-        self.pick5.save()
-        self.pick6 = Pick(picker=self.user4, picked=self.user1, event=self.event2)
-        self.pick6.save()
+        Pick.objects.pick(self.user1, self.user2, self.event)
+        Pick.objects.pick(self.user1, self.user3, self.event)
+        Pick.objects.pick(self.user2, self.user1, self.event)
+        Pick.objects.pick(self.user2, self.user3, self.event)
+        Pick.objects.pick(self.user1, self.user4, self.event2)
+        Pick.objects.pick(self.user4, self.user1, self.event2)
 
-    def test_matches(self):
+    def test_get_all_matches_by_user_and_event(self):
         # Get all matches for user1
-        matches = Pick.objects.get_matches(self.user1, self.event)
+        matches = Pick.objects.get_all_matches_by_user_and_event(self.user1, self.event)
         self.assertEqual(len(matches), 1)
         self.assertTrue(self.user2 in matches)
 
         # Get all matches for user2
-        matches = Pick.objects.get_matches(self.user2, self.event)
+        matches = Pick.objects.get_all_matches_by_user_and_event(self.user2, self.event)
         self.assertEqual(len(matches), 1)
         self.assertTrue(self.user1 in matches)
 
         # Get all matches for user1, event2
-        matches = Pick.objects.get_matches(self.user1, self.event2)
+        matches = Pick.objects.get_all_matches_by_user_and_event(self.user1, self.event2)
         self.assertEqual(len(matches), 1)
         self.assertTrue(self.user4 in matches)
+
+    def test_get_all_matches_by_user(self):
+        # Get all matches for user1
+        matches = Pick.objects.get_all_matches_by_user(self.user1)
+        self.assertEqual(len(matches), 2)
+        self.assertTrue(self.event in matches)
+        self.assertTrue(self.event2 in matches)
+        self.assertEqual(len(matches[self.event]), 1)
+        self.assertEqual(len(matches[self.event2]), 1)
+        self.assertTrue(self.user2 in matches[self.event])
+
+        # Get all matches for user3
+        matches = Pick.objects.get_all_matches_by_user(self.user3)
+        self.assertEqual(len(matches), 0)
 
 # Testing the forms EventForm and EventGroupForm
 # class EventForm(TestCase):
