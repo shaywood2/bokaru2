@@ -6,134 +6,159 @@
 {% block content %}
 
 <!--=== Profile ===-->
-		<div class="container content profile">
-			<div class="row">
+<div class="container content profile">
+    <div class="row">
 
-				<!-- Profile Content -->
-				<div class="col-md-12">
-					<div class="profile-body">
-                        <h1 style="text-align: center">My Matches</h1>
-						<!--Timeline-->
-						<ul class="timeline-v2">
-							<li>
-								<time class="cbp_tmtime" datetime=""><span>4/1/2016</span> <span>Dog Lovers</span></time>
-								<i class="cbp_tmicon rounded-x hidden-xs"></i>
-								<div class="cbp_tmlabel">
+        <!-- Profile Content -->
+        <div class="col-md-12">
+            <div class="profile-body">
+                <h2>Matches:</h2>
+                    {% for event, picks in pick_map %}
+                    <li>{{ event.name }} - {{event.startDateTime}} ({{event.id}})</li>
+                    <ul>
+                        {% for pick in picks %}
+                        <li>{{pick}}</li>
+                        {% endfor %}
+                    </ul>
+                    {% endfor %}
+                </ul>
+                <h1 style="text-align: center">My Matches</h1>
+                <!--Timeline-->
+                <ul class="timeline-v2">
+                    <li>
+                        <time class="cbp_tmtime" datetime=""><span>4/1/2016</span> <span>Dog Lovers</span></time>
+                        <i class="cbp_tmicon rounded-x hidden-xs"></i>
+                        <div class="cbp_tmlabel">
 
-									<div class="row">
+                            <div class="row">
 
-										<div class="col-sm-6 sm-margin-bottom-20">
-                                            <div class="profile-blog">
-                                                <img class="rounded-x" src="{% static 'web/theme/img/testimonials/img1.jpg' %}" alt="">
+                                <div class="col-sm-6 sm-margin-bottom-20">
+                                    <div class="profile-blog">
+                                        <img class="rounded-x" src="{% static 'web/theme/img/testimonials/img1.jpg' %}"
+                                             alt="">
 
-                                                <div class="name-location">
-                                                    <strong>Mikel Andrews</strong>
-                                                    <span><i class="fa fa-map-marker"></i><a href="#">California,</a> <a href="#">US</a></span>
-                                                </div>
-                                                <div class="clearfix margin-bottom-20"></div>
-                                                <p>Donec non dignissim eros. Mauris faucibus turpis volutpat sagittis rhoncus. Pellentesque et rhoncus sapien, sed ullamcorper justo.</p>
-                                                <hr>
-                                                <ul class="list-inline share-list">
-                                                     <li><a class="btn-u btn-u-sm rounded" href="#">Contact Match</a></li>
-                                                </ul>
-                                            </div>
+                                        <div class="name-location">
+                                            <strong>Mikel Andrews</strong>
+                                            <span><i class="fa fa-map-marker"></i><a href="#">California,</a> <a
+                                                    href="#">US</a></span>
                                         </div>
+                                        <div class="clearfix margin-bottom-20"></div>
+                                        <p>Donec non dignissim eros. Mauris faucibus turpis volutpat sagittis rhoncus.
+                                            Pellentesque et rhoncus sapien, sed ullamcorper justo.</p>
+                                        <hr>
+                                        <ul class="list-inline share-list">
+                                            <li><a class="btn-u btn-u-sm rounded" href="#">Contact Match</a></li>
+                                        </ul>
+                                    </div>
+                                </div>
 
 
-                                        <div class="col-sm-6 sm-margin-bottom-20">
-                                            <div class="profile-blog">
-                                                <img class="rounded-x" src="{% static 'web/theme/img/testimonials/img2.jpg' %}" alt="">
+                                <div class="col-sm-6 sm-margin-bottom-20">
+                                    <div class="profile-blog">
+                                        <img class="rounded-x" src="{% static 'web/theme/img/testimonials/img2.jpg' %}"
+                                             alt="">
 
-                                                <div class="name-location">
-                                                    <strong>Mikel Andrews</strong>
-                                                    <span><i class="fa fa-map-marker"></i><a href="#">California,</a> <a href="#">US</a></span>
-                                                </div>
-                                                <div class="clearfix margin-bottom-20"></div>
-                                                <p>Donec non dignissim eros. Mauris faucibus turpis volutpat sagittis rhoncus. Pellentesque et rhoncus sapien, sed ullamcorper justo.</p>
-                                                <hr>
-                                                <ul class="list-inline share-list">
-                                                    <li><a class="btn-u btn-u-sm rounded" href="#">Contact Match</a></li>
-                                                </ul>
-                                            </div>
+                                        <div class="name-location">
+                                            <strong>Mikel Andrews</strong>
+                                            <span><i class="fa fa-map-marker"></i><a href="#">California,</a> <a
+                                                    href="#">US</a></span>
                                         </div>
-                                        <div class="col-sm-6 sm-margin-bottom-20">
-                                            <div class="profile-blog">
-                                                <img class="rounded-x" src="{% static 'web/theme/img/testimonials/img2.jpg' %}" alt="">
+                                        <div class="clearfix margin-bottom-20"></div>
+                                        <p>Donec non dignissim eros. Mauris faucibus turpis volutpat sagittis rhoncus.
+                                            Pellentesque et rhoncus sapien, sed ullamcorper justo.</p>
+                                        <hr>
+                                        <ul class="list-inline share-list">
+                                            <li><a class="btn-u btn-u-sm rounded" href="#">Contact Match</a></li>
+                                        </ul>
+                                    </div>
+                                </div>
+                                <div class="col-sm-6 sm-margin-bottom-20">
+                                    <div class="profile-blog">
+                                        <img class="rounded-x" src="{% static 'web/theme/img/testimonials/img2.jpg' %}"
+                                             alt="">
 
-                                                <div class="name-location">
-                                                    <strong>Mikel Andrews</strong>
-                                                    <span><i class="fa fa-map-marker"></i><a href="#">California,</a> <a href="#">US</a></span>
-                                                </div>
-                                                <div class="clearfix margin-bottom-20"></div>
-                                                <p>Donec non dignissim eros. Mauris faucibus turpis volutpat sagittis rhoncus. Pellentesque et rhoncus sapien, sed ullamcorper justo.</p>
-                                                <hr>
-                                                <ul class="list-inline share-list">
-                                                    <li><a class="btn-u btn-u-sm rounded" href="#">Contact Match</a></li>
-                                                </ul>
-                                            </div>
+                                        <div class="name-location">
+                                            <strong>Mikel Andrews</strong>
+                                            <span><i class="fa fa-map-marker"></i><a href="#">California,</a> <a
+                                                    href="#">US</a></span>
                                         </div>
-									</div>
-								</div>
-							</li>
-							<li>
-								<time class="cbp_tmtime" datetime=""><span>7/2/09</span> <span>Activity Junkies</span></time>
-								<i class="cbp_tmicon rounded-x hidden-xs"></i>
-								<div class="cbp_tmlabel">
-									<div class="row">
+                                        <div class="clearfix margin-bottom-20"></div>
+                                        <p>Donec non dignissim eros. Mauris faucibus turpis volutpat sagittis rhoncus.
+                                            Pellentesque et rhoncus sapien, sed ullamcorper justo.</p>
+                                        <hr>
+                                        <ul class="list-inline share-list">
+                                            <li><a class="btn-u btn-u-sm rounded" href="#">Contact Match</a></li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </li>
+                    <li>
+                        <time class="cbp_tmtime" datetime=""><span>7/2/09</span> <span>Activity Junkies</span></time>
+                        <i class="cbp_tmicon rounded-x hidden-xs"></i>
+                        <div class="cbp_tmlabel">
+                            <div class="row">
 
-										<div class="col-sm-6 sm-margin-bottom-20">
-                                            <div class="profile-blog">
-                                                <img class="rounded-x" src="{% static 'web/theme/img/testimonials/img1.jpg' %}" alt="">
+                                <div class="col-sm-6 sm-margin-bottom-20">
+                                    <div class="profile-blog">
+                                        <img class="rounded-x" src="{% static 'web/theme/img/testimonials/img1.jpg' %}"
+                                             alt="">
 
-                                                <div class="name-location">
-                                                    <strong>Mikel Andrews</strong>
-                                                    <span><i class="fa fa-map-marker"></i><a href="#">California,</a> <a href="#">US</a></span>
-                                                </div>
-                                                <div class="clearfix margin-bottom-20"></div>
-                                                <p>Donec non dignissim eros. Mauris faucibus turpis volutpat sagittis rhoncus. Pellentesque et rhoncus sapien, sed ullamcorper justo.</p>
-                                                <hr>
-                                                <ul class="list-inline share-list">
-                                                     <li><a class="btn-u btn-u-sm rounded" href="#">Contact Match</a></li>
-                                                </ul>
-                                            </div>
+                                        <div class="name-location">
+                                            <strong>Mikel Andrews</strong>
+                                            <span><i class="fa fa-map-marker"></i><a href="#">California,</a> <a
+                                                    href="#">US</a></span>
                                         </div>
+                                        <div class="clearfix margin-bottom-20"></div>
+                                        <p>Donec non dignissim eros. Mauris faucibus turpis volutpat sagittis rhoncus.
+                                            Pellentesque et rhoncus sapien, sed ullamcorper justo.</p>
+                                        <hr>
+                                        <ul class="list-inline share-list">
+                                            <li><a class="btn-u btn-u-sm rounded" href="#">Contact Match</a></li>
+                                        </ul>
+                                    </div>
+                                </div>
 
 
-                                        <div class="col-sm-6 sm-margin-bottom-20">
-                                            <div class="profile-blog">
-                                                <img class="rounded-x" src="{% static 'web/theme/img/testimonials/img2.jpg' %}" alt="">
+                                <div class="col-sm-6 sm-margin-bottom-20">
+                                    <div class="profile-blog">
+                                        <img class="rounded-x" src="{% static 'web/theme/img/testimonials/img2.jpg' %}"
+                                             alt="">
 
-                                                <div class="name-location">
-                                                    <strong>Mikel Andrews</strong>
-                                                    <span><i class="fa fa-map-marker"></i><a href="#">California,</a> <a href="#">US</a></span>
-                                                </div>
-                                                <div class="clearfix margin-bottom-20"></div>
-                                                <p>Donec non dignissim eros. Mauris faucibus turpis volutpat sagittis rhoncus. Pellentesque et rhoncus sapien, sed ullamcorper justo.</p>
-                                                <hr>
-                                                <ul class="list-inline share-list">
-                                                    <li><a class="btn-u btn-u-sm rounded" href="#">Contact Match</a></li>
-                                                </ul>
-                                            </div>
+                                        <div class="name-location">
+                                            <strong>Mikel Andrews</strong>
+                                            <span><i class="fa fa-map-marker"></i><a href="#">California,</a> <a
+                                                    href="#">US</a></span>
                                         </div>
-									</div>
-								</div>
-							</li>
-							<li>
-								<time class="cbp_tmtime" datetime=""><span>28/6/12</span> <span>Fun Times</span></time>
-								<i class="cbp_tmicon rounded-x hidden-xs"></i>
-								<div class="cbp_tmlabel">
-									<h2>No Matches</h2>
-									<p>Unfortunately there were no matches from this event.</p>
-								</div>
-							</li>
+                                        <div class="clearfix margin-bottom-20"></div>
+                                        <p>Donec non dignissim eros. Mauris faucibus turpis volutpat sagittis rhoncus.
+                                            Pellentesque et rhoncus sapien, sed ullamcorper justo.</p>
+                                        <hr>
+                                        <ul class="list-inline share-list">
+                                            <li><a class="btn-u btn-u-sm rounded" href="#">Contact Match</a></li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </li>
+                    <li>
+                        <time class="cbp_tmtime" datetime=""><span>28/6/12</span> <span>Fun Times</span></time>
+                        <i class="cbp_tmicon rounded-x hidden-xs"></i>
+                        <div class="cbp_tmlabel">
+                            <h2>No Matches</h2>
+                            <p>Unfortunately there were no matches from this event.</p>
+                        </div>
+                    </li>
 
-						</ul>
-						<!--End Timeline-->
-					</div>
-				</div>
-				<!-- End Profile Content -->
-			</div>
-		</div><!--/container-->
-		<!--=== End Profile ===-->
+                </ul>
+                <!--End Timeline-->
+            </div>
+        </div>
+        <!-- End Profile Content -->
+    </div>
+</div><!--/container-->
+<!--=== End Profile ===-->
 
 {% endblock %}
