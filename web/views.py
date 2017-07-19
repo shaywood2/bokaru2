@@ -1,4 +1,5 @@
 import datetime
+import logging
 
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
@@ -11,7 +12,6 @@ from account.models import Account
 from money.billing_logic import get_product_by_participant_number
 from .forms import EventForm, EventGroupForm, SearchForm
 from .models import Event, EventGroup, Pick
-import logging
 
 # Get an instance of a logger
 logger = logging.getLogger(__name__)
@@ -202,15 +202,15 @@ def event_joined(request, event_id):
     group1_participants = Account.objects.filter(
         user__in=event_groups[0].get_registered_participants().values_list('user'))
     group2_participants = {}
-    group1_filled_percentage = float(event_groups[0].get_registered_participants().values_list('user').count()) / \
-                               selected_event.maxParticipantsInGroup * 100
+    group1_filled_percentage = float(event_groups[0].get_registered_participants().values_list(
+        'user').count()) / selected_event.maxParticipantsInGroup * 100
     group2_spots_left = 0
     if num_groups > 1:
         group2_participants = Account.objects.filter(
             user__in=event_groups[1].get_registered_participants().values_list('user'))
         group2_spots_left = selected_event.maxParticipantsInGroup - event_groups[1].count_registered_participants()
-        group2_filled_percentage = float(event_groups[1].get_registered_participants().values_list('user').count()) \
-                                   / selected_event.maxParticipantsInGroup * 100
+        group2_filled_percentage = float(event_groups[1].get_registered_participants().values_list(
+            'user').count()) / selected_event.maxParticipantsInGroup * 100
 
     context = {
         'test': "Event Joined Page",

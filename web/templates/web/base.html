@@ -1,421 +1,397 @@
 <!DOCTYPE html>
 
 
-
-<!--[if IE 8]> <html lang="en" class="ie8"> <![endif]-->
-<!--[if IE 9]> <html lang="en" class="ie9"> <![endif]-->
-<!--[if !IE]><!--> <html lang="en"> <!--<![endif]-->
+<!--[if IE 8]>
+<html lang="en" class="ie8"> <![endif]-->
+<!--[if IE 9]>
+<html lang="en" class="ie9"> <![endif]-->
+<!--[if !IE]><!-->
+<html lang="en"> <!--<![endif]-->
 
 
 {% load staticfiles %}
 
 
 <head>
-   <title>Home Default 2 | Unify - Responsive Website Template</title>
+    <title>Home Default 2 | Unify - Responsive Website Template</title>
 
-	<!-- Meta -->
-	<meta charset="utf-8">
-	<meta name="viewport" content="width=device-width, initial-scale=1.0">
-	<meta name="description" content="">
-	<meta name="author" content="">
+    <!-- Meta -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="">
+    <meta name="author" content="">
 
-	<!-- Favicon -->
-	<link rel="shortcut icon" href="favicon.ico">
+    <!-- Favicon -->
+    <link rel="shortcut icon" href="favicon.ico">
 
-	<!-- Web Fonts -->
-	<link rel="stylesheet" href="//fonts.googleapis.com/css?family=Open+Sans:400,300,600&amp;subset=cyrillic,latin">
+    <!-- Web Fonts -->
+    <link rel="stylesheet" href="//fonts.googleapis.com/css?family=Open+Sans:400,300,600&amp;subset=cyrillic,latin">
 
-	<!-- CSS Global Compulsory -->
-	<link rel="stylesheet" href="{% static 'web/theme/plugins/bootstrap/css/bootstrap.min.css' %}">
-	<link rel="stylesheet" href="{% static 'web/theme/css/style.css' %}">
-
-
-	<!-- CSS Header and Footer -->
-	<link rel="stylesheet" href="{% static 'web/theme/css/headers/header-v6.css' %}">
-
-	<link rel="stylesheet" href="{% static 'web/theme/css/footers/footer-v6.css' %}">
+    <!-- CSS Global Compulsory -->
+    <link rel="stylesheet" href="{% static 'web/theme/plugins/bootstrap/css/bootstrap.min.css' %}">
+    <link rel="stylesheet" href="{% static 'web/theme/css/style.css' %}">
 
 
-	<!-- CSS Implementing Plugins -->
-	<link rel="stylesheet" href="{% static 'web/theme/plugins/animate.css' %}">
+    <!-- CSS Header and Footer -->
+    <link rel="stylesheet" href="{% static 'web/theme/css/headers/header-v6.css' %}">
 
-	<link rel="stylesheet" href="{% static 'web/theme/plugins/line-icons/line-icons.css' %}">
-
-	<link rel="stylesheet" href="{% static 'web/theme/plugins/font-awesome/css/font-awesome.min.css' %}">
-
-	<link rel="stylesheet" href="{% static 'web/theme/plugins/sliding-panel/style.css' %}">
+    <link rel="stylesheet" href="{% static 'web/theme/css/footers/footer-v6.css' %}">
 
 
+    <!-- CSS Implementing Plugins -->
+    <link rel="stylesheet" href="{% static 'web/theme/plugins/animate.css' %}">
+
+    <link rel="stylesheet" href="{% static 'web/theme/plugins/line-icons/line-icons.css' %}">
+
+    <link rel="stylesheet" href="{% static 'web/theme/plugins/font-awesome/css/font-awesome.min.css' %}">
+
+    <link rel="stylesheet" href="{% static 'web/theme/plugins/sliding-panel/style.css' %}">
 
 
     <!-- CSS Page Style -->
-	<link rel="stylesheet" href="{% static 'web/theme/css/pages/profile.css' %}">
+    <link rel="stylesheet" href="{% static 'web/theme/css/pages/profile.css' %}">
 
     <link rel="stylesheet" href="{% static 'web/theme/css/pages/shortcode_timeline2.css' %}">
 
-	<!-- CSS Theme -->
-	<link rel="stylesheet" href="{% static 'web/theme/css/theme-colors/red.css' %}" id="style_color">
+    <!-- CSS Theme -->
+    <link rel="stylesheet" href="{% static 'web/theme/css/theme-colors/red.css' %}" id="style_color">
 
-	<link rel="stylesheet" href="{% static 'web/theme/css/theme-skins/dark.css' %}">
+    <link rel="stylesheet" href="{% static 'web/theme/css/theme-skins/dark.css' %}">
 
 
     {% block header %}
     {% endblock %}
 
-	<!-- CSS Customization -->
-	<link rel="stylesheet" href="{% static 'web/theme/css/custom.css' %}">
+    <!-- CSS Customization -->
+    <link rel="stylesheet" href="{% static 'web/theme/css/custom.css' %}">
 
 
 </head>
 <body class="header-fixed header-fixed-space promo-padding-top sliding-panel-ini sliding-panel-flag-right">
-	<div class="wrapper">
-		<!--=== Header v6 ===-->
-		<div class="header-v6 header-classic-white header-sticky">
-			<!-- Navbar -->
-			<div class="navbar mega-menu" role="navigation">
-				<div class="container">
-					<!-- Brand and toggle get grouped for better mobile display -->
-					<div class="menu-container">
+<div class="wrapper">
+    <!--=== Header v6 ===-->
+    <div class="header-v6 header-classic-white header-sticky">
+        <!-- Navbar -->
+        <div class="navbar mega-menu" role="navigation">
+            <div class="container">
+                <!-- Brand and toggle get grouped for better mobile display -->
+                <div class="menu-container">
 
+                    <!-- Navbar Brand -->
+                    <div class="navbar-brand">
+                        <a href="{% url 'web:index' %}">
+                            <img class="shrink-logo" src="{% static 'web/images/outline-owl.jpg' %}" alt="Logo">
+                        </a>
 
-						<!-- Navbar Brand -->
-						<div class="navbar-brand">
-							<a href="{% url 'web:index' %}">
+                    </div>
+                    <div class="navbar-brand">
+                        <a href="{% url 'web:index' %}">
+                            <img class="shrink-logo" src="{% static 'web/theme/img/bokaru-logo.png' %}" alt="Logo">
+                        </a>
+                    </div>
 
-								<img class="shrink-logo" src="{% static 'web/images/outline-owl.jpg' %}" alt="Logo">
+                    <div class="navbar-brand" style="margin-top: 7px;">
 
-							</a>
 
+                        &nbsp &nbsp
+                        <a href="#">
+                            HOME
+                        </a>
 
 
-						</div>
-						<div class="navbar-brand">
-							<a href="{% url 'web:index' %}">
+                        &nbsp &nbsp
+                        <a href="{% url 'web:search' %}">
+                            FIND EVENTS
+                        </a>
 
-								<img class="shrink-logo" src="{% static 'web/theme/img/bokaru-logo.png' %}" alt="Logo">
 
+                        &nbsp &nbsp
+                        <a href="{% url 'account:view' %}">
+                            PROFILE
+                        </a>
 
-							</a>
-						</div>
-
-						<div class="navbar-brand" style="margin-top: 7px;">
-
+                        &nbsp &nbsp
+                        <a href="{% url 'web:matches' %}">
+                            MY MATCHES
+                        </a>
 
-											&nbsp &nbsp
-											<a href="#">
-												HOME
-											</a>
-
+                        &nbsp &nbsp
+                        <a href="{% url 'web:myevents' %}">
+                            MY EVENTS
+                        </a>
+                        &nbsp &nbsp
 
-											&nbsp &nbsp
-											<a href="{% url 'web:search' %}">
-												FIND EVENTS
-											</a>
-
-
-											&nbsp &nbsp
-											<a href="{% url 'account:view' %}">
-												PROFILE
-											</a>
-
-											&nbsp &nbsp
-											<a href="{% url 'web:matches' %}">
-												MY MATCHES
-											</a>
-
-											&nbsp &nbsp
-											<a href="{% url 'web:myevents' %}">
-												MY EVENTS
-											</a>
-											&nbsp &nbsp
-											<a href="{% url 'web:myevents' %}">
-												LIVE EVENT
-											</a>
-
-						</div>
-
-
-						<!-- ENd Navbar Brand -->
-
-						<!-- Header Inner Right -->
-						<div class="header-inner-right">
-
-						</div>
-						<!-- End Header Inner Right -->
-					</div>
-				</div>
-			</div>
-			<!-- End Navbar -->
-		</div>
-		<!--=== End Header v6 ===-->
-
-
-
-        {% block content %}
-        {% endblock %}
-
-
-
-		<!--=== Footer v6 ===-->
-		<div id="footer-v6" class="footer-v6">
-			<div class="footer">
-				<div class="container">
-					<div class="row">
-						<!-- About Us -->
-						<div class="col-md-3 sm-margin-bottom-40">
-							<div class="heading-footer"><h2>About Bokaru</h2></div>
-							<p>A site to date and find your mate.</p>
-						</div>
-						<!-- End About Us -->
-
-						<!-- Recent News -->
-						<div class="col-md-3 sm-margin-bottom-40">
-							<div class="heading-footer"><h2>Recent News</h2></div>
-							<ul class="list-unstyled link-news">
-								<li>
-									<a href="#">Apple Conference</a>
-									<small>12 July, 2014</small>
-								</li>
-								<li>
-									<a href="#">Bootstrap Update</a>
-									<small>12 July, 2014</small>
-								</li>
-								<li>
-									<a href="#">Themeforest Templates</a>
-									<small>12 July, 2014</small>
-								</li>
-							</ul>
-						</div>
-						<!-- End Recent News -->
-
-						<!-- Useful Links -->
-						<div class="col-md-3 sm-margin-bottom-40">
-							<div class="heading-footer"><h2>Links</h2></div>
-							<ul class="list-unstyled footer-link-list">
-								<li><a href="#">Find Events</a></li>
-								<li><a href="#">My Matches</a></li>
-								<li><a href="#">My Events</a></li>
-								<li><a href="#">Profile Settings</a></li>
-							</ul>
-						</div>
-						<!-- End Useful Links -->
-
-						<!-- Contacts -->
-						<div class="col-md-3">
-							<div class="heading-footer"><h2>Contact Us</h2></div>
-							<ul class="list-unstyled contacts">
-
-
-								<li>
-									<i class="radius-3x fa fa-globe"></i>
-									<a href="#">webmaster@gmail.com</a><br>
-									<a href="#">www.toronto.com</a>
-								</li>
-							</ul>
-						</div>
-						<!-- End Contacts -->
-					</div>
-				</div><!--/container -->
-			</div>
-
-			<div class="copyright">
-				<div class="container">
-					<div class="row">
-						<div class="col-md-8 sm-margon-bottom-10">
-							<ul class="list-inline terms-menu">
-								<li class="silver"> &copy; 2016 All right reserved. Bokaru LLP</li>
-								<li><a href="{% url 'web:termsofuse' %}">Terms of Use</a></li>
-								<li><a href="{% url 'web:privacypolicy' %}">Privacy and Policy</a></li>
-								<li><a href="#">Terms of Use</a></li>
-								<li><a href="#">Privacy and Policy</a></li>
-								<li><a href="#">License</a></li>
-								<li><a href="#">Support</a></li>
-							</ul>
-						</div>
-						<div class="col-md-4">
-							<ul class="list-inline dark-social pull-right space-bottom-0">
-								<li>
-									<a data-placement="top" data-toggle="tooltip" class="tooltips" data-original-title="Facebook" href="#">
-										<i class="fa fa-facebook"></i>
-									</a>
-								</li>
-								<li>
-									<a data-placement="top" data-toggle="tooltip" class="tooltips" data-original-title="Twitter" href="#">
-										<i class="fa fa-twitter"></i>
-									</a>
-								</li>
-								<li>
-									<a data-placement="top" data-toggle="tooltip" class="tooltips" data-original-title="Vine" href="#">
-										<i class="fa fa-vine"></i>
-									</a>
-								</li>
-								<li>
-									<a data-placement="top" data-toggle="tooltip" class="tooltips" data-original-title="Google plus" href="#">
-										<i class="fa fa-google-plus"></i>
-									</a>
-								</li>
-								<li>
-									<a data-placement="top" data-toggle="tooltip" class="tooltips" data-original-title="Pinterest" href="#">
-										<i class="fa fa-pinterest"></i>
-									</a>
-								</li>
-								<li>
-									<a data-placement="top" data-toggle="tooltip" class="tooltips" data-original-title="Instagram" href="#">
-										<i class="fa fa-instagram"></i>
-									</a>
-								</li>
-								<li>
-									<a data-placement="top" data-toggle="tooltip" class="tooltips" data-original-title="Tumblr" href="#">
-										<i class="fa fa-tumblr"></i>
-									</a>
-								</li>
-								<li>
-									<a data-placement="top" data-toggle="tooltip" class="tooltips" data-original-title="Youtube" href="#">
-										<i class="fa fa-youtube"></i>
-									</a>
-								</li>
-								<li>
-									<a data-placement="top" data-toggle="tooltip" class="tooltips" data-original-title="Soundcloud" href="#">
-										<i class="fa fa-soundcloud"></i>
-									</a>
-								</li>
-							</ul>
-						</div>
-					</div>
-				</div>
-			</div>
-		</div>
-		<!--=== End Footer v6 ===-->
-	</div><!--/wrapper-->
+                        {% load event_notification_tag %}
+                        {% autoescape off %}{% event_notification request %}{% endautoescape %}
 
-	<!-- Sliding Panel -->
-	<div class="sliding-panel bg-color-darker">
-		<div class="sliding-panel-inner sliding-panel-scrollable fullscreen">
-			<ul class="sliding-navigation">
-				<li><a href="index.html">Home</a></li>
-				<li><a href="page_about3.html">Abour Us</a></li>
-				<li><a href="page_services.html">Services</a></li>
-				<li><a href="page_profile.html">Profile</a></li>
-				<li><a href="blog_large_right_sidebar1.html">Blog</a></li>
-				<li><a href="portfolio_3_columns_grid_text.html">Our Work</a></li>
-				<li><a href="page_contact1.html">Contact Us</a></li>
-			</ul>
+                    </div>
 
-			<h4>Contacts</h4>
-			<address>
-				58, Lorem Lis Street, Central Ave<br>
-				New York, US<br><br>
-				Phone: 938 334 6049<br>
-				Fax: 938 334 6050<br><br>
-				Email: <a href="mailto:#">info@htmlstream.com</a><br>
-			</address>
 
-			<ul class="list-inline social-icons-v1 social-icons-v1--dark">
-				<li><a href="#"><i class="fa fa-twitter"></i></a></li>
-				<li><a href="#"><i class="fa fa-facebook"></i></a></li>
-				<li><a href="#"><i class="fa fa-google-plus"></i></a></li>
-				<li><a href="#"><i class="fa fa-linkedin"></i></a></li>
-			</ul>
-		</div>
+                    <!-- ENd Navbar Brand -->
 
-		<a href="javascript:void(0);" class="sliding-panel__close">Close</a>
-	</div>
-	<!-- End Sliding Panel -->
+                    <!-- Header Inner Right -->
+                    <div class="header-inner-right">
 
+                    </div>
+                    <!-- End Header Inner Right -->
+                </div>
+            </div>
+        </div>
+        <!-- End Navbar -->
+    </div>
+    <!--=== End Header v6 ===-->
 
 
-	<!-- JS Global Compulsory -->
-	<script src="{% static 'web/theme/plugins/jquery/jquery.min.js' %}"></script>
-
-	<script src="{% static 'web/theme/plugins/jquery/jquery-migrate.min.js' %}"></script>
-
-	<script src="{% static 'web/theme/plugins/bootstrap/js/bootstrap.min.js' %}"></script>
-
-	<!-- JS Implementing Plugins -->
-	<script src="{% static 'web/theme/plugins/back-to-top.js' %}"></script>
-
-	<script src="{% static 'web/theme/plugins/smoothScroll.js' %}"></script>
-
-
-
-
-
-
-
-
-
-
-
-
-    <!-- JS Global Compulsory -->
-	<script type="text/javascript" src="{% static 'web/theme/plugins/jquery/jquery.min.js' %}"></script>
-
-
-
-	<script type="text/javascript" src="{% static 'web/theme/plugins/jquery/jquery-migrate.min.js' %}"></script>
-
-
-
-	<script type="text/javascript" src="{% static 'web/theme/plugins/bootstrap/js/bootstrap.min.js' %}"></script>
-
-
-
-	<!-- JS Implementing Plugins -->
-	<script type="text/javascript" src="{% static 'web/theme/plugins/back-to-top.js' %}"></script>
-
-
-
-	<script type="text/javascript" src="{% static 'web/theme/plugins/smoothScroll.js' %}"></script>
-
-
-
-	<script type="text/javascript" src="{% static 'web/theme/plugins/circles-master/circles.js' %}"></script>
-
-
-
-
-
-
-
-	<script type="text/javascript" src="{% static 'web/theme/plugins/scrollbar/js/jquery.mCustomScrollbar.concat.min.js' %}"></script>
-
-
-
-
-
-
-
-	<!-- JS Page Level -->
-	<script src="{% static 'web/theme/js/app.js' %}"></script>
-
-	<script src="{% static 'web/theme/js/plugins/style-switcher.js' %}"></script>
-
-	<script src="{% static 'web/theme/js/plugins/owl-carousel.js' %}"></script>
-
-    <script type="text/javascript" src="{% static 'web/theme/js/plugins/circles-master.js' %}"></script>
-	<!-- JS Customization -->
-	<script src="{% static 'web/theme/js/custom.js' %}"></script>
-
-
-    {% block javascript %}
+    {% block content %}
     {% endblock %}
-	<!-- JS Initialization -->
-	<script type="text/javascript">
+
+
+    <!--=== Footer v6 ===-->
+    <div id="footer-v6" class="footer-v6">
+        <div class="footer">
+            <div class="container">
+                <div class="row">
+                    <!-- About Us -->
+                    <div class="col-md-3 sm-margin-bottom-40">
+                        <div class="heading-footer"><h2>About Bokaru</h2></div>
+                        <p>A site to date and find your mate.</p>
+                    </div>
+                    <!-- End About Us -->
+
+                    <!-- Recent News -->
+                    <div class="col-md-3 sm-margin-bottom-40">
+                        <div class="heading-footer"><h2>Recent News</h2></div>
+                        <ul class="list-unstyled link-news">
+                            <li>
+                                <a href="#">Apple Conference</a>
+                                <small>12 July, 2014</small>
+                            </li>
+                            <li>
+                                <a href="#">Bootstrap Update</a>
+                                <small>12 July, 2014</small>
+                            </li>
+                            <li>
+                                <a href="#">Themeforest Templates</a>
+                                <small>12 July, 2014</small>
+                            </li>
+                        </ul>
+                    </div>
+                    <!-- End Recent News -->
+
+                    <!-- Useful Links -->
+                    <div class="col-md-3 sm-margin-bottom-40">
+                        <div class="heading-footer"><h2>Links</h2></div>
+                        <ul class="list-unstyled footer-link-list">
+                            <li><a href="#">Find Events</a></li>
+                            <li><a href="#">My Matches</a></li>
+                            <li><a href="#">My Events</a></li>
+                            <li><a href="#">Profile Settings</a></li>
+                        </ul>
+                    </div>
+                    <!-- End Useful Links -->
+
+                    <!-- Contacts -->
+                    <div class="col-md-3">
+                        <div class="heading-footer"><h2>Contact Us</h2></div>
+                        <ul class="list-unstyled contacts">
+
+
+                            <li>
+                                <i class="radius-3x fa fa-globe"></i>
+                                <a href="#">webmaster@gmail.com</a><br>
+                                <a href="#">www.toronto.com</a>
+                            </li>
+                        </ul>
+                    </div>
+                    <!-- End Contacts -->
+                </div>
+            </div><!--/container -->
+        </div>
+
+        <div class="copyright">
+            <div class="container">
+                <div class="row">
+                    <div class="col-md-8 sm-margon-bottom-10">
+                        <ul class="list-inline terms-menu">
+                            <li class="silver"> &copy; 2016 All right reserved. Bokaru LLP</li>
+                            <li><a href="{% url 'web:termsofuse' %}">Terms of Use</a></li>
+                            <li><a href="{% url 'web:privacypolicy' %}">Privacy and Policy</a></li>
+                            <li><a href="#">Terms of Use</a></li>
+                            <li><a href="#">Privacy and Policy</a></li>
+                            <li><a href="#">License</a></li>
+                            <li><a href="#">Support</a></li>
+                        </ul>
+                    </div>
+                    <div class="col-md-4">
+                        <ul class="list-inline dark-social pull-right space-bottom-0">
+                            <li>
+                                <a data-placement="top" data-toggle="tooltip" class="tooltips"
+                                   data-original-title="Facebook" href="#">
+                                    <i class="fa fa-facebook"></i>
+                                </a>
+                            </li>
+                            <li>
+                                <a data-placement="top" data-toggle="tooltip" class="tooltips"
+                                   data-original-title="Twitter" href="#">
+                                    <i class="fa fa-twitter"></i>
+                                </a>
+                            </li>
+                            <li>
+                                <a data-placement="top" data-toggle="tooltip" class="tooltips"
+                                   data-original-title="Vine" href="#">
+                                    <i class="fa fa-vine"></i>
+                                </a>
+                            </li>
+                            <li>
+                                <a data-placement="top" data-toggle="tooltip" class="tooltips"
+                                   data-original-title="Google plus" href="#">
+                                    <i class="fa fa-google-plus"></i>
+                                </a>
+                            </li>
+                            <li>
+                                <a data-placement="top" data-toggle="tooltip" class="tooltips"
+                                   data-original-title="Pinterest" href="#">
+                                    <i class="fa fa-pinterest"></i>
+                                </a>
+                            </li>
+                            <li>
+                                <a data-placement="top" data-toggle="tooltip" class="tooltips"
+                                   data-original-title="Instagram" href="#">
+                                    <i class="fa fa-instagram"></i>
+                                </a>
+                            </li>
+                            <li>
+                                <a data-placement="top" data-toggle="tooltip" class="tooltips"
+                                   data-original-title="Tumblr" href="#">
+                                    <i class="fa fa-tumblr"></i>
+                                </a>
+                            </li>
+                            <li>
+                                <a data-placement="top" data-toggle="tooltip" class="tooltips"
+                                   data-original-title="Youtube" href="#">
+                                    <i class="fa fa-youtube"></i>
+                                </a>
+                            </li>
+                            <li>
+                                <a data-placement="top" data-toggle="tooltip" class="tooltips"
+                                   data-original-title="Soundcloud" href="#">
+                                    <i class="fa fa-soundcloud"></i>
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!--=== End Footer v6 ===-->
+</div><!--/wrapper-->
+
+<!-- Sliding Panel -->
+<div class="sliding-panel bg-color-darker">
+    <div class="sliding-panel-inner sliding-panel-scrollable fullscreen">
+        <ul class="sliding-navigation">
+            <li><a href="index.html">Home</a></li>
+            <li><a href="page_about3.html">Abour Us</a></li>
+            <li><a href="page_services.html">Services</a></li>
+            <li><a href="page_profile.html">Profile</a></li>
+            <li><a href="blog_large_right_sidebar1.html">Blog</a></li>
+            <li><a href="portfolio_3_columns_grid_text.html">Our Work</a></li>
+            <li><a href="page_contact1.html">Contact Us</a></li>
+        </ul>
+
+        <h4>Contacts</h4>
+        <address>
+            58, Lorem Lis Street, Central Ave<br>
+            New York, US<br><br>
+            Phone: 938 334 6049<br>
+            Fax: 938 334 6050<br><br>
+            Email: <a href="mailto:#">info@htmlstream.com</a><br>
+        </address>
+
+        <ul class="list-inline social-icons-v1 social-icons-v1--dark">
+            <li><a href="#"><i class="fa fa-twitter"></i></a></li>
+            <li><a href="#"><i class="fa fa-facebook"></i></a></li>
+            <li><a href="#"><i class="fa fa-google-plus"></i></a></li>
+            <li><a href="#"><i class="fa fa-linkedin"></i></a></li>
+        </ul>
+    </div>
+
+    <a href="javascript:void(0);" class="sliding-panel__close">Close</a>
+</div>
+<!-- End Sliding Panel -->
+
+
+<!-- JS Global Compulsory -->
+<script src="{% static 'web/theme/plugins/jquery/jquery.min.js' %}"></script>
+
+<script src="{% static 'web/theme/plugins/jquery/jquery-migrate.min.js' %}"></script>
+
+<script src="{% static 'web/theme/plugins/bootstrap/js/bootstrap.min.js' %}"></script>
+
+<!-- JS Implementing Plugins -->
+<script src="{% static 'web/theme/plugins/back-to-top.js' %}"></script>
+
+<script src="{% static 'web/theme/plugins/smoothScroll.js' %}"></script>
+
+
+<!-- JS Global Compulsory -->
+<script type="text/javascript" src="{% static 'web/theme/plugins/jquery/jquery.min.js' %}"></script>
+
+
+<script type="text/javascript" src="{% static 'web/theme/plugins/jquery/jquery-migrate.min.js' %}"></script>
+
+
+<script type="text/javascript" src="{% static 'web/theme/plugins/bootstrap/js/bootstrap.min.js' %}"></script>
+
+
+<!-- JS Implementing Plugins -->
+<script type="text/javascript" src="{% static 'web/theme/plugins/back-to-top.js' %}"></script>
+
+
+<script type="text/javascript" src="{% static 'web/theme/plugins/smoothScroll.js' %}"></script>
+
+
+<script type="text/javascript" src="{% static 'web/theme/plugins/circles-master/circles.js' %}"></script>
+
+
+<script type="text/javascript"
+        src="{% static 'web/theme/plugins/scrollbar/js/jquery.mCustomScrollbar.concat.min.js' %}"></script>
+
+
+<!-- JS Page Level -->
+<script src="{% static 'web/theme/js/app.js' %}"></script>
+
+<script src="{% static 'web/theme/js/plugins/style-switcher.js' %}"></script>
+
+<script src="{% static 'web/theme/js/plugins/owl-carousel.js' %}"></script>
+
+<script type="text/javascript" src="{% static 'web/theme/js/plugins/circles-master.js' %}"></script>
+<!-- JS Customization -->
+<script src="{% static 'web/theme/js/custom.js' %}"></script>
+
+
+{% block javascript %}
+{% endblock %}
+<!-- JS Initialization -->
+<script type="text/javascript">
 		jQuery(document).ready(function() {
 			App.init();
 
 		});
-	</script>
 
 
-	<!--[if lt IE 9]>
-		<script src="{% static 'web/theme/plugins/respond.js' %}"></script>
+</script>
 
-		<script src="{% static 'web/theme/plugins/html5shiv.js' %}"></script>
 
-		<script src="{% static 'web/theme/plugins/placeholder-IE-fixes.js' %}"></script>
+<!--[if lt IE 9]>
+<script src="{% static 'web/theme/plugins/respond.js' %}"></script>
 
-	<![endif]-->
+<script src="{% static 'web/theme/plugins/html5shiv.js' %}"></script>
+
+<script src="{% static 'web/theme/plugins/placeholder-IE-fixes.js' %}"></script>
+
+<![endif]-->
 
 
 </body>
