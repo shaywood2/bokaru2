@@ -98,41 +98,19 @@
 							</a>
 						</div>
 
-						<div class="navbar-brand" style="margin-top: 7px;">
 
 
-											&nbsp &nbsp
-											<a href="#">
-												HOME
-											</a>
 
 
-											&nbsp &nbsp
-											<a href="{% url 'web:search' %}">
-												FIND EVENTS
-											</a>
-
-
-											&nbsp &nbsp
-											<a href="{% url 'account:view' %}">
-												PROFILE
-											</a>
-
-											&nbsp &nbsp
-											<a href="{% url 'web:matches' %}">
-												MY MATCHES
-											</a>
-
-											&nbsp &nbsp
-											<a href="{% url 'web:myevents' %}">
-												MY EVENTS
-											</a>
-											&nbsp &nbsp
-											<a href="{% url 'web:myevents' %}">
-												LIVE EVENT
-											</a>
-
+						<div type="button" style="cursor: pointer" class="navbar-toggle sliding-panel__btn sliding-panel__btn--dark">
+							<span class="sr-only">Toggle navigation</span>
+							<span class="icon-bar"></span>
+							<span class="icon-bar"></span>
+							<span class="icon-bar"></span>
 						</div>
+
+
+
 
 
 						<!-- ENd Navbar Brand -->
@@ -293,21 +271,20 @@
 		<div class="sliding-panel-inner sliding-panel-scrollable fullscreen">
 			<ul class="sliding-navigation">
 				<li><a href="index.html">Home</a></li>
-				<li><a href="page_about3.html">Abour Us</a></li>
-				<li><a href="page_services.html">Services</a></li>
-				<li><a href="page_profile.html">Profile</a></li>
-				<li><a href="blog_large_right_sidebar1.html">Blog</a></li>
-				<li><a href="portfolio_3_columns_grid_text.html">Our Work</a></li>
-				<li><a href="page_contact1.html">Contact Us</a></li>
+				<li><a href="{% url 'web:search' %}">Find Events</a></li>
+				<li><a href="{% url 'account:view' %}">Profile</a></li>
+				<li><a href="{% url 'web:matches' %}">Matches</a></li>
+				<li><a href="{% url 'web:myevents' %}">My Events</a></li>
+
 			</ul>
 
-			<h4>Contacts</h4>
+			<h4>My Profile - <span style="font-size: 9pt;"><a href="#">Update</a></span></h4>
 			<address>
-				58, Lorem Lis Street, Central Ave<br>
-				New York, US<br><br>
-				Phone: 938 334 6049<br>
-				Fax: 938 334 6050<br><br>
-				Email: <a href="mailto:#">info@htmlstream.com</a><br>
+				testUser2<br>
+				New York, US<br>
+				Age 30<br>
+				Male<br>
+				<a href="mailto:#">info@bokaru.com</a><br>
 			</address>
 
 			<ul class="list-inline social-icons-v1 social-icons-v1--dark">
@@ -381,8 +358,9 @@
 
 
 
+<script src="{% static 'web/theme/plugins/wow-animations/js/wow.min.js' %}"></script>
 
-
+<script src="{% static 'web/theme/plugins/sliding-panel/jquery.sliding-panel.js' %}"></script>
 
 
 	<!-- JS Page Level -->

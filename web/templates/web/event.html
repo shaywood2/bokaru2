@@ -71,25 +71,84 @@
                         </div>
                         <div class="col-md-7">
                             <h2>{{event.name}}</h2>
-                            <span><strong>Location:</strong> {{event.locationName}}</span>
-                            <span><strong>Age Ranges:</strong> {{groups.0}} &amp; {{groups.1}}</span>
-                            <span><strong>Date:</strong> {{event.startDateTime}}</span>
+
                             <hr>
                             <p>{{event.description}}</p>
-                            <p>{{event.startDateTime}}</p>
 
-                            <strong>DEBUG PRODUCT: {{event.product}}</strong><br>
-                            <strong>DEBUG IS_REGISTERED: {{is_registered}}</strong>
 
-                            <p>Created by: {{event.creator}}</p>
+                           <!-- <strong>DEBUG PRODUCT: {{event.product}}</strong><br>
+                            <strong>DEBUG IS_REGISTERED: {{is_registered}}</strong> -->
 
-                            <br/>
 
-                            <p>{{groups.0}} registered {{group1_participants.count}} out of
-                                {{event.maxParticipantsInGroup}}</p>
-                            <p>{{groups.1}} registered {{group2_participants.count}} out of
-                                {{event.maxParticipantsInGroup}}</p>
+
+
+
                         </div>
+
+
+
+
+
+                        <div class="col-md-7">
+                        <div class="panel panel-sea margin-bottom-40" style="border: none;">
+								<div class="panel-heading" style="background-color: gray; color: white">
+									<h3 class="panel-title" style="font-weight: 200; font-size: 12pt"><i class="fa fa-edit"></i> Event Details</h3>
+								</div>
+								<table class="table table-striped">
+
+									<tbody>
+										<tr>
+											<td>Location</td>
+											<td>{{event.locationName}}</td>
+
+										</tr>
+
+										<tr>
+											<td>Date</td>
+											<td>{{event.startDateTime}}</td>
+
+										</tr>
+
+                                        <tr>
+											<td>Created By</td>
+											<td>{{event.creator}}</td>
+
+										</tr>
+
+									</tbody>
+								</table>
+							</div>
+                            </div>
+
+
+                        <div class="col-md-7">
+                        <div class="panel panel-sea margin-bottom-40" style="border: none;">
+								<div class="panel-heading" style="background-color: gray; color: white">
+									<h3 class="panel-title" style="font-weight: 200; font-size: 12pt"><i class="fa fa-edit"></i>Demographics</h3>
+								</div>
+								<table class="table table-striped">
+
+									<tbody>
+										<tr>
+											<td>{{groups.0.name}}</td>
+											<td>{{groups.0.ageMin}} - {{groups.0.ageMax}}</td>
+
+										</tr>
+
+                                        {% if num_groups == 2 %}
+										<tr>
+											<td>{{groups.1.name}}</td>
+											<td>{{groups.1.ageMin}} - {{groups.1.ageMax}}</td>
+
+										</tr>
+                                        {% endif %}
+
+									</tbody>
+								</table>
+							</div>
+                            </div>
+
+
                     </div>
                 </div><!--/end row-->
                 <div class="row margin-top-20">
@@ -164,7 +223,8 @@
         <div class="col-md-12">
 
             <div class="profile-body margin-bottom-20">
-                <h2> {{groups.0}} </h2>
+                <h2> {{groups.0.name}} </h2>
+                <h4 style="font-weight: 200"> Ages {{groups.0.ageMin}} - {{groups.0.ageMax}} </h4>
                 <!--Profile Blog-->
                 <div class="row">
 
@@ -190,7 +250,8 @@
 
                 </div>
                 {% if group2_participants.count > 0 %}
-                <h2> {{groups.1}} </h2>
+                <h2> {{groups.1.name}} </h2>
+                <h4 style="font-weight: 200"> Ages {{groups.1.ageMin}} - {{groups.1.ageMax}} </h4>
                 <div class="row">
 
                     {% for participant in group2_participants %}

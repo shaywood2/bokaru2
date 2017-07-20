@@ -9,7 +9,7 @@
 
     {% block header %}
 
-        <link rel="stylesheet" href="{% static 'account/css/paymentInfo.css' %}">
+
         <link rel="stylesheet" href="{% static 'account/css/credit_card.css' %}">
 
 
@@ -110,7 +110,7 @@
                                  <div class="col-md-6 form-row credit_card_pay_input">
 
                                     <button class="float-right">Sign Up for Event</button>
-                                    <button class="float-right" onclick="javascript: showExistingCardForm();">Use Existing Card</button>
+                                   {% if credit_card %} <button class="float-right" onclick="javascript: showExistingCardForm();">Use Existing Card</button>{% endif %}
                                  </div>
                                 </form>
                     </div>
