@@ -113,19 +113,6 @@
     -o-transform: rotateY(180deg);
     transform: rotateY(180deg); }
 
-.no-svg .card-image {
-  background-image: url("../images/cc-front.png"); }
-  .no-svg .card-image.visa {
-    background-image: url("../images/cc-visa.png"); }
-  .no-svg .card-image.mc {
-    background-image: url("../images/cc-mc.png"); }
-  .no-svg .card-image.amex {
-    background-image: url("../images/cc-amex.png"); }
-  .no-svg .card-image.disc {
-    background-image: url("../images/cc-disc.png"); }
-  .no-svg .card-image.cvv2 {
-    background-image: url("../images/cc-back.png"); }
-
 .card-instruction {
   font-size: 80%;
   color: gray; }
