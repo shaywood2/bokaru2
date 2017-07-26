@@ -1,4 +1,5 @@
 import datetime
+import logging
 
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
@@ -10,11 +11,10 @@ from django.utils.timezone import utc
 from account.models import Account
 from money.billing_logic import get_product_by_participant_number
 from .forms import EventForm, EventGroupForm, SearchForm
-from .models import Event, EventGroup
-import logging
+from .models import Event, EventGroup, Pick
+
 # Get an instance of a logger
 logger = logging.getLogger(__name__)
-# logger.error('This is an error')
 
 
 def index(request):
@@ -196,24 +196,24 @@ def participants(request):
 
 
 def event_joined(request, event_id):
-
     selected_event = get_object_or_404(Event, pk=event_id)
     event_groups = list(selected_event.eventgroup_set.all())
     num_groups = len(event_groups)
     group1_spots_left = selected_event.maxParticipantsInGroup - event_groups[0].count_registered_participants()
 
     # group1_participants = Account.objects.filter(user__in=event_groups[0].participants.all())
-    group1_participants = Account.objects.filter(user__in=event_groups[0].get_registered_participants().values_list('user'))
+    group1_participants = Account.objects.filter(
+        user__in=event_groups[0].get_registered_participants().values_list('user'))
     group2_participants = {}
-    group1_filled_percentage = float(event_groups[0].get_registered_participants().values_list('user').count()) / \
-        selected_event.maxParticipantsInGroup * 100
+    group1_filled_percentage = float(event_groups[0].get_registered_participants().values_list(
+        'user').count()) / selected_event.maxParticipantsInGroup * 100
     group2_spots_left = 0
     if num_groups > 1:
-        group2_participants = Account.objects.filter(user__in=event_groups[1].get_registered_participants().values_list('user'))
+        group2_participants = Account.objects.filter(
+            user__in=event_groups[1].get_registered_participants().values_list('user'))
         group2_spots_left = selected_event.maxParticipantsInGroup - event_groups[1].count_registered_participants()
-        group2_filled_percentage = float(event_groups[1].get_registered_participants().values_list('user').count())\
-                                   / selected_event.maxParticipantsInGroup * 100
-
+        group2_filled_percentage = float(event_groups[1].get_registered_participants().values_list(
+            'user').count()) / selected_event.maxParticipantsInGroup * 100
 
     context = {
         'test': "Event Joined Page",
@@ -239,8 +239,11 @@ def payment(request):
     return render(request, 'web/payment.html', context)
 
 
+@login_required
 def matches(request):
-    context = {}
+    # Get all matches by user
+    picks = Pick.objects.get_all_matches_by_user(request.user)
+    context = {'pick_map': sorted(picks.items())}
 
     return render(request, 'web/matches.html', context)
 

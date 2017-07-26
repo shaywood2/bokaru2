@@ -122,15 +122,9 @@
 						<!-- End Header Inner Right -->
 					</div>
 				</div>
-				<!-- Overlay for active event
-				<div class="container" style="width: 100%; height: 100px; background-color: #e74c3c">
-					<div style="line-height: 100px; font-size: 20pt; text-align: center; color: white">You have an event starting soon.
-						<a href="#" style="color: white; text-decoration: underline">Join Now</a>
-						<div>X</div>
-					</div>
+                 {% load event_notification_tag %}
+                {% autoescape off %}{% event_notification request %}{% endautoescape %}
 
-				</div>
-				-->
 			</div>
 			<!-- End Navbar -->
 		</div>

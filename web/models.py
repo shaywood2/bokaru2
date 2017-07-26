@@ -113,6 +113,18 @@ class Event(models.Model):
     def __str__(self):
         return self.name + ' @ ' + self.locationName + ', [' + str(self.startDateTime) + ']'
 
+    def __lt__(self, other):
+        return self.startDateTime < other.startDateTime
+
+    def __hash__(self):
+        return hash((self.name, self.locationName, self.startDateTime, self.id))
+
+    def __eq__(self, other):
+        return self.id == other.id
+
+    def __ne__(self, other):
+        return not (self == other)
+
     # Return True if the user is registered in any group of this event
     def is_registered(self, user):
         try:
@@ -258,29 +270,41 @@ class EventParticipant(models.Model):
 
 
 class PickManager(models.Manager):
-    def get_query_set(self):
-        return models.QuerySet(self.model, using=self._db)
-
-    def get_matches(self, user, event):
-        matches = []
+    def get_all_matches_by_user(self, user):
+        result = {}
         # Get all picks from an event
-        for users_pick in self.get_query_set().filter(picker=user, event=event):
-            if len(self.get_query_set().filter(picker=users_pick.picked, picked=user, event=event)) > 0:
-                matches.append(users_pick.picked)
-        return matches
+        for users_pick in self.filter(picker=user):
+            if len(self.filter(picker=users_pick.picked, picked=user)) > 0:
+                if users_pick.event not in result:
+                    result[users_pick.event] = []
+
+                result[users_pick.event].append(users_pick.picked)
+
+        return result
+
+    def get_all_matches_by_user_and_event(self, user, event):
+        all_matches = []
+        # Get all picks from an event
+        for users_pick in self.filter(picker=user, event=event):
+            if len(self.filter(picker=users_pick.picked, picked=user, event=event)) > 0:
+                all_matches.append(users_pick.picked)
+        return all_matches
+
+    @staticmethod
+    def pick(user, picked, event):
+        p = Pick(picker=user, picked=picked, event=event)
+        p.save()
+        return p
 
 
 class Pick(models.Model):
+    # TODO: save "no" choices as well
     picker = models.ForeignKey(settings.AUTH_USER_MODEL, related_name='picked_by')
     picked = models.ForeignKey(settings.AUTH_USER_MODEL, related_name='picked')
     event = models.ForeignKey(Event)
 
     # Automatic timestamps
     created = models.DateTimeField(auto_now_add=True)
-
-    # def pick(self, picker, picked, event):
-    #     p = Pick(picker=picker, picked=picked, event=event)
-    #     return p
 
     # Custom manager
     objects = PickManager()
