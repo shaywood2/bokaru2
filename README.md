@@ -35,10 +35,11 @@ Do this once:
     1. Run command `python3 /home/vagrant/bokaru/manage.py createsuperuser`
     2. Enter user's name, email and password (e.g. bokaru, bokaru@bokaru.com, password123)
 13. Create product records:
-    1. Log the dev server and navigate to the admin panel (see instruction below)
-    2. Add 3 products with the following short codes `smallevent`, `mediumevent` and `largeevent`
-    3. Amount and other fields do not matter at this point
-    4. Stop the server with CTRL+C
+    1. Start the interactive Python shell: `python3 /home/vagrant/bokaru/manage.py shell`
+    2. Import the required module: `from chat import test_data`
+    3. Run the function: `test_data.make_products()`
+    4. **Optional**: create test events by running commands `test_data.make_event_two_groups()` and `test_data.make_event_one_group()`
+    5. Run command `exit()` to exit the shell
 14. Run the tests
     1. Change directory `cd /home/vagrant/bokaru/`
     2. Run all tests `python3 ./manage.py test`
@@ -99,7 +100,7 @@ Changing models
 Do this whenever models are added or modified:
 
 1. Change your models (in models.py).
-2. Run `python3 /home/vagrant/bokaru/manage.py makemigrations` to create migrations for those changes
+2. Run `python3 /home/vagrant/bokaru/manage.py makemigrations` to create migrations for those changes.
 3. Run `python3 /home/vagrant/bokaru/manage.py migrate` to apply those changes to the database.
 
 Static files

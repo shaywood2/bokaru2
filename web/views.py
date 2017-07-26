@@ -42,7 +42,7 @@ def search(request):
     if request.method == 'POST':
         form = SearchForm(request.POST)
         #logger.error('This is an error 5: ' + form.errors.as_json())
-        
+
         if form.is_valid():
             # Full text search
             search_result = Event.objects.search_text(form.cleaned_data['search_term'])

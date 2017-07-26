@@ -1,0 +1,107 @@
+{% extends 'web/base.html' %}
+
+
+{% load staticfiles %}
+
+
+
+
+{% block header %}
+
+<link rel="stylesheet" href="{% static 'web/css/search.css' %}">
+
+
+{% endblock %}
+
+
+{% block content %}
+
+<div class="container content-md">
+
+
+
+
+
+    <h2 class="heading-md search_title">No events starting soon</h2>
+
+
+
+
+
+
+
+    <div class="heading heading-v4 margin-bottom-40">
+        <h2>Next Event</h2>
+        <br />
+        <h4>Starting In {{ event.startDateTime|timeuntil }}</h4>
+    </div>
+
+{% if event %}
+<div class="row news-v1 margin-bottom-40">
+
+				<div class="col-md-4 md-margin-bottom-40" style="margin-left: auto; margin-right: auto; float: none;">
+					<div class="news-v1-in">
+						<a href="#"><img class="img-responsive" src="{% static 'web/theme/img/main/img11.jpg' %}" alt=""></a>
+
+						<h3><a href="#">{{event.name}}</a></h3>
+						<p>{{event.description}}</p>
+						<ul class="list-inline news-v1-info">
+							<li><a href="#">{{event.locationName}}</a></li>
+							<li>|</li>
+							<li><i class="fa fa-clock-o"></i> {{event.startDateTime}}</li>
+							<li class="pull-right"><a href="#"><i class="fa fa-comments-o"></i> 14</a></li>
+						</ul>
+					</div>
+				</div>
+
+			</div>
+
+    {% else %}
+    <div class="heading margin-bottom-40">
+        <h2>You have not signed up for any events!</h2>
+        <br />
+        <h2>Find one now.</h2>
+    </div>
+
+    <form method="post" action="{% url 'web:search' %}">
+        <div class="row">
+            <div class="col-md-12 margin-bottom-40" style="text-align: center">
+
+                    {% csrf_token %}
+
+
+                <input type="text" id="id_search_term" name="search_term" class="search_input" placeholder="{{search_placeholder}}"></input>
+                <select id="id_distance" name="distance" class="distance_input"><option>Distance</option><option>5</option><option>10</option><option>20</option><option>50</option><option>100</option></select>
+            </div>
+        </div>
+
+          <div class="row md-margin-bottom-80">
+            <div class="col-md-12 margin-bottom-80" style="text-align: center">
+
+
+
+                    <input type="submit" class="btn-u btn-u-lg btn-u-red" value="Search"/>
+
+
+            </div>
+        </div>
+      </form>
+    {% endif %}
+
+    </div>
+
+
+
+
+
+
+{% endblock %}
+
+
+{% block javascript %}
+
+<script type="text/javascript"
+        src="{% static 'web/theme/plugins/cube-portfolio/cubeportfolio/js/jquery.cubeportfolio.min.js' %}"></script>
+<script type="text/javascript" src="{% static 'web/theme/js/plugins/cube-portfolio/cube-portfolio-2.js' %}"></script>
+
+{% endblock %}
