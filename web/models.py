@@ -114,12 +114,16 @@ class Event(models.Model):
         return self.name + ' @ ' + self.locationName + ', [' + str(self.startDateTime) + ']'
 
     def __lt__(self, other):
+        if other is None:
+            return False
         return self.startDateTime < other.startDateTime
 
     def __hash__(self):
         return hash((self.name, self.locationName, self.startDateTime, self.id))
 
     def __eq__(self, other):
+        if other is None:
+            return False
         return self.id == other.id
 
     def __ne__(self, other):
