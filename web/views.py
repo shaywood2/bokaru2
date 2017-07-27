@@ -41,6 +41,8 @@ def search(request):
     placeholder = "Dog Lovers"
     if request.method == 'POST':
         form = SearchForm(request.POST)
+        #logger.error('This is an error 5: ' + form.errors.as_json())
+
         if form.is_valid():
             # Full text search
             search_result = Event.objects.search_text(form.cleaned_data['search_term'])
@@ -54,6 +56,7 @@ def search(request):
             # TODO: filter out full events
             # TODO: search by event size
             # TODO: search by filled percentage
+
     else:
         form = SearchForm
 
