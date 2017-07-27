@@ -3,7 +3,7 @@
 from django.contrib.auth.decorators import login_required
 from django.http import JsonResponse
 from django.shortcuts import render
-
+from account.models import Account
 from chat import utils
 from web.models import Event
 
@@ -29,10 +29,11 @@ def live_event(request):
     if event.is_in_progress():
         # Get current date
         date = utils.get_current_date(request.user.id, event.id)
-
+        account = Account.objects.get(user=request.user)
         context = {
             'event': event,
-            'date': date
+            'date': date,
+            'account': account
         }
 
         if date is None:
