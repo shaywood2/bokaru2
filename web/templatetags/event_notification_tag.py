@@ -27,4 +27,4 @@ def event_notification(request):
 
     # TODO: include redirect javascript
     if event.is_in_progress():
-        return '<strong>event in progress, get going</strong>'
+        return '<strong>event starting soon</strong>'

@@ -23,7 +23,7 @@
 
 
     <h2 class="heading-md search_title">Find Events Near You</h2>
-     <form method="post">
+     <form method="POST">
         <div class="row">
             <div class="col-md-12 margin-bottom-40" style="text-align: center">
 
@@ -31,7 +31,7 @@
 
 
                 <input type="text" id="id_search_term" name="search_term" class="search_input" placeholder="{{search_placeholder}}"></input>
-                <select id="id_distance" name="distance" class="distance_input"><option>Distance</option><option>5 KM</option><option>10 KM</option><option>20 KM</option><option>50 KM</option><option>100 KM</option></select>
+                <select id="id_distance" name="distance" class="distance_input"><option>Distance</option><option>5</option><option>10</option><option>20</option><option>50</option><option>100</option></select>
             </div>
         </div>
 
@@ -51,7 +51,9 @@
 
 
 <div class="row news-v1">
+
                 {% for event in search_result %}
+
 				<div class="col-md-4 md-margin-bottom-40">
 					<div class="news-v1-in">
 						<a href="{% url 'web:event_view' event.id %}"><img class="img-responsive" src="{% static 'web/theme/img/main/img11.jpg' %}" alt=""></a>
