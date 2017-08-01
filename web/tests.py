@@ -227,12 +227,12 @@ class PickModelCase(TestCase):
                             maxParticipantsInGroup=3, numGroups=2, product=self.product1)
         self.event2.save()
 
-        Pick.objects.pick(self.user1, self.user2, self.event)
-        Pick.objects.pick(self.user1, self.user3, self.event)
-        Pick.objects.pick(self.user2, self.user1, self.event)
-        Pick.objects.pick(self.user2, self.user3, self.event)
-        Pick.objects.pick(self.user1, self.user4, self.event2)
-        Pick.objects.pick(self.user4, self.user1, self.event2)
+        Pick.objects.pick(self.user1, self.user2, self.event, Pick.YES)
+        Pick.objects.pick(self.user1, self.user3, self.event, Pick.YES)
+        Pick.objects.pick(self.user2, self.user1, self.event, Pick.YES)
+        Pick.objects.pick(self.user2, self.user3, self.event, Pick.YES)
+        Pick.objects.pick(self.user1, self.user4, self.event2, Pick.YES)
+        Pick.objects.pick(self.user4, self.user1, self.event2, Pick.YES)
 
     def test_get_all_matches_by_user_and_event(self):
         # Get all matches for user1

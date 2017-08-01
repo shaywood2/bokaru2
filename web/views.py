@@ -243,7 +243,9 @@ def payment(request):
 def matches(request):
     # Get all matches by user
     picks = Pick.objects.get_all_matches_by_user(request.user)
-    context = {'pick_map': sorted(picks.items())}
+    # Sort picks by event date
+    picks = sorted(picks.items(), key=lambda pick: pick[0].startDateTime)
+    context = {'pick_map': picks}
 
     return render(request, 'web/matches.html', context)
 

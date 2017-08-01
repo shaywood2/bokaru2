@@ -16,10 +16,6 @@ from django.utils.translation import ugettext_lazy as _
 from money.models import Product
 
 
-def get_sentinel_user():
-    return get_user_model().objects.get_or_create(username='deleted')[0]
-
-
 # Splits the query string in individual keywords, getting rid of unnecessary spaces and grouping quoted words together.
 def normalize_query(query_string,
                     find_terms=re.compile(r'"([^"]+)"|(\S+)').findall,
@@ -81,10 +77,7 @@ class Event(models.Model):
     # The event must be at least 70% full to be confirmed
     CONFIRMED_MIN_PARTICIPANTS = 0.7
 
-    creator = models.ForeignKey(
-        settings.AUTH_USER_MODEL,
-        on_delete=models.SET(get_sentinel_user)
-    )
+    creator = models.ForeignKey(settings.AUTH_USER_MODEL)
     name = models.CharField(max_length=150)
     locationName = models.CharField(max_length=150)
     locationCoordinates = gis_models.PointField(srid=4326, default=Point(0, 0))
@@ -110,24 +103,9 @@ class Event(models.Model):
 
     objects = EventManager()
 
+    # To string
     def __str__(self):
         return self.name + ' @ ' + self.locationName + ', [' + str(self.startDateTime) + ']'
-
-    def __lt__(self, other):
-        if other is None:
-            return False
-        return self.startDateTime < other.startDateTime
-
-    def __hash__(self):
-        return hash((self.name, self.locationName, self.startDateTime, self.id))
-
-    def __eq__(self, other):
-        if other is None:
-            return False
-        return self.id == other.id
-
-    def __ne__(self, other):
-        return not (self == other)
 
     # Return True if the user is registered in any group of this event
     def is_registered(self, user):
@@ -259,10 +237,10 @@ class EventParticipant(models.Model):
     group = models.ForeignKey(EventGroup, on_delete=models.PROTECT)
     user = models.ForeignKey(settings.AUTH_USER_MODEL)
     STATUSES = (
-        ('registered', REGISTERED),
-        ('waiting_list', WAITING_LIST),
-        ('payment_success', PAYMENT_SUCCESS),
-        ('payment_failure', PAYMENT_FAILURE),
+        (REGISTERED, 'registered'),
+        (WAITING_LIST, 'waiting_list'),
+        (PAYMENT_SUCCESS, 'payment_success'),
+        (PAYMENT_FAILURE, 'payment_failure'),
     )
     status = models.CharField(max_length=20, choices=STATUSES)
 
@@ -278,7 +256,7 @@ class PickManager(models.Manager):
         result = {}
         # Get all picks from an event
         for users_pick in self.filter(picker=user):
-            if len(self.filter(picker=users_pick.picked, picked=user)) > 0:
+            if len(self.filter(picker=users_pick.picked, picked=user, response=Pick.YES)) > 0:
                 if users_pick.event not in result:
                     result[users_pick.event] = []
 
@@ -290,22 +268,56 @@ class PickManager(models.Manager):
         all_matches = []
         # Get all picks from an event
         for users_pick in self.filter(picker=user, event=event):
-            if len(self.filter(picker=users_pick.picked, picked=user, event=event)) > 0:
+            if len(self.filter(picker=users_pick.picked, picked=user, event=event, response=Pick.YES)) > 0:
                 all_matches.append(users_pick.picked)
         return all_matches
 
     @staticmethod
-    def pick(user, picked, event):
-        p = Pick(picker=user, picked=picked, event=event)
+    def pick(user, picked, event, response):
+        # Check if the pick exists
+        try:
+            p = Pick.objects.get(picker=user, picked=picked, event=event)
+            # Update response
+            p.response = response
+        except Pick.DoesNotExist:
+            p = Pick(picker=user, picked=picked, event=event, response=response)
+
+        p.save()
+        return p
+
+    @staticmethod
+    def pick_by_id(user, picked_id, event_id, response):
+        picked = get_user_model().objects.get(id=picked_id)
+
+        event = Event.objects.get(id=event_id)
+
+        # Check if the pick exists
+        try:
+            p = Pick.objects.get(picker=user, picked=picked, event=event)
+            # Update response
+            p.response = response
+        except Pick.DoesNotExist:
+            p = Pick(picker=user, picked=picked, event=event, response=response)
+
         p.save()
         return p
 
 
 class Pick(models.Model):
-    # TODO: save "no" choices as well
+    # Choice
+    YES = 1
+    NO = 0
+    MAYBE = 2
+
     picker = models.ForeignKey(settings.AUTH_USER_MODEL, related_name='picked_by')
     picked = models.ForeignKey(settings.AUTH_USER_MODEL, related_name='picked')
     event = models.ForeignKey(Event)
+    RESPONSES = (
+        (YES, 'liked'),
+        (NO, 'did not like'),
+        (MAYBE, 'maybe liked')
+    )
+    response = models.PositiveSmallIntegerField(default=NO, choices=RESPONSES)
 
     # Automatic timestamps
     created = models.DateTimeField(auto_now_add=True)
@@ -314,4 +326,11 @@ class Pick(models.Model):
     objects = PickManager()
 
     def __str__(self):
-        return 'User ' + str(self.picker) + ' picked ' + str(self.picked) + ' at event ' + str(self.event)
+        if self.response == self.YES:
+            return 'User ' + str(self.picker) + ' LIKED ' + str(self.picked) + ' at event ' + str(self.event)
+
+        if self.response == self.NO:
+            return 'User ' + str(self.picker) + ' DID NOT LIKE ' + str(self.picked) + ' at event ' + str(self.event)
+
+        if self.response == self.MAYBE:
+            return 'User ' + str(self.picker) + ' MAYBE LIKED ' + str(self.picked) + ' at event ' + str(self.event)
