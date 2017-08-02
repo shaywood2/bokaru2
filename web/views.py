@@ -5,13 +5,15 @@ from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.forms.formsets import formset_factory
 from django.http import HttpResponseRedirect
+from django.http import JsonResponse
 from django.shortcuts import render, reverse, get_object_or_404
 from django.utils.timezone import utc
+from django.views.decorators.csrf import csrf_exempt
 
 from account.models import Account
 from money.billing_logic import get_product_by_participant_number
 from .forms import EventForm, EventGroupForm, SearchForm
-from .models import Event, EventGroup, Pick
+from .models import Event, EventGroup, Pick, Memo
 
 # Get an instance of a logger
 logger = logging.getLogger(__name__)
@@ -41,7 +43,7 @@ def search(request):
     placeholder = "Dog Lovers"
     if request.method == 'POST':
         form = SearchForm(request.POST)
-        #logger.error('This is an error 5: ' + form.errors.as_json())
+        # logger.error('This is an error 5: ' + form.errors.as_json())
 
         if form.is_valid():
             # Full text search
@@ -298,3 +300,15 @@ def privacy_policy(request):
     }
 
     return render(request, 'web/privacypolicy.html', context)
+
+
+@login_required
+@csrf_exempt
+def create_or_update_memo(request, about_user_id):
+    # TODO: add crsf protection: https://docs.djangoproject.com/en/1.11/ref/csrf/
+    if request.method == 'POST':
+        # Get content from the body
+        content = request.body.decode('utf-8')
+        memo = Memo.objects.create_or_update_memo_by_id(request.user, about_user_id, content)
+
+        return JsonResponse({'owner': str(memo.owner), 'about': str(memo.about), 'content': str(memo.content)})

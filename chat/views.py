@@ -120,7 +120,6 @@ def get_current_date(request, event_id):
 
 @login_required
 def create_pick(request, target_user_id, event_id, response):
-
     pick = Pick.objects.pick_by_id(request.user, target_user_id, event_id, response)
 
     return JsonResponse({'picker': str(pick.picker), 'picked': str(pick.picked), 'event': str(pick.event),

@@ -244,8 +244,9 @@ class EventParticipant(models.Model):
     )
     status = models.CharField(max_length=20, choices=STATUSES)
 
-    # Automatic timestamp
+    # Automatic timestamps
     created = models.DateTimeField(auto_now_add=True)
+    updated = models.DateTimeField(auto_now=True)
 
     def __str__(self):
         return self.user.username + ' [' + str(self.user.id) + '] ' + ' in event: ' + self.group.event.name
@@ -272,11 +273,10 @@ class PickManager(models.Manager):
                 all_matches.append(users_pick.picked)
         return all_matches
 
-    @staticmethod
-    def pick(user, picked, event, response):
+    def pick(self, user, picked, event, response):
         # Check if the pick exists
         try:
-            p = Pick.objects.get(picker=user, picked=picked, event=event)
+            p = self.get(picker=user, picked=picked, event=event)
             # Update response
             p.response = response
         except Pick.DoesNotExist:
@@ -285,22 +285,12 @@ class PickManager(models.Manager):
         p.save()
         return p
 
-    @staticmethod
-    def pick_by_id(user, picked_id, event_id, response):
+    def pick_by_id(self, user, picked_id, event_id, response):
         picked = get_user_model().objects.get(id=picked_id)
 
         event = Event.objects.get(id=event_id)
 
-        # Check if the pick exists
-        try:
-            p = Pick.objects.get(picker=user, picked=picked, event=event)
-            # Update response
-            p.response = response
-        except Pick.DoesNotExist:
-            p = Pick(picker=user, picked=picked, event=event, response=response)
-
-        p.save()
-        return p
+        return self.pick(user, picked, event, response)
 
 
 class Pick(models.Model):
@@ -321,6 +311,7 @@ class Pick(models.Model):
 
     # Automatic timestamps
     created = models.DateTimeField(auto_now_add=True)
+    updated = models.DateTimeField(auto_now=True)
 
     # Custom manager
     objects = PickManager()
@@ -334,3 +325,38 @@ class Pick(models.Model):
 
         if self.response == self.MAYBE:
             return 'User ' + str(self.picker) + ' MAYBE LIKED ' + str(self.picked) + ' at event ' + str(self.event)
+
+
+class MemoManager(models.Manager):
+    def create_or_update_memo(self, owner, about, content):
+        # Check if the memo exists
+        try:
+            m = self.get(owner=owner, about=about)
+            # Update content
+            m.content = content
+        except Memo.DoesNotExist:
+            m = Memo(owner=owner, about=about, content=content)
+
+        m.save()
+        return m
+
+    def create_or_update_memo_by_id(self, owner, about_id, content):
+        about = get_user_model().objects.get(id=about_id)
+
+        return self.create_or_update_memo(owner, about, content)
+
+
+class Memo(models.Model):
+    owner = models.ForeignKey(settings.AUTH_USER_MODEL, related_name='owner')
+    about = models.ForeignKey(settings.AUTH_USER_MODEL, related_name='about')
+    content = models.TextField(max_length=2000, blank=True)
+
+    # Automatic timestamps
+    created = models.DateTimeField(auto_now_add=True)
+    updated = models.DateTimeField(auto_now=True)
+
+    # Custom manager
+    objects = MemoManager()
+
+    def __str__(self):
+        return str(self.owner) + ' (' + str(self.about) + '): ' + self.content
