@@ -307,7 +307,7 @@ class Pick(models.Model):
         (NO, 'did not like'),
         (MAYBE, 'maybe liked')
     )
-    response = models.PositiveSmallIntegerField(default=NO, choices=RESPONSES)
+    response = models.PositiveSmallIntegerField(default=MAYBE, choices=RESPONSES)
 
     # Automatic timestamps
     created = models.DateTimeField(auto_now_add=True)
