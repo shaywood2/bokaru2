@@ -16,4 +16,8 @@ urlpatterns = [
     url(r'^current_date/(?P<event_id>.+)/$', views.get_current_date, name='get_current_date'),
     # ex: /chat/
     url(r'^$', views.live_event, name='live_event'),
+    # ex: /chat/pick/target_user/123/event/456/response/1/
+    # Responses are: 1 - Yes, 0 - No and 2 - Maybe
+    url(r'^pick/target_user/(?P<target_user_id>.+)/event/(?P<event_id>.+)/response/(?P<response>.+)/$',
+        views.create_pick, name='create_pick'),
 ]

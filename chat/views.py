@@ -4,7 +4,7 @@ from django.contrib.auth.decorators import login_required
 from django.http import JsonResponse
 from django.shortcuts import render
 from chat import utils
-from web.models import Event
+from web.models import Event, Pick
 
 api_key = "45689752"
 api_secret = "8b928a5fcc3d59f30bd1e8577171cef2676edecf"
@@ -116,3 +116,11 @@ def get_current_date(request, event_id):
         return JsonResponse(result)
     else:
         return JsonResponse({})
+
+
+@login_required
+def create_pick(request, target_user_id, event_id, response):
+    pick = Pick.objects.pick_by_id(request.user, target_user_id, event_id, response)
+
+    return JsonResponse({'picker': str(pick.picker), 'picked': str(pick.picked), 'event': str(pick.event),
+                         'response': pick.response})

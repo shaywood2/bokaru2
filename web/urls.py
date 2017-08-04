@@ -23,4 +23,6 @@ urlpatterns = [
     url(r'^termsofuse/$', views.terms_of_use, name='termsofuse'),
     url(r'^howitworks/$', views.how_it_works, name='howitworks'),
     url(r'^privacypolicy/$', views.privacy_policy, name='privacypolicy'),
+    # Usage example: $.post( "/memo/about/2/", "lorem ipsum dolor sit amet");
+    url(r'^memo/about/(?P<about_user_id>\d+)/$', views.create_or_update_memo, name='memo'),
 ]
