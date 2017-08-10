@@ -1,10 +1,5 @@
-from django.db import models
 from django.conf import settings
-from django.contrib.auth import get_user_model
-
-
-def get_sentinel_user():
-    return get_user_model().objects.get_or_create(username='deleted')[0]
+from django.db import models
 
 
 class Account(models.Model):
@@ -43,7 +38,7 @@ class Account(models.Model):
         ('curvy', 'Curvy'),
         ('overweight', 'Overweight')
     )
-    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET(get_sentinel_user))
+    user = models.ForeignKey(settings.AUTH_USER_MODEL)
     birthDate = models.DateField(blank=True, null=True)
     status = models.CharField(max_length=20, choices=STATUSES, blank=True)
     gender = models.CharField(max_length=30, blank=True)
