@@ -206,3 +206,21 @@ def get_current_date(user_id, event_id):
                 'time_passed': time_passed, 'is_active': is_active, 'time_until_reload': time_until_reload}
     except Event.DoesNotExist:
         return None
+
+
+# Make a key for a message by combining user IDs
+def make_message_key(sender_id, receiver_id):
+    return str(sender_id) + ':' + str(receiver_id)
+
+
+# Send a message from sender to receiver user by storing it in the cache
+def send_message(sender_id, receiver_id, message):
+    key = make_message_key(sender_id, receiver_id)
+    cache.set(key, message, 60 * 15)
+
+
+# Get a message from a sender to the receiver by checking the cache
+def get_message(receiver_id, sender_id):
+    key = make_message_key(sender_id, receiver_id)
+    result = cache.get(key)
+    return result
