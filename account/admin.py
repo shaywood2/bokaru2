@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from .models import Account, UserPreferences
+from .models import Account, UserPreference
 
 admin.site.register(Account)
-admin.site.register(UserPreferences)
+admin.site.register(UserPreference)

@@ -74,7 +74,7 @@ class Account(models.Model):
         return self.fullName
 
 
-class UserPreferences(models.Model):
+class UserPreference(models.Model):
     EVENT_SIZES = (
         (10, 'Small'),
         (20, 'Medium'),
