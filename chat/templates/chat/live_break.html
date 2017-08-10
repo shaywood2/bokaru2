@@ -3,62 +3,117 @@
 
 {% load staticfiles %}
 
+
+{% block header %}
+
+<link rel="stylesheet" href="{% static 'web/css/search.css' %}">
+
+
+{% endblock %}
+
+
 {% block content %}
 
 <!--=== Container Part ===-->
 <div class="container">
     <div class="content">
-        <div class="row margin-bottom-60">
-            <div class="col-sm-8">
-                <div class="headline"><h2>Talked to: {{date.fullName}}</h2></div>
-                <div class="headline"><h2>Seconds since start: {{date.time_passed}}, reload in: {{date.time_until_reload}}</h2></div>
-                <div class="headline"><h2>Is talking now: {{date.is_active}}</h2></div>
-                <div class="headline"><h2>Do you like them? YES/NO</h2></div>
-                <div class="headline"><h2>Notes</h2></div>
-                <textarea cols="80" id="id_summary" maxlength="2000" name="summary" rows="11"></textarea>
+            <h1 id="countDownDiv" class="heading-md count_down">30</h1>
+         <h1 class="heading-md count_down_description margin-bottom-80">seconds to decide</h1>
+            <h1 class="heading-md search_title margin-bottom-20">Was it a match?</h1>
+        <div class="col-md-12 margin-bottom-80" style="text-align: center">
+                Your contact information will be shared with this user in the event that they select you as a match as well.
+            </div>
+            <div class="row md-margin-bottom-80">
+            <div class="col-md-12 margin-bottom-80" style="text-align: center">
+
+                    <input id="button_yes" type="submit" class="btn-u btn-u-lg btn-u-red" style="width: 150px; margin-right: 40px;" value="Yes">
+                <input id="button_maybe" type="submit" class="btn-u btn-u-lg btn-u-red" style="width: 150px; margin-right: 40px;"  value="Maybe">
+                    <input id="button_no" type="submit" class="btn-u btn-u-lg btn-u-red" style="width: 150px;" value="No">
+                <div class="headline margin-top-20"><h2>Notes</h2></div>
+
+                <textarea onchange="changeNote(true)" oninput="changeNote()" cols="80" id="id_summary" maxlength="2000" name="summary" rows="11"></textarea>
+                <div id="saved_text" class="hidden"><h5>Saved as you type</h5></div>
             </div>
 
-            <div class="col-sm-4">
-                <div class="headline"><h2>Details</h2></div>
-                <ul class="list-unstyled project-details">
-                    <li><strong>Location: Test</strong> Web Design</li>
-                    <li><strong>Age:</strong> 17 October 2014</li>
-                    <li><strong>Gender:</strong>hi</li>
-                    <li><strong>Height:</strong>hi</li>
-                    <li><strong>Body Type:</strong>hi</li>
-                    <li><strong>Education:</strong>hi</li>
-                    <li><strong>Profession:</strong>hi</li>
-                    <li><strong>Relationship:</strong>hi</li>
-                    <li><strong>Orientation:</strong>hi</li>
-                    <li><strong>Identity:</strong>hi</li>
-                    <li><strong>Ethnicity:</strong>hi</li>
-                    <li><strong>Religion:</strong>hi</li>
-                    <li><strong>Languages:</strong>hi</li>
-                    <li><strong>Kids:</strong>hi</li>
-                    <li><strong>Vices:</strong>hi</li>
-                    <li><strong>Diet:</strong>hi</li>
-                </ul>
-            </div>
+
         </div>
-
-        <h1>DEBUG EVENT: {{event.name}} {{event.startDateTime}} - {{event.endDateTime}}</h1>
-        <h1>DEBUG is_in_progress: {{event.is_in_progress}}</h1>
-        <h1>DEBUG is_starting_soon: {{event.is_starting_soon}}</h1>
-        <h1>DEBUG is_ended_recently: {{event.is_ended_recently}}</h1>
-
-
     </div>
 </div>
 <!--=== End Container Part ===-->
+
 
 {% endblock %}
 
 {% block javascript %}
 <script type="text/javascript">
+	var countDown = 30;
+    var changeCount = 0;
+
 	function reloadPage(){
 	    location.reload();
 	}
-    setTimeout(reloadPage, {{date.time_until_reload}});
 
+	function changeCountdown() {
+	    countDown = countDown - 1;
+
+	    $("#countDownDiv")[0].innerHTML = countDown;
+	    if (countDown > 0) {
+	        setTimeout(changeCountdown, 1000);
+	    }
+	    else {
+	        submitAnswer(0);
+	    }
+	}
+
+	function submitAnswer(answer) {
+        var eventID = "{{event.id}}";
+        var pickID = "{{date.id}}";
+	    var url = "/chat/pick/target_user/" + pickID + "/event/" + eventID + "/response/" + answer + "/";
+	    console.log(url);
+	    changeNote(true);
+	    $.ajax({url: url, success: answerSubmitted, error: answerFailed});
+	}
+
+
+	function changeNote(changeNow) {
+
+	    changeCount = changeCount + 1;
+
+	    if (changeCount == 5 || changeNow == true) {
+	        console.log("Note Saved");
+	        $("#saved_text").removeClass("hidden");
+	        changeCount = 0;
+	    }
+	}
+
+
+	function answerSubmitted() {
+	    console.log("match recorded");
+	}
+
+	function answerFailed() {
+	    console.log("match NOT recorded");
+	}
+
+	$("#button_yes").click(function(){
+	    submitAnswer(1);
+    });
+
+    $("#button_maybe").click(function(){
+	    submitAnswer(2);
+    });
+
+    $("#button_no").click(function(){
+	    submitAnswer(0);
+    });
+
+
+
+
+// /chat/pick/target_user/123/event/456/response/1/
+
+
+    setTimeout(reloadPage, {{date.time_until_reload}});
+    setTimeout(changeCountdown, 1000);
 </script>
 {% endblock %}

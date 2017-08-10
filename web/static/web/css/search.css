@@ -18,3 +18,21 @@
     margin-left: 20px;
     width: 80px;
 }
+
+
+.search_title {
+    text-align: center;
+}
+
+
+
+.count_down {
+    font-size: 55pt;
+    text-align: center;
+}
+
+
+.count_down_description {
+    font-size: 12pt;
+    text-align: center;
+}

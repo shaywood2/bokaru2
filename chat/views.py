@@ -1,10 +1,12 @@
 # from opentok import OpenTok, MediaModes, OutputModes
 
+import logging
 from django.contrib.auth.decorators import login_required
 from django.http import JsonResponse
 from django.shortcuts import render
 from chat import utils
 from web.models import Event, Pick
+
 
 api_key = "45689752"
 api_secret = "8b928a5fcc3d59f30bd1e8577171cef2676edecf"
@@ -17,6 +19,7 @@ api_secret = "8b928a5fcc3d59f30bd1e8577171cef2676edecf"
 
 @login_required
 def live_event(request):
+
     # Get the current event
     event = Event.objects.get_current(request.user)
 
@@ -26,6 +29,7 @@ def live_event(request):
         return render(request, 'chat/no_live.html', {'event': event})
 
     if event.is_in_progress():
+
         # Get current date
         date = utils.get_current_date(request.user.id, event.id)
 
@@ -37,8 +41,11 @@ def live_event(request):
         if date is None:
             # No next date, the event should be over
             # TODO: get results
+            picks = Pick.objects.get_all_matches_by_user_and_event(request.user, event)
+
             context = {
-                'event': event
+                'event': event,
+                'picks': picks,
             }
             return render(request, 'chat/post_live.html', context)
 
@@ -62,9 +69,14 @@ def live_event(request):
         return render(request, 'chat/lobby.html', context)
 
     if event.is_ended_recently():
+
         # TODO: get results
+
+        picks = Pick.objects.get_all_matches_by_user_and_event(request.user, event)
+
         context = {
-            'event': event
+            'event': event,
+            'picks': picks,
         }
 
         return render(request, 'chat/post_live.html', context)

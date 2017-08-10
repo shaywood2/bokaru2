@@ -30,13 +30,17 @@
 
 
 
+
+
+{% if event %}
+
     <div class="heading heading-v4 margin-bottom-40">
         <h2>Next Event</h2>
         <br />
         <h4>Starting In {{ event.startDateTime|timeuntil }}</h4>
     </div>
 
-{% if event %}
+
 <div class="row news-v1 margin-bottom-40">
 
 				<div class="col-md-4 md-margin-bottom-40" style="margin-left: auto; margin-right: auto; float: none;">
