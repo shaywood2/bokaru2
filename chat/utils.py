@@ -195,14 +195,14 @@ def get_current_date(user_id, event_id):
         date = date_matrix[user_id][date_num]
         # Check if the date is a gap
         if date == '':
-            return {'fullName': 'wait', 'username': 'wait', 'id': -1, 'time_passed': time_passed,
+            return {'is_empty_slot': True, 'fullName': 'wait', 'username': 'wait', 'id': -1, 'time_passed': time_passed,
                     'is_active': is_active, 'time_until_reload': time_until_reload}
 
         # Get the user
         user = User.objects.get(pk=int(date))
         # Get the user's account
         account = Account.objects.get(user=user)
-        return {'account': account, 'fullName': account.fullName, 'username': user.username, 'id': user.id,
+        return {'is_empty_slot': False, 'account': account, 'fullName': account.fullName, 'username': user.username, 'id': user.id,
                 'time_passed': time_passed, 'is_active': is_active, 'time_until_reload': time_until_reload}
     except Event.DoesNotExist:
         return None

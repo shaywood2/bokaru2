@@ -8,6 +8,28 @@
 <!--=== Container Part ===-->
 <div class="container">
     <div class="content">
+         {% if date.is_empty_slot %}
+
+
+
+
+
+        <!-- End Magazine Slider -->
+
+        <div class="row margin-bottom-60">
+            <div class="col-sm-12">
+
+                <div style="text-align: center;"><h1>Your next date will start in 3 minutes.</h1></div>
+                <div style="text-align: center;"><h3>In the meanwhile enjoy this game to pass the time.</h3></div>
+
+            </div>
+
+
+        </div>
+
+
+
+        {% else %}
         <!-- Magazine Slider -->
         <div class="carousel slide carousel-v2 margin-bottom-40" id="portfolio-carousel">
             <div class="carousel-inner">
@@ -20,6 +42,12 @@
 
         <div class="row margin-bottom-60">
             <div class="col-sm-8">
+
+
+
+
+
+
                 <div class="headline"><h2>Talking to: {{date.fullName}}</h2></div>
                 <div class="headline"><h2>Seconds since start: {{date.time_passed}}, reload in: {{date.time_until_reload}}</h2></div>
                 <div class="headline"><h2>Is talking now: {{date.is_active}}</h2></div>
@@ -58,6 +86,11 @@
                 </ul>
             </div>
         </div>
+
+
+
+
+        {% endif %}
 
         <h1>DEBUG EVENT: {{event.name}} {{event.startDateTime}} - {{event.endDateTime}}</h1>
         <h1>DEBUG is_in_progress: {{event.is_in_progress}}</h1>
