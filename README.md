@@ -125,3 +125,10 @@ Here is a list of custom commands that can be called using Django admin:
   * Selects all attendees of events that will start in in the next 24 hours and charges their credit cards
   * Scheduled to run hourly
   * Command: `python3 /home/vagrant/bokaru/manage.py processpayments`
+  
+Deploy to AWS
+-------------
+The deployment procedure for AWS server:
+* Install the CLI for AWS Elastic Beanstalk (EB): `sudo pip3 install awsebcli`
+* Initialize EB: `eb init`
+* Deploy to EB: `eb deploy`
