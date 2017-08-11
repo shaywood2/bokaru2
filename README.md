@@ -125,3 +125,14 @@ Here is a list of custom commands that can be called using Django admin:
   * Selects all attendees of events that will start in in the next 24 hours and charges their credit cards
   * Scheduled to run hourly
   * Command: `python3 /home/vagrant/bokaru/manage.py processpayments`
+  
+Deploy to AWS
+-------------
+The deployment procedure for AWS server:
+* SSH into the server
+* Get the latest code from Git: `git pull`
+* Make sure the setup files are executable: `chmod +x server_setup.sh`, etc.
+* Run the setup command: `./server_setup.sh`
+* Log out and log in again, make sure that the variables are set correctly: `echo $DATABASE_URL`
+* Run the migrate command: `./server_migrate.sh`
+* Start the server: `./server_start.sh`
