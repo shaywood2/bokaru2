@@ -1,5 +1,7 @@
 language: python
 
+dist: precise
+
 python:
   - 2.7
   - 3.4
@@ -17,8 +19,6 @@ env:
 
 install:
   - pip install -r requirements.txt
-  - sudo apt-get install -y postgresql-9.5-postgis-2.3
-  - sudo service postgresql restart
 
 before_script:
   - psql -c "CREATE DATABASE bokaru;" -U postgres
