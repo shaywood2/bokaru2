@@ -18,7 +18,8 @@ env:
   - DATABASE_URL="postgres://localhost/bokaru"
 
 install:
-  - pip install -r requirements.txt
+  - pip install -r requirements/common.txt
+  - pip install -r requirements/dev.txt
 
 before_script:
   - psql -c "CREATE DATABASE bokaru;" -U postgres
