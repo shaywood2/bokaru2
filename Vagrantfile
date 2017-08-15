@@ -76,7 +76,7 @@ Vagrant.configure(2) do |config|
     sudo apt-get build-dep -y psycopg2
     sudo apt-get install -y python3-pip
     sudo apt-get install -y memcached
-    #sudo apt-get install libmemcached-dev
+    sudo apt-get install -y libmemcached-dev
 
     # Install Python dependencies
     sudo pip3 install -r /home/vagrant/bokaru/requirements/common.txt

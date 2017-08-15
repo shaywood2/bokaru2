@@ -25,8 +25,6 @@ Do this once:
     2. Exit VM using command `exit` and log in again with `vagrant ssh`
 10. Set up the environment variable(s) by running the following command(s):
     1. `echo "export DATABASE_URL='postgres://localhost/bokaru?user=bokaru&password=bokaru123'" >> ~/.bashrc`
-    2. `echo "export AWS_ACCESS_KEY_ID='AKIAJKZZF54QTZ2FEZ7A'" >> ~/.bashrc`
-    3. `echo "export AWS_SECRET_ACCESS_KEY='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'" >> ~/.bashrc`
     4. Exit VM using command `exit` and log in again with `vagrant ssh`
     5. Make sure that variables are set correctly (e.g. `echo $DATABASE_URL` should return the url above)
 11. Run the following commands to initialize up the database and collect static files:
@@ -54,7 +52,7 @@ Starting the development server
 2. SSH into the VM: `vagrant ssh`
 3. Start the development server `python3 /home/vagrant/bokaru/manage.py runserver 0.0.0.0:8000`
 4. Navigate to the [admin panel](http://localhost:8000/admin/) on the host machine
-5. NOTE: to start the server using production settings use command `python3 /home/vagrant/bokaru/manage.py runserver 0.0.0.0:8000 --settings=bokaru.settings.dev`
+5. NOTE: to start the server using production settings use command `python3 /home/vagrant/bokaru/manage.py runserver 0.0.0.0:8000 --settings=bokaru.settings.prod`
 
 Starting the production server (gunicorn)
 -----------------------------------------

@@ -5,7 +5,7 @@ sudo apt-get update
 
 # Install dependencies
 sudo apt-get install -y python3-pip
-sudo apt-get install -y memcached
+sudo apt-get install -y libmemcached-dev
 
 # Upgrade pip and install Python dependencies
 sudo pip3 install --upgrade pip
