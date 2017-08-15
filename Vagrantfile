@@ -79,7 +79,8 @@ Vagrant.configure(2) do |config|
     #sudo apt-get install libmemcached-dev
 
     # Install Python dependencies
-    sudo pip3 install -r /home/vagrant/bokaru/requirements.txt
+    sudo pip3 install -r /home/vagrant/bokaru/requirements/common.txt
+    sudo pip3 install -r /home/vagrant/bokaru/requirements/dev.txt
 
     # Create Postgres user and DB, install extensions
     sudo -u postgres psql -c "CREATE ROLE bokaru WITH LOGIN SUPERUSER PASSWORD 'bokaru123'"

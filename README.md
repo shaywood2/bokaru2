@@ -52,6 +52,7 @@ Starting the development server
 2. SSH into the VM: `vagrant ssh`
 3. Start the development server `python3 /home/vagrant/bokaru/manage.py runserver 0.0.0.0:8000`
 4. Navigate to the [admin panel](http://localhost:8000/admin/) on the host machine
+5. NOTE: to start the server using production settings use command `python3 /home/vagrant/bokaru/manage.py runserver 0.0.0.0:8000 --settings=bokaru.settings.dev`
 
 Starting the production server (gunicorn)
 -----------------------------------------
@@ -86,6 +87,8 @@ To access postgres in your Vagrant VM follow these steps:
 5. List all extensions: `\dx` (must contain postgis and postgis_topology)
 6. Run this command to quit the sql editor: `\q`
 7. Run this command to exit the postgres user: `exit`
+8. Connect to the remote server: `psql -h bokaru.ccmerekzzbun.ca-central-1.rds.amazonaws.com -d bokaru -U bokaru`
+9. Create the extension manually: `CREATE EXTENSION postgis; CREATE EXTENSION postgis_topology;`
 
 Using Django's database API
 ---------------------------

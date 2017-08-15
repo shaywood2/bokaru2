@@ -1,0 +1,2 @@
+boto>=1.4
+django-storages>=1.6
