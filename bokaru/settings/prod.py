@@ -16,4 +16,3 @@ S3_USE_SIGV4 = True
 # Set up ElastiCache
 CACHES['default']['BACKEND'] = 'django_elasticache.memcached.ElastiCache'
 CACHES['default']['LOCATION'] = os.environ['CACHE_URL']
-CACHES['default']['OPTIONS'] = {'IGNORE_CLUSTER_ERRORS': [True, False]}
