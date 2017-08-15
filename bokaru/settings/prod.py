@@ -1,5 +1,8 @@
 from bokaru.settings.common import *
 
+# Secret key
+SECRET_KEY = os.environ['DJANGO_SECRET_KEY']
+
 # Set up S3 bucket as storage
 INSTALLED_APPS += ('storages',)
 AWS_ACCESS_KEY_ID = os.environ['AWS_ACCESS_KEY_ID']

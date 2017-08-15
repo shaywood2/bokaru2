@@ -89,8 +89,6 @@ To access postgres in your Vagrant VM follow these steps:
 5. List all extensions: `\dx` (must contain postgis and postgis_topology)
 6. Run this command to quit the sql editor: `\q`
 7. Run this command to exit the postgres user: `exit`
-8. Connect to the remote server: `psql -h bokaru.ccmerekzzbun.ca-central-1.rds.amazonaws.com -d bokaru -U bokaru`
-9. Create the extension manually: `CREATE EXTENSION postgis; CREATE EXTENSION postgis_topology;`
 
 Using Django's database API
 ---------------------------
