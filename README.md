@@ -136,6 +136,6 @@ The deployment procedure for AWS server:
 * Get the latest code from Git: `git pull`
 * Make sure the setup files are executable: `chmod +x server_setup.sh`, etc.
 * Run the setup command: `./server_setup.sh`
-* Log out and log in again, make sure that the variables are set correctly: `echo $DATABASE_URL`
 * Run the migrate command: `./server_migrate.sh`
 * Start the server: `./server_start.sh`
+* Check the status of the service: `sudo systemctl status bokaru-gunicorn`
