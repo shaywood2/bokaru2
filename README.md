@@ -59,8 +59,10 @@ Starting the production server (gunicorn)
 1. Start the VM: `vagrant up`
 2. SSH into the VM: `vagrant ssh`
 3. Navigate to the project directory `cd bokaru`
-4. Start the production server by running command `gunicorn -b 0.0.0.0:8000 bokaru.wsgi`
-5. Navigate to the [admin panel](http://localhost:8000/admin/) on the host machine
+4. Copy gunicorn service config `sudo cp bokaru/configs/dev/bokaru-gunicorn.conf /etc/init/bokaru-gunicorn.conf`
+5. Start the gunicorn service `sudo service bokaru-gunicorn start`
+6. Check the status of the gunicorn service: `sudo service bokaru-gunicorn status` and make sure that the socket file `bokaru-gunicorn.sock` exists in home directory
+7. If error happens, check the logs in `sudo cat /var/log/upstart/bokaru-gunicorn.log` or `cat logs/bokaru-gunicorn.log`
 
 Vagrant Commands
 ----------------
