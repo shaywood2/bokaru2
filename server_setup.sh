@@ -6,7 +6,6 @@ sudo apt-get update
 # Install dependencies
 sudo apt-get install -y python3-pip
 sudo apt-get install -y libmemcached-dev
-sudo apt-get install -y nginx
 
 # Upgrade pip and install Python dependencies
 sudo pip3 install --upgrade pip

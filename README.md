@@ -54,8 +54,8 @@ Starting the development server
 4. Navigate to the [admin panel](http://localhost:8000/admin/) on the host machine
 5. NOTE: to start the server using production settings use command `python3 /home/vagrant/bokaru/manage.py runserver 0.0.0.0:8000 --settings=bokaru.settings.prod`
 
-Starting the production server (gunicorn)
------------------------------------------
+Starting the production server (gunicorn) locally
+-------------------------------------------------
 1. Start the VM: `vagrant up`
 2. SSH into the VM: `vagrant ssh`
 3. Navigate to the project directory `cd bokaru`
