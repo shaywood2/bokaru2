@@ -25,8 +25,8 @@ Do this once:
     2. Exit VM using command `exit` and log in again with `vagrant ssh`
 10. Set up the environment variable(s) by running the following command(s):
     1. `echo "export DATABASE_URL='postgres://localhost/bokaru?user=bokaru&password=bokaru123'" >> ~/.bashrc`
-    2. Exit VM using command `exit` and log in again with `vagrant ssh`
-    3. Make sure that variables are set correctly (e.g. `echo $DATABASE_URL` should return the url above)
+    4. Exit VM using command `exit` and log in again with `vagrant ssh`
+    5. Make sure that variables are set correctly (e.g. `echo $DATABASE_URL` should return the url above)
 11. Run the following commands to initialize up the database and collect static files:
     1. Make migrations: `python3 /home/vagrant/bokaru/manage.py makemigrations`
     2. Run migrations: `python3 /home/vagrant/bokaru/manage.py migrate`
@@ -52,14 +52,17 @@ Starting the development server
 2. SSH into the VM: `vagrant ssh`
 3. Start the development server `python3 /home/vagrant/bokaru/manage.py runserver 0.0.0.0:8000`
 4. Navigate to the [admin panel](http://localhost:8000/admin/) on the host machine
+5. NOTE: to start the server using production settings use command `python3 /home/vagrant/bokaru/manage.py runserver 0.0.0.0:8000 --settings=bokaru.settings.prod`
 
-Starting the production server (gunicorn)
------------------------------------------
+Starting the production server (gunicorn) locally
+-------------------------------------------------
 1. Start the VM: `vagrant up`
 2. SSH into the VM: `vagrant ssh`
 3. Navigate to the project directory `cd bokaru`
-4. Start the production server by running command `gunicorn -b 0.0.0.0:8000 bokaru.wsgi`
-5. Navigate to the [admin panel](http://localhost:8000/admin/) on the host machine
+4. Copy gunicorn service config `sudo cp bokaru/configs/dev/bokaru-gunicorn.conf /etc/init/bokaru-gunicorn.conf`
+5. Start the gunicorn service `sudo service bokaru-gunicorn start`
+6. Check the status of the gunicorn service: `sudo service bokaru-gunicorn status` and make sure that the socket file `bokaru-gunicorn.sock` exists in home directory
+7. If error happens, check the logs in `sudo cat /var/log/upstart/bokaru-gunicorn.log` or `cat logs/bokaru-gunicorn.log`
 
 Vagrant Commands
 ----------------
@@ -133,6 +136,6 @@ The deployment procedure for AWS server:
 * Get the latest code from Git: `git pull`
 * Make sure the setup files are executable: `chmod +x server_setup.sh`, etc.
 * Run the setup command: `./server_setup.sh`
-* Log out and log in again, make sure that the variables are set correctly: `echo $DATABASE_URL`
 * Run the migrate command: `./server_migrate.sh`
 * Start the server: `./server_start.sh`
+* Check the status of the service: `sudo systemctl status bokaru-gunicorn`

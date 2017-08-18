@@ -1,3 +1,5 @@
 #!/usr/bin/env bash
 
-gunicorn -b 0.0.0.0:8000 bokaru.wsgi
+sudo cp configs/prod/bokaru-gunicorn.service /etc/systemd/system/bokaru-gunicorn.service
+sudo systemctl start bokaru-gunicorn
+sudo systemctl enable bokaru-gunicorn
