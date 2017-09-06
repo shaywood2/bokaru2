@@ -58,10 +58,6 @@ INSTALLED_APPS = [
     'django.contrib.gis',
     'django.contrib.sessions',
     'django.contrib.messages',
-    # Disable Django's own staticfiles handling in favour of WhiteNoise, for
-    # greater consistency between gunicorn and `./manage.py runserver`. See:
-    # http://whitenoise.evans.io/en/stable/django.html#using-whitenoise-in-development
-    'whitenoise.runserver_nostatic',
     'django.contrib.staticfiles',
     'imagekit'
 ]
@@ -165,13 +161,6 @@ SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
 
 # Allow all host headers
 ALLOWED_HOSTS = ['*']
-
-# Static files (CSS, JavaScript, Images)
-STATIC_ROOT = os.path.join(BASE_DIR, "..", "www", "static")
-STATIC_URL = '/static/'
-
-MEDIA_ROOT = os.path.join(BASE_DIR, "..", "www", "uploads")
-MEDIA_URL = '/uploads/'
 
 LOGGING = {
     'version': 1,
