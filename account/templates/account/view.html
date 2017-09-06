@@ -19,6 +19,8 @@
                         </div>
                         <div class="col-md-7">
                             <h2>{{ account.fullName }}</h2>
+                            <span><img src="{{ account.photo_thumbnail.url }}"/> </span>
+
                             <span><strong>Location:</strong> [CITY]</span>
                             <span><strong>Age:</strong> {{ account.age }} </span>
                             <span><strong>Gender:</strong> {{ account.gender }} </span>
@@ -45,7 +47,7 @@
 
                 <div class="row">
                     <h4>This information is only shown to your matches:</h4>
-                    <h5>&nbsp How matches contact you: {{ account.contactInfo }} </h5>
+                    <h5>&nbsp; How matches contact you: {{ account.contactInfo }} </h5>
 
                 </div><!--/end row-->
 

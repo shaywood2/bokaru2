@@ -65,13 +65,13 @@ class RegistrationForm(RegistrationFormUniqueEmail):
 class AccountForm(ModelForm):
     class Meta:
         model = Account
-        exclude = ['user']
+        exclude = ['user', 'locationCoordinates']
 
-    def clean_gender(self):
-        gender = self.cleaned_data.get('gender')
-        if gender != 'bob':
-            raise forms.ValidationError(
-                'nope, you can be only bob',
-                code='not_bob'
-            )
-        return gender
+    # def clean_gender(self):
+    #     gender = self.cleaned_data.get('gender')
+    #     if gender != 'bob':
+    #         raise forms.ValidationError(
+    #             'nope, you can be only bob',
+    #             code='not_bob'
+    #         )
+    #     return gender

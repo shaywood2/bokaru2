@@ -1,10 +1,16 @@
 from django.conf import settings
 from django.contrib.gis.db import models as gis_models
 from django.contrib.gis.geos import Point
-from django.db import models
 from django.core.validators import MinValueValidator, MaxValueValidator
+from django.db import models
+from imagekit.models import ImageSpecField
+from imagekit.processors import ResizeToFill
 
 from web.models import Event
+
+
+def user_photo_file_name(instance, filename):
+    return 'user-photos/' + instance.user.username + '.' + filename.split('.')[-1]
 
 
 class Account(models.Model):
@@ -44,6 +50,11 @@ class Account(models.Model):
         ('overweight', 'Overweight')
     )
     user = models.ForeignKey(settings.AUTH_USER_MODEL)
+    photo = models.ImageField(upload_to=user_photo_file_name)
+    photo_thumbnail = ImageSpecField(source='photo',
+                                     processors=[ResizeToFill(400, 400)],
+                                     format='JPEG',
+                                     options={'quality': 80})
     birthDate = models.DateField(blank=True, null=True)
     status = models.CharField(max_length=20, choices=STATUSES, blank=True)
     gender = models.CharField(max_length=30, blank=True)

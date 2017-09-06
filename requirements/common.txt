@@ -1,7 +1,9 @@
 dj-database-url>=0.4
 Django>=1.10
+django-imagekit>=4.0
 django-registration>=2.2
 gunicorn>=19.7
+Pillow>=4.2
 psycopg2>=2.7
 python-memcached>=1.0
 OpenTok>=2.4

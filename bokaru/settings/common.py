@@ -62,7 +62,8 @@ INSTALLED_APPS = [
     # greater consistency between gunicorn and `./manage.py runserver`. See:
     # http://whitenoise.evans.io/en/stable/django.html#using-whitenoise-in-development
     'whitenoise.runserver_nostatic',
-    'django.contrib.staticfiles'
+    'django.contrib.staticfiles',
+    'imagekit'
 ]
 
 MIDDLEWARE_CLASSES = [
@@ -169,9 +170,8 @@ ALLOWED_HOSTS = ['*']
 STATIC_ROOT = os.path.join(BASE_DIR, "..", "www", "static")
 STATIC_URL = '/static/'
 
-# Simplified static file serving.
-# https://warehouse.python.org/project/whitenoise/
-STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
+MEDIA_ROOT = os.path.join(BASE_DIR, "..", "www", "uploads")
+MEDIA_URL = '/uploads/'
 
 LOGGING = {
     'version': 1,

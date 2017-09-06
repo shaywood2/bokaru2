@@ -250,19 +250,18 @@ def credit_card_register(request):
         )
 
     card = {
-            'brand': payment_info.credit_card_brand,
-            'last4': payment_info.credit_card_last_4,
-            'exp_month': payment_info.credit_card_exp_month,
-            'exp_year': payment_info.credit_card_exp_year,
-            'id': payment_info.credit_card_id,
-        }
+        'brand': payment_info.credit_card_brand,
+        'last4': payment_info.credit_card_last_4,
+        'exp_month': payment_info.credit_card_exp_month,
+        'exp_year': payment_info.credit_card_exp_year,
+        'id': payment_info.credit_card_id,
+    }
 
     return HttpResponseRedirect(reverse('account:credit_card'))
 
 
 @login_required
 def credit_card_register_and_pay(request, group_id):
-
     current_user = request.user
     card_found = False
 
