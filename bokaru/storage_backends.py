@@ -6,11 +6,10 @@ import os
 
 class MediaStorage(S3Boto3Storage):
     """
-        This is a custom version of S3Boto3Storage that fixes a bug in boto3
-         where the passed in file is closed upon upload.
+    This is a custom version of S3Boto3Storage that fixes a bug in boto where the passed in file is closed upon upload.
 
-        https://github.com/boto/boto3/issues/929
-        https://github.com/matthewwithanm/django-imagekit/issues/391
+    https://github.com/boto/boto3/issues/929
+    https://github.com/matthewwithanm/django-imagekit/issues/391
     """
 
     def _save_content(self, obj, content, parameters):

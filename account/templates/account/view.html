@@ -2,7 +2,6 @@
 
 
 {% load staticfiles %}
-{% load imagekit %}
 
 {% block content %}
 
@@ -20,8 +19,7 @@
                         </div>
                         <div class="col-md-7">
                             <h2>{{ account.fullName }}</h2>
-
-                            <span>{% thumbnail '200x200' account.photo -- alt="A picture of Me" id="avatar" %}</span>
+                            <span><img src="{{ account.photo_thumbnail_small.url }}"/> </span>
 
                             <span><strong>Location:</strong> [CITY]</span>
                             <span><strong>Age:</strong> {{ account.age }} </span>
