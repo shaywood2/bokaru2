@@ -97,7 +97,6 @@ def edit(request):
         form = AccountForm(request.POST, request.FILES, instance=account)
         if form.is_valid():
             form.save()
-            account.generate_image_cache()
 
             # Redirect to view profile page
             return HttpResponseRedirect(reverse('account:view'))
