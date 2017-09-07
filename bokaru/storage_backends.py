@@ -43,4 +43,5 @@ class MediaStorage(S3Boto3Storage):
         pass
 
     location = 'media'
-    file_overwrite = True
+    # TODO: Change to True and figure out how to rebuild imagekit cache
+    file_overwrite = False
