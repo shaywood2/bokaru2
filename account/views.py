@@ -64,7 +64,6 @@ def view(request):
     context = {
         'user': current_user,
         'account': account,
-
     }
 
     return render(request, 'account/view.html', context)

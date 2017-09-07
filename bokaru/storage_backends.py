@@ -12,4 +12,4 @@ class MediaStorage(S3Boto3Storage):
         pass
 
     location = 'media'
-    file_overwrite = False
+    file_overwrite = True
