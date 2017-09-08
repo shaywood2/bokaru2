@@ -1,12 +1,14 @@
+import io
+import logging
+
 from PIL import Image
 from django import forms
+from django.core.files.storage import default_storage
 from django.forms import ModelForm
 from django.utils.translation import ugettext_lazy as _
 from registration.forms import RegistrationFormUniqueEmail
 
 from .models import Account
-
-import logging
 
 # Get an instance of a logger
 logger = logging.getLogger(__name__)
@@ -84,19 +86,28 @@ class AccountForm(ModelForm):
         if commit:
             account.save()
 
+        # Get cropping parameters
         x = self.cleaned_data.get('crop_x')
         y = self.cleaned_data.get('crop_y')
         w = self.cleaned_data.get('crop_w')
         h = self.cleaned_data.get('crop_h')
 
-        image = Image.open(account.photo)
+        # Open the image file and read as an image
+        file = default_storage.open(account.photo.path, 'rb')
+        image = Image.open(file)
+
+        # Crop and resize the image
         cropped_image = image.crop((x, y, w + x, h + y))
-        logger.debug("crop image: ")
-        logger.debug(x)
-        logger.debug(y)
-        logger.debug(w)
-        logger.debug(h)
         resized_image = cropped_image.resize((400, 400), Image.ANTIALIAS)
-        resized_image.save(account.photo.path)
+
+        # Create a binary stream
+        stream = io.BytesIO()
+        resized_image.save(stream, 'JPEG')
+        file.close()
+
+        # Reopen the file for writing
+        file = default_storage.open(account.photo.path, 'wb')
+        file.write(stream.getvalue())
+        file.close()
 
         return account
