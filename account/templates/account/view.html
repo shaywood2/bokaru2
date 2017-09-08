@@ -21,7 +21,13 @@
                         <div class="col-md-7">
                             <h2>{{ account.fullName }}</h2>
 
-                            <span>{% thumbnail '200x200' account.photo -- alt="A picture of Me" id="avatar" %}</span>
+                            <span>
+                            {% ifequal account.photo '' %}
+                            <img src="{% static 'account/images/default-avatar.png' %}" alt="Default avatar" id="avatar"/>
+                            {% else %}
+                            {% thumbnail '200x200' account.photo -- alt="A picture of Me" id="avatar" %}
+                            {% endifequal %}
+                            </span>
 
                             <span><strong>Location:</strong> [CITY]</span>
                             <span><strong>Age:</strong> {{ account.age }} </span>

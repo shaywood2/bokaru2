@@ -5,6 +5,37 @@
 
 {% block profile_content %}
 
+<!-- MODAL TO CROP THE IMAGE -->
+<div class="modal fade" id="modalCrop" aria-labelledby="modalLabel" role="dialog" tabindex="-1">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content modal-lg">
+            <div class="modal-header">
+                <button type="button" class="close js-crop-dismiss" data-dismiss="modal" aria-label="Close">
+                    <span>&times;</span>
+                </button>
+                <h4 class="modal-title" id="modalLabel">Crop the image</h4>
+            </div>
+            <div class="modal-body">
+                <div>
+                    <img src="" id="image" style="max-width: 100%;">
+                </div>
+            </div>
+            <div class="modal-footer">
+                <div class="btn-group pull-left" role="group">
+                    <button type="button" class="btn btn-default js-zoom-in">
+                        <span class="glyphicon glyphicon-zoom-in"></span>
+                    </button>
+                    <button type="button" class="btn btn-default js-zoom-out">
+                        <span class="glyphicon glyphicon-zoom-out"></span>
+                    </button>
+                </div>
+                <button type="button" class="btn btn-default js-crop-dismiss" data-dismiss="modal">Never mind</button>
+                <button type="button" class="btn btn-primary js-crop">Crop</button>
+            </div>
+        </div>
+    </div>
+</div>
+
 <form method="post" enctype="multipart/form-data">
     {% csrf_token %}
 
@@ -28,6 +59,7 @@
         <h2 class="heading-md">Photo</h2>
 
         {{ form.photo }}
+        {{ form.crop_x }}{{ form.crop_y }}{{ form.crop_w }}{{ form.crop_h }}
 
         <h2 class="heading-md">Manage your profile</h2>
         <p>This is where you can control your profile settings and what is visible to other members on the site.</p>
@@ -152,8 +184,69 @@
 {% block javascript %}
 <script>
 setActiveLink($("#details_link"));
+</script>
 
+<script>
+$(function() {
 
+    /* SCRIPT TO OPEN THE MODAL WITH THE PREVIEW */
+    $("#id_photo").change(function() {
+        if (this.files && this.files[0]) {
+            var reader = new FileReader();
+            reader.onload = function(e) {
+                $("#image").attr("src", e.target.result);
+                $("#modalCrop").modal("show");
+            }
+            reader.readAsDataURL(this.files[0]);
+        }
+    });
+
+    /* SCRIPTS TO HANDLE THE CROPPER BOX */
+    var image = document.getElementById('image');
+    var cropBoxData;
+    var canvasData;
+    var cropper;
+
+    $("#modalCrop").on("shown.bs.modal", function() {
+        cropper = new Cropper(image, {
+            viewMode: 1,
+            aspectRatio: 1 / 1,
+            minCropBoxWidth: 200,
+            minCropBoxHeight: 200,
+            ready: function() {
+                cropper.setCropBoxData(cropBoxData).setCanvasData(canvasData);
+            }
+        });
+    }).on("hidden.bs.modal", function() {
+        cropBoxData = cropper.getCropBoxData();
+        canvasData = cropper.getCanvasData();
+        cropper.destroy();
+    });
+
+    // Enable zoom in button
+    $(".js-zoom-in").click(function() {
+        cropper.zoom(0.1);
+    });
+
+    // Enable zoom out button
+    $(".js-zoom-out").click(function() {
+        cropper.zoom(-0.1);
+    });
+
+    /* SCRIPT TO COLLECT THE DATA AND POST TO THE SERVER */
+    $(".js-crop").click(function() {
+        var cropData = cropper.getData();
+        $("#id_crop_x").val(cropData["x"]);
+        $("#id_crop_y").val(cropData["y"]);
+        $("#id_crop_h").val(cropData["height"]);
+        $("#id_crop_w").val(cropData["width"]);
+        $("#modalCrop").modal("hide");
+    });
+
+    $(".js-crop-dismiss").click(function() {
+        $("#id_photo").val("");
+    });
+});
 </script>
 
 {% endblock %}
