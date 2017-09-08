@@ -1,9 +1,6 @@
-import io
 import logging
 
-from PIL import Image
 from django import forms
-from django.core.files.storage import default_storage
 from django.forms import ModelForm
 from django.utils.translation import ugettext_lazy as _
 from registration.forms import RegistrationFormUniqueEmail
@@ -71,6 +68,7 @@ class RegistrationForm(RegistrationFormUniqueEmail):
 
 class AccountForm(ModelForm):
     # Photo cropping fields
+    upload_image = forms.ImageField()
     crop_x = forms.FloatField(widget=forms.HiddenInput())
     crop_y = forms.FloatField(widget=forms.HiddenInput())
     crop_w = forms.FloatField(widget=forms.HiddenInput())
@@ -79,35 +77,3 @@ class AccountForm(ModelForm):
     class Meta:
         model = Account
         exclude = ['user', 'locationCoordinates']
-
-    def save(self, commit=True):
-        account = super(AccountForm, self).save(commit=False)
-
-        if commit:
-            account.save()
-
-        # Get cropping parameters
-        x = self.cleaned_data.get('crop_x')
-        y = self.cleaned_data.get('crop_y')
-        w = self.cleaned_data.get('crop_w')
-        h = self.cleaned_data.get('crop_h')
-
-        # Open the image file and read as an image
-        file = default_storage.open(account.photo.path, 'rb')
-        image = Image.open(file)
-
-        # Crop and resize the image
-        cropped_image = image.crop((x, y, w + x, h + y))
-        resized_image = cropped_image.resize((400, 400), Image.ANTIALIAS)
-
-        # Create a binary stream
-        stream = io.BytesIO()
-        resized_image.save(stream, 'JPEG')
-        file.close()
-
-        # Reopen the file for writing
-        file = default_storage.open(account.photo.path, 'wb')
-        file.write(stream.getvalue())
-        file.close()
-
-        return account

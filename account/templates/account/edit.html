@@ -58,7 +58,7 @@
     <div id="profile" class="profile-edit tab-pane fade in active">
         <h2 class="heading-md">Photo</h2>
 
-        {{ form.photo }}
+        {{ form.upload_image }}
         {{ form.crop_x }}{{ form.crop_y }}{{ form.crop_w }}{{ form.crop_h }}
 
         <h2 class="heading-md">Manage your profile</h2>
@@ -190,7 +190,7 @@ setActiveLink($("#details_link"));
 $(function() {
 
     /* SCRIPT TO OPEN THE MODAL WITH THE PREVIEW */
-    $("#id_photo").change(function() {
+    $("#id_upload_image").change(function() {
         if (this.files && this.files[0]) {
             var reader = new FileReader();
             reader.onload = function(e) {
@@ -244,7 +244,7 @@ $(function() {
     });
 
     $(".js-crop-dismiss").click(function() {
-        $("#id_photo").val("");
+        $("#id_upload_image").val("");
     });
 });
 </script>

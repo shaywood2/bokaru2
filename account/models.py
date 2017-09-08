@@ -48,7 +48,7 @@ class Account(models.Model):
         ('overweight', 'Overweight')
     )
     user = models.ForeignKey(settings.AUTH_USER_MODEL)
-    photo = models.ImageField(upload_to=user_photo_file_name, blank=True)
+    photo = models.ImageField(blank=True)
     birthDate = models.DateField(blank=True, null=True)
     status = models.CharField(max_length=20, choices=STATUSES, blank=True)
     gender = models.CharField(max_length=30, blank=True)

@@ -1,11 +1,15 @@
+import io
 import logging
 
+from PIL import Image
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
+from django.core.files.storage import default_storage
 from django.http import HttpResponseRedirect
 from django.shortcuts import get_object_or_404, render
 from django.urls import reverse
 from django.utils import timezone
+from django.utils.crypto import get_random_string
 from registration.backends.hmac.views import RegistrationView as BaseRegistrationView
 
 from money.models import UserPaymentInfo
@@ -97,6 +101,45 @@ def edit(request):
         form = AccountForm(request.POST, request.FILES, instance=account)
         if form.is_valid():
             form.save()
+
+            if 'upload_image' in request.FILES:
+                image_file = request.FILES['upload_image'].read()
+
+                # Get cropping parameters
+                x = form.cleaned_data.get('crop_x')
+                y = form.cleaned_data.get('crop_y')
+                w = form.cleaned_data.get('crop_w')
+                h = form.cleaned_data.get('crop_h')
+
+                # Open the stream as an image
+                stream = io.BytesIO(image_file)
+                image = Image.open(stream)
+
+                # Crop and resize the image
+                cropped_image = image.crop((x, y, w + x, h + y))
+                resized_image = cropped_image.resize((400, 400), Image.ANTIALIAS)
+
+                # Save the image
+                stream = io.BytesIO()
+                resized_image.save(stream, 'JPEG')
+
+                # Reopen the file for writing
+                path = 'user-photos/' + current_user.username + '-' + get_random_string(length=6) + '.jpg'
+                file = default_storage.open(path, 'wb')
+                file.write(stream.getvalue())
+                file.close()
+
+                # Delete the old image file
+                default_storage.delete(account.photo.path)
+
+                # Delete cached thumbnails
+                cache_path = 'CACHE/images/' + account.photo.name.replace('.jpg', '') + '/'
+                cached_files = default_storage.listdir(cache_path)
+                for f in cached_files[1]:
+                    default_storage.delete(cache_path + f)
+
+                account.photo = path
+                account.save()
 
             # Redirect to view profile page
             return HttpResponseRedirect(reverse('account:view'))
