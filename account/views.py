@@ -129,14 +129,15 @@ def edit(request):
                 file.write(stream.getvalue())
                 file.close()
 
-                # Delete the old image file
-                default_storage.delete(account.photo.path)
+                if account.photo != '':
+                    # Delete the old image file
+                    default_storage.delete(account.photo.path)
 
-                # Delete cached thumbnails
-                cache_path = 'CACHE/images/' + account.photo.name.replace('.jpg', '') + '/'
-                cached_files = default_storage.listdir(cache_path)
-                for f in cached_files[1]:
-                    default_storage.delete(cache_path + f)
+                    # Delete the cached thumbnails
+                    cache_path = 'CACHE/images/' + account.photo.name.replace('.jpg', '') + '/'
+                    cached_files = default_storage.listdir(cache_path)
+                    for f in cached_files[1]:
+                        default_storage.delete(cache_path + f)
 
                 account.photo = path
                 account.save()
