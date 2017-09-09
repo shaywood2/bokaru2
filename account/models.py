@@ -99,16 +99,16 @@ class Account(models.Model):
         file.close()
 
         # Clean up old photo and thumbnails
-        if self.photo is not None and str(self.photo) != '':
+        if self.photo is not None and self.photo.name != '':
             # Delete the old image file
-            default_storage.delete(self.photo)
-            logging.debug('Deleted file: ' + str(self.photo))
+            default_storage.delete(self.photo.name)
+            logging.debug('Deleted file: ' + self.photo.name)
 
-            cache_path = 'CACHE/images/' + str(self.photo).replace('.jpg', '') + '/'
+            cache_path = 'CACHE/images/' + self.photo.name.replace('.jpg', '') + '/'
             cached_files = default_storage.listdir(cache_path)
             for f in cached_files[1]:
                 default_storage.delete(cache_path + f)
-                logging.debug('Deleted file: ' + cache_path + str(f))
+                logging.debug('Deleted file: ' + cache_path + f)
 
         self.photo = path
         self.save(update_fields=['photo'])
