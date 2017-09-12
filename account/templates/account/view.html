@@ -2,6 +2,7 @@
 
 
 {% load staticfiles %}
+{% load imagekit %}
 
 {% block content %}
 
@@ -19,6 +20,15 @@
                         </div>
                         <div class="col-md-7">
                             <h2>{{ account.fullName }}</h2>
+
+                            <span>
+                            {% ifequal account.photo '' %}
+                            <img src="{% static 'account/images/default-avatar.png' %}" alt="Default avatar" id="avatar"/>
+                            {% else %}
+                            {% thumbnail '200x200' account.photo -- alt="A picture of Me" id="avatar" %}
+                            {% endifequal %}
+                            </span>
+
                             <span><strong>Location:</strong> [CITY]</span>
                             <span><strong>Age:</strong> {{ account.age }} </span>
                             <span><strong>Gender:</strong> {{ account.gender }} </span>
@@ -45,7 +55,7 @@
 
                 <div class="row">
                     <h4>This information is only shown to your matches:</h4>
-                    <h5>&nbsp How matches contact you: {{ account.contactInfo }} </h5>
+                    <h5>&nbsp; How matches contact you: {{ account.contactInfo }} </h5>
 
                 </div><!--/end row-->
 

@@ -1,10 +1,14 @@
+import logging
+
 from django import forms
 from django.forms import ModelForm
 from django.utils.translation import ugettext_lazy as _
-
 from registration.forms import RegistrationFormUniqueEmail
 
 from .models import Account
+
+# Get an instance of a logger
+logger = logging.getLogger(__name__)
 
 
 class RegistrationForm(RegistrationFormUniqueEmail):
@@ -63,15 +67,13 @@ class RegistrationForm(RegistrationFormUniqueEmail):
 
 
 class AccountForm(ModelForm):
+    # Photo cropping fields
+    upload_image = forms.ImageField()
+    crop_x = forms.FloatField(widget=forms.HiddenInput())
+    crop_y = forms.FloatField(widget=forms.HiddenInput())
+    crop_w = forms.FloatField(widget=forms.HiddenInput())
+    crop_h = forms.FloatField(widget=forms.HiddenInput())
+
     class Meta:
         model = Account
-        exclude = ['user']
-
-    def clean_gender(self):
-        gender = self.cleaned_data.get('gender')
-        if gender != 'bob':
-            raise forms.ValidationError(
-                'nope, you can be only bob',
-                code='not_bob'
-            )
-        return gender
+        exclude = ['user', 'locationCoordinates']

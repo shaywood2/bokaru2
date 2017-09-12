@@ -139,3 +139,4 @@ The deployment procedure for AWS server:
 * Run the migrate command: `./server_migrate.sh`
 * Start the server: `./server_start.sh`
 * Check the status of the service: `sudo systemctl status bokaru-gunicorn`
+* Restart service: `sudo systemctl restart bokaru-gunicorn`

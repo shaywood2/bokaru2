@@ -5,132 +5,248 @@
 
 {% block profile_content %}
 
-<form method="post">
-									{% csrf_token %}
+<!-- MODAL TO CROP THE IMAGE -->
+<div class="modal fade" id="modalCrop" aria-labelledby="modalLabel" role="dialog" tabindex="-1">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content modal-lg">
+            <div class="modal-header">
+                <button type="button" class="close js-crop-dismiss" data-dismiss="modal" aria-label="Close">
+                    <span>&times;</span>
+                </button>
+                <h4 class="modal-title" id="modalLabel">Crop the image</h4>
+            </div>
+            <div class="modal-body">
+                <div>
+                    <img src="" id="image" style="max-width: 100%;">
+                </div>
+            </div>
+            <div class="modal-footer">
+                <div class="btn-group pull-left" role="group">
+                    <button type="button" class="btn btn-default js-zoom-in">
+                        <span class="glyphicon glyphicon-zoom-in"></span>
+                    </button>
+                    <button type="button" class="btn btn-default js-zoom-out">
+                        <span class="glyphicon glyphicon-zoom-out"></span>
+                    </button>
+                </div>
+                <button type="button" class="btn btn-default js-crop-dismiss" data-dismiss="modal">Never mind</button>
+                <button type="button" class="btn btn-primary js-crop">Crop</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<form method="post" enctype="multipart/form-data">
+    {% csrf_token %}
+
+    {% if form.errors %}
+    {% for field in form %}
+    {% for error in field.errors %}
+    <div class="alert alert-danger">
+        <strong>{{ error|escape }}</strong>
+    </div>
+    {% endfor %}
+    {% endfor %}
+    {% for error in form.non_field_errors %}
+    <div class="alert alert-danger">
+        <strong>{{ error|escape }}</strong>
+    </div>
+    {% endfor %}
+    {% endif %}
 
 
-								<div id="profile" class="profile-edit tab-pane fade in active">
-									<h2 class="heading-md">Manage your profile</h2>
-									<p>This is where you can control your profile settings and what is visible to other members on the site.</p>
-									<br>
-									<dl class="dl-horizontal">
-										<dt><strong>Your Name </strong></dt>
-										<dd>
+    <div id="profile" class="profile-edit tab-pane fade in active">
+        <h2 class="heading-md">Photo</h2>
 
-											{{ form.fullName }}
+        {{ form.upload_image }}
+        {{ form.crop_x }}{{ form.crop_y }}{{ form.crop_w }}{{ form.crop_h }}
 
-										</dd>
-										<hr>
-										<dt><strong>Location </strong></dt>
-										<dd>
-											[CITY]
+        <h2 class="heading-md">Manage your profile</h2>
+        <p>This is where you can control your profile settings and what is visible to other members on the site.</p>
+        <br>
+        <dl class="dl-horizontal">
+            <dt><strong>Your Name </strong></dt>
+            <dd>
 
-										</dd>
-										<hr>
-										<dt><strong>Birth Date </strong></dt>
-										<dd>
-											{{ form.birthDate }}
-										</dd>
-										<hr>
-										<dt><strong>Height</strong></dt>
-										<dd>
-											{{ form.height }}
-										</dd>
-										<hr>
-										<dt><strong>Body Type </strong></dt>
-										<dd>
-											{{ form.bodyType }}
-										</dd>
-										<hr>
-										<dt><strong>Education </strong></dt>
-										<dd>
-											{{ form.education }}
-										</dd>
-										<hr>
-										<dt><strong>Gender </strong></dt>
-										<dd>
-											{{ form.gender }}
-										</dd>
-										<hr>
-										<dt><strong>Profession </strong></dt>
-										<dd>
-											[JOB]
-										</dd>
-										<hr>
-										<dt><strong>Relationship Type </strong></dt>
-										<dd>
-											{{ form.relationshipType }}
-										</dd>
-										<hr>
-										<dt><strong>Orientation </strong></dt>
-										<dd>
-											{{ form.sexualOrientation }}
-										</dd>
-										<hr>
-										<dt><strong>Identity </strong></dt>
-										<dd>
-											{{ form.sexualIdentity }}
-										</dd>
-										<hr>
-										<dt><strong>Ethnicity </strong></dt>
-										<dd>
-											{{ form.ethnicity }}
-										</dd>
-										<hr>
-										<dt><strong>Religion </strong></dt>
-										<dd>
-											{{ form.religion }}
-										</dd>
-										<hr>
-										<dt><strong>Languages </strong></dt>
-										<dd>
-											{{ form.languages }}
-										</dd>
-										<hr>
-										<dt><strong>Kids </strong></dt>
-										<dd>
-											{{ form.kids }}
-										</dd>
-										<hr>
-										<dt><strong>Vices </strong></dt>
-										<dd>
-											{{ form.vices }}
-										</dd>
-										<hr>
-										<dt><strong>Diet </strong></dt>
-										<dd>
-											{{ form.diet }}
-										</dd>
-										<hr>
-										<dt><strong>Match Contact Info </strong></dt>
-										<dd>
-											{{ form.contactInfo }}
-										</dd>
-										<hr>
-										<dt><strong>Summary </strong></dt>
-										<dd>
-											{{ form.summary }}
-										</dd>
-										<hr>
-									</dl>
-									<p style="text-align: center">
-										<button type="submit" class="btn-u rounded">Save Changes</button>
-									</p>
+                {{ form.fullName }}
 
-								</div>
+            </dd>
+            <hr>
+            <dt><strong>Location </strong></dt>
+            <dd>
+                [CITY]
+
+            </dd>
+            <hr>
+            <dt><strong>Birth Date </strong></dt>
+            <dd>
+                {{ form.birthDate }}
+            </dd>
+            <hr>
+            <dt><strong>Height</strong></dt>
+            <dd>
+                {{ form.height }}
+            </dd>
+            <hr>
+            <dt><strong>Body Type </strong></dt>
+            <dd>
+                {{ form.bodyType }}
+            </dd>
+            <hr>
+            <dt><strong>Education </strong></dt>
+            <dd>
+                {{ form.education }}
+            </dd>
+            <hr>
+            <dt><strong>Gender </strong></dt>
+            <dd>
+                {{ form.gender }}
+            </dd>
+            <hr>
+            <dt><strong>Profession </strong></dt>
+            <dd>
+                [JOB]
+            </dd>
+            <hr>
+            <dt><strong>Relationship Type </strong></dt>
+            <dd>
+                {{ form.relationshipType }}
+            </dd>
+            <hr>
+            <dt><strong>Orientation </strong></dt>
+            <dd>
+                {{ form.sexualOrientation }}
+            </dd>
+            <hr>
+            <dt><strong>Identity </strong></dt>
+            <dd>
+                {{ form.sexualIdentity }}
+            </dd>
+            <hr>
+            <dt><strong>Ethnicity </strong></dt>
+            <dd>
+                {{ form.ethnicity }}
+            </dd>
+            <hr>
+            <dt><strong>Religion </strong></dt>
+            <dd>
+                {{ form.religion }}
+            </dd>
+            <hr>
+            <dt><strong>Languages </strong></dt>
+            <dd>
+                {{ form.languages }}
+            </dd>
+            <hr>
+            <dt><strong>Kids </strong></dt>
+            <dd>
+                {{ form.kids }}
+            </dd>
+            <hr>
+            <dt><strong>Vices </strong></dt>
+            <dd>
+                {{ form.vices }}
+            </dd>
+            <hr>
+            <dt><strong>Diet </strong></dt>
+            <dd>
+                {{ form.diet }}
+            </dd>
+            <hr>
+            <dt><strong>Match Contact Info </strong></dt>
+            <dd>
+                {{ form.contactInfo }}
+            </dd>
+            <hr>
+            <dt><strong>Summary </strong></dt>
+            <dd>
+                {{ form.summary }}
+            </dd>
+            <hr>
+            <dt><strong>Location</strong></dt>
+            <dd>
+                {{ form.locationName }}
+            </dd>
+            <hr>
+        </dl>
+        <p style="text-align: center">
+            <button type="submit" class="btn-u rounded">Save Changes</button>
+        </p>
+
+    </div>
 
 
-
-
-								</form>
+</form>
 
 {% endblock %}
 
 
-
 {% block javascript %}
 <script>
-
 setActiveLink($("#details_link"));
 </script>
+
+<script>
+$(function() {
+
+    /* SCRIPT TO OPEN THE MODAL WITH THE PREVIEW */
+    $("#id_upload_image").change(function() {
+        if (this.files && this.files[0]) {
+            var reader = new FileReader();
+            reader.onload = function(e) {
+                $("#image").attr("src", e.target.result);
+                $("#modalCrop").modal("show");
+            }
+            reader.readAsDataURL(this.files[0]);
+        }
+    });
+
+    /* SCRIPTS TO HANDLE THE CROPPER BOX */
+    var image = document.getElementById('image');
+    var cropBoxData;
+    var canvasData;
+    var cropper;
+
+    $("#modalCrop").on("shown.bs.modal", function() {
+        cropper = new Cropper(image, {
+            viewMode: 1,
+            aspectRatio: 1 / 1,
+            minCropBoxWidth: 200,
+            minCropBoxHeight: 200,
+            ready: function() {
+                cropper.setCropBoxData(cropBoxData).setCanvasData(canvasData);
+            }
+        });
+    }).on("hidden.bs.modal", function() {
+        cropBoxData = cropper.getCropBoxData();
+        canvasData = cropper.getCanvasData();
+        cropper.destroy();
+    });
+
+    // Enable zoom in button
+    $(".js-zoom-in").click(function() {
+        cropper.zoom(0.1);
+    });
+
+    // Enable zoom out button
+    $(".js-zoom-out").click(function() {
+        cropper.zoom(-0.1);
+    });
+
+    /* SCRIPT TO COLLECT THE DATA AND POST TO THE SERVER */
+    $(".js-crop").click(function() {
+        var cropData = cropper.getData();
+        $("#id_crop_x").val(cropData["x"]);
+        $("#id_crop_y").val(cropData["y"]);
+        $("#id_crop_h").val(cropData["height"]);
+        $("#id_crop_w").val(cropData["width"]);
+        $("#modalCrop").modal("hide");
+    });
+
+    $(".js-crop-dismiss").click(function() {
+        $("#id_upload_image").val("");
+    });
+});
+</script>
+
 {% endblock %}

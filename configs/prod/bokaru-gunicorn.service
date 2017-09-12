@@ -7,7 +7,7 @@ User=ubuntu
 Group=ubuntu
 EnvironmentFile=/home/ubuntu/bokaru2/env
 WorkingDirectory=/home/ubuntu/bokaru2
-ExecStart=/home/ubuntu/.local/bin/gunicorn --access-logfile -  --env DJANGO_SETTINGS_MODULE=bokaru.settings.prod --workers 3 --bind 0.0.0.0:8000 bokaru.wsgi:application
+ExecStart=/home/ubuntu/.local/bin/gunicorn --access-logfile - --env DJANGO_SETTINGS_MODULE=bokaru.settings.prod --workers 3 --bind 0.0.0.0:8000 bokaru.wsgi:application
 
 [Install]
 WantedBy=multi-user.target
