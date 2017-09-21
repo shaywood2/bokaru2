@@ -68,7 +68,7 @@ class RegistrationForm(RegistrationFormUniqueEmail):
 
 class AccountForm(ModelForm):
     # Photo cropping fields
-    upload_image = forms.ImageField()
+    upload_image = forms.ImageField(required=False)
     crop_x = forms.FloatField(widget=forms.HiddenInput())
     crop_y = forms.FloatField(widget=forms.HiddenInput())
     crop_w = forms.FloatField(widget=forms.HiddenInput())

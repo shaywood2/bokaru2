@@ -2,7 +2,6 @@
 
 
 {% load staticfiles %}
-{% load imagekit %}
 
 {% block content %}
 
@@ -15,19 +14,17 @@
                 <div class="profile-bio">
                     <div class="row">
                         <div class="col-md-5">
-                            <img class="img-responsive md-margin-bottom-10"
-                                 src="{% static 'web/theme/img/team/img32-md.jpg' %}" alt="">
+                            {% ifequal account.photo '' %}
+                            <img src="{% static 'account/images/default-avatar.png' %}" alt="Default avatar" id="default_avatar"/>
+                            {% else %}
+                            <img src="{{ account.photo.url }}" alt="A picture of Me" id="avatar" class="img-responsive md-margin-bottom-10"/>
+                            {% endifequal %}
+                            </span>
                         </div>
                         <div class="col-md-7">
                             <h2>{{ account.fullName }}</h2>
 
                             <span>
-                            {% ifequal account.photo '' %}
-                            <img src="{% static 'account/images/default-avatar.png' %}" alt="Default avatar" id="avatar"/>
-                            {% else %}
-                            {% thumbnail '200x200' account.photo -- alt="A picture of Me" id="avatar" %}
-                            {% endifequal %}
-                            </span>
 
                             <span><strong>Location:</strong> [CITY]</span>
                             <span><strong>Age:</strong> {{ account.age }} </span>

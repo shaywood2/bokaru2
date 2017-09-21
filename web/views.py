@@ -148,11 +148,24 @@ def event_create(request):
             new_event.product = get_product_by_participant_number(
                 new_event.maxParticipantsInGroup * new_event.numGroups)
             new_event.save()
+
             for inline_form in group_formset:
                 if inline_form.cleaned_data:
                     group = inline_form.save(commit=False)
                     group.event = new_event
                     group.save()
+
+            if 'upload_image' in request.FILES:
+                image_file = request.FILES['upload_image'].read()
+
+                # Get cropping parameters
+                x = event_form.cleaned_data.get('crop_x')
+                y = event_form.cleaned_data.get('crop_y')
+                w = event_form.cleaned_data.get('crop_w')
+                h = event_form.cleaned_data.get('crop_h')
+
+                new_event.add_photo(image_file, x, y, w, h, 400)
+
             return HttpResponseRedirect(reverse('web:event_view', kwargs={'event_id': new_event.id}))
     else:
         event_form = EventForm()

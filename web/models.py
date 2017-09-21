@@ -1,19 +1,26 @@
 import datetime
+import io
+import logging
 import re
 from datetime import timedelta
 
+from PIL import Image
 from django.conf import settings
 from django.contrib.auth import get_user_model
 from django.contrib.gis.db import models as gis_models
 from django.contrib.gis.geos import Point
 from django.contrib.gis.measure import D
 from django.contrib.postgres.search import SearchQuery, SearchRank, SearchVector
+from django.core.files.storage import default_storage
 from django.core.validators import MinValueValidator, MaxValueValidator
 from django.db import models
+from django.utils.crypto import get_random_string
 from django.utils.timezone import utc
 from django.utils.translation import ugettext_lazy as _
 
 from money.models import Product
+
+logger = logging.getLogger(__name__)
 
 
 # Splits the query string in individual keywords, getting rid of unnecessary spaces and grouping quoted words together.
@@ -99,6 +106,7 @@ class Event(models.Model):
 
     creator = models.ForeignKey(settings.AUTH_USER_MODEL)
     name = models.CharField(max_length=150)
+    photo = models.ImageField(blank=True)
     locationName = models.CharField(max_length=150)
     locationCoordinates = gis_models.PointField(srid=4326, default=Point(0, 0))
     description = models.TextField(max_length=2000, blank=True)
@@ -179,6 +187,40 @@ class Event(models.Model):
         now = datetime.datetime.utcnow().replace(tzinfo=utc)
         hour_ago = now - timedelta(hours=1)
         return now >= self.endDateTime >= hour_ago
+
+    def add_photo(self, new_photo, x, y, w, h, size):
+        # Open the stream as an image
+        stream = io.BytesIO(new_photo)
+        image = Image.open(stream)
+
+        # Crop and resize the image
+        cropped_image = image.crop((x, y, w + x, h + y))
+        final_image = cropped_image.resize((size, size), Image.ANTIALIAS)
+
+        # Save the image
+        stream = io.BytesIO()
+        final_image.save(stream, 'JPEG')
+
+        # Reopen the file for writing
+        path = 'event-photos/event_' + str(self.pk) + '-' + get_random_string(length=6) + '.jpg'
+        file = default_storage.open(path, 'wb')
+        file.write(stream.getvalue())
+        file.close()
+
+        # Clean up old photo and thumbnails
+        if self.photo is not None and self.photo.name != '':
+            # Delete the old image file
+            default_storage.delete(self.photo.name)
+            logging.debug('Deleted file: ' + self.photo.name)
+
+            cache_path = 'CACHE/images/' + self.photo.name.replace('.jpg', '') + '/'
+            cached_files = default_storage.listdir(cache_path)
+            for f in cached_files[1]:
+                default_storage.delete(cache_path + f)
+                logging.debug('Deleted file: ' + cache_path + f)
+
+        self.photo = path
+        self.save(update_fields=['photo'])
 
 
 class EventGroup(models.Model):

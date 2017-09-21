@@ -31,10 +31,6 @@
         border: none;
     }
 
-
-
-
-
 </style>
 
 {% endblock %}
@@ -42,11 +38,9 @@
 
 {% block javascript %}
 
-  <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
-
+<script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
 
 <script>
-
 
 function setDate()
 {
@@ -69,8 +63,6 @@ function setTime()
     }
 }
 
-
-
   $( function() {
     $( "#datepicker" ).datepicker({
     dateFormat: 'd.m.yy',
@@ -78,227 +70,320 @@ function setTime()
 
     $("#id_startDateTime_1").val("20:00");
   } );
+</script>
 
+<script>
+$(function() {
 
+    /* SCRIPT TO OPEN THE MODAL WITH THE PREVIEW */
+    $("#id_upload_image").change(function() {
+        if (this.files && this.files[0]) {
+            var reader = new FileReader();
+            reader.onload = function(e) {
+                $("#image").attr("src", e.target.result);
+                $("#modalCrop").modal("show");
+            }
+            reader.readAsDataURL(this.files[0]);
+        }
+    });
 
-  </script>
+    /* SCRIPTS TO HANDLE THE CROPPER BOX */
+    var image = document.getElementById('image');
+    var cropBoxData;
+    var canvasData;
+    var cropper;
+
+    $("#modalCrop").on("shown.bs.modal", function() {
+        cropper = new Cropper(image, {
+            viewMode: 1,
+            aspectRatio: 1 / 1,
+            minCropBoxWidth: 200,
+            minCropBoxHeight: 200,
+            ready: function() {
+                cropper.setCropBoxData(cropBoxData).setCanvasData(canvasData);
+            }
+        });
+    }).on("hidden.bs.modal", function() {
+        cropBoxData = cropper.getCropBoxData();
+        canvasData = cropper.getCanvasData();
+        cropper.destroy();
+    });
+
+    // Enable zoom in button
+    $(".js-zoom-in").click(function() {
+        cropper.zoom(0.1);
+    });
+
+    // Enable zoom out button
+    $(".js-zoom-out").click(function() {
+        cropper.zoom(-0.1);
+    });
+
+    /* SCRIPT TO COLLECT THE DATA AND POST TO THE SERVER */
+    $(".js-crop").click(function() {
+        var cropData = cropper.getData();
+        $("#id_crop_x").val(cropData["x"]);
+        $("#id_crop_y").val(cropData["y"]);
+        $("#id_crop_h").val(cropData["height"]);
+        $("#id_crop_w").val(cropData["width"]);
+        $("#modalCrop").modal("hide");
+    });
+
+    $(".js-crop-dismiss").click(function() {
+        $("#id_upload_image").val("");
+    });
+});
+</script>
 {% endblock %}
 
 
 {% block content %}
 
-<form method="post">
+<!-- MODAL TO CROP THE IMAGE -->
+<div class="modal fade" id="modalCrop" aria-labelledby="modalLabel" role="dialog" tabindex="-1">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content modal-lg">
+            <div class="modal-header">
+                <button type="button" class="close js-crop-dismiss" data-dismiss="modal" aria-label="Close">
+                    <span>&times;</span>
+                </button>
+                <h4 class="modal-title" id="modalLabel">Crop the image</h4>
+            </div>
+            <div class="modal-body">
+                <div>
+                    <img src="" id="image" style="max-width: 100%;">
+                </div>
+            </div>
+            <div class="modal-footer">
+                <div class="btn-group pull-left" role="group">
+                    <button type="button" class="btn btn-default js-zoom-in">
+                        <span class="glyphicon glyphicon-zoom-in"></span>
+                    </button>
+                    <button type="button" class="btn btn-default js-zoom-out">
+                        <span class="glyphicon glyphicon-zoom-out"></span>
+                    </button>
+                </div>
+                <button type="button" class="btn btn-default js-crop-dismiss" data-dismiss="modal">Never mind</button>
+                <button type="button" class="btn btn-primary js-crop">Crop</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<form method="post" enctype="multipart/form-data">
     {% csrf_token %}
 
+    {% if event_form.errors %}
+        {% for field in event_form %}
+            {% for error in field.errors %}
+                <div class="alert alert-danger">
+                    <strong>{{ error|escape }}</strong> {{ field }}
+                </div>
+            {% endfor %}
+        {% endfor %}
+        {% for error in event_form.non_field_errors %}
+            <div class="alert alert-danger">
+                <strong>{{ error|escape }}</strong>
+            </div>
+        {% endfor %}
+    {% endif %}
+
+    <div class="container content profile">
+        <div class="row">
+            <!--Left Sidebar-->
+            <div class="col-md-3 md-margin-bottom-40">
+                <img class="img-responsive profile-img margin-bottom-20"
+                     src="{% static 'web/theme/img/team/img32-md.jpg' %}" alt="">
 
 
-<div class="container content profile">
-    <div class="row">
-        <!--Left Sidebar-->
-        <div class="col-md-3 md-margin-bottom-40">
-            <img class="img-responsive profile-img margin-bottom-20"
-                 src="{% static 'web/theme/img/team/img32-md.jpg' %}" alt="">
+                <ul class="list-group sidebar-nav-v1 margin-bottom-40" id="sidebar-nav-1">
+                    <li class="list-group-item">
+                        <a href="page_profile.html"><i class="fa fa-picture-o"></i> Select Image</a>
+                        {{ event_form.upload_image }}
+                        {{ event_form.crop_x }}{{ event_form.crop_y }}{{ event_form.crop_w }}{{ event_form.crop_h }}
+                    </li>
+
+                </ul>
 
 
-            <ul class="list-group sidebar-nav-v1 margin-bottom-40" id="sidebar-nav-1">
-                <li class="list-group-item">
-                    <a href="page_profile.html"><i class="fa fa-picture-o"></i> Select Image</a>
-                </li>
+                <div class="margin-bottom-50"></div>
 
-            </ul>
+                <!--Datepicker-->
+                <form action="#" id="sky-form2" class="sky-form">
+                    <div id="inline-start"></div>
+                </form>
+                <!--End Datepicker-->
+            </div>
+            <!--End Left Sidebar-->
 
+            <!-- Profile Content -->
+            <div class="col-md-9">
+                <div class="profile-body margin-bottom-20">
+                    <div class="tab-v1">
 
-            <div class="margin-bottom-50"></div>
+                        <div class="tab-content">
+                            <div id="profile" class="profile-edit tab-pane fade in active">
+                                <h2 class="heading-md">Create your own event</h2>
+                                <p>Here's your chance to create an event that meets your interests so you can meet
+                                    people
+                                    with similar interests.</p>
+                                <br>
+                                <dl class="dl-horizontal">
+                                    <dt><strong>Event Name </strong></dt>
+                                    <dd>
+                                        <div class="col-lg-9">
+                                            {{ event_form.name | addclass:"form-control input-lg" }}
+                                        </div>
+                                    </dd>
+                                    <dt><strong>Event Type </strong></dt>
+                                    <dd>
+                                        <div class="col-lg-9">
+                                            {{ event_form.type | addclass:"form-control input-lg" }}
+                                        </div>
+                                    </dd>
+                                    <hr>
+                                    <dt><strong>Description </strong></dt>
+                                    <dd>
+                                        <div class="col-lg-9">
+                                            {{ event_form.description | addclass:"form-control input-lg" }}
+                                        </div>
+                                    </dd>
+                                    <hr>
+                                    <dt><strong>Location </strong></dt>
+                                    <dd>
+                                        <div class="col-lg-9">
+                                            {{ event_form.locationName | addclass:"form-control input-lg" }}
+                                        </div>
 
-            <!--Datepicker-->
-            <form action="#" id="sky-form2" class="sky-form">
-                <div id="inline-start"></div>
-            </form>
-            <!--End Datepicker-->
-        </div>
-        <!--End Left Sidebar-->
+                                    </dd>
+                                    <hr>
 
-        <!-- Profile Content -->
-        <div class="col-md-9">
-            <div class="profile-body margin-bottom-20">
-                <div class="tab-v1">
-
-                    <div class="tab-content">
-                        <div id="profile" class="profile-edit tab-pane fade in active">
-                            <h2 class="heading-md">Create your own event</h2>
-                            <p>Here's your chance to create an event that meets your interests so you can meet people
-                                with similar interests.</p>
-                            <br>
-                            <dl class="dl-horizontal">
-                                <dt><strong>Event Name </strong></dt>
-                                <dd>
-                                    <div class="col-lg-9">
-                                        {{ event_form.name | addclass:"form-control input-lg" }}
-                                    </div>
-                                </dd>
-                                <hr>
-                                <dt><strong>Description </strong></dt>
-                                <dd>
-                                    <div class="col-lg-9">
-                                        {{ event_form.description | addclass:"form-control input-lg" }}
-                                    </div>
-                                </dd>
-                                <hr>
-                                <dt><strong>Location </strong></dt>
-                                <dd>
-                                     <div class="col-lg-9">
-                                        {{ event_form.locationName | addclass:"form-control input-lg" }}
-                                     </div>
-
-                                </dd>
-                                <dt><strong>Location</strong></dt>
-                                <dd>
-                                     <div class="col-lg-9">
-                                        {{ event_form.locationCoordinates }}
-                                     </div>
-
-                                </dd>
-                                <hr>
-
-                                 <dt><strong>Date</strong></dt>
-                                <dd>
+                                    <dt><strong>Date</strong></dt>
+                                    <dd>
                                         {{ event_form.startDateTime }}
 
-                                    <div class="col-lg-9">
-                                        <input type="text" id="datepicker" class="form-control input-lg">
-                                    </div>
-                                </dd>
-                                <hr>
-                                 <dt><strong>Time</strong></dt>
-                                <dd>
+                                        <div class="col-lg-9">
+                                            <input type="text" id="datepicker" class="form-control input-lg">
+                                        </div>
+                                    </dd>
+                                    <hr>
+                                    <dt><strong>Time</strong></dt>
+                                    <dd>
 
-                                    <div class="col-lg-3">
-                                        <select id="time_selector" class="form-control input-lg" onchange="setTime()">
-                                            <option>1</option>
-                                            <option>2</option>
-                                            <option>3</option>
-                                            <option>4</option>
-                                            <option>5</option>
-                                            <option>6</option>
-                                            <option>7</option>
-                                            <option selected>8</option>
-                                            <option>9</option>
-                                            <option>10</option>
-                                            <option>11</option>
-                                            <option>12</option>
-                                        </select>
-                                    </div>
-                                    <div class="col-lg-3">
-                                        <select id="ampm_selector" class="form-control input-lg" onchange="setTime()">
-                                            <option>AM</option>
-                                            <option selected>PM</option>
+                                        <div class="col-lg-3">
+                                            <select id="time_selector" class="form-control input-lg"
+                                                    onchange="setTime()">
+                                                <option>1</option>
+                                                <option>2</option>
+                                                <option>3</option>
+                                                <option>4</option>
+                                                <option>5</option>
+                                                <option>6</option>
+                                                <option>7</option>
+                                                <option selected>8</option>
+                                                <option>9</option>
+                                                <option>10</option>
+                                                <option>11</option>
+                                                <option>12</option>
+                                            </select>
+                                        </div>
+                                        <div class="col-lg-3">
+                                            <select id="ampm_selector" class="form-control input-lg"
+                                                    onchange="setTime()">
+                                                <option>AM</option>
+                                                <option selected>PM</option>
 
-                                        </select>
-                                    </div>
-
-
-
-                                </dd>
-                                <hr>
-                                <dt><strong>How Many Genders </strong></dt>
-                                <dd>
-                                    <button type="button" class="btn-u">One</button>
-                                    &nbsp
-                                    <button type="button" class="btn-u">Two</button>
-                                </dd>
+                                            </select>
+                                        </div>
 
 
-
-                                <hr>
-                                <dt><strong>Num groups </strong></dt>
-                                <dd>
-                                     <div class="col-lg-9">
-                                        {{ event_form.numGroups | addclass:"form-control input-lg" }}
-                                     </div>
-
-                                </dd>
-
-                                <hr>
-                                <dt><strong>Max Participants </strong></dt>
-                                <dd>
-                                     <div class="col-lg-9">
-                                        {{ event_form.maxParticipantsInGroup | addclass:"form-control input-lg" }}
-                                     </div>
-
-                                </dd>
+                                    </dd>
+                                    <hr>
+                                    <dt><strong>How Many Genders </strong></dt>
+                                    <dd>
+                                        <button type="button" class="btn-u">One</button>
+                                        &nbsp
+                                        <button type="button" class="btn-u">Two</button>
+                                    </dd>
 
 
-                                <hr>
+                                    <hr>
+                                    <dt><strong>Num groups </strong></dt>
+                                    <dd>
+                                        <div class="col-lg-9">
+                                            {{ event_form.numGroups | addclass:"form-control input-lg" }}
+                                        </div>
 
-                                {{ group_formset.management_form }}
-                                {% for group_form in group_formset %}
-                                <dt><strong>Gender 1 </strong></dt>
-                                <dd>
-                                    <div class="funny-boxes funny-boxes-top-red">
-                                        <div class="row">
+                                    </dd>
 
-                                            <div class="col-md-12">
-                                                <dl class="dl-horizontal">
-                                                    <dt><strong>Group Name </strong></dt>
-                                                    <dd>
-                                                        <div class="col-lg-9">
-                                                            {{ group_form.name | addclass:"form-control input-lg"}}
-                                                        </div>
+                                    <hr>
+                                    <dt><strong>Max Participants </strong></dt>
+                                    <dd>
+                                        <div class="col-lg-9">
+                                            {{ event_form.maxParticipantsInGroup | addclass:"form-control input-lg" }}
+                                            {{ event_form.dateDuration | addclass:"form-control input-lg" }}
+                                            {{ event_form.breakDuration | addclass:"form-control input-lg" }}
+                                        </div>
 
-                                                    </dd>
-                                                    <hr>
-                                                    <dt><strong>Age Range </strong></dt>
-                                                    <dd>
-                                                        <div class="col-lg-4" style="float: left">
-                                                        {{ group_form.ageMin | addclass:"form-control input-lg" }}
-                                                        </div>
-
-                                                         <div class="col-lg-1" style="float: left; line-height: 50px; text-align: center">
-                                                           -
-                                                         </div>
-                                                        <div class="col-lg-4" style="float: left">
-                                                            {{ group_form.ageMax | addclass:"form-control input-lg" }}
-                                                        </div>
-                                                    </dd>
-                                                    <hr>
+                                    </dd>
 
 
+                                    <hr>
 
+                                    {{ group_formset.management_form }}
+                                    {% for group_form in group_formset %}
+                                    <dt><strong>Gender 1 </strong></dt>
+                                    <dd>
+                                        <div class="funny-boxes funny-boxes-top-red">
+                                            <div class="row">
 
+                                                <div class="col-md-12">
+                                                    <dl class="dl-horizontal">
+                                                        <dt><strong>Group Name </strong></dt>
+                                                        <dd>
+                                                            <div class="col-lg-9">
+                                                                {{ group_form.name | addclass:"form-control input-lg"}}
+                                                            </div>
 
+                                                        </dd>
+                                                        <hr>
+                                                        <dt><strong>Age Range </strong></dt>
+                                                        <dd>
+                                                            <div class="col-lg-4" style="float: left">
+                                                                {{ group_form.ageMin | addclass:"form-control input-lg" }}
+                                                            </div>
 
-
-
-                                                </dl>
+                                                            <div class="col-lg-1"
+                                                                 style="float: left; line-height: 50px; text-align: center">
+                                                                -
+                                                            </div>
+                                                            <div class="col-lg-4" style="float: left">
+                                                                {{ group_form.ageMax | addclass:"form-control input-lg" }}
+                                                            </div>
+                                                        </dd>
+                                                        <hr>
+                                                    </dl>
+                                                </div>
                                             </div>
                                         </div>
-                                    </div>
 
-                                </dd>
-                                <hr>
-                                {% endfor %}
-
+                                    </dd>
+                                    <hr>
+                                    {% endfor %}
 
 
+                                </dl>
 
-                            </dl>
+                                <input type="submit" class="btn-u" value="Create Event" />
 
-                            <input type="submit" class="btn-u" value="Create Event"></input>
-
+                            </div>
                         </div>
-
-
-
-
-
-
                     </div>
                 </div>
             </div>
-        </div>
-        <!-- End Profile Content -->
-    </div><!--/end row-->
-</div>
+            <!-- End Profile Content -->
+        </div><!--/end row-->
+    </div>
 </form>
 
 
