@@ -136,6 +136,7 @@ $(function() {
 </script>
 {% endblock %}
 
+{% block title %}Bokaru: Create event{% endblock %}
 
 {% block content %}
 
@@ -177,7 +178,7 @@ $(function() {
         {% for field in event_form %}
             {% for error in field.errors %}
                 <div class="alert alert-danger">
-                    <strong>{{ error|escape }}</strong> {{ field }}
+                    <strong>{{ error|escape }}</strong>
                 </div>
             {% endfor %}
         {% endfor %}
@@ -389,4 +390,3 @@ $(function() {
 
 <!--=== End Profile ===-->
 {% endblock %}
-

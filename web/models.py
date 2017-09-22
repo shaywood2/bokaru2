@@ -182,6 +182,12 @@ class Event(models.Model):
         hour_from_now = now + timedelta(hours=1)
         return now <= self.startDateTime <= hour_from_now
 
+    # Return true if the event is starting within one hour
+    def is_starting_within_a_day(self):
+        now = datetime.datetime.utcnow().replace(tzinfo=utc)
+        day_from_now = now + timedelta(day=1)
+        return now <= self.startDateTime <= day_from_now
+
     # Return true if the event has ended at most one hour ago
     def is_ended_recently(self):
         now = datetime.datetime.utcnow().replace(tzinfo=utc)
