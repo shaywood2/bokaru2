@@ -89,5 +89,10 @@ Vagrant.configure(2) do |config|
     sudo -u postgres psql -c "CREATE DATABASE bokaru WITH OWNER bokaru"
     sudo -u postgres psql -c "CREATE EXTENSION postgis; CREATE EXTENSION postgis_topology;" bokaru
 
+    # Create image folders
+    mkdir /home/vagrant/bokaru/www
+    mkdir /home/vagrant/bokaru/www/event-photos
+    mkdir /home/vagrant/bokaru/www/user-photos
+
     SHELL
 end

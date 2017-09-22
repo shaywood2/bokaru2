@@ -41,12 +41,16 @@
     "name": "Andy Lagunoff"
   }
 }
+
 </script>
 
 
 {% endblock %}
 
+{% block title %}Bokaru: {{ event.name }}{% endblock %}
+
 {% block content %}
+{% load imagekit %}
 {% if messages %}
 <ul class="messages">
     {% for message in messages %}
@@ -64,8 +68,12 @@
                 <div class="profile-bio">
                     <div class="row">
                         <div class="col-md-5">
-                            <img class="img-responsive md-margin-bottom-10"
-                                 src="{% static 'web/theme/img/team/img32-md.jpg' %}" alt="">
+                            {% ifequal event.photo '' %}
+                            <img src="{% static 'account/images/default-avatar.png' %}" width="400px" height="400px"
+                                 id="default_photo" class="img-responsive md-margin-bottom-10"/>
+                            {% else %}
+                            <img src="{{ event.photo.url }}" id="photo" class="img-responsive md-margin-bottom-10"/>
+                            {% endifequal %}
 
 
                         </div>
@@ -75,78 +83,68 @@
                             <hr>
                             <p>{{event.description}}</p>
 
+                        </div>
 
-                           <!-- <strong>DEBUG PRODUCT: {{event.product}}</strong><br>
-                            <strong>DEBUG IS_REGISTERED: {{is_registered}}</strong> -->
+                        <div class="col-md-7">
+                            <div class="panel panel-sea margin-bottom-40" style="border: none;">
+                                <div class="panel-heading" style="background-color: gray; color: white">
+                                    <h3 class="panel-title" style="font-weight: 200; font-size: 12pt"><i
+                                            class="fa fa-edit"></i> Event Details</h3>
+                                </div>
+                                <table class="table table-striped">
 
+                                    <tbody>
+                                    <tr>
+                                        <td>Location</td>
+                                        <td>{{event.locationName}}</td>
 
+                                    </tr>
 
+                                    <tr>
+                                        <td>Date</td>
+                                        <td>{{event.startDateTime}}</td>
 
+                                    </tr>
 
+                                    <tr>
+                                        <td>Created By</td>
+                                        <td>{{event.creator}}</td>
+
+                                    </tr>
+
+                                    </tbody>
+                                </table>
+                            </div>
                         </div>
 
 
-
-
-
                         <div class="col-md-7">
-                        <div class="panel panel-sea margin-bottom-40" style="border: none;">
-								<div class="panel-heading" style="background-color: gray; color: white">
-									<h3 class="panel-title" style="font-weight: 200; font-size: 12pt"><i class="fa fa-edit"></i> Event Details</h3>
-								</div>
-								<table class="table table-striped">
+                            <div class="panel panel-sea margin-bottom-40" style="border: none;">
+                                <div class="panel-heading" style="background-color: gray; color: white">
+                                    <h3 class="panel-title" style="font-weight: 200; font-size: 12pt"><i
+                                            class="fa fa-edit"></i>Demographics</h3>
+                                </div>
+                                <table class="table table-striped">
 
-									<tbody>
-										<tr>
-											<td>Location</td>
-											<td>{{event.locationName}}</td>
+                                    <tbody>
+                                    <tr>
+                                        <td>{{groups.0.name}}</td>
+                                        <td>{{groups.0.ageMin}} - {{groups.0.ageMax}}</td>
 
-										</tr>
+                                    </tr>
 
-										<tr>
-											<td>Date</td>
-											<td>{{event.startDateTime}}</td>
+                                    {% if num_groups == 2 %}
+                                    <tr>
+                                        <td>{{groups.1.name}}</td>
+                                        <td>{{groups.1.ageMin}} - {{groups.1.ageMax}}</td>
 
-										</tr>
+                                    </tr>
+                                    {% endif %}
 
-                                        <tr>
-											<td>Created By</td>
-											<td>{{event.creator}}</td>
-
-										</tr>
-
-									</tbody>
-								</table>
-							</div>
+                                    </tbody>
+                                </table>
                             </div>
-
-
-                        <div class="col-md-7">
-                        <div class="panel panel-sea margin-bottom-40" style="border: none;">
-								<div class="panel-heading" style="background-color: gray; color: white">
-									<h3 class="panel-title" style="font-weight: 200; font-size: 12pt"><i class="fa fa-edit"></i>Demographics</h3>
-								</div>
-								<table class="table table-striped">
-
-									<tbody>
-										<tr>
-											<td>{{groups.0.name}}</td>
-											<td>{{groups.0.ageMin}} - {{groups.0.ageMax}}</td>
-
-										</tr>
-
-                                        {% if num_groups == 2 %}
-										<tr>
-											<td>{{groups.1.name}}</td>
-											<td>{{groups.1.ageMin}} - {{groups.1.ageMax}}</td>
-
-										</tr>
-                                        {% endif %}
-
-									</tbody>
-								</table>
-							</div>
-                            </div>
+                        </div>
 
 
                     </div>
@@ -233,7 +231,11 @@
 
                     <div class="col-sm-6">
                         <div class="profile-blog margin-bottom-20">
-                            <img class="rounded-x" src="{% static 'web/theme/img/testimonials/user.jpg' %}" alt="">
+                            {% ifequal participant.photo '' %}
+                            <img src="{% static 'account/images/default-avatar.png' %}" class="rounded-x"/>
+                            {% else %}
+                            {% thumbnail '50x50' participant.photo -- class="rounded-x" %}
+                            {% endifequal %}
 
                             <div class="name-location">
                                 <strong>{{participant.fullName}}</strong>
@@ -259,7 +261,11 @@
 
                     <div class="col-sm-6">
                         <div class="profile-blog margin-bottom-20">
-                            <img class="rounded-x" src="{% static 'web/theme/img/testimonials/user.jpg' %}" alt="">
+                            {% ifequal participant.photo '' %}
+                            <img src="{% static 'account/images/default-avatar.png' %}" class="rounded-x"/>
+                            {% else %}
+                            {% thumbnail '50x50' participant.photo -- class="rounded-x" %}
+                            {% endifequal %}
 
                             <div class="name-location">
                                 <strong>{{participant.fullName}}</strong>
@@ -328,6 +334,7 @@
 
 
 		});
+
 
 
 
