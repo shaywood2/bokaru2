@@ -1,0 +1,117 @@
+{% extends 'account/profile_template.html' %}
+
+
+{% load staticfiles %}
+
+
+
+
+{% block profile_content %}
+
+
+	<form method="post">
+		{% csrf_token %}
+
+
+		<div id="settings" class="profile-edit tab-pane fade active in">
+			<h2 class="heading-md">Manage your Preferences.</h2>
+			<p>Below are the notifications you may manage.</p>
+			<br>
+				<hr>
+				<label class="toggle"><input type="checkbox" checked="" name="checkbox-toggle-1"><i class="no-rounded"></i> Subscribe to our newsletter</label>
+				<hr>
+				<label class="toggle">Unit of Measure: &nbsp</label>
+					{{ form.as_t }}
+					{{ form.ageMin }}
+
+				<hr>
+
+				<label class="toggle"><i class="no-rounded"></i> Age Range</label>
+					<select>
+						<option>18</option>
+						<option>19</option>
+						<option>20</option>
+						<option>21</option>
+						<option>22</option>
+						<option>23</option>
+						<option>24</option>
+						<option>25</option>
+						<option>26</option>
+						<option>27</option>
+						<option>28</option>
+						<option>29</option>
+						<option>30</option>
+						<option>31</option>
+						<option>32</option>
+						<option>33</option>
+
+
+					</select>
+					&nbsp
+					to
+					&nbsp
+						<select>
+						<option>18</option>
+						<option>19</option>
+						<option>20</option>
+						<option>21</option>
+						<option>22</option>
+						<option>23</option>
+						<option>24</option>
+						<option>25</option>
+						<option>26</option>
+						<option>27</option>
+						<option>28</option>
+						<option>29</option>
+						<option>30</option>
+						<option>31</option>
+						<option>32</option>
+						<option>33</option>
+
+
+					</select>
+
+					<hr>
+				<label class="toggle">Interest</label>&nbsp
+						<select>
+						<option>Marriage</option>
+						<option>Dating</option>
+						<option>Casual</option>
+
+
+					</select>
+
+					<hr>
+				<label class="toggle">Event Size</label>&nbsp
+					<select>
+						<option>Small</option>
+						<option>Medium</option>
+						<option>Large</option>
+					</select>
+					<hr>
+				<label class="toggle">Event Type</label>
+					<select>
+						<option>Same Sex</option>
+						<option>Opposite Sex</option>
+					</select>
+				<hr>
+
+				<button type="button" class="btn-u btn-u-default">Reset</button>
+				<button class="btn-u" type="submit">Save Changes</button>
+
+		</div>
+
+
+	</form>
+
+
+
+{% endblock %}
+
+
+{% block javascript %}
+<script>
+
+setActiveLink($("#notifications_link"));
+</script>
+{% endblock %}

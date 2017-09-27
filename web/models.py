@@ -51,7 +51,8 @@ class EventManager(models.Manager):
 
     # Get all events that belong to the given user
     def get_all_by_user(self, user):
-        return self.filter(eventgroup__eventparticipant__user=user).order_by('startDateTime')
+        return self.filter(eventgroup__eventparticipant__user=user).filter(
+            startDateTime__gte=datetime.date.today()).order_by('startDateTime')
 
     # Get next event that the user is registered for
     def get_next(self, user):
@@ -77,12 +78,33 @@ class Event(models.Model):
     # The event must be at least 70% full to be confirmed
     CONFIRMED_MIN_PARTICIPANTS = 0.7
 
+    # Number of groups
+    NUM_GROUPS = (
+        (1, 'One group (talk to everyone)'),
+        (2, 'Two groups (talk to all members of the opposite group)')
+    )
+
+    # Event types
+    SERIOUS = 1
+    CASUAL = 2
+    HOOKUP = 3
+    FRIENDSHIP = 4
+    MARRIAGE = 5
+    TYPES = (
+        (MARRIAGE, 'Marriage'),
+        (SERIOUS, 'Serious relationship'),
+        (CASUAL, 'Casual dating'),
+        (HOOKUP, 'Casual hookup'),
+        (FRIENDSHIP, 'Friendship')
+    )
+
     creator = models.ForeignKey(settings.AUTH_USER_MODEL)
     name = models.CharField(max_length=150)
     locationName = models.CharField(max_length=150)
     locationCoordinates = gis_models.PointField(srid=4326, default=Point(0, 0))
     description = models.TextField(max_length=2000, blank=True)
-    numGroups = models.PositiveSmallIntegerField(validators=[MinValueValidator(1), MaxValueValidator(2)], default=2)
+    numGroups = models.PositiveSmallIntegerField(validators=[MinValueValidator(1), MaxValueValidator(2)],
+                                                 choices=NUM_GROUPS, default=2)
     maxParticipantsInGroup = models.PositiveSmallIntegerField(validators=[MinValueValidator(5), MaxValueValidator(25)])
     startDateTime = models.DateTimeField()
     dateDuration = models.PositiveSmallIntegerField(validators=[MinValueValidator(60 * 3), MaxValueValidator(60 * 10)],
@@ -90,6 +112,7 @@ class Event(models.Model):
     breakDuration = models.PositiveSmallIntegerField(validators=[MinValueValidator(60 / 2), MaxValueValidator(60 * 5)],
                                                      default=60)
     product = models.ForeignKey(Product)
+    type = models.PositiveSmallIntegerField(choices=TYPES, default=SERIOUS)
 
     # Automatic timestamps
     created = models.DateTimeField(auto_now_add=True)
@@ -99,7 +122,7 @@ class Event(models.Model):
     @property
     def endDateTime(self):
         return self.startDateTime + timedelta(
-            seconds=self.maxParticipantsInGroup * (self.dateDuration + self.breakDuration))
+                seconds=self.maxParticipantsInGroup * (self.dateDuration + self.breakDuration))
 
     objects = EventManager()
 

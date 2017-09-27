@@ -4,7 +4,7 @@ from django.utils.translation import ugettext_lazy as _
 
 from registration.forms import RegistrationFormUniqueEmail
 
-from .models import Account
+from .models import Account, UserPreference
 
 
 class RegistrationForm(RegistrationFormUniqueEmail):
@@ -75,3 +75,9 @@ class AccountForm(ModelForm):
                 code='not_bob'
             )
         return gender
+
+
+class UserPreferenceForm(ModelForm):
+    class Meta:
+        model = UserPreference
+        exclude = ['user']

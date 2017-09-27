@@ -13,7 +13,7 @@ from django.views.decorators.csrf import csrf_exempt
 from account.models import Account
 from money.billing_logic import get_product_by_participant_number
 from .forms import EventForm, EventGroupForm, SearchForm
-from .models import Event, EventGroup, Pick, Memo
+from .models import Event, EventParticipant, EventGroup, Pick, Memo
 
 # Get an instance of a logger
 logger = logging.getLogger(__name__)
@@ -80,7 +80,14 @@ def results(request):
 
 
 def event(request):
+
+    groupparticipants = EventParticipant.objects.filter(user=request.user)
+    eventgroups = EventGroup.objects.filter(eventparticipant__in=groupparticipants)
+    events = Event.objects.filter(eventgroup__in=eventgroups)
+
     context = {
+        'test2': [1, 2],
+        'events': events,
         'test': "Event Detail Page",
     }
 
@@ -270,8 +277,17 @@ def live(request):
     return render(request, 'web/live.html', context)
 
 
+@login_required
 def myevents(request):
+
+
+    #groupparticipants = EventParticipant.objects.filter(user=request.user)
+    #eventgroups = EventGroup.objects.filter(eventparticipant__in=groupparticipants)
+    #events = Event.objects.filter(eventgroup__in=eventgroups)
+
+    events = Event.objects.get_all_by_user(request.user)
     context = {
+        'events': events,
         'test': "My Events Page",
     }
 

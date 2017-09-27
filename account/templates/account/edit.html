@@ -2,6 +2,63 @@
 
 
 {% load staticfiles %}
+{% load form_tag %}
+
+
+{% block javascript %}
+
+
+<script>
+	function initMap() {
+			var autocomplete = new google.maps.places.Autocomplete(document.getElementById('searchBox'));
+			var geocoder = new google.maps.Geocoder();
+			document.getElementById('searchBox').addEventListener('change', function() {
+         		 geocodeAddress(geocoder);
+        	});
+        }
+function geocodeAddress(geocoder) {
+	var address = document.getElementById('searchBox').value;
+		geocoder.geocode({'address': address}, function(results, status) {
+          if (status === 'OK') {
+            console.log("Longitude: " + results[0].geometry.location.lng());
+            console.log("Latitude: " + results[0].geometry.location.lat());
+			for (component in results[0].address_components)
+			{
+				for (type in results[0].address_components[component].types)
+				{
+					if (results[0].address_components[component].types[type] == 'locality')
+					{
+						console.log("City: " + results[0].address_components[component].long_name);
+					}
+					if (results[0].address_components[component].types[type] == 'administrative_area_level_1')
+					{
+						console.log("State: " + results[0].address_components[component].short_name);
+					}
+				}
+			}
+          } else {
+            console.log('Geocode was not successful for the following reason: ' + status);
+          }
+        });
+}
+</script>
+
+
+
+<script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBLJqyRqu7Mfr0xJ1OFwFxFxmCZDxX7fxQ&callback=initMap&libraries=places"
+  type="text/javascript"></script>
+
+
+<script>
+
+setActiveLink($("#details_link"));
+</script>
+
+
+
+{% endblock %}
+
+
 
 {% block profile_content %}
 
@@ -17,39 +74,39 @@
 										<dt><strong>Your Name </strong></dt>
 										<dd>
 
-											{{ form.fullName }}
+											{{ form.fullName | addclass:"form-control" }}
 
 										</dd>
 										<hr>
 										<dt><strong>Location </strong></dt>
 										<dd>
-											[CITY]
+											<input class="form-control" id="searchBox" type="text"></input>
 
 										</dd>
 										<hr>
 										<dt><strong>Birth Date </strong></dt>
 										<dd>
-											{{ form.birthDate }}
+											{{ form.birthDate | addclass:"form-control" }}
 										</dd>
 										<hr>
 										<dt><strong>Height</strong></dt>
 										<dd>
-											{{ form.height }}
+											{{ form.height | addclass:"form-control" }}
 										</dd>
 										<hr>
 										<dt><strong>Body Type </strong></dt>
 										<dd>
-											{{ form.bodyType }}
+											{{ form.bodyType | addclass:"form-control" }}
 										</dd>
 										<hr>
 										<dt><strong>Education </strong></dt>
 										<dd>
-											{{ form.education }}
+											{{ form.education | addclass:"form-control" }}
 										</dd>
 										<hr>
 										<dt><strong>Gender </strong></dt>
 										<dd>
-											{{ form.gender }}
+											{{ form.gender | addclass:"form-control"}}
 										</dd>
 										<hr>
 										<dt><strong>Profession </strong></dt>
@@ -59,62 +116,62 @@
 										<hr>
 										<dt><strong>Relationship Type </strong></dt>
 										<dd>
-											{{ form.relationshipType }}
+											{{ form.relationshipType | addclass:"form-control"}}
 										</dd>
 										<hr>
 										<dt><strong>Orientation </strong></dt>
 										<dd>
-											{{ form.sexualOrientation }}
+											{{ form.sexualOrientation | addclass:"form-control"}}
 										</dd>
 										<hr>
 										<dt><strong>Identity </strong></dt>
 										<dd>
-											{{ form.sexualIdentity }}
+											{{ form.sexualIdentity| addclass:"form-control" }}
 										</dd>
 										<hr>
 										<dt><strong>Ethnicity </strong></dt>
 										<dd>
-											{{ form.ethnicity }}
+											{{ form.ethnicity | addclass:"form-control"}}
 										</dd>
 										<hr>
 										<dt><strong>Religion </strong></dt>
 										<dd>
-											{{ form.religion }}
+											{{ form.religion | addclass:"form-control"}}
 										</dd>
 										<hr>
 										<dt><strong>Languages </strong></dt>
 										<dd>
-											{{ form.languages }}
+											{{ form.languages | addclass:"form-control"}}
 										</dd>
 										<hr>
 										<dt><strong>Kids </strong></dt>
 										<dd>
-											{{ form.kids }}
+											{{ form.kids | addclass:"form-control"}}
 										</dd>
 										<hr>
 										<dt><strong>Vices </strong></dt>
 										<dd>
-											{{ form.vices }}
+											{{ form.vices | addclass:"form-control" }}
 										</dd>
 										<hr>
 										<dt><strong>Diet </strong></dt>
 										<dd>
-											{{ form.diet }}
+											{{ form.diet | addclass:"form-control"}}
 										</dd>
 										<hr>
 										<dt><strong>Match Contact Info </strong></dt>
 										<dd>
-											{{ form.contactInfo }}
+											{{ form.contactInfo | addclass:"form-control"}}
 										</dd>
 										<hr>
 										<dt><strong>Summary </strong></dt>
 										<dd>
-											{{ form.summary }}
+											{{ form.summary | addclass:"form-control"}}
 										</dd>
 										<hr>
 									</dl>
 									<p style="text-align: center">
-										<button type="submit" class="btn-u rounded">Save Changes</button>
+										<button id="submitButton" type="submit" class="btn-u rounded">Save Changes</button>
 									</p>
 
 								</div>
@@ -126,11 +183,3 @@
 
 {% endblock %}
 
-
-
-{% block javascript %}
-<script>
-
-setActiveLink($("#details_link"));
-</script>
-{% endblock %}

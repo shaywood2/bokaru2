@@ -1,5 +1,10 @@
 from django.conf import settings
+from django.contrib.gis.db import models as gis_models
+from django.contrib.gis.geos import Point
 from django.db import models
+from django.core.validators import MinValueValidator, MaxValueValidator
+
+from web.models import Event
 
 
 class Account(models.Model):
@@ -56,9 +61,10 @@ class Account(models.Model):
     vices = models.CharField(max_length=150, blank=True)
     kids = models.CharField(max_length=150, blank=True)
     diet = models.CharField(max_length=150, blank=True)
-    # looking for gender, age range, purpose
     summary = models.TextField(max_length=2000, blank=True)
     contactInfo = models.CharField(max_length=150, blank=True)
+    locationName = models.CharField(max_length=150, blank=True)
+    locationCoordinates = gis_models.PointField(srid=4326, default=Point(0, 0))
 
     # Automatic timestamps
     created = models.DateTimeField(auto_now_add=True)
@@ -66,3 +72,37 @@ class Account(models.Model):
 
     def __str__(self):
         return self.fullName
+
+
+class UserPreference(models.Model):
+    EVENT_SIZES = (
+        (10, 'Small'),
+        (20, 'Medium'),
+        (30, 'Large')
+    )
+    UNITS = (
+        ('km', 'Kilometers'),
+        ('m', 'Miles')
+    )
+
+    user = models.ForeignKey(settings.AUTH_USER_MODEL)
+    # Event preferences
+    ageMin = models.PositiveSmallIntegerField(validators=[MinValueValidator(18)], blank=True)
+    ageMax = models.PositiveSmallIntegerField(validators=[MinValueValidator(18)], blank=True)
+    numGroups = models.PositiveSmallIntegerField(validators=[MinValueValidator(1), MaxValueValidator(2)],
+                                                 choices=Event.NUM_GROUPS, blank=True)
+    eventType = models.PositiveSmallIntegerField(choices=Event.TYPES, blank=True)
+    eventSize = models.PositiveSmallIntegerField(choices=EVENT_SIZES, blank=True)
+
+    # Communication preferences
+    receiveNewsletter = models.BooleanField(default=True)
+
+    # Misc preferences
+    units = models.CharField(max_length=3, choices=UNITS, blank=True)
+
+    # Automatic timestamps
+    created = models.DateTimeField(auto_now_add=True)
+    updated = models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        return str(self.user)

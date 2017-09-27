@@ -129,3 +129,23 @@ class UtilsTest(TestCase):
         date_matrix = utils.get_date_matrix(self.event.id)
         self.assertEqual(user1_date_1, date_matrix[self.user1.id][0])
         self.assertEqual(user5_date_3, date_matrix[self.user5.id][2])
+
+    def test_send_message_get_message(self):
+        cache.clear()
+
+        user1 = User.objects.create_user(username='bob1', email='bob1@alice.com', password='top_secret')
+        user2 = User.objects.create_user(username='bob2', email='bob2@alice.com', password='top_secret')
+
+        # Send a message from 1 to 2
+        utils.send_message(user1.id, user2.id, 'lorem ipsum dolor sit amet')
+
+        # Send a message from 2 to 1
+        utils.send_message(user2.id, user1.id, {'key': 'value'})
+
+        # Read a message from 1
+        message1 = utils.get_message(user2.id, user1.id)
+        self.assertEqual(message1, 'lorem ipsum dolor sit amet')
+
+        # Read a message from 2
+        message2 = utils.get_message(user1.id, user2.id)
+        self.assertEqual(message2['key'], 'value')
