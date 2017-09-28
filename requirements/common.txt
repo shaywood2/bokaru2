@@ -1,6 +1,7 @@
 dj-database-url>=0.4
 Django>=1.10
 django-imagekit>=4.0
+django-mailgun>=0.9
 django-registration>=2.2
 gunicorn>=19.7
 Pillow>=4.2

@@ -135,8 +135,12 @@ ACCOUNT_ACTIVATION_DAYS = 7
 REGISTRATION_OPEN = True
 REGISTRATION_SALT = 'helloThere!'
 
-# TODO: set up email backend
-EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+# Mailgun backend
+EMAIL_BACKEND = 'django_mailgun.MailgunBackend'
+MAILGUN_ACCESS_KEY = os.environ['MG_KEY']
+MAILGUN_SERVER_NAME = os.environ['MG_SERVER']
+DEFAULT_FROM_EMAIL = 'Bokaru <admin@bokaru.com>'
+SERVER_EMAIL = 'server@bokaru.com'
 
 # Internationalization
 # https://docs.djangoproject.com/en/1.9/topics/i18n/
