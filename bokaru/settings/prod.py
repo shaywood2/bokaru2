@@ -1,3 +1,5 @@
+import dj_database_url
+
 from bokaru.settings.common import *
 
 # Secret key
@@ -22,6 +24,14 @@ STATICFILES_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'
 
 MEDIA_URL = 'https://%s/%s/' % (AWS_S3_CUSTOM_DOMAIN, AWS_MEDIA_LOCATION)
 DEFAULT_FILE_STORAGE = 'bokaru.storage_backends.MediaStorage'
+
+# Database
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.contrib.gis.db.backends.postgis',
+        'NAME': dj_database_url.config(conn_max_age=500),
+    }
+}
 
 # ElastiCache
 CACHES = {
@@ -60,7 +70,7 @@ LOGGING = {
 }
 
 # Security
-ALLOWED_HOSTS = ['bokaru.com', '*.bokaru.com']
+ALLOWED_HOSTS = ['bokaru.com', '*.bokaru.com', 'localhost']
 # TODO: set to 1 year (31536000)
 # SECURE_HSTS_SECONDS = 3600
 # SECURE_HSTS_PRELOAD = True
