@@ -11,42 +11,12 @@ https://docs.djangoproject.com/en/1.9/ref/settings/
 """
 
 import os
-import dj_database_url
-import logging
 
-# Build paths inside the project like this: os.path.join(BASE_DIR, ...)
+# Build paths
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 PROJECT_ROOT = os.path.dirname(os.path.abspath(__file__))
 
-# Quick-start development settings - unsuitable for production
-# See https://docs.djangoproject.com/en/1.9/howto/deployment/checklist/
-
-# SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'il3dg4!5!r1sw%&i+%h7(&f4yu(6gog6pfjx()b8c%quwk5se5'
-
-# SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
-
-# Logging
-if DEBUG:
-    # will output to your console
-    logging.basicConfig(
-        level=logging.DEBUG,
-        format='%(asctime)s %(levelname)s %(message)s',
-        datefmt="[%d/%b/%Y %H:%M:%S]"
-    )
-else:
-    # will output to logging file
-    logging.basicConfig(
-        level=logging.DEBUG,
-        format='%(asctime)s %(levelname)s %(message)s',
-        datefmt="[%d/%b/%Y %H:%M:%S]",
-        filename='/my_log_file.log',
-        filemode='a'
-    )
-
 # Application definition
-
 INSTALLED_APPS = [
     'web.apps.WebConfig',
     'money.apps.MoneyConfig',
@@ -75,6 +45,7 @@ MIDDLEWARE_CLASSES = [
 ]
 
 ROOT_URLCONF = 'bokaru.urls'
+APPEND_SLASH = True
 
 TEMPLATES = [
     {
@@ -93,16 +64,6 @@ TEMPLATES = [
 ]
 
 WSGI_APPLICATION = 'bokaru.wsgi.application'
-
-# Database
-# https://docs.djangoproject.com/en/1.9/ref/settings/#databases
-
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
-    }
-}
 
 # Password validation
 # https://docs.djangoproject.com/en/1.10/topics/auth/passwords/#module-django.contrib.auth.password_validation
@@ -135,82 +96,13 @@ ACCOUNT_ACTIVATION_DAYS = 7
 REGISTRATION_OPEN = True
 REGISTRATION_SALT = 'helloThere!'
 
-# Mailgun backend
-EMAIL_BACKEND = 'django_mailgun.MailgunBackend'
-MAILGUN_ACCESS_KEY = os.environ['MG_KEY']
-MAILGUN_SERVER_NAME = os.environ['MG_SERVER']
-DEFAULT_FROM_EMAIL = 'Bokaru <admin@bokaru.com>'
-SERVER_EMAIL = 'server@bokaru.com'
-
 # Internationalization
 # https://docs.djangoproject.com/en/1.9/topics/i18n/
-
 LANGUAGE_CODE = 'en-us'
-
 TIME_ZONE = 'America/Toronto'
-
 USE_I18N = True
-
 USE_L10N = True
-
 USE_TZ = True
-
-# Update database configuration with $DATABASE_URL.
-db_from_env = dj_database_url.config(conn_max_age=500)
-DATABASES['default'].update(db_from_env)
-DATABASES['default']['ENGINE'] = 'django.contrib.gis.db.backends.postgis'
 
 # Honor the 'X-Forwarded-Proto' header for request.is_secure()
 SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
-
-# Allow all host headers
-ALLOWED_HOSTS = ['*']
-
-LOGGING = {
-    'version': 1,
-    'disable_existing_loggers': False,
-    'handlers': {
-        'console': {
-            'class': 'logging.StreamHandler',
-        },
-    },
-    'loggers': {
-        'django': {
-            'handlers': ['console'],
-            'level': os.getenv('DJANGO_LOG_LEVEL', 'INFO'),
-        },
-    },
-}
-
-
-CACHES = {
-    'default': {
-        'BACKEND': 'django.core.cache.backends.memcached.MemcachedCache',
-        'LOCATION': '127.0.0.1:11211',
-    }
-}
-
-# def get_cache():
-#     import os
-#     try:
-#         os.environ['MEMCACHE_SERVERS'] = os.environ['MEMCACHIER_SERVERS'].replace(',', ';')
-#         os.environ['MEMCACHE_USERNAME'] = os.environ['MEMCACHIER_USERNAME']
-#         os.environ['MEMCACHE_PASSWORD'] = os.environ['MEMCACHIER_PASSWORD']
-#         return {
-#             'default': {
-#                 'BACKEND': 'django_pylibmc.memcached.PyLibMCCache',
-#                 'TIMEOUT': 3600,
-#                 'BINARY': True,
-#                 'OPTIONS': {'tcp_nodelay': True}
-#             }
-#         }
-#     except Exception:
-#         return {
-#             'default': {
-#                 'BACKEND': 'django.core.cache.backends.memcached.MemcachedCache',
-#                 'LOCATION': '127.0.0.1:11211',
-#             }
-#         }
-#
-#
-# CACHES = get_cache()
