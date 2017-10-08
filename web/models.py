@@ -58,7 +58,8 @@ class EventManager(models.Manager):
 
     # Get all events that belong to the given user
     def get_all_by_user(self, user):
-        return self.filter(eventgroup__eventparticipant__user=user).order_by('startDateTime')
+        return self.filter(eventgroup__eventparticipant__user=user).filter(
+            startDateTime__gte=datetime.date.today()).order_by('startDateTime')
 
     # Get next event that the user is registered for
     def get_next(self, user):
@@ -129,7 +130,7 @@ class Event(models.Model):
     @property
     def endDateTime(self):
         return self.startDateTime + timedelta(
-            seconds=self.maxParticipantsInGroup * (self.dateDuration + self.breakDuration))
+                seconds=self.maxParticipantsInGroup * (self.dateDuration + self.breakDuration))
 
     objects = EventManager()
 

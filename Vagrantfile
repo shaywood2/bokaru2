@@ -78,6 +78,7 @@ Vagrant.configure(2) do |config|
     sudo apt-get install -y memcached
     sudo apt-get install -y libmemcached-dev
     sudo apt-get install -y libjpeg8
+    sudo apt-get install -y libjpeg-dev
     sudo apt-get install -y zlib1g
 
     # Install Python dependencies

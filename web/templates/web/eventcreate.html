@@ -38,7 +38,54 @@
 
 {% block javascript %}
 
-<script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+
+
+
+<script>
+	function initMap() {
+			var autocomplete = new google.maps.places.Autocomplete(document.getElementById('searchBox'));
+			var geocoder = new google.maps.Geocoder();
+			document.getElementById('searchBox').addEventListener('change', function() {
+         		 geocodeAddress(geocoder);
+        	});
+        }
+function geocodeAddress(geocoder) {
+	var address = document.getElementById('searchBox').value;
+		geocoder.geocode({'address': address}, function(results, status) {
+          if (status === 'OK') {
+            console.log("Longitude: " + results[0].geometry.location.lng());
+            console.log("Latitude: " + results[0].geometry.location.lat());
+			for (component in results[0].address_components)
+			{
+				for (type in results[0].address_components[component].types)
+				{
+					if (results[0].address_components[component].types[type] == 'locality')
+					{
+						console.log("City: " + results[0].address_components[component].long_name);
+					}
+					if (results[0].address_components[component].types[type] == 'administrative_area_level_1')
+					{
+						console.log("State: " + results[0].address_components[component].short_name);
+					}
+				}
+			}
+          } else {
+            console.log('Geocode was not successful for the following reason: ' + status);
+          }
+        });
+}
+</script>
+
+
+
+<script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBLJqyRqu7Mfr0xJ1OFwFxFxmCZDxX7fxQ&callback=initMap&libraries=places"
+  type="text/javascript"></script>
+
+
+
+  <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+
+
 
 <script>
 

@@ -8,7 +8,7 @@ from django.core.cache import cache
 from django.utils.timezone import utc
 
 from account.models import Account
-from web.models import Event
+from web.models import Event, Memo
 
 LOGGER = logging.getLogger(__name__)
 
@@ -191,6 +191,8 @@ def get_current_date(user_id, event_id):
         if date_num not in date_matrix[user_id]:
             return None
 
+
+
         # Get the paired user based on the date matrix
         date = date_matrix[user_id][date_num]
         # Check if the date is a gap
@@ -202,9 +204,12 @@ def get_current_date(user_id, event_id):
         user = User.objects.get(pk=int(date))
         # Get the user's account
         account = Account.objects.get(user=user)
-        return {'is_empty_slot': False, 'account': account, 'fullName': account.fullName, 'username': user.username,
-                'id': user.id, 'time_passed': time_passed, 'is_active': is_active,
-                'time_until_reload': time_until_reload}
+
+        memo = Memo.objects.get(owner=user_id, about=user.id)
+
+        return {'is_empty_slot': False, 'account': account, 'fullName': account.fullName, 'username': user.username, 'id': user.id,
+                'time_passed': time_passed, 'is_active': False, 'time_until_reload': time_until_reload, 'memo': memo.content}
+
     except Event.DoesNotExist:
         return None
 

@@ -14,26 +14,42 @@
 
 {% block content %}
 
+
 <!--=== Container Part ===-->
 <div class="container">
     <div class="content">
-            <h1 id="countDownDiv" class="heading-md count_down">30</h1>
-         <h1 class="heading-md count_down_description margin-bottom-80">seconds to decide</h1>
-            <h1 class="heading-md search_title margin-bottom-20">Was it a match?</h1>
+        <h1 id="countDownDiv" class="heading-md count_down"></h1>
+        <script>
+   // $("#countDownDiv")[0].innerHTML = parseInt({{date.time_until_reload}}/1000);
+    document.getElementById("countDownDiv").innerHTML = parseInt({{date.time_until_reload}}/1000);
+
+        </script>
+        <h1 class="heading-md count_down_description margin-bottom-80">seconds to decide</h1>
+
+        <h1 class="heading-md search_title margin-bottom-20">Was it a match?</h1>
         <div class="col-md-12 margin-bottom-80" style="text-align: center">
-                Your contact information will be shared with this user in the event that they select you as a match as well.
-            </div>
-            <div class="row md-margin-bottom-80">
+            Your contact information will be shared with this user in the event that they select you as a match as well.
+        </div>
+        <div class="row md-margin-bottom-80">
             <div class="col-md-12 margin-bottom-80" style="text-align: center">
 
-                    <input id="button_yes" type="submit" class="btn-u btn-u-lg btn-u-red" style="width: 150px; margin-right: 40px;" value="Yes">
-                <input id="button_maybe" type="submit" class="btn-u btn-u-lg btn-u-red" style="width: 150px; margin-right: 40px;"  value="Maybe">
-                    <input id="button_no" type="submit" class="btn-u btn-u-lg btn-u-red" style="width: 150px;" value="No">
-                <div class="headline margin-top-20"><h2>Notes</h2></div>
+                <input id="button_yes" type="submit" class="btn-u btn-u-lg white-button"
+                       style="width: 150px; margin-right: 40px;" value="Yes">
+                <!--<input id="button_maybe" type="submit" class="btn-u btn-u-lg white-button" style="width: 150px; margin-right: 40px;"  value="Maybe">-->
+                <input id="button_no" type="submit" class="btn-u btn-u-lg white-button" style="width: 150px;"
+                       value="No">
 
-                <textarea onchange="changeNote(true)" oninput="changeNote()" cols="80" id="id_summary" maxlength="2000" name="summary" rows="11"></textarea>
-                <div id="saved_text" class="hidden"><h5>Saved as you type</h5></div>
+
             </div>
+            <div class="col-md-12 margin-bottom-80" style="text-align: center">
+                 <div class="headline margin-top-20"><h2>Notes</h2></div>
+
+                <textarea onchange="changeNote(true)" oninput="changeNote()" cols="80" id="memo" maxlength="2000"
+                          name="summary" rows="11">{{memo}}</textarea>
+                <div id="saved_text" class="hidden"><h5>Saved as you type</h5></div>
+
+            </div>
+
 
 
         </div>
@@ -45,8 +61,10 @@
 {% endblock %}
 
 {% block javascript %}
+
+
 <script type="text/javascript">
-	var countDown = 30;
+	var countDown = parseInt({{date.time_until_reload}})/1000;
     var changeCount = 0;
 
 	function reloadPage(){
@@ -61,7 +79,7 @@
 	        setTimeout(changeCountdown, 1000);
 	    }
 	    else {
-	        submitAnswer(0);
+	        submitAnswer(2);
 	    }
 	}
 
@@ -71,18 +89,30 @@
 	    var url = "/chat/pick/target_user/" + pickID + "/event/" + eventID + "/response/" + answer + "/";
 	    console.log(url);
 	    changeNote(true);
+
+
+
 	    $.ajax({url: url, success: answerSubmitted, error: answerFailed});
 	}
 
 
+    function setInitialNote() {
+
+    $("#memo")[0].value = "{{date.memo}}";
+    }
+
+
 	function changeNote(changeNow) {
 
+        var url = "/memo/about/{{date.id}}/";
 	    changeCount = changeCount + 1;
 
 	    if (changeCount == 5 || changeNow == true) {
 	        console.log("Note Saved");
 	        $("#saved_text").removeClass("hidden");
 	        changeCount = 0;
+	        var noteText = $("#memo")[0].value;
+	        $.post(url, noteText);
 	    }
 	}
 
@@ -97,23 +127,42 @@
 
 	$("#button_yes").click(function(){
 	    submitAnswer(1);
+	    $("#button_no").removeClass("red-button");
+	    //$("#button_maybe").removeClass("red-button");
+	    $("#button_yes").addClass("red-button");
     });
 
     $("#button_maybe").click(function(){
 	    submitAnswer(2);
+	    $("#button_yes").removeClass("red-button");
+	    $("#button_no").removeClass("red-button");
+	   // $("#button_maybe").addClass("red-button");
     });
 
     $("#button_no").click(function(){
 	    submitAnswer(0);
+	    $("#button_yes").removeClass("red-button");
+	   // $("#button_maybe").removeClass("red-button");
+	    $("#button_no").addClass("red-button");
+
     });
 
 
+//TODO: Set default answer to 2 when you come to page
+//TODO: Take time_until_reload/1000 as inital value
+//TODO: Set the styling for selected button with Maybe selected by default
+//TODO: Save notes using API
+//TODO: Change pick set to Post
+// $.post( "/memo/about/2/", "lorem ipsum dolor sit amet");
+//TODO: Retrieve existing note
+//TODO: Make it choose  the current pick status when you load the page
 
-
-// /chat/pick/target_user/123/event/456/response/1/
-
+//TODO: Maps API to event create
 
     setTimeout(reloadPage, {{date.time_until_reload}});
     setTimeout(changeCountdown, 1000);
+    setInitialNote();
+    submitAnswer(2);
+
 </script>
 {% endblock %}
