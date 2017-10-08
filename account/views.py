@@ -1,5 +1,3 @@
-import logging
-
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 from django.http import HttpResponseRedirect
@@ -12,8 +10,6 @@ from money.models import UserPaymentInfo
 from money.payment_service import create_customer, delete_card, create_card
 from .forms import RegistrationForm, AccountForm, UserPreferenceForm
 from .models import Account, UserPreference
-
-LOGGER = logging.getLogger(__name__)
 
 
 class RegistrationView(BaseRegistrationView):
@@ -64,7 +60,6 @@ def view(request):
     context = {
         'user': current_user,
         'account': account,
-
     }
 
     return render(request, 'account/view.html', context)
@@ -98,6 +93,18 @@ def edit(request):
         form = AccountForm(request.POST, request.FILES, instance=account)
         if form.is_valid():
             form.save()
+
+            if 'upload_image' in request.FILES:
+                image_file = request.FILES['upload_image'].read()
+
+                # Get cropping parameters
+                x = form.cleaned_data.get('crop_x')
+                y = form.cleaned_data.get('crop_y')
+                w = form.cleaned_data.get('crop_w')
+                h = form.cleaned_data.get('crop_h')
+
+                account.add_photo(image_file, x, y, w, h, 400)
+
             # Redirect to view profile page
             return HttpResponseRedirect(reverse('account:view'))
     else:
@@ -262,19 +269,18 @@ def credit_card_register(request):
         )
 
     card = {
-            'brand': payment_info.credit_card_brand,
-            'last4': payment_info.credit_card_last_4,
-            'exp_month': payment_info.credit_card_exp_month,
-            'exp_year': payment_info.credit_card_exp_year,
-            'id': payment_info.credit_card_id,
-        }
+        'brand': payment_info.credit_card_brand,
+        'last4': payment_info.credit_card_last_4,
+        'exp_month': payment_info.credit_card_exp_month,
+        'exp_year': payment_info.credit_card_exp_year,
+        'id': payment_info.credit_card_id,
+    }
 
     return HttpResponseRedirect(reverse('account:credit_card'))
 
 
 @login_required
 def credit_card_register_and_pay(request, group_id):
-
     current_user = request.user
     card_found = False
 

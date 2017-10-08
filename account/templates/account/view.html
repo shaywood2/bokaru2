@@ -14,11 +14,18 @@
                 <div class="profile-bio">
                     <div class="row">
                         <div class="col-md-5">
-                            <img class="img-responsive md-margin-bottom-10"
-                                 src="{% static 'web/theme/img/team/img32-md.jpg' %}" alt="">
+                            {% ifequal account.photo '' %}
+                            <img src="{% static 'account/images/default-avatar.png' %}" alt="Default avatar" id="default_avatar"/>
+                            {% else %}
+                            <img src="{{ account.photo.url }}" alt="A picture of Me" id="avatar" class="img-responsive md-margin-bottom-10"/>
+                            {% endifequal %}
+                            </span>
                         </div>
                         <div class="col-md-7">
                             <h2>{{ account.fullName }}</h2>
+
+                            <span>
+
                             <span><strong>Location:</strong> [CITY]</span>
                             <span><strong>Age:</strong> {{ account.age }} </span>
                             <span><strong>Gender:</strong> {{ account.gender }} </span>
@@ -45,7 +52,7 @@
 
                 <div class="row">
                     <h4>This information is only shown to your matches:</h4>
-                    <h5>&nbsp How matches contact you: {{ account.contactInfo }} </h5>
+                    <h5>&nbsp; How matches contact you: {{ account.contactInfo }} </h5>
 
                 </div><!--/end row-->
 

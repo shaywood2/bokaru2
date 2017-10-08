@@ -204,10 +204,12 @@ def get_current_date(user_id, event_id):
         user = User.objects.get(pk=int(date))
         # Get the user's account
         account = Account.objects.get(user=user)
+
         memo = Memo.objects.get(owner=user_id, about=user.id)
 
         return {'is_empty_slot': False, 'account': account, 'fullName': account.fullName, 'username': user.username, 'id': user.id,
                 'time_passed': time_passed, 'is_active': False, 'time_until_reload': time_until_reload, 'memo': memo.content}
+
     except Event.DoesNotExist:
         return None
 

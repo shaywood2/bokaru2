@@ -68,3 +68,9 @@ target/
 
 # Migrations (for dev purposes)
 */migrations/*
+
+# Production keys
+bokaru.txt
+
+# Static files
+/www/

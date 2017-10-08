@@ -1,10 +1,18 @@
+import io
+import logging
+
+from PIL import Image
 from django.conf import settings
 from django.contrib.gis.db import models as gis_models
 from django.contrib.gis.geos import Point
-from django.db import models
+from django.core.files.storage import default_storage
 from django.core.validators import MinValueValidator, MaxValueValidator
+from django.db import models
+from django.utils.crypto import get_random_string
 
 from web.models import Event
+
+logger = logging.getLogger(__name__)
 
 
 class Account(models.Model):
@@ -44,6 +52,7 @@ class Account(models.Model):
         ('overweight', 'Overweight')
     )
     user = models.ForeignKey(settings.AUTH_USER_MODEL)
+    photo = models.ImageField(blank=True)
     birthDate = models.DateField(blank=True, null=True)
     status = models.CharField(max_length=20, choices=STATUSES, blank=True)
     gender = models.CharField(max_length=30, blank=True)
@@ -69,6 +78,40 @@ class Account(models.Model):
     # Automatic timestamps
     created = models.DateTimeField(auto_now_add=True)
     updated = models.DateTimeField(auto_now=True)
+
+    def add_photo(self, new_photo, x, y, w, h, size):
+        # Open the stream as an image
+        stream = io.BytesIO(new_photo)
+        image = Image.open(stream)
+
+        # Crop and resize the image
+        cropped_image = image.crop((x, y, w + x, h + y))
+        final_image = cropped_image.resize((size, size), Image.ANTIALIAS)
+
+        # Save the image
+        stream = io.BytesIO()
+        final_image.save(stream, 'JPEG')
+
+        # Reopen the file for writing
+        path = 'user-photos/' + self.user.username + '-' + get_random_string(length=6) + '.jpg'
+        file = default_storage.open(path, 'wb')
+        file.write(stream.getvalue())
+        file.close()
+
+        # Clean up old photo and thumbnails
+        if self.photo is not None and self.photo.name != '':
+            # Delete the old image file
+            default_storage.delete(self.photo.name)
+            logging.debug('Deleted file: ' + self.photo.name)
+
+            cache_path = 'CACHE/images/' + self.photo.name.replace('.jpg', '') + '/'
+            cached_files = default_storage.listdir(cache_path)
+            for f in cached_files[1]:
+                default_storage.delete(cache_path + f)
+                logging.debug('Deleted file: ' + cache_path + f)
+
+        self.photo = path
+        self.save(update_fields=['photo'])
 
     def __str__(self):
         return self.fullName
