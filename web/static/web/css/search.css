@@ -36,3 +36,21 @@
     font-size: 12pt;
     text-align: center;
 }
+
+
+.white-button
+{
+    background-color: white;
+    color: #555;
+    border: 1px solid #555;
+}
+
+.red-button
+{
+
+    background-color: #c0392b;
+    color: white;
+    border: none;
+
+
+}

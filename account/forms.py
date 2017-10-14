@@ -5,7 +5,7 @@ from django.forms import ModelForm
 from django.utils.translation import ugettext_lazy as _
 from registration.forms import RegistrationFormUniqueEmail
 
-from .models import Account
+from .models import Account, UserPreference
 
 # Get an instance of a logger
 logger = logging.getLogger(__name__)
@@ -76,4 +76,20 @@ class AccountForm(ModelForm):
 
     class Meta:
         model = Account
+        exclude = ['user']
+
+    def clean_gender(self):
+        gender = self.cleaned_data.get('gender')
+        if gender != 'bob':
+            raise forms.ValidationError(
+                'nope, you can be only bob',
+                code='not_bob'
+            )
+        return gender
+
+
+class UserPreferenceForm(ModelForm):
+    class Meta:
+        model = UserPreference
         exclude = ['user', 'locationCoordinates']
+

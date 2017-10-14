@@ -8,8 +8,8 @@ from registration.backends.hmac.views import RegistrationView as BaseRegistratio
 
 from money.models import UserPaymentInfo
 from money.payment_service import create_customer, delete_card, create_card
-from .forms import RegistrationForm, AccountForm
-from .models import Account
+from .forms import RegistrationForm, AccountForm, UserPreferenceForm
+from .models import Account, UserPreference
 
 
 class RegistrationView(BaseRegistrationView):
@@ -119,10 +119,22 @@ def password(request):
     return render(request, 'account/changepassword.html', context)
 
 
-def notifications(request):
-    context = {}
+@login_required
+def preferences(request):
 
-    return render(request, 'account/notifications.html', context)
+    current_user = request.user
+    preference = UserPreference.objects.get(user=current_user)
+
+    if request.method == 'POST':
+        form = UserPreferenceForm(request.POST, request.FILES, instance=preference)
+        if form.is_valid():
+            form.save()
+            # Redirect to view profile page
+            return HttpResponseRedirect(reverse('account:preferences'))
+    else:
+        form = AccountForm(instance=preference)
+
+    return render(request, 'account/preferences.html', {'form': form})
 
 
 def closeaccount(request):
