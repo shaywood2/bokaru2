@@ -87,7 +87,7 @@ AUTH_PASSWORD_VALIDATORS = [
 # https://docs.djangoproject.com/en/1.10/topics/auth/passwords/#using-argon2-with-django
 
 # Authentication settings
-LOGIN_URL = '/account/login/'
+LOGIN_URL = '/login/'
 LOGIN_REDIRECT_URL = '/'
 LOGOUT_REDIRECT_URL = '/'
 PASSWORD_RESET_TIMEOUT_DAYS = 3

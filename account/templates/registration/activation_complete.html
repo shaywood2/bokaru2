@@ -1,10 +1,14 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Title</title>
-</head>
-<body>
-ACCOUNT ACTIVE, now bugger off.
-</body>
-</html>
+{% extends 'web/base_auth.html' %}
+{% load staticfiles %}
+
+{% block title %}Bokaru | Activation Complete{% endblock %}
+
+{% block content %}
+<h2 class="h4 g-font-weight-700 mb-4">Your account is activated successfully!</h2>
+<p>You may go ahead and log in now.</p>
+<div class="row">
+    <div class="col-md-12">
+        <a href="{% url 'auth_login' %}" class="btn btn-lg btn-block u-btn-primary g-mb-10">Log In</a>
+    </div>
+</div>
+{% endblock %}

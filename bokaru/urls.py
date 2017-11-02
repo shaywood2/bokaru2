@@ -12,11 +12,11 @@ urlpatterns = [
     url(r'^chat/', include('chat.urls')),
     url(r'^admin/', admin.site.urls),
     # Registration and authentication views
-    url(r'^account/register/$',
+    url(r'^register/$',
         RegistrationView.as_view(
             form_class=RegistrationForm
         ),
-        name='registration_register',
+        name='auth_register',
         ),
-    url(r'^account/', include('registration.backends.hmac.urls')),
+    url(r'^', include('registration.backends.hmac.urls')),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

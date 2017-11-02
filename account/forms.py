@@ -13,13 +13,12 @@ logger = logging.getLogger(__name__)
 
 class RegistrationForm(RegistrationFormUniqueEmail):
     error_messages = {
-        'email_mismatch': _('The two email fields didn\'t match.'),
         'password_mismatch': _('The two password fields didn\'t match.'),
+        'terms_required': _('You must agree to the terms to register.'),
     }
 
     fullName = forms.CharField(max_length=150)
-    email2 = forms.EmailField(required=True)
-    terms = forms.BooleanField(error_messages={'required': _(u'You must agree to the terms to register')})
+    terms = forms.BooleanField(required=False)
     newsletter = forms.BooleanField(required=False)
 
     def __init__(self, *args, **kwargs):
@@ -30,8 +29,6 @@ class RegistrationForm(RegistrationFormUniqueEmail):
             self.fields['fullName'].widget.attrs.update({'placeholder': _(u'Your name')})
         if 'email' in self.fields:
             self.fields['email'].widget.attrs.update({'placeholder': _(u'Your email')})
-        if 'email2' in self.fields:
-            self.fields['email2'].widget.attrs.update({'placeholder': _(u'Confirm email')})
         if 'password1' in self.fields:
             self.fields['password1'].widget.attrs.update({'placeholder': _(u'Enter password')})
         if 'password2' in self.fields:
@@ -48,16 +45,14 @@ class RegistrationForm(RegistrationFormUniqueEmail):
             )
         return password2
 
-    def clean_email2(self):
-        # Emails must match
-        email1 = self.cleaned_data.get('email')
-        email2 = self.cleaned_data.get('email2')
-        if email1 and email2 and email1 != email2:
+    def clean_terms(self):
+        terms = self.cleaned_data.get('terms')
+        if not terms:
             raise forms.ValidationError(
-                self.error_messages['email_mismatch'],
-                code='email_mismatch',
+                self.error_messages['terms_required'],
+                code='terms_required',
             )
-        return email2
+        return terms
 
     def save(self, commit=True):
         user = super(RegistrationFormUniqueEmail, self).save(commit=False)
@@ -92,4 +87,3 @@ class UserPreferenceForm(ModelForm):
     class Meta:
         model = UserPreference
         exclude = ['user', 'locationCoordinates']
-
