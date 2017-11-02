@@ -27,7 +27,7 @@ def index(request):
     if request.user.is_authenticated():
         return render(request, 'web/index.html', context)
     else:
-        return render(request, 'web/test.html', context)
+        return render(request, 'web/index.html', context)
 
 
 def test(request):

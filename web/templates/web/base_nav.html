@@ -1,0 +1,82 @@
+{% extends 'web/base.html' %}
+{% load staticfiles %}
+
+{% block main %}
+<!-- Header -->
+<header id="js-header"
+        class="u-header u-header--static--lg u-header--show-hide--lg u-header--change-appearance--lg u-header--untransitioned"
+        data-header-fix-moment="500" data-header-fix-effect="slide">
+    <!-- Top Bar -->
+    <div class="u-header__section u-header__section--hidden u-header__section--dark g-bg-black g-transition-0_3 g-py-10">
+        <div class="container">
+            <div class="row flex-column flex-sm-row justify-content-between align-items-center text-uppercase g-font-weight-600 g-color-white g-font-size-12 g-mx-0--lg">
+                <div class="col-auto" style="margin-left: auto; margin-right: auto;">
+                    <i class="fa fa-warning g-font-size-18 g-valign-middle g-color-primary g-mr-10 g-mt-minus-2"></i>
+                    Notification message
+                </div>
+
+                <div class="col-auto">
+                    <a class="g-color-white g-color-primary--hover g-text-underline--none--hover"
+                       href="{% url 'auth_login' %}">Login</a>
+                    &nbsp;|&nbsp;
+                    <a class="g-color-white g-color-primary--hover g-text-underline--none--hover"
+                       href="{% url 'auth_register' %}">Register</a>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Top Bar End -->
+
+    <div class="u-header__section u-header__section--light g-bg-white g-transition-0_3 g-py-10 g-py-0--lg"
+         data-header-fix-moment-classes="u-shadow-v18">
+        <nav class="js-mega-menu navbar navbar-expand-lg py-0 hs-menu-initialized hs-menu-horizontal">
+            <div class="container">
+                <!-- Responsive Toggle Button -->
+                <button class="navbar-toggler navbar-toggler-right btn g-line-height-1 g-brd-none g-pa-0 g-pos-abs g-top-3 g-right-0"
+                        type="button" aria-label="Toggle navigation" aria-expanded="false" aria-controls="navBar"
+                        data-toggle="collapse" data-target="#navBar">
+                    <span class="hamburger hamburger--slider">
+                        <span class="hamburger-box">
+                            <span class="hamburger-inner"></span>
+                        </span>
+                    </span>
+                </button>
+                <!-- End Responsive Toggle Button -->
+                <!-- Logo -->
+                <a href="{% url 'web:index' %}" class="navbar-brand">
+                    <img src="{% static 'web/images/outline-owl.jpg' %}" style="max-width: 90px; max-height: 90px"
+                         alt="Logo">
+                </a>
+                <!-- End Logo -->
+
+                <!-- Navigation -->
+                <div class="collapse navbar-collapse align-items-center flex-sm-row" id="navBar">
+                    <ul class="navbar-nav ml-auto text-uppercase g-font-weight-600 u-main-nav-v4 u-sub-menu-v1">
+                        <li class="nav-item g-mx-2--md g-mx-5--xl g-mb-5 g-mb-0--lg {% if request.path == '/' %}active{% endif %}">
+                            <a href="{% url 'web:index' %}" class="nav-link">Home</a>
+                        </li>
+                        <li class="nav-item g-mx-2--md g-mx-5--xl g-mb-5 g-mb-0--lg">
+                            <a href="{% url 'web:search' %}" class="nav-link">Find Events</a>
+                        </li>
+                        <li class="nav-item g-mx-2--md g-mx-5--xl g-mb-5 g-mb-0--lg">
+                            <a href="{% url 'account:view' %}" class="nav-link">Profile</a>
+                        </li>
+                        <li class="nav-item g-mx-2--md g-mx-5--xl g-mb-5 g-mb-0--lg">
+                            <a href="{% url 'web:matches' %}" class="nav-link">Matches</a>
+                        </li>
+                        <li class="nav-item g-mx-2--md g-mx-5--xl g-mb-5 g-mb-0--lg">
+                            <a href="{% url 'web:myevents' %}" class="nav-link">My Events</a>
+                        </li>
+                    </ul>
+                </div>
+                <!-- End Navigation -->
+            </div>
+        </nav>
+    </div>
+</header>
+<!-- Header End -->
+
+{% block content %}
+{% endblock %}
+
+{% endblock %}
