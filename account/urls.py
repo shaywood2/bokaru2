@@ -4,14 +4,11 @@ from . import views
 app_name = 'account'
 urlpatterns = [
     # ex: /profile
-    url(r'^$', views.summary, name='summary'),
-    url(r'^subscription$', views.subscription, name='subscription'),
-    url(r'^view$', views.view, name='view'),
+    url(r'^$', views.view, name='view'),
     url(r'^view/(?P<username>\w+)$', views.view_user, name='view_user'),
     url(r'^edit$', views.edit, name='edit'),
     url(r'^password', views.password, name='password'),
     url(r'^preferences', views.preferences, name='preferences'),
-    url(r'^closeaccount', views.closeaccount, name='closeaccount'),
     url(r'^history', views.history, name='history'),
     url(r'^settings$', views.settings, name='settings'),
     url(r'^close$', views.close, name='close'),

@@ -3,7 +3,6 @@ from django.contrib.auth.models import User
 from django.http import HttpResponseRedirect
 from django.shortcuts import get_object_or_404, render
 from django.urls import reverse
-from django.utils import timezone
 from registration.backends.hmac.views import RegistrationView as BaseRegistrationView
 
 from money.models import UserPaymentInfo
@@ -17,35 +16,16 @@ class RegistrationView(BaseRegistrationView):
 
     def register(self, form):
         new_user = BaseRegistrationView.register(self, form)
+        # Create account object
         acc = Account()
         acc.fullName = form.cleaned_data['fullName']
         acc.user = new_user
         acc.status = 'created'
         acc.save()
-
-
-@login_required
-def summary(request):
-    try:
-        acc = Account.objects.get(user=request.user)
-    except:
-        acc = None
-
-    context = {
-        'test': "Summary Page",
-        'user': request.user,
-        'account': acc
-    }
-
-    return render(request, 'account/summary.html', context)
-
-
-def subscription(request):
-    context = {
-        'test': "Subscription Page",
-    }
-
-    return render(request, 'account/subscription.html', context)
+        # Create user preferences object
+        pref = UserPreference()
+        pref.user = new_user
+        pref.save()
 
 
 @login_required
@@ -53,24 +33,12 @@ def view(request):
     current_user = request.user
     account = Account.objects.get(user=current_user)
 
-    if account.birthDate is not None:
-        age = calculate_age(account.birthDate)
-        account.age = age
-
     context = {
         'user': current_user,
         'account': account,
     }
 
     return render(request, 'account/view.html', context)
-
-
-def calculate_age(born):
-    today = timezone.today()
-    years_difference = today.year - born.year
-    is_before_birthday = (today.month, today.day) < (born.month, born.day)
-    elapsed_years = years_difference - int(is_before_birthday)
-    return elapsed_years
 
 
 def view_user(request, username):
@@ -81,6 +49,7 @@ def view_user(request, username):
         'user': user,
         'account': account,
     }
+
     return render(request, 'account/view_user.html', context)
 
 
@@ -113,6 +82,7 @@ def edit(request):
     return render(request, 'account/edit.html', {'form': form})
 
 
+@login_required
 def password(request):
     context = {}
 
@@ -121,7 +91,6 @@ def password(request):
 
 @login_required
 def preferences(request):
-
     current_user = request.user
     preference = UserPreference.objects.get(user=current_user)
 
@@ -137,18 +106,14 @@ def preferences(request):
     return render(request, 'account/preferences.html', {'form': form})
 
 
-def closeaccount(request):
-    context = {}
-
-    return render(request, 'account/close.html', context)
-
-
+@login_required
 def history(request):
     context = {}
 
     return render(request, 'account/history.html', context)
 
 
+@login_required
 def settings(request):
     context = {
         'test': "Account Settings Page",
@@ -157,6 +122,7 @@ def settings(request):
     return render(request, 'account/settings.html', context)
 
 
+@login_required
 def close(request):
     context = {
         'test': "Close Account Page",

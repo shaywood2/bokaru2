@@ -18,19 +18,25 @@
     <!-- Google Fonts -->
     <link rel="stylesheet" href="//fonts.googleapis.com/css?family=Open+Sans%3A400%2C300%2C500%2C600%2C700">
 
-    <!-- CSS Global Compulsory -->
+    <!-- CSS Compulsory -->
     <link rel="stylesheet" href="{% static 'web/vendor/bootstrap/bootstrap.min.css' %}">
+    <link rel="stylesheet" href="{% static 'web/vendor/bootstrap/offcanvas.css' %}">
 
-    <!-- CSS Global Icons -->
+    <!-- CSS Icons -->
     <link rel="stylesheet" href="{% static 'web/vendor/icon-awesome/css/font-awesome.min.css' %}">
     <link rel="stylesheet" href="{% static 'web/vendor/icon-line/css/simple-line-icons.css' %}">
     <link rel="stylesheet" href="{% static 'web/vendor/hamburgers/hamburgers.min.css' %}">
+    <link rel="stylesheet" href="{% static 'web/vendor/icon-hs/style.css' %}">
     <!--<link rel="stylesheet" href="{% static 'web/vendor/icon-etlinefont/style.css' %}">-->
     <!--<link rel="stylesheet" href="{% static 'web/vendor/icon-line-pro/style.css' %}">-->
-    <!--<link rel="stylesheet" href="{% static 'web/vendor/icon-hs/style.css' %}">-->
+
+    <!-- CSS Plugins -->
+    <link rel="stylesheet" href="{% static 'web/vendor/animate.css' %}">
+    <link rel="stylesheet" href="{% static 'web/vendor/dzsparallaxer/dzsparallaxer.css' %}">
+    <link rel="stylesheet" href="{% static 'web/vendor/dzsparallaxer/dzsscroller/scroller.css' %}">
+    <link rel="stylesheet" href="{% static 'web/vendor/dzsparallaxer/advancedscroller/plugin.css' %}">
+    <link rel="stylesheet" href="{% static 'web/vendor/hs-megamenu/src/hs.megamenu.css' %}">
     <!--<link rel="stylesheet" href="{% static 'web/vendor/slick-carousel/slick/slick.css' %}">-->
-    <!--<link rel="stylesheet" href="{% static 'web/vendor/hs-megamenu/src/hs.megamenu.css' %}">-->
-    <!--<link rel="stylesheet" href="{% static 'web/vendor/animate.css' %}">-->
 
     <!-- CSS Unify -->
     <link rel="stylesheet" href="{% static 'web/css/unify-core.css' %}">
@@ -190,6 +196,15 @@
 </footer>
 <!-- End Footer -->
 
+<!-- Go To -->
+<a class="js-go-to u-go-to-v2" href="#" data-type="fixed" data-position='{
+     "bottom": 15,
+     "right": 15
+   }' data-offset-top="400" data-compensation="#js-header" data-show-effect="zoomIn">
+    <i class="fa fa-chevron-up"></i>
+</a>
+<!-- End Go To -->
+
 <!-- JS Global Compulsory -->
 <script src="{% static 'web/vendor/jquery/jquery.min.js' %}"></script>
 <script src="{% static 'web/vendor/jquery-migrate/jquery-migrate.min.js' %}"></script>
@@ -197,18 +212,32 @@
 <script src="{% static 'web/vendor/popper.min.js' %}"></script>
 <script src="{% static 'web/vendor/bootstrap/bootstrap.min.js' %}"></script>
 
+<!-- JS Implementing Plugins -->
+<script src="{% static 'web/vendor/dzsparallaxer/dzsparallaxer.js' %}"></script>
+<script src="{% static 'web/vendor/dzsparallaxer/dzsscroller/scroller.js' %}"></script>
+<script src="{% static 'web/vendor/dzsparallaxer/advancedscroller/plugin.js' %}"></script>
+<script src="{% static 'web/vendor/masonry/dist/masonry.pkgd.min.js' %}"></script>
+<script src="{% static 'web/vendor/imagesloaded/imagesloaded.pkgd.min.js' %}"></script>
+<script src="{% static 'web/vendor/slick-carousel/slick/slick.js' %}"></script>
+<script src="{% static 'web/vendor/fancybox/jquery.fancybox.min.js' %}"></script>
+<script src="{% static 'web/vendor/appear.js' %}"></script>
+
 <!-- JS Unify -->
 <script src="{% static 'web/js/hs.core.js' %}"></script>
 
 <script src="{% static 'web/js/components/hs.header.js' %}"></script>
-<script src="{% static 'web/js/helpers/hs.hamburgers.js' %}"></script>
-<script src="{% static 'web/js/helpers/hs.focus-state.js' %}"></script>
-<script src="{% static 'web//js/helpers/hs.height-calc.js' %}"></script>
+<script src="{% static 'web/vendor/hs-megamenu/src/hs.megamenu.js' %}"></script>
+<script src="{% static 'web/js/components/hs.scrollbar.js' %}"></script>
+<script src="{% static 'web/js/components/hs.popup.js' %}"></script>
+<script src="{% static 'web/js/components/hs.go-to.js' %}"></script>
+<script src="{% static 'web/js/components/hs.dropdown.js' %}"></script>
+<script src="{% static 'web/js/components/hs.onscroll-animation.js' %}"></script>
+<script src="{% static 'web/js/components/hs.counter.js' %}"></script>
 
 <!-- jQuery UI Helpers -->
-<!--<script src="{% static 'web/vendor/jquery-ui/ui/widgets/menu.js' %}"></script>-->
-<!--<script src="{% static 'web/vendor/jquery-ui/ui/widgets/mouse.js' %}"></script>-->
-<!-- End jQuery UI Helpers -->
+<script src="{% static 'web/js/helpers/hs.hamburgers.js' %}"></script>
+<script src="{% static 'web/js/helpers/hs.focus-state.js' %}"></script>
+<script src="{% static 'web/js/helpers/hs.height-calc.js' %}"></script>
 
 <!-- JS Custom -->
 <script src="{% static 'web/js/custom.js' %}"></script>
@@ -216,20 +245,44 @@
 <!-- JS Plugins Init. -->
 <script>
 $(document).on('ready', function () {
+    // initialization of go to
+    $.HSCore.components.HSGoTo.init('.js-go-to');
+
     // initialization of forms
     $.HSCore.helpers.HSFocusState.init();
+
+    // initialization of HSScrollBar component
+    $.HSCore.components.HSScrollBar.init($('.js-scrollbar'));
+
+    // initialization of scroll animation
+    $.HSCore.components.HSOnScrollAnimation.init('[data-animation]');
+
+    // initialization of HSDropdown component
+    $.HSCore.components.HSDropdown.init($('[data-dropdown-target]'));
+
+    // initialization of counters
+    var counters = $.HSCore.components.HSCounter.init('[class*="js-counter"]');
 });
 
 $(window).on('load', function () {
     // initialization of header
     $.HSCore.components.HSHeader.init($('#js-header'));
     $.HSCore.helpers.HSHamburgers.init('.hamburger');
+    // initialization of HSMegaMenu component
+    $('.js-mega-menu').HSMegaMenu({
+        event: 'hover',
+        pageContainer: $('.container'),
+        breakpoint: 991
+    });
 });
+
+
+
+
 </script>
 
 {% block javascript %}
 {% endblock %}
-
 
 </body>
 </html>

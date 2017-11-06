@@ -8,6 +8,7 @@ from django.contrib.gis.geos import Point
 from django.core.files.storage import default_storage
 from django.core.validators import MinValueValidator, MaxValueValidator
 from django.db import models
+from django.utils import timezone
 from django.utils.crypto import get_random_string
 
 from web.models import Event
@@ -16,9 +17,13 @@ logger = logging.getLogger(__name__)
 
 
 class Account(models.Model):
+    # Newly created account
+    CREATED = 'created'
+    # Activated by verifying email
     STATUSES = (
         ('created', 'Created'),
         ('active', 'Active'),
+        ('completed', 'Completed'),
         ('suspended', 'Suspended'),
         ('deleted', 'Deleted')
     )
@@ -29,8 +34,8 @@ class Account(models.Model):
         ('other', 'Other')
     )
     IDENTITIES = (
-        ('woman', 'Woman'),
-        ('man', 'Man'),
+        ('female', 'Female'),
+        ('male', 'Male'),
         ('other', 'Other')
     )
     RELATIONSHIP_STATUSES = (
@@ -78,6 +83,18 @@ class Account(models.Model):
     # Automatic timestamps
     created = models.DateTimeField(auto_now_add=True)
     updated = models.DateTimeField(auto_now=True)
+
+    # Virtual field
+    @property
+    def age(self):
+        if self.birthDate is None:
+            return None
+
+        today = timezone.now()
+        years_difference = today.year - self.birthDate.year
+        is_before_birthday = (today.month, today.day) < (self.birthDate.month, self.birthDate.day)
+        elapsed_years = years_difference - int(is_before_birthday)
+        return elapsed_years
 
     def add_photo(self, new_photo, x, y, w, h, size):
         # Open the stream as an image

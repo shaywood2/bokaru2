@@ -3,74 +3,115 @@
 
 {% block main %}
 <!-- Header -->
-<header id="js-header"
-        class="u-header u-header--static--lg u-header--show-hide--lg u-header--change-appearance--lg u-header--untransitioned"
-        data-header-fix-moment="500" data-header-fix-effect="slide">
-    <!-- Top Bar -->
+<header id="js-header" class="u-header u-header--absolute-top g-mb-25">
+    {% if messages %}
+    <!-- Message Bar -->
     <div class="u-header__section u-header__section--hidden u-header__section--dark g-bg-black g-transition-0_3 g-py-10">
         <div class="container">
             <div class="row flex-column flex-sm-row justify-content-between align-items-center text-uppercase g-font-weight-600 g-color-white g-font-size-12 g-mx-0--lg">
-                <div class="col-auto" style="margin-left: auto; margin-right: auto;">
+                {% for message in messages %}
+                <div class="col-auto {% if message.tags %}{{ message.tags }}{% endif %}"
+                     style="margin-left: auto; margin-right: auto;">
+                    {% if message.level == DEFAULT_MESSAGE_LEVELS.ERROR %}
                     <i class="fa fa-warning g-font-size-18 g-valign-middle g-color-primary g-mr-10 g-mt-minus-2"></i>
-                    Notification message
+                    {% endif %}
+                    {% if message.level == DEFAULT_MESSAGE_LEVELS.INFO %}
+                    <i class="fa fa-info-circle g-font-size-18 g-valign-middle g-color-yellow g-mr-10 g-mt-minus-2"></i>
+                    {% endif %}
+                    {% if message.level == DEFAULT_MESSAGE_LEVELS.SUCCESS %}
+                    <i class="fa fa-check-square g-font-size-18 g-valign-middle g-color-green g-mr-10 g-mt-minus-2"></i>
+                    {% endif %}
+                    {{ message }}
                 </div>
-
-                <div class="col-auto">
-                    <a class="g-color-white g-color-primary--hover g-text-underline--none--hover"
-                       href="{% url 'auth_login' %}">Login</a>
-                    &nbsp;|&nbsp;
-                    <a class="g-color-white g-color-primary--hover g-text-underline--none--hover"
-                       href="{% url 'auth_register' %}">Register</a>
-                </div>
+                {% endfor %}
             </div>
         </div>
     </div>
-    <!-- Top Bar End -->
+    {% endif %}
+    <!-- Message Bar End -->
 
-    <div class="u-header__section u-header__section--light g-bg-white g-transition-0_3 g-py-10 g-py-0--lg"
-         data-header-fix-moment-classes="u-shadow-v18">
-        <nav class="js-mega-menu navbar navbar-expand-lg py-0 hs-menu-initialized hs-menu-horizontal">
-            <div class="container">
-                <!-- Responsive Toggle Button -->
-                <button class="navbar-toggler navbar-toggler-right btn g-line-height-1 g-brd-none g-pa-0 g-pos-abs g-top-3 g-right-0"
-                        type="button" aria-label="Toggle navigation" aria-expanded="false" aria-controls="navBar"
-                        data-toggle="collapse" data-target="#navBar">
+    <div class="u-header__section u-header__section--light g-bg-white u-shadow-v18">
+        <nav class="js-mega-menu navbar navbar-expand-lg">
+            <!-- Responsive Toggle Button -->
+            <button class="navbar-toggler navbar-toggler-right btn g-line-height-1 g-brd-none g-pa-0 g-pos-abs g-top-3 g-right-0"
+                    type="button" aria-label="Toggle navigation" aria-expanded="false" aria-controls="navBar"
+                    data-toggle="collapse" data-target="#navBar">
                     <span class="hamburger hamburger--slider">
                         <span class="hamburger-box">
                             <span class="hamburger-inner"></span>
                         </span>
                     </span>
-                </button>
-                <!-- End Responsive Toggle Button -->
-                <!-- Logo -->
-                <a href="{% url 'web:index' %}" class="navbar-brand">
-                    <img src="{% static 'web/images/outline-owl.jpg' %}" style="max-width: 90px; max-height: 90px"
-                         alt="Logo">
-                </a>
-                <!-- End Logo -->
+            </button>
+            <!-- End Responsive Toggle Button -->
+            <!-- Logo -->
+            <a href="{% url 'web:index' %}" class="navbar-brand u-header__logo">
+                <img src="{% static 'web/images/bokaru-logo.png' %}" style="max-height: 40px" alt="Logo">
+            </a>
+            <!-- End Logo -->
 
-                <!-- Navigation -->
-                <div class="collapse navbar-collapse align-items-center flex-sm-row" id="navBar">
-                    <ul class="navbar-nav ml-auto text-uppercase g-font-weight-600 u-main-nav-v4 u-sub-menu-v1">
-                        <li class="nav-item g-mx-2--md g-mx-5--xl g-mb-5 g-mb-0--lg {% if request.path == '/' %}active{% endif %}">
-                            <a href="{% url 'web:index' %}" class="nav-link">Home</a>
-                        </li>
-                        <li class="nav-item g-mx-2--md g-mx-5--xl g-mb-5 g-mb-0--lg">
-                            <a href="{% url 'web:search' %}" class="nav-link">Find Events</a>
-                        </li>
-                        <li class="nav-item g-mx-2--md g-mx-5--xl g-mb-5 g-mb-0--lg">
-                            <a href="{% url 'account:view' %}" class="nav-link">Profile</a>
-                        </li>
-                        <li class="nav-item g-mx-2--md g-mx-5--xl g-mb-5 g-mb-0--lg">
-                            <a href="{% url 'web:matches' %}" class="nav-link">Matches</a>
-                        </li>
-                        <li class="nav-item g-mx-2--md g-mx-5--xl g-mb-5 g-mb-0--lg">
-                            <a href="{% url 'web:myevents' %}" class="nav-link">My Events</a>
-                        </li>
-                    </ul>
-                </div>
-                <!-- End Navigation -->
+            <!-- Navigation -->
+            <div class="js-mega-menu collapse navbar-collapse align-items-center flex-sm-row" id="navBar">
+                <ul class="navbar-nav text-uppercase g-font-weight-600 ml-auto u-main-nav-v5">
+                    <li class="nav-item g-mx-20--lg g-mb-5 g-mb-0--lg {% if request.path == '/' %}active{% endif %}">
+                        <a href="{% url 'web:index' %}" class="nav-link">Home</a>
+                    </li>
+                    <li class="nav-item g-mx-20--lg">
+                        <a href="{% url 'web:search' %}" class="nav-link">Find Events</a>
+                    </li>
+
+                    <!-- User links -->
+                    {% if user.is_authenticated %}
+                    <li class="nav-item g-mx-20--lg">
+                        <a href="{% url 'web:myevents' %}" class="nav-link">My Events</a>
+                    </li>
+                    <li class="nav-item g-mx-20--lg">
+                        <a href="{% url 'web:matches' %}" class="nav-link">Matches</a>
+                    </li>
+                    <!-- Account submenu -->
+                    <li class="nav-item hs-has-sub-menu g-mx-20--lg" data-event="click">
+                        <a href="#" class="nav-link dropdown-toggle g-py-0 g-brd-none" id="account-dropdown-invoker"
+                           aria-haspopup="true" aria-expanded="false" aria-controls="account-dropdown">
+                            <img class="img-fluid rounded-circle" src="http://via.placeholder.com/30x30"
+                                 alt="profile image">
+                            <!-- username -->
+                            <span class="g-hidden-md-up">{{user.username}}</span>
+                        </a>
+                        <ul id="account-dropdown"
+                            class="hs-sub-menu list-unstyled g-text-transform-none g-min-width-200 g-mt-15 g-mt-10--lg--scrolling u-shadow-v1-5 g-brd-top g-brd-primary g-brd-top-2"
+                            aria-labelledby="account-dropdown-invoker">
+                            <li class="dropdown-item {% if request.path == '/profile/' %}active{% endif %}">
+                                <a class="nav-link g-px-0"
+                                   href="{% url 'account:view' %}">View Profile</a>
+                            </li>
+                            <li class="dropdown-item">
+                                <a class="nav-link g-px-0"
+                                   href="{% url 'account:preferences' %}">My Account</a>
+                            </li>
+                            <li class="dropdown-item">
+                                <a class="nav-link g-px-0"
+                                   href="{% url 'account:settings' %}">Settings</a>
+                            </li>
+                            <li class="dropdown-item">
+                                <a class="nav-link g-px-0"
+                                   href="{% url 'auth_logout' %}">Log out</a>
+                            </li>
+                        </ul>
+                        <!-- End Profile links -->
+                    </li>
+
+                    <!-- Guest links -->
+                    {% else %}
+                    <li class="nav-item g-mx-20--lg">
+                        <a href="{% url 'auth_register' %}" class="nav-link">Register</a>
+                    </li>
+
+                    <li class="nav-item g-mx-20--lg">
+                        <a href="{% url 'auth_login' %}" class="nav-link">Log in</a>
+                    </li>
+                    {% endif %}
+                </ul>
             </div>
+            <!-- End Navigation -->
         </nav>
     </div>
 </header>

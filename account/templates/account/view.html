@@ -1,9 +1,132 @@
-{% extends 'web/base.html' %}
-
+{% extends 'web/base_nav.html' %}
 
 {% load staticfiles %}
 
+{% block title %}Bokaru | {{ user.username }}{% endblock %}
+
 {% block content %}
+
+<!-- User Block -->
+<section class="g-mb-100">
+    <div class="container g-brd-around g-brd-gray-light-v4 g-pa-20 g-mb-40">
+        <div class="row">
+            <div class="col-lg-4 g-mb-40 g-mb-0--lg">
+                <!-- User Image -->
+                <div class="g-mb-20">
+                    {% ifequal account.photo '' %}
+                    <img class="img-fluid w-100" src="{% static 'account/images/default-avatar.png' %}"
+                         alt="Default avatar" id="default_avatar"/>
+                    {% else %}
+                    <img class="img-fluid w-100" src="{{ account.photo.url }}" alt="A picture of Me" id="avatar"/>
+                    {% endifequal %}
+                </div>
+                <!-- End User Image -->
+
+                <!-- User Contact Button -->
+                <a class="btn btn-block u-btn-outline-primary g-rounded-50 g-py-12 g-mb-10" href="#">
+                    <i class="icon-envelope-letter g-pos-rel g-top-1 g-mr-5"></i> Contact Me
+                </a>
+                <!-- End User Contact Button -->
+                <h2 class="g-font-weight-300 g-mr-10">Contact info</h2>
+                <small>This section will be only visible to your matches</small>
+                <p>{{ account.contactInfo }}</p>
+
+                <hr/>
+
+                <h2 class="g-font-weight-300 g-mr-10">Notes</h2>
+            </div>
+
+            <div class="col-lg-8">
+                <!-- Name -->
+                <h2 class="g-font-weight-600 g-mr-10">{{ user.username }}</h2>
+                <h2 class="g-font-weight-300 g-mr-10">{{ account.fullName }}</h2>
+
+                <!-- Basic info -->
+                <h4 class="h6 g-font-weight-300 g-mb-10">
+                    {{ account.age }} | {{ account.locationName }}
+                </h4>
+
+
+                <!-- Edit Button -->
+                <a class="btn u-btn-primary g-rounded-50 g-py-12" href="{% url 'account:edit' %}">
+                    <i class="icon-pencil g-pos-rel g-top-1 g-mr-5"></i> Edit Profile
+                </a>
+                <!-- End Edit Button -->
+
+                <hr class="g-brd-gray-light-v4 g-my-20">
+
+                <div class="row">
+                    <div class="col-lg-8">
+                        <h3>Self-summary</h3>
+                        <p class="lead g-line-height-1_8">{{ account.summary }}</p>
+                    </div>
+                    <div class="col-lg-4">
+                        <!-- Basic info -->
+                        <div class="u-shadow-v22 g-bg-secondary text-center g-rounded-5 g-pb-30 g-mb-50">
+                            <span class="d-block g-color-primary g-font-size-40 g-mb-10">
+                                <i class="icon-heart"></i>
+                            </span>
+                            <p class="g-color-gray-dark-v4 g-mb-20">
+                                <strong>
+                                    {{ account.sexualOrientation }},
+                                    {{ account.sexualIdentity }},
+                                    {{ account.relationshipStatus }},
+                                    {{ account.relationshipType }},
+                                    {{ account.height }},
+                                    {{ account.bodyType }}
+                                </strong>
+                            </p>
+                        </div>
+
+                        <!-- Background -->
+                        <div class="u-shadow-v22 g-bg-secondary text-center g-rounded-5 g-pb-30 g-mb-50">
+                            <span class="d-block g-color-primary g-font-size-40 g-mb-10">
+                                <i class="icon-globe"></i>
+                            </span>
+                            <p class="g-color-gray-dark-v4 g-mb-20">
+                                <strong>
+                                    {{ account.ethnicity }},
+                                    Speaks {{ account.languages }},
+                                    {{ account.religion }},
+                                    Attended {{ account.education }}
+                                </strong>
+                            </p>
+                        </div>
+
+                        <!-- Details -->
+                        <div class="u-shadow-v22 g-bg-secondary text-center g-rounded-5 g-pb-30 g-mb-50">
+                            <span class="d-block g-color-primary g-font-size-40 g-mb-10">
+                                <i class="icon-info"></i>
+                            </span>
+                            <p class="g-color-gray-dark-v4 g-mb-20">
+                                <strong>
+                                    {{ account.kids }},
+                                    {{ account.pets }},
+                                    {{ account.vices }},
+                                    {{ account.diet }}
+                                </strong>
+                            </p>
+                        </div>
+
+                        <!-- Looking for -->
+                        <div class="u-shadow-v1-5 g-bg-primary text-center g-rounded-5 g-pb-30 g-mb-50">
+                            <span class="d-block g-color-white g-font-size-40 g-mb-10">
+                                <i class="icon-eyeglass"></i>
+                            </span>
+                            <p class="g-color-white g-mb-20">
+                                <strong>
+                                    Looking for Woman, 18-33
+                                </strong>
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+<!-- End User Block -->
+{% endblock %}
 
 <!--=== Profile ===-->
 <div class="container content profile">
@@ -12,68 +135,31 @@
         <div class="col-md-12">
             <div class="profile-body">
                 <div class="profile-bio">
+
+                    <hr>
+
                     <div class="row">
-                        <div class="col-md-5">
-                            {% ifequal account.photo '' %}
-                            <img src="{% static 'account/images/default-avatar.png' %}" alt="Default avatar" id="default_avatar"/>
-                            {% else %}
-                            <img src="{{ account.photo.url }}" alt="A picture of Me" id="avatar" class="img-responsive md-margin-bottom-10"/>
-                            {% endifequal %}
-                            </span>
-                        </div>
-                        <div class="col-md-7">
-                            <h2>{{ account.fullName }}</h2>
+                        <h4>This information is only shown to your matches:</h4>
+                        <h5>&nbsp; How matches contact you: {{ account.contactInfo }} </h5>
 
-                            <span>
+                    </div><!--/end row-->
 
-                            <span><strong>Location:</strong> [CITY]</span>
-                            <span><strong>Age:</strong> {{ account.age }} </span>
-                            <span><strong>Gender:</strong> {{ account.gender }} </span>
-                            <span><strong>Height:</strong> {{ account.height }} </span>
-                            <span><strong>Body Type:</strong> {{ account.bodyType }} </span>
-                            <span><strong>Education:</strong> {{ account.education }} </span>
-                            <span><strong>Profession:</strong> [JOB] </span>
-                            <span><strong>Relationship Type:</strong> {{ account.relationshipType }} </span>
-                            <span><strong>Orientation:</strong> {{ account.sexualOrientation }} </span>
-                            <span><strong>Identity:</strong> {{ account.sexualIdentity }} </span>
-                            <span><strong>Ethnicity:</strong> {{ account.ethnicity }} </span>
-                            <span><strong>Religion:</strong> {{ account.religion }} </span>
-                            <span><strong>Languages:</strong> {{ account.languages }} </span>
-                            <span><strong>Kids:</strong> {{ account.kids }} </span>
-                            <span><strong>Vices:</strong> {{ account.vices }} </span>
-                            <span><strong>Diet:</strong> {{ account.diet }} </span>
-                            <hr>
-                            <p>{{ account.summary }}</p>
-                        </div>
-                    </div>
-                </div><!--/end row-->
+                    <hr>
 
-                <hr>
+                    <div class="row">
+                        <small>&nbsp Account Created: {{ account.created }}</small>
+                        <br/>
+                        <small>&nbsp Account Last Created: {{ account.updated }}</small>
+                    </div><!--/end row-->
 
-                <div class="row">
-                    <h4>This information is only shown to your matches:</h4>
-                    <h5>&nbsp; How matches contact you: {{ account.contactInfo }} </h5>
+                    <hr>
 
-                </div><!--/end row-->
-
-                <hr>
-
-                <div class="row">
-                    <small>&nbsp Account Created: {{ account.created }}</small>
-                    <br/>
-                    <small>&nbsp Account Last Created: {{ account.updated }}</small>
-                </div><!--/end row-->
-
-                <hr>
-
-                <div class="row" style="text-align: center;">
-                    <a class="btn-u btn-u-lg rounded" href="{% url 'account:edit' %}">Edit Profile</a>
-                </div><!--/end row-->
+                    <div class="row" style="text-align: center;">
+                        <a class="btn-u btn-u-lg rounded" href="{% url 'account:edit' %}">Edit Profile</a>
+                    </div><!--/end row-->
+                </div>
             </div>
+            <!-- End Profile Content -->
         </div>
-        <!-- End Profile Content -->
     </div>
-</div>
-<!--=== End Profile ===-->
-{% endblock %}
-
+    <!--=== End Profile ===-->

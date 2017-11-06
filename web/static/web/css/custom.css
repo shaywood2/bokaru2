@@ -16,6 +16,15 @@
     background-color: #404041 !important;
 }
 
+/*------------------------------------
+  Go To
+------------------------------------*/
+.u-go-to-v2:hover,
+.u-go-to-v2:focus:hover {
+  background-color: #e74c3c;
+}
+
+
 /* Replace this with SASS later */
 
 .u-header__section--light .navbar-nav:not([class*="u-main-nav-v"]) .open > .nav-link,

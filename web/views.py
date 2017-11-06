@@ -27,15 +27,8 @@ def index(request):
     if request.user.is_authenticated():
         return render(request, 'web/index.html', context)
     else:
-        return render(request, 'web/index.html', context)
-
-
-def test(request):
-    context = {
-        'test': "Test Page",
-    }
-
-    return render(request, 'web/test.html', context)
+        # messages.success(request, 'Profile details updated.')
+        return render(request, 'web/index_landing.html', context)
 
 
 def search(request):
