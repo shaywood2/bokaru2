@@ -118,7 +118,7 @@ class Account(models.Model):
     # User model
     user = models.ForeignKey(settings.AUTH_USER_MODEL)
     # Account status
-    status = models.CharField(max_length=20, choices=STATUS)
+    status = models.CharField(max_length=20, choices=STATUS, default=CREATED)
     # Photo
     photo = models.ImageField(blank=True)
     photoThumbnail = ImageSpecField(source='photo',
@@ -140,7 +140,9 @@ class Account(models.Model):
     height = models.PositiveSmallIntegerField(blank=True, null=True)
     bodyType = models.CharField(max_length=50, choices=BODY_TYPE, blank=True)
     # Background
+    # TODO: calculate max possible size
     ethnicityList = models.CharField(max_length=500, blank=True)
+    # TODO: calculate max possible size
     languageList = models.CharField(max_length=500, blank=True)
     education = models.CharField(max_length=50, choices=EDUCATION, blank=True)
     religion = models.CharField(max_length=50, choices=RELIGION, blank=True)
@@ -150,6 +152,7 @@ class Account(models.Model):
     viceDrugs = models.CharField(max_length=50, choices=VICE_CHOICES, blank=True)
     kidsHave = models.CharField(max_length=50, choices=KIDS_HAVE_CHOICES, blank=True)
     kidsWant = models.CharField(max_length=50, choices=KIDS_WANT_CHOICES, blank=True)
+    # TODO: calculate max possible size
     petList = models.CharField(max_length=500, blank=True)
     diet = models.CharField(max_length=50, choices=DIET, blank=True)
     # Summary
@@ -157,9 +160,11 @@ class Account(models.Model):
     # Contact info
     contactInfo = models.CharField(max_length=150, blank=True)
     # Looking for
+    # TODO: calculate max possible size
     lookingForGenderList = models.CharField(max_length=500, blank=True)
     lookingForAgeMin = models.PositiveSmallIntegerField(validators=[MinValueValidator(18)], blank=True, null=True)
     lookingForAgeMax = models.PositiveSmallIntegerField(validators=[MinValueValidator(18)], blank=True, null=True)
+    # TODO: calculate max possible size
     lookingForConnectionsList = models.CharField(max_length=500, blank=True)
 
     # Automatic timestamps
@@ -313,7 +318,7 @@ class Account(models.Model):
         self.save(update_fields=['photo'])
 
     def __str__(self):
-        return self.fullName
+        return self.user.username + ' (' + self.fullName + ')'
 
 
 class UserPreference(models.Model):

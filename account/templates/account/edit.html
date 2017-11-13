@@ -611,6 +611,17 @@ $(document).on('ready', function () {
     // Init date picker
     $.HSCore.components.HSDatepicker.init('#id_birthDate', {dateFormat: 'yy-mm-dd'})
 
+    $('#id_birthDate').on('change', function () {
+        var $this = $(this),
+            thisVal = $this.val();
+
+        if (thisVal != 0) {
+            $this.addClass('g-state-not-empty');
+        } else {
+            $this.removeClass('g-state-not-empty');
+        }
+    });
+
     // Listen to changes on orientation and identity selects
     let so = $('#id_sexualOrientation')
     let soog = $('#sexualOrientationOtherGroup')

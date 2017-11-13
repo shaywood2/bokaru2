@@ -10,57 +10,80 @@
 <section class="g-mb-100">
     <div class="container g-brd-around g-brd-gray-light-v4 g-pa-20 g-mb-40">
         <div class="row">
-            <div class="col-lg-4">
-                <!-- User Image -->
-                <div class="g-mb-20">
-                    {% if account.photo is None or account.photo.name == '' %}
-                    <img class="img-fluid w-100" src="{% static 'account/images/default-avatar.png' %}"
-                         alt="Default picture" id="default_avatar"/>
+            <div class="col-lg-8">
+                <div class="row">
+                    <div class="col-lg-6">
+                        <!-- User Image -->
+                        <div class="g-mb-20">
+                            {% if account.photo is None or account.photo.name == '' %}
+                            <img class="img-fluid w-100" src="{% static 'account/images/default-avatar.png' %}"
+                                 alt="Default picture" id="default_avatar"/>
+                            {% else %}
+                            <img class="img-fluid w-100" src="{{ account.photo.url }}" alt="Profile picture"
+                                 id="avatar"/>
+                            {% endif %}
+                        </div>
+                    </div>
+                    {% if profile_incomplete %}
+                    <div class="col-lg-6">
+                        <h2 class="g-font-weight-300 g-mr-10 g-my-100" style="text-align: center;">
+                            Nothing here yet.
+                        </h2>
+                    </div>
                     {% else %}
-                    <img class="img-fluid w-100" src="{{ account.photo.url }}" alt="Profile picture" id="avatar"/>
+                    <div class="col-lg-6">
+                        <!-- Name -->
+                        <h2 class="g-font-weight-300 g-mr-10">{{ account.fullName }}</h2>
+
+                        <!-- Age and location -->
+                        <h4 class="h6 g-font-weight-300 g-mb-10">
+                            {{ account.age }} | {{ account.locationName }}
+                        </h4>
+
+                        <!-- User Contact Button -->
+                        {% if can_contact %}
+                        <a class="btn btn-lg btn-block u-btn-primary rounded-0 g-py-12" href="#contact"
+                           data-modal-target="#contact" data-modal-effect="superscaled">
+                            <i class="icon-envelope-letter g-pos-rel g-top-1 g-mr-5"></i> Contact Me
+                        </a>
+                        <div id="contact" class="text-left g-max-width-600 g-bg-white g-overflow-y-auto g-pa-20"
+                             style="display: none;">
+                            <button type="button" class="close" onclick="Custombox.modal.close();">
+                                <i class="hs-icon hs-icon-close"></i>
+                            </button>
+                            <h4 class="g-mb-20">You are a match!</h4>
+                            <p>Please do not forget to be excellent to each other!</p>
+                            <p>Email: <a href="mailto:{{user.email}}" target="_blank">{{user.email}}</a></p>
+                            <p>{{ account.contactInfo }}</p>
+                        </div>
+                        {% endif %}
+
+                        <!-- Notes -->
+                        {% if show_notes %}
+                        <h4 class="g-mt-15">Your Notes</h4>
+                        <p><i>This section is only visible to you.</i></p>
+                        <textarea>Note here 123</textarea>
+                        {% endif %}
+                    </div>
                     {% endif %}
+
                 </div>
 
-                <!-- User Contact Button -->
-                {% if can_contact %}
-                <a class="btn btn-lg btn-block u-btn-primary rounded-0 g-py-12" href="#contact"
-                   data-modal-target="#contact" data-modal-effect="superscaled">
-                    <i class="icon-envelope-letter g-pos-rel g-top-1 g-mr-5"></i> Contact Me
-                </a>
-                <div id="contact" class="text-left g-max-width-600 g-bg-white g-overflow-y-auto g-pa-20"
-                     style="display: none;">
-                    <button type="button" class="close" onclick="Custombox.modal.close();">
-                        <i class="hs-icon hs-icon-close"></i>
-                    </button>
-                    <h4 class="g-mb-20">You are a match!</h4>
-                    <p>Please do not forget to be excellent to each other!</p>
-                    <p>Email: <a href="mailto:{{user.email}}" target="_blank">{{user.email}}</a></p>
-                    <p>{{ account.contactInfo }}</p>
+                {% if account.summary %}
+                <div class="row">
+                    <div class="col-lg-12">
+                        <hr class="g-brd-gray-light-v4 g-my-20">
+                        <!-- Summary -->
+                        <h3>Self-summary</h3>
+                        <p class="lead g-line-height-1_8">{{ account.summary }}</p>
+                    </div>
                 </div>
-                {% endif %}
-
-                <!-- Notes -->
-                {% if show_notes %}
-                <h2 class="g-font-weight-300 g-mr-10">Your Notes</h2>
                 {% endif %}
             </div>
 
             <div class="col-lg-4">
-                <!-- Name -->
-                <h2 class="g-font-weight-300 g-mr-10">{{ account.fullName }}</h2>
-
                 <!-- Basic info -->
-                <h4 class="h6 g-font-weight-300 g-mb-10">
-                    {{ account.age }} | {{ account.locationName }}
-                </h4>
-
-                <hr class="g-brd-gray-light-v4 g-my-20">
-                <h3>Self-summary</h3>
-                <p class="lead g-line-height-1_8">{{ account.summary }}</p>
-            </div>
-
-            <div class="col-lg-4">
-                <!-- Basic info -->
+                {% if account.basicInfo %}
                 <div class="u-shadow-v22 g-bg-white rounded g-pa-20 g-mb-30">
                     <div class="media">
                         <div class="d-flex align-self-center mr-3">
@@ -75,8 +98,10 @@
                         </div>
                     </div>
                 </div>
+                {% endif %}
 
                 <!-- Background -->
+                {% if account.background %}
                 <div class="u-shadow-v22 g-bg-white rounded g-pa-20 g-mb-30">
                     <div class="media">
                         <div class="d-flex align-self-center mr-3">
@@ -91,8 +116,10 @@
                         </div>
                     </div>
                 </div>
+                {% endif %}
 
                 <!-- Details -->
+                {% if account.details %}
                 <div class="u-shadow-v22 g-bg-white rounded g-pa-20 g-mb-30">
                     <div class="media">
                         <div class="d-flex align-self-center mr-3">
@@ -107,8 +134,10 @@
                         </div>
                     </div>
                 </div>
+                {% endif %}
 
                 <!-- Looking for -->
+                {% if account.lookingFor %}
                 <div class="u-shadow-v22 g-bg-secondary rounded g-pa-20 g-mb-30">
                     <div class="media">
                         <div class="d-flex align-self-center mr-3">
@@ -123,13 +152,13 @@
                         </div>
                     </div>
                 </div>
+                {% endif %}
 
             </div>
         </div>
     </div>
 </section>
 <!-- End User Block -->
-
 {% endblock %}
 
 {% block javascript %}

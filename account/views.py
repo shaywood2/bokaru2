@@ -13,7 +13,10 @@ from money.payment_service import create_customer, delete_card, create_card
 from .forms import RegistrationForm, AccountForm, UserPreferenceForm, PhotoForm
 from .models import Account, UserPreference
 
+logger = logging.getLogger(__name__)
 
+
+# Custom view for registration page
 class RegistrationView(BaseRegistrationView):
     form_class = RegistrationForm
 
@@ -23,7 +26,7 @@ class RegistrationView(BaseRegistrationView):
         acc = Account()
         acc.fullName = form.cleaned_data['fullName']
         acc.user = new_user
-        acc.status = 'created'
+        acc.status = Account.CREATED
         acc.save()
         # Create user preferences object
         pref = UserPreference()
@@ -31,17 +34,18 @@ class RegistrationView(BaseRegistrationView):
         pref.save()
 
 
+# Listen to login signal and put account into session
 def stuff_session(sender, user, request, **kwargs):
     try:
         account = Account.objects.get(user=user)
         if account.photo is not None and account.photo.name != '':
             request.session['photo_url'] = account.photoThumbnail.url
-            request.session['status'] = account.status
+
+        request.session['profile_incomplete'] = account.status == Account.CREATED
     except Account.DoesNotExist:
         return
 
 
-# Listen to login signal and put account into session
 user_logged_in.connect(stuff_session)
 
 
@@ -49,11 +53,15 @@ user_logged_in.connect(stuff_session)
 def view(request):
     current_user = request.user
     account = Account.objects.get(user=current_user)
+    profile_incomplete = account.status == Account.CREATED
+    profile_suspended = account.status == Account.SUSPENDED
     photo_form = PhotoForm()
 
     context = {
         'user': current_user,
         'account': account,
+        'profile_incomplete': profile_incomplete,
+        'profile_suspended': profile_suspended,
         'photo_form': photo_form
     }
 
@@ -63,6 +71,8 @@ def view(request):
 def view_user(request, username):
     user = get_object_or_404(User, username=username)
     account = Account.objects.get(user=user)
+    profile_incomplete = account.status == Account.CREATED
+    profile_suspended = account.status == Account.SUSPENDED
     can_contact = False
     show_notes = False
 
@@ -74,6 +84,8 @@ def view_user(request, username):
     context = {
         'user': user,
         'account': account,
+        'profile_incomplete': profile_incomplete,
+        'profile_suspended': profile_suspended,
         'can_contact': can_contact,
         'show_notes': show_notes
     }
@@ -90,6 +102,9 @@ def edit(request):
         form = AccountForm(request.POST, instance=account)
         if form.is_valid():
             form.save()
+
+            # Update session
+            request.session['profile_incomplete'] = account.status == Account.CREATED
 
             return HttpResponseRedirect(reverse('account:view'))
     else:

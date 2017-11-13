@@ -46,6 +46,14 @@
     top: 0;
 }
 
+.u-datepicker-v1 .ui-datepicker-calendar th a:hover, .u-datepicker-v1 .ui-datepicker-calendar th a.ui-state-active,
+.u-datepicker-v1 .ui-datepicker-calendar td a:hover,
+.u-datepicker-v1 .ui-datepicker-calendar td a.ui-state-active {
+  color: #fff;
+  background-color: #e74c3c;
+  border-color: #e74c3c;
+  transition: all .2s; }
+
 /*------------------------------------
   Go To
 ------------------------------------*/

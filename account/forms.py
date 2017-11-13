@@ -1,8 +1,8 @@
 import logging
 
 from django import forms
-from django.contrib.gis.geos import Point
 from django.forms import ModelForm
+from django.utils import timezone
 from django.utils.translation import ugettext_lazy as _
 from registration.forms import RegistrationFormUniqueEmail
 
@@ -67,11 +67,12 @@ class AccountForm(ModelForm):
         'details_required': _('Please provide more details.'),
         'age_range_error': _('Maximum age should be greater than the minimum age.'),
         'at_least_one_required': _('Please select at least one.'),
+        'under_18': _('You must be older than 18 to register.')
     }
 
-    contactInfo = forms.CharField(max_length=150, widget=forms.Textarea(
+    contactInfo = forms.CharField(max_length=150, required=False, widget=forms.Textarea(
         attrs={'class': 'form-control form-control-md u-textarea-expandable rounded-0'}))
-    summary = forms.CharField(max_length=2000, widget=forms.Textarea(
+    summary = forms.CharField(max_length=2000, required=False, widget=forms.Textarea(
         attrs={'class': 'form-control form-control-md u-textarea-expandable rounded-0'}))
     # Additional location fields
     cityName = forms.CharField(widget=forms.HiddenInput(), required=False)
@@ -125,6 +126,24 @@ class AccountForm(ModelForm):
     class Meta:
         model = Account
         exclude = ['user', 'status', 'locationCoordinates']
+
+    def clean_birthDate(self):
+        birth_date = self.cleaned_data.get('birthDate')
+
+        if birth_date is None:
+            return None
+
+        today = timezone.now()
+        years_difference = today.year - birth_date.year
+        is_before_birthday = (today.month, today.day) < (birth_date.month, birth_date.day)
+        elapsed_years = years_difference - int(is_before_birthday)
+        if elapsed_years < 18:
+            raise forms.ValidationError(
+                self.error_messages['under_18'],
+                code='under_18'
+            )
+
+        return birth_date
 
     def clean_sexualIdentityOther(self):
         si = self.cleaned_data.get('sexualIdentity')
@@ -184,7 +203,11 @@ class AccountForm(ModelForm):
 
         return lfc_list
 
-    def save(self):
+    def save(self, commit=True):
+        # Update status to completed
+        if self.instance.status == Account.CREATED:
+            self.instance.status = Account.COMPLETED
+
         # Save coordinates
         lat = self.cleaned_data.get('cityLat')
         lng = self.cleaned_data.get('cityLng')
@@ -194,7 +217,7 @@ class AccountForm(ModelForm):
             point.set_x(lat)
             point.set_y(lng)
 
-        super(AccountForm, self).save()
+        super(AccountForm, self).save(commit=commit)
 
 
 class PhotoForm(forms.Form):

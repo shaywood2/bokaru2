@@ -4,26 +4,18 @@
 {% block main %}
 <!-- Header -->
 <header id="js-header" class="u-header u-header--absolute-top g-mb-25">
-    {% if messages %}
     <!-- Message Bar -->
+    {% if request.session.profile_incomplete or request.session.profile_suspended %}
     <div class="u-header__section u-header__section--hidden u-header__section--dark g-bg-black g-transition-0_3 g-py-10">
         <div class="container">
             <div class="row flex-column flex-sm-row justify-content-between align-items-center text-uppercase g-font-weight-600 g-color-white g-font-size-12 g-mx-0--lg">
-                {% for message in messages %}
-                <div class="col-auto {% if message.tags %}{{ message.tags }}{% endif %}"
-                     style="margin-left: auto; margin-right: auto;">
-                    {% if message.level == DEFAULT_MESSAGE_LEVELS.ERROR %}
+                {% if request.session.profile_incomplete %}
+                <div class="col-auto" style="margin-left: auto; margin-right: auto;">
                     <i class="fa fa-warning g-font-size-18 g-valign-middle g-color-primary g-mr-10 g-mt-minus-2"></i>
-                    {% endif %}
-                    {% if message.level == DEFAULT_MESSAGE_LEVELS.INFO %}
-                    <i class="fa fa-info-circle g-font-size-18 g-valign-middle g-color-yellow g-mr-10 g-mt-minus-2"></i>
-                    {% endif %}
-                    {% if message.level == DEFAULT_MESSAGE_LEVELS.SUCCESS %}
-                    <i class="fa fa-check-square g-font-size-18 g-valign-middle g-color-green g-mr-10 g-mt-minus-2"></i>
-                    {% endif %}
-                    {{ message }}
+                    Please complete your <a href="{% url 'account:edit' %}">profile</a>, otherwise you will not able to
+                    join any events.
                 </div>
-                {% endfor %}
+                {% endif %}
             </div>
         </div>
     </div>
@@ -62,6 +54,9 @@
                     <!-- User links -->
                     {% if user.is_authenticated %}
                     <li class="nav-item g-mx-20--lg">
+                        <a href="{% url 'web:myevents' %}" class="nav-link">Create Event</a>
+                    </li>
+                    <li class="nav-item g-mx-20--lg">
                         <a href="{% url 'web:myevents' %}" class="nav-link">My Events</a>
                     </li>
                     <li class="nav-item g-mx-20--lg">
@@ -71,8 +66,12 @@
                     <li class="nav-item hs-has-sub-menu g-mx-20--lg" data-event="click">
                         <a href="#" class="nav-link dropdown-toggle g-py-0 g-brd-none" id="account-dropdown-invoker"
                            aria-haspopup="true" aria-expanded="false" aria-controls="account-dropdown">
-                            <img class="img-fluid rounded-circle" src="{{ request.session.photo_url }}"
-                                 alt="profile image">
+                            {% if request.session.photo_url is None or request.session.photo_url == '' %}
+                            <img class="img-fluid rounded-circle" src="{% static 'account/images/default-avatar.png' %}"
+                                 width="30px" height="30px" alt="Default picture" id="default_avatar"/>
+                            {% else %}
+                            <img class="img-fluid rounded-circle" src="{{ request.session.photo_url }}" alt="Profile picture"/>
+                            {% endif %}
                             <!-- username -->
                             <span class="g-hidden-md-up">{{user.username}}</span>
 
