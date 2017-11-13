@@ -74,9 +74,9 @@ class AccountForm(ModelForm):
     summary = forms.CharField(max_length=2000, widget=forms.Textarea(
         attrs={'class': 'form-control form-control-md u-textarea-expandable rounded-0'}))
     # Additional location fields
-    cityName = forms.CharField(widget=forms.HiddenInput())
-    cityLat = forms.FloatField(widget=forms.HiddenInput())
-    cityLng = forms.FloatField(widget=forms.HiddenInput())
+    cityName = forms.CharField(widget=forms.HiddenInput(), required=False)
+    cityLat = forms.FloatField(widget=forms.HiddenInput(), required=False)
+    cityLng = forms.FloatField(widget=forms.HiddenInput(), required=False)
 
     def __init__(self, *args, **kwargs):
         super(AccountForm, self).__init__(*args, **kwargs)
@@ -189,9 +189,10 @@ class AccountForm(ModelForm):
         lat = self.cleaned_data.get('cityLat')
         lng = self.cleaned_data.get('cityLng')
 
-        point = self.instance.locationCoordinates
-        point.set_x(lat)
-        point.set_y(lng)
+        if lat and lng:
+            point = self.instance.locationCoordinates
+            point.set_x(lat)
+            point.set_y(lng)
 
         super(AccountForm, self).save()
 

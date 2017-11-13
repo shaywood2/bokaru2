@@ -47,14 +47,14 @@
 
                 <div class="col-lg-8">
                     <!-- errors -->
-                    {% if form.errors %}
+                    {% if form.non_field_errors %}
                     <div class="alert fade show g-bg-red-opacity-0_1 g-color-lightred rounded-0" role="alert">
                         <div class="media">
                             <div class="d-flex g-mr-10">
                                 <i></i>
                             </div>
                             <div class="media-body">
-                                {% for error in form.errors %}
+                                {% for error in form.non_field_errors %}
                                 <strong>{{ error|escape }}</strong>
                                 {% endfor %}
                             </div>
