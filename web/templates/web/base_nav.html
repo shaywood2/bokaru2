@@ -71,10 +71,11 @@
                     <li class="nav-item hs-has-sub-menu g-mx-20--lg" data-event="click">
                         <a href="#" class="nav-link dropdown-toggle g-py-0 g-brd-none" id="account-dropdown-invoker"
                            aria-haspopup="true" aria-expanded="false" aria-controls="account-dropdown">
-                            <img class="img-fluid rounded-circle" src="http://via.placeholder.com/30x30"
+                            <img class="img-fluid rounded-circle" src="{{ request.session.photo_url }}"
                                  alt="profile image">
                             <!-- username -->
                             <span class="g-hidden-md-up">{{user.username}}</span>
+
                         </a>
                         <ul id="account-dropdown"
                             class="hs-sub-menu list-unstyled g-text-transform-none g-min-width-200 g-mt-15 g-mt-10--lg--scrolling u-shadow-v1-5 g-brd-top g-brd-primary g-brd-top-2"

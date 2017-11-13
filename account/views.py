@@ -1,5 +1,8 @@
+import logging
+
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
+from django.contrib.auth.signals import user_logged_in
 from django.http import HttpResponseRedirect
 from django.shortcuts import get_object_or_404, render
 from django.urls import reverse
@@ -7,7 +10,7 @@ from registration.backends.hmac.views import RegistrationView as BaseRegistratio
 
 from money.models import UserPaymentInfo
 from money.payment_service import create_customer, delete_card, create_card
-from .forms import RegistrationForm, AccountForm, UserPreferenceForm
+from .forms import RegistrationForm, AccountForm, UserPreferenceForm, PhotoForm
 from .models import Account, UserPreference
 
 
@@ -28,14 +31,30 @@ class RegistrationView(BaseRegistrationView):
         pref.save()
 
 
+def stuff_session(sender, user, request, **kwargs):
+    try:
+        account = Account.objects.get(user=user)
+        if account.photo is not None and account.photo.name != '':
+            request.session['photo_url'] = account.photoThumbnail.url
+            request.session['status'] = account.status
+    except Account.DoesNotExist:
+        return
+
+
+# Listen to login signal and put account into session
+user_logged_in.connect(stuff_session)
+
+
 @login_required
 def view(request):
     current_user = request.user
     account = Account.objects.get(user=current_user)
+    photo_form = PhotoForm()
 
     context = {
         'user': current_user,
         'account': account,
+        'photo_form': photo_form
     }
 
     return render(request, 'account/view.html', context)
@@ -44,10 +63,19 @@ def view(request):
 def view_user(request, username):
     user = get_object_or_404(User, username=username)
     account = Account.objects.get(user=user)
+    can_contact = False
+    show_notes = False
+
+    if request.user.is_authenticated:
+        # TODO: figure out connection status
+        can_contact = True
+        show_notes = True
 
     context = {
         'user': user,
         'account': account,
+        'can_contact': can_contact,
+        'show_notes': show_notes
     }
 
     return render(request, 'account/view_user.html', context)
@@ -59,27 +87,44 @@ def edit(request):
     account = Account.objects.get(user=current_user)
 
     if request.method == 'POST':
-        form = AccountForm(request.POST, request.FILES, instance=account)
+        form = AccountForm(request.POST, instance=account)
         if form.is_valid():
             form.save()
 
-            if 'upload_image' in request.FILES:
-                image_file = request.FILES['upload_image'].read()
-
-                # Get cropping parameters
-                x = form.cleaned_data.get('crop_x')
-                y = form.cleaned_data.get('crop_y')
-                w = form.cleaned_data.get('crop_w')
-                h = form.cleaned_data.get('crop_h')
-
-                account.add_photo(image_file, x, y, w, h, 400)
-
-            # Redirect to view profile page
             return HttpResponseRedirect(reverse('account:view'))
     else:
         form = AccountForm(instance=account)
 
-    return render(request, 'account/edit.html', {'form': form})
+    photo_url = None
+    if account.photo is not None and account.photo.name != '':
+        photo_url = account.photo.url
+
+    return render(request, 'account/edit.html', {'form': form, 'photo_url': photo_url, 'email': current_user.email})
+
+
+@login_required()
+def update_photo(request):
+    current_user = request.user
+    account = Account.objects.get(user=current_user)
+
+    if request.method == 'POST':
+        form = PhotoForm(request.POST, request.FILES)
+        if form.is_valid():
+            image_file = request.FILES['upload_image'].read()
+
+            # Get cropping parameters
+            x = form.cleaned_data.get('crop_x')
+            y = form.cleaned_data.get('crop_y')
+            w = form.cleaned_data.get('crop_w')
+            h = form.cleaned_data.get('crop_h')
+
+            account.add_photo(image_file, x, y, w, h, 400)
+
+            # Update image in session
+            request.session['photo_url'] = account.photoThumbnail.url
+
+    # Redirect to edit profile page
+    return HttpResponseRedirect(reverse('account:view'))
 
 
 @login_required

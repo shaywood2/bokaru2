@@ -7,6 +7,7 @@ urlpatterns = [
     url(r'^$', views.view, name='view'),
     url(r'^view/(?P<username>\w+)$', views.view_user, name='view_user'),
     url(r'^edit$', views.edit, name='edit'),
+    url(r'^edit/photo$', views.update_photo, name='update_photo'),
     url(r'^password', views.password, name='password'),
     url(r'^preferences', views.preferences, name='preferences'),
     url(r'^history', views.history, name='history'),

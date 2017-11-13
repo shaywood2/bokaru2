@@ -16,6 +16,46 @@
     background-color: #404041 !important;
 }
 
+.u-has-error-v1 .u-input-group-v2 label {
+    background-color: #fff0f0;
+}
+
+.tag {
+  display: inline-block;
+  max-width: 100%;
+}
+
+.tag > span {
+  max-width: 94%;
+  white-space: nowrap;
+  overflow: hidden;
+  -ms-text-overflow: ellipsis;
+  -o-text-overflow: ellipsis;
+  text-overflow: ellipsis;
+}
+
+.tag a {
+  display: inline-block;
+  color: #bbb;
+  cursor: pointer;
+  opacity: 0.6;
+  margin: 0 0 0 0.3em;
+}
+
+.tag a:hover {
+  opacity: 1.0;
+}
+
+.tag a > i {
+  color: #fff;
+  margin-bottom: 2px;
+}
+
+.tag .remove {
+  vertical-align: bottom;
+  top: 0;
+}
+
 /*------------------------------------
   Go To
 ------------------------------------*/

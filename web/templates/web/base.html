@@ -27,8 +27,6 @@
     <link rel="stylesheet" href="{% static 'web/vendor/icon-line/css/simple-line-icons.css' %}">
     <link rel="stylesheet" href="{% static 'web/vendor/hamburgers/hamburgers.min.css' %}">
     <link rel="stylesheet" href="{% static 'web/vendor/icon-hs/style.css' %}">
-    <!--<link rel="stylesheet" href="{% static 'web/vendor/icon-etlinefont/style.css' %}">-->
-    <!--<link rel="stylesheet" href="{% static 'web/vendor/icon-line-pro/style.css' %}">-->
 
     <!-- CSS Plugins -->
     <link rel="stylesheet" href="{% static 'web/vendor/animate.css' %}">
@@ -36,7 +34,10 @@
     <link rel="stylesheet" href="{% static 'web/vendor/dzsparallaxer/dzsscroller/scroller.css' %}">
     <link rel="stylesheet" href="{% static 'web/vendor/dzsparallaxer/advancedscroller/plugin.css' %}">
     <link rel="stylesheet" href="{% static 'web/vendor/hs-megamenu/src/hs.megamenu.css' %}">
-    <!--<link rel="stylesheet" href="{% static 'web/vendor/slick-carousel/slick/slick.css' %}">-->
+    <link rel="stylesheet" href="{% static 'web/vendor/hs-megamenu/src/hs.megamenu.css' %}">
+    <link rel="stylesheet" href="{% static 'web/vendor/cropper/cropper.min.css' %}">
+    <link rel="stylesheet" href="{% static 'web/vendor/jquery-ui/themes/base/jquery-ui.min.css' %}">
+    <link rel="stylesheet" href="{% static 'web/vendor/custombox/custombox.min.css' %}">
 
     <!-- CSS Unify -->
     <link rel="stylesheet" href="{% static 'web/css/unify-core.css' %}">
@@ -104,63 +105,6 @@
             <!-- End Footer Content -->
 
             <!-- Footer Content -->
-            <div class="col-lg-6 g-mb-40 g-mb-0--lg">
-                <h2 class="h6 g-color-white text-uppercase g-font-weight-700 g-mb-20">Latest Events</h2>
-                <article class="media">
-                    <a class="d-flex g-mt-4 mr-3" href="#">
-                        <img class="g-width-80 g-height-80" src="../../../assets/img-temp/100x100/img8.jpg"
-                             alt="Image Description">
-                    </a>
-
-                    <div class="media-body align-self-center">
-                        <ul class="list-inline g-font-size-12 g-mb-10">
-                            <li class="list-inline-item">June 09, 2017</li>
-                            <li class="list-inline-item">/</li>
-                            <li class="list-inline-item">
-                                <a class="u-link-v5 g-color-white-opacity-0_8 g-color-white--hover" href="#">
-                                    <i class="fa fa-comments-o"></i>
-                                    12
-                                </a>
-                            </li>
-                        </ul>
-
-                        <h3 class="h6 mb-0">
-                            <a class="g-color-white-opacity-0_8 g-color-white--hover" href="#">Top 7 luxury places to
-                                visit around Victoria, BC</a>
-                        </h3>
-                    </div>
-                </article>
-
-                <hr class="g-brd-white-opacity-0_1 g-mt-15 g-mb-10">
-
-                <article class="media">
-                    <a class="d-flex g-mt-4 mr-3" href="#">
-                        <img class="g-width-80 g-height-80" src="../../../assets/img-temp/100x100/img9.jpg"
-                             alt="Image Description">
-                    </a>
-
-                    <div class="media-body align-self-center">
-                        <ul class="list-inline g-font-size-12 g-mb-10">
-                            <li class="list-inline-item">July 30, 2017</li>
-                            <li class="list-inline-item">/</li>
-                            <li class="list-inline-item">
-                                <a class="u-link-v5 g-color-white-opacity-0_8 g-color-white--hover" href="#">
-                                    <i class="fa fa-comments-o"></i>
-                                    18
-                                </a>
-                            </li>
-                        </ul>
-
-                        <h3 class="h6 mb-0">
-                            <a class="g-color-white-opacity-0_8 g-color-white--hover" href="#">Coding week, 10 best
-                                premium templates</a>
-                        </h3>
-                    </div>
-                </article>
-            </div>
-            <!-- End Footer Content -->
-
-            <!-- Footer Content -->
             <div class="col-lg-2 g-mb-30 g-mb-0--lg">
                 <h2 class="h6 g-color-white text-uppercase g-font-weight-700 g-mb-20">Useful Links</h2>
                 <ul class="list-unstyled mb-0">
@@ -211,28 +155,29 @@
 <script src="{% static 'web/vendor/jquery.easing/js/jquery.easing.js' %}"></script>
 <script src="{% static 'web/vendor/popper.min.js' %}"></script>
 <script src="{% static 'web/vendor/bootstrap/bootstrap.min.js' %}"></script>
+<script src="{% static 'web/vendor/bootstrap/offcanvas.js' %}"></script>
 
 <!-- JS Implementing Plugins -->
+<script src="{% static 'web/vendor/hs-megamenu/src/hs.megamenu.js' %}"></script>
+<script src="{% static 'web/vendor/appear.js' %}"></script>
 <script src="{% static 'web/vendor/dzsparallaxer/dzsparallaxer.js' %}"></script>
 <script src="{% static 'web/vendor/dzsparallaxer/dzsscroller/scroller.js' %}"></script>
 <script src="{% static 'web/vendor/dzsparallaxer/advancedscroller/plugin.js' %}"></script>
-<script src="{% static 'web/vendor/masonry/dist/masonry.pkgd.min.js' %}"></script>
-<script src="{% static 'web/vendor/imagesloaded/imagesloaded.pkgd.min.js' %}"></script>
-<script src="{% static 'web/vendor/slick-carousel/slick/slick.js' %}"></script>
-<script src="{% static 'web/vendor/fancybox/jquery.fancybox.min.js' %}"></script>
-<script src="{% static 'web/vendor/appear.js' %}"></script>
+<script src="{% static 'web/vendor/cropper/cropper.min.js' %}"></script>
+<script src="{% static 'web/vendor/custombox/custombox.min.js' %}"></script>
 
 <!-- JS Unify -->
 <script src="{% static 'web/js/hs.core.js' %}"></script>
 
 <script src="{% static 'web/js/components/hs.header.js' %}"></script>
-<script src="{% static 'web/vendor/hs-megamenu/src/hs.megamenu.js' %}"></script>
 <script src="{% static 'web/js/components/hs.scrollbar.js' %}"></script>
 <script src="{% static 'web/js/components/hs.popup.js' %}"></script>
 <script src="{% static 'web/js/components/hs.go-to.js' %}"></script>
 <script src="{% static 'web/js/components/hs.dropdown.js' %}"></script>
 <script src="{% static 'web/js/components/hs.onscroll-animation.js' %}"></script>
 <script src="{% static 'web/js/components/hs.counter.js' %}"></script>
+<script src="{% static 'web/js/components/hs.modal-window.js' %}"></script>
+<script src="{% static 'web/js/helpers/hs.not-empty-state.js' %}"></script>
 
 <!-- jQuery UI Helpers -->
 <script src="{% static 'web/js/helpers/hs.hamburgers.js' %}"></script>
@@ -250,6 +195,7 @@ $(document).on('ready', function () {
 
     // initialization of forms
     $.HSCore.helpers.HSFocusState.init();
+    $.HSCore.helpers.HSNotEmptyState.init();
 
     // initialization of HSScrollBar component
     $.HSCore.components.HSScrollBar.init($('.js-scrollbar'));
@@ -262,6 +208,9 @@ $(document).on('ready', function () {
 
     // initialization of counters
     var counters = $.HSCore.components.HSCounter.init('[class*="js-counter"]');
+
+    // initialization of popups
+    $.HSCore.components.HSModalWindow.init('[data-modal-target]');
 });
 
 $(window).on('load', function () {
@@ -275,10 +224,6 @@ $(window).on('load', function () {
         breakpoint: 991
     });
 });
-
-
-
-
 </script>
 
 {% block javascript %}

@@ -1,313 +1,861 @@
-{% extends 'account/profile_template.html' %}
-
+{% extends 'web/base_nav.html' %}
 
 {% load staticfiles %}
-{% load form_tag %}
+{% load filters %}
 
+{% block title %}Bokaru | Edit profile{% endblock %}
 
-
-
-{% block profile_content %}
-
-<form method="post" enctype="multipart/form-data">
-									{% csrf_token %}
-
-
-								<div id="profile" class="profile-edit tab-pane fade in active">
-									<h2 class="heading-md">Manage your profile</h2>
-									<p>This is where you can control your profile settings and what is visible to other members on the site.</p>
-									<br>
-
-                                    {% csrf_token %}
-
-                                    {% if form.errors %}
-                                    {% for field in form %}
-                                    {% for error in field.errors %}
-                                    <div class="alert alert-danger">
-                                        <strong>{{ error|escape }}</strong>
-                                    </div>
-                                    {% endfor %}
-                                    {% endfor %}
-                                    {% for error in form.non_field_errors %}
-                                    <div class="alert alert-danger">
-                                        <strong>{{ error|escape }}</strong>
-                                    </div>
-                                    {% endfor %}
-                                    {% endif %}
-									<dl class="dl-horizontal">
-
-
-
-
-                                        <dt><strong>Profile Picture </strong></dt>
-                                        <dd>
-
-                                            {{ form.upload_image }}
-                                             {{ form.crop_x }}{{ form.crop_y }}{{ form.crop_w }}{{ form.crop_h }}
-                                        <!-- MODAL TO CROP THE IMAGE -->
-                                        <div class="modal fade" id="modalCrop" aria-labelledby="modalLabel" role="dialog" tabindex="-1">
-                                            <div class="modal-dialog" role="document">
-                                                <div class="modal-content modal-lg">
-                                                    <div class="modal-header">
-                                                        <button type="button" class="close js-crop-dismiss" data-dismiss="modal" aria-label="Close">
-                                                            <span>&times;</span>
-                                                        </button>
-                                                        <h4 class="modal-title" id="modalLabel">Crop the image</h4>
-                                                    </div>
-                                                    <div class="modal-body">
-                                                        <div>
-                                                            <img src="" id="image" style="max-width: 100%;">
-                                                        </div>
-                                                    </div>
-                                                    <div class="modal-footer">
-                                                        <div class="btn-group pull-left" role="group">
-                                                            <button type="button" class="btn btn-default js-zoom-in">
-                                                                <span class="glyphicon glyphicon-zoom-in"></span>
-                                                            </button>
-                                                            <button type="button" class="btn btn-default js-zoom-out">
-                                                                <span class="glyphicon glyphicon-zoom-out"></span>
-                                                            </button>
-                                                        </div>
-                                                        <button type="button" class="btn btn-default js-crop-dismiss" data-dismiss="modal">Cancel</button>
-                                                        <button type="button" class="btn btn-primary js-crop">Save</button>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        </dd>
-                                        <hr>
-
-										<dt><strong>Your Name </strong></dt>
-										<dd>
-
-											{{ form.fullName | addclass:"form-control" }}
-
-										</dd>
-										<hr>
-										<dt><strong>Location </strong></dt>
-										<dd>
-											<input class="form-control" id="searchBox" type="text"></input>
-
-										</dd>
-										<hr>
-										<dt><strong>Birth Date </strong></dt>
-										<dd>
-											{{ form.birthDate | addclass:"form-control" }}
-										</dd>
-										<hr>
-										<dt><strong>Height</strong></dt>
-										<dd>
-											{{ form.height | addclass:"form-control" }}
-										</dd>
-										<hr>
-										<dt><strong>Body Type </strong></dt>
-										<dd>
-											{{ form.bodyType | addclass:"form-control" }}
-										</dd>
-										<hr>
-										<dt><strong>Education </strong></dt>
-										<dd>
-											{{ form.education | addclass:"form-control" }}
-										</dd>
-										<hr>
-										<dt><strong>Gender </strong></dt>
-										<dd>
-											{{ form.gender | addclass:"form-control"}}
-										</dd>
-										<hr>
-										<dt><strong>Profession </strong></dt>
-										<dd>
-											[JOB]
-										</dd>
-										<hr>
-										<dt><strong>Relationship Type </strong></dt>
-										<dd>
-											{{ form.relationshipType | addclass:"form-control"}}
-										</dd>
-										<hr>
-										<dt><strong>Orientation </strong></dt>
-										<dd>
-											{{ form.sexualOrientation | addclass:"form-control"}}
-										</dd>
-										<hr>
-										<dt><strong>Identity </strong></dt>
-										<dd>
-											{{ form.sexualIdentity| addclass:"form-control" }}
-										</dd>
-										<hr>
-										<dt><strong>Ethnicity </strong></dt>
-										<dd>
-											{{ form.ethnicity | addclass:"form-control"}}
-										</dd>
-										<hr>
-										<dt><strong>Religion </strong></dt>
-										<dd>
-											{{ form.religion | addclass:"form-control"}}
-										</dd>
-										<hr>
-										<dt><strong>Languages </strong></dt>
-										<dd>
-											{{ form.languages | addclass:"form-control"}}
-										</dd>
-										<hr>
-										<dt><strong>Kids </strong></dt>
-										<dd>
-											{{ form.kids | addclass:"form-control"}}
-										</dd>
-										<hr>
-										<dt><strong>Vices </strong></dt>
-										<dd>
-											{{ form.vices | addclass:"form-control" }}
-										</dd>
-										<hr>
-										<dt><strong>Diet </strong></dt>
-										<dd>
-											{{ form.diet | addclass:"form-control"}}
-										</dd>
-										<hr>
-										<dt><strong>Match Contact Info </strong></dt>
-										<dd>
-											{{ form.contactInfo | addclass:"form-control"}}
-										</dd>
-										<hr>
-										<dt><strong>Summary </strong></dt>
-										<dd>
-											{{ form.summary | addclass:"form-control"}}
-										</dd>
-										<hr>
-									</dl>
-									<p style="text-align: center">
-										<button id="submitButton" type="submit" class="btn-u rounded">Save Changes</button>
-									</p>
-
-								</div>
-
-
-
-
-								</form>
-
-
-
-
-
-
+{% block header %}
+<script src="//maps.googleapis.com/maps/api/js?libraries=places&key=AIzaSyBTwfHuVilarsPOOE4Opm4GaG9I2dfbyCw" type="text/javascript"></script>
 {% endblock %}
 
+{% block content %}
+<!-- User Block -->
+<section class="g-mb-100">
+    <form method="post">
+        {% csrf_token %}
+        <div class="container g-brd-around g-brd-gray-light-v4 g-pa-20 g-mb-40">
+            <div class="row">
+                <div class="col-lg-4 g-mb-40 g-mb-0--lg">
+                    <!-- User Image -->
+                    <div class="g-mb-20">
+                        {% if photo_url == None %}
+                        <img class="img-fluid w-100" src="{% static 'account/images/default-avatar.png' %}"
+                             alt="Default picture" id="default_avatar"/>
+                        {% else %}
+                        <img class="img-fluid w-100" src="{{ photo_url }}" alt="Profile picture" id="avatar"/>
+                        {% endif %}
+                    </div>
+                    <!-- End User Image -->
+
+                    <!-- Contact info -->
+                    <h2 class="g-font-weight-300 g-mr-10">Contact info</h2>
+                    <p>Please provide a preferred method of contact to your matches. Your email <i>({{ email }})</i>
+                        will be included automatically as well.</p>
+                    <p></p>
+                    <div class="form-group g-mb-20 {% if form.contactInfo.errors %}u-has-error-v1{% endif %}">
+                        <div class="u-input-group-v2">
+                            {{ form.contactInfo }}
+                            <!--<label for="id_contactInfo">Contact Info</label>-->
+                        </div>
+                        {% if form.contactInfo.errors %}
+                        <small class="form-control-feedback">{{form.contactInfo.errors}}</small>
+                        {% endif %}
+                    </div>
+                    <small>This section will be only visible to your matches.</small>
+                </div>
+
+                <div class="col-lg-8">
+                    <!-- errors -->
+                    {% if form.errors %}
+                    <div class="alert fade show g-bg-red-opacity-0_1 g-color-lightred rounded-0" role="alert">
+                        <div class="media">
+                            <div class="d-flex g-mr-10">
+                                <i></i>
+                            </div>
+                            <div class="media-body">
+                                {% for error in form.errors %}
+                                <strong>{{ error|escape }}</strong>
+                                {% endfor %}
+                            </div>
+                        </div>
+                    </div>
+                    {% endif %}
+
+                    <!-- Name -->
+                    <h2 class="g-font-weight-600 g-mr-10">{{ user.username }}</h2>
+                    <hr class="g-brd-gray-light-v4 g-my-20">
+
+                    <!-- Basic info -->
+                    <h2>Basic Info</h2>
+
+                    <!-- Name -->
+                    <div class="form-group g-mb-20 {% if form.fullName.errors %}u-has-error-v1{% endif %}">
+                        <div class="u-input-group-v2">
+                            {{ form.fullName }}
+                            <label for="id_fullName">Full name</label>
+                        </div>
+                        {% if form.fullName.errors %}
+                        <small class="form-control-feedback">{{form.fullName.errors}}</small>
+                        {% endif %}
+                    </div>
+
+                    <!-- Birth Date -->
+                    <div class="form-group g-mb-20 {% if form.birthDate.errors %}u-has-error-v1{% endif %}">
+                        <div class="input-group u-input-group-v2 g-brd-primary--focus">
+                            {{ form.birthDate }}
+                            <label for="id_birthDate" style="z-index: 2;">Birth date</label>
+                            <div class="input-group-addon d-flex align-items-center g-bg-white g-color-gray-dark-v5 rounded-0">
+                                <i class="icon-calendar"></i>
+                            </div>
+                        </div>
+                        {% if form.birthDate.errors %}
+                        <small class="form-control-feedback">{{form.birthDate.errors}}</small>
+                        {% endif %}
+                    </div>
+
+                    <!-- Location -->
+                    <div class="form-group g-mb-20 {% if form.locationName.errors %}u-has-error-v1{% endif %}">
+                        <div class="u-input-group-v2">
+                            {{ form.locationName }}
+                            <label for="id_locationName">Location</label>
+                        </div>
+                        {% if form.locationName.errors %}
+                        <small class="form-control-feedback">{{form.locationName.errors}}</small>
+                        {% endif %}
+                        {{ form.cityName }}{{ form.cityLat }}{{ form.cityLng }}
+                    </div>
+
+                    <!-- Identity and orientation -->
+                    <div class="row">
+                        <div class="col-lg-12">
+                            <h4>I am a&hellip;</h4>
+                        </div>
+                        <div class="col-lg-6">
+                            <div class="form-group g-mb-20 {% if form.sexualOrientation.errors %}u-has-error-v1{% endif %}">
+                                {{ form.sexualOrientation }}
+                                {% if form.sexualOrientation.errors %}
+                                <small class="form-control-feedback">{{form.sexualOrientation.errors}}</small>
+                                {% endif %}
+                            </div>
+                            <div class="form-group g-mb-20 {% if form.sexualOrientationOther.errors %}u-has-error-v1{% endif %}"
+                                 id="sexualOrientationOtherGroup">
+                                <div class="u-input-group-v2">
+                                    {{ form.sexualOrientationOther }}
+                                    <label for="id_sexualOrientationOther">Other sexual orientation</label>
+                                </div>
+                                {% if form.sexualOrientationOther.errors %}
+                                <small class="form-control-feedback">{{form.sexualOrientationOther.errors}}</small>
+                                {% endif %}
+                            </div>
+                        </div>
+                        <div class="col-lg-6">
+                            <div class="form-group g-mb-20 {% if form.sexualIdentity.errors %}u-has-error-v1{% endif %}">
+                                {{ form.sexualIdentity }}
+                                {% if form.sexualIdentity.errors %}
+                                <small class="form-control-feedback">{{form.sexualIdentity.errors}}</small>
+                                {% endif %}
+                            </div>
+                            <div class="form-group g-mb-20 {% if form.sexualIdentityOther.errors %}u-has-error-v1{% endif %}"
+                                 id="sexualIdentityOtherGroup">
+                                <div class="u-input-group-v2">
+                                    {{ form.sexualIdentityOther }}
+                                    <label for="id_sexualIdentityOther">Other sexual identity</label>
+                                </div>
+                                {% if form.sexualIdentityOther.errors %}
+                                <small class="form-control-feedback">{{form.sexualIdentityOther.errors}}</small>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <!-- Relationship Status -->
+                        <div class="col-lg-6">
+                            <h4>Relationship Status</h4>
+                            <div class="form-group g-mb-20 {% if form.relationshipStatus.errors %}u-has-error-v1{% endif %}">
+                                {{ form.relationshipStatus }}
+                                {% if form.relationshipStatus.errors %}
+                                <small class="form-control-feedback">{{form.relationshipStatus.errors}}</small>
+                                {% endif %}
+                            </div>
+                        </div>
+                        <!-- Relationship Type -->
+                        <div class="col-lg-6">
+                            <h4>Relationship Type</h4>
+                            <div class="form-group g-mb-20 {% if form.relationshipType.errors %}u-has-error-v1{% endif %}">
+                                {{ form.relationshipType }}
+                                {% if form.relationshipType.errors %}
+                                <small class="form-control-feedback">{{form.relationshipType.errors}}</small>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <!-- Height -->
+                        <div class="col-lg-3" style="border-right: 1px solid #ccc;">
+                            <h4>Height</h4>
+                            <div class="form-group g-mb-20 {% if form.height.errors %}u-has-error-v1{% endif %}">
+                                <div class="input-group g-brd-primary--focus">
+                                    {{ form.height }}
+                                    <div class="input-group-addon d-flex align-items-center g-bg-white g-color-gray-dark-v5 rounded-0">
+                                        cm
+                                    </div>
+                                </div>
+                                {% if form.height.errors %}
+                                <small class="form-control-feedback">{{form.height.errors}}</small>
+                                {% endif %}
+                            </div>
+                        </div>
+                        <!-- Height alt -->
+                        <div class="col-lg-3">
+                            <div class="form-group g-mt-10">
+                                <div class="input-group g-brd-primary--focus">
+                                    <input type="number" class="form-control rounded-0 u-form-control0"
+                                           id="id_height_ft" min="0">
+                                    <div class="input-group-addon d-flex align-items-center g-bg-white g-color-gray-dark-v5 rounded-0">
+                                        ft
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <div class="input-group g-brd-primary--focus">
+                                    <input type="number" class="form-control rounded-0 u-form-control0"
+                                           id="id_height_in" min="0" max="11">
+                                    <div class="input-group-addon d-flex align-items-center g-bg-white g-color-gray-dark-v5 rounded-0">
+                                        in
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- Body Type -->
+                        <div class="col-lg-6">
+                            <h4>Body Type</h4>
+                            <div class="form-group g-mb-20 {% if form.bodyType.errors %}u-has-error-v1{% endif %}">
+                                {{ form.bodyType }}
+                                {% if form.bodyType.errors %}
+                                <small class="form-control-feedback">{{form.bodyType.errors}}</small>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+
+                    <hr class="g-brd-gray-light-v4 g-my-20">
+
+                    <!-- Background -->
+                    <h2>Background</h2>
+
+                    <!-- Ethnicity list -->
+                    <div class="form-group g-mb-20">
+                        <h4>Ethnicity</h4>
+                        <h4 id="ethnicityListContainer" class="g-mt-15"></h4>
+                        <div class="input-group">
+                            <select id="ethnicityInput" class="form-control rounded-0 u-form-control0 u-select-v1">
+                                <option value>---------</option>
+                                <option value="Asian">Asian</option>
+                                <option value="Black">Black</option>
+                                <option value="Hispanic / Latin">Hispanic / Latin</option>
+                                <option value="Indian">Indian</option>
+                                <option value="Middle Eastern">Middle Eastern</option>
+                                <option value="Native American">Native American</option>
+                                <option value="Pacific Islander">Pacific Islander</option>
+                                <option value="White">White</option>
+                                <option value="Other">Other</option>
+                            </select>
+                            <span class="input-group-btn">
+                                <button class="btn u-btn-primary rounded-0" type="button" id="addEthnicity">Add</button>
+                            </span>
+                        </div>
+                        {{ form.ethnicityList }}
+                    </div>
+
+                    <!-- Language list -->
+                    <div class="form-group g-mb-20">
+                        <h4>Languages</h4>
+                        <h4 id="languageListContainer" class="g-mt-15"></h4>
+                        <div class="input-group">
+                            <select id="languageInput" class="form-control rounded-0 u-form-control0 u-select-v1">
+                                <option value>---------</option>
+                                <option value="English">English</option>
+                                <option value="Afrikaans">Afrikaans</option>
+                                <option value="Albanian">Albanian</option>
+                                <option value="Arabic">Arabic</option>
+                                <option value="Armenian">Armenian</option>
+                                <option value="Basque">Basque</option>
+                                <option value="Belarusian">Belarusian</option>
+                                <option value="Bengali">Bengali</option>
+                                <option value="Breton">Breton</option>
+                                <option value="Bulgarian">Bulgarian</option>
+                                <option value="Catalan">Catalan</option>
+                                <option value="Cebuano">Cebuano</option>
+                                <option value="Chechen">Chechen</option>
+                                <option value="Chinese">Chinese</option>
+                                <option value="Chinese (Cantonese)">Chinese (Cantonese)</option>
+                                <option value="Chinese (Mandarin)">Chinese (Mandarin)</option>
+                                <option value="C++">C++</option>
+                                <option value="Croatian">Croatian</option>
+                                <option value="Czech">Czech</option>
+                                <option value="Danish">Danish</option>
+                                <option value="Dutch">Dutch</option>
+                                <option value="Esperanto">Esperanto</option>
+                                <option value="Rstonian">Estonian</option>
+                                <option value="Finnish">Finnish</option>
+                                <option value="French">French</option>
+                                <option value="Frisian">Frisian</option>
+                                <option value="Georgian">Georgian</option>
+                                <option value="German">German</option>
+                                <option value="Greek">Greek</option>
+                                <option value="Gujarati">Gujarati</option>
+                                <option value="Ancient_greek">Ancient Greek</option>
+                                <option value="Hawaiian">Hawaiian</option>
+                                <option value="Hebrew">Hebrew</option>
+                                <option value="Hindi">Hindi</option>
+                                <option value="Hungarian">Hungarian</option>
+                                <option value="Icelandic">Icelandic</option>
+                                <option value="Ilongo">Ilongo</option>
+                                <option value="Indonesian">Indonesian</option>
+                                <option value="Irish">Irish</option>
+                                <option value="Italian">Italian</option>
+                                <option value="Japanese">Japanese</option>
+                                <option value="Khmer">Khmer</option>
+                                <option value="Klingon">Klingon</option>
+                                <option value="Korean">Korean</option>
+                                <option value="Latin">Latin</option>
+                                <option value="Latvian">Latvian</option>
+                                <option value="LISP">LISP</option>
+                                <option value="Lithuanian">Lithuanian</option>
+                                <option value="Malay">Malay</option>
+                                <option value="Maori">Maori</option>
+                                <option value="Mongolian">Mongolian</option>
+                                <option value="Norwegian">Norwegian</option>
+                                <option value="Occitan">Occitan</option>
+                                <option value="Other">Other</option>
+                                <option value="Persian">Persian</option>
+                                <option value="Polish">Polish</option>
+                                <option value="Portuguese">Portuguese</option>
+                                <option value="Punjabi">Punjabi</option>
+                                <option value="Romanian">Romanian</option>
+                                <option value="Rotuman">Rotuman</option>
+                                <option value="Russian">Russian</option>
+                                <option value="Sanskrit">Sanskrit</option>
+                                <option value="Sardinian">Sardinian</option>
+                                <option value="Serbian">Serbian</option>
+                                <option value="Sign Language">Sign Language</option>
+                                <option value="Slovak">Slovak</option>
+                                <option value="Slovenian">Slovenian</option>
+                                <option value="Spanish">Spanish</option>
+                                <option value="Swahili">Swahili</option>
+                                <option value="Swedish">Swedish</option>
+                                <option value="Tagalog">Tagalog</option>
+                                <option value="Tamil">Tamil</option>
+                                <option value="Thai">Thai</option>
+                                <option value="Tibetan">Tibetan</option>
+                                <option value="Turkish">Turkish</option>
+                                <option value="Ukrainian">Ukrainian</option>
+                                <option value="Urdu">Urdu</option>
+                                <option value="Vietnamese">Vietnamese</option>
+                                <option value="Welsh">Welsh</option>
+                                <option value="Yiddish">Yiddish</option>
+                            </select>
+                            <span class="input-group-btn">
+                                <button class="btn u-btn-primary rounded-0" type="button" id="addLanguage">Add</button>
+                            </span>
+                        </div>
+                        {{ form.languageList }}
+                    </div>
+
+                    <div class="row">
+                        <!-- Education -->
+                        <div class="col-lg-6">
+                            <h4>Education</h4>
+                            <div class="form-group g-mb-20 {% if form.education.errors %}u-has-error-v1{% endif %}">
+                                {{ form.education }}
+                                {% if form.education.errors %}
+                                <small class="form-control-feedback">{{form.education.errors}}</small>
+                                {% endif %}
+                            </div>
+                        </div>
+
+                        <!-- Religion -->
+                        <div class="col-lg-6">
+                            <h4>Religion</h4>
+                            <div class="form-group g-mb-20 {% if form.religion.errors %}u-has-error-v1{% endif %}">
+                                {{ form.religion }}
+                                {% if form.religion.errors %}
+                                <small class="form-control-feedback">{{form.religion.errors}}</small>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+
+                    <hr class="g-brd-gray-light-v4 g-my-20">
+
+                    <!-- More info -->
+                    <h2>More information</h2>
+
+                    <div class="row">
+                        <!-- Smoking -->
+                        <div class="col-lg-4">
+                            <h4>Smoking</h4>
+                            <div class="form-group g-mb-20 {% if form.viceSmoking.errors %}u-has-error-v1{% endif %}">
+                                {{ form.viceSmoking }}
+                                {% if form.viceSmoking.errors %}
+                                <small class="form-control-feedback">{{form.viceSmoking.errors}}</small>
+                                {% endif %}
+                            </div>
+                        </div>
+                        <!-- Drinking -->
+                        <div class="col-lg-4">
+                            <h4>Drinking</h4>
+                            <div class="form-group g-mb-20 {% if form.viceDrinking.errors %}u-has-error-v1{% endif %}">
+                                {{ form.viceDrinking }}
+                                {% if form.viceDrinking.errors %}
+                                <small class="form-control-feedback">{{form.viceDrinking.errors}}</small>
+                                {% endif %}
+                            </div>
+                        </div>
+                        <!-- Drugs -->
+                        <div class="col-lg-4">
+                            <h4>Drugs</h4>
+                            <div class="form-group g-mb-20 {% if form.viceDrugs.errors %}u-has-error-v1{% endif %}">
+                                {{ form.viceDrugs }}
+                                {% if form.viceDrugs.errors %}
+                                <small class="form-control-feedback">{{form.viceDrugs.errors}}</small>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <!-- Diet -->
+                        <div class="col-lg-4">
+                            <h4>Diet</h4>
+                            <div class="form-group g-mb-20 {% if form.diet.errors %}u-has-error-v1{% endif %}">
+                                {{ form.diet }}
+                                {% if form.diet.errors %}
+                                <small class="form-control-feedback">{{form.diet.errors}}</small>
+                                {% endif %}
+                            </div>
+                        </div>
+                        <!-- Kids -->
+                        <div class="col-lg-4">
+                            <h4>Kids</h4>
+                            <div class="form-group g-mb-20 {% if form.kidsHave.errors %}u-has-error-v1{% endif %}">
+                                {{ form.kidsHave }}
+                                {% if form.kidsHave.errors %}
+                                <small class="form-control-feedback">{{form.kidsHave.errors}}</small>
+                                {% endif %}
+                            </div>
+                        </div>
+                        <div class="col-lg-4">
+                            <h4>&nbsp;</h4>
+                            <div class="form-group g-mb-20 {% if form.kidsWant.errors %}u-has-error-v1{% endif %}">
+                                {{ form.kidsWant }}
+                                {% if form.kidsWant.errors %}
+                                <small class="form-control-feedback">{{form.kidsWant.errors}}</small>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Pets list -->
+                    <div class="form-group g-mb-20">
+                        <h4>Pets</h4>
+                        <h4 id="petListContainer" class="g-mt-15"></h4>
+                        <div class="input-group">
+                            <select id="petInput" class="form-control rounded-0 u-form-control0 u-select-v1">
+                                <option value>---------</option>
+                                <option value="Dogs">Dogs</option>
+                                <option value="Cats">Cats</option>
+                                <option value="Birds">Birds</option>
+                                <option value="Fish">Fish</option>
+                                <option value="Reptiles">Reptiles</option>
+                                <option value="Rock">Rock</option>
+                                <option value="Other">Other</option>
+                            </select>
+                            <span class="input-group-btn">
+                                <button class="btn u-btn-primary rounded-0" type="button" id="addPet">Add</button>
+                            </span>
+                        </div>
+                        {{ form.petList }}
+                    </div>
+
+                    <hr class="g-brd-gray-light-v4 g-my-20">
+
+                    <!-- Self-summary -->
+                    <h2>Self-summary</h2>
+                    <p>Write a few words about yourself: what you are doing with your life, things you are passionate
+                        about, things you are good at and so on.</p>
+                    <p></p>
+                    <div class="form-group g-mb-20 {% if form.summary.errors %}u-has-error-v1{% endif %}">
+                        <div class="u-input-group-v2">
+                            {{ form.summary }}
+                        </div>
+                        {% if form.summary.errors %}
+                        <small class="form-control-feedback">{{form.summary.errors}}</small>
+                        {% endif %}
+                    </div>
+
+                    <hr class="g-brd-gray-light-v4 g-my-20">
+
+                    <!-- Looking for -->
+                    <h2>Looking for</h2>
+                    <!-- Looking for genders list -->
+                    <h4>Gender(s)</h4>
+                    <div class="form-group g-mb-20 {% if form.lookingForGenderList.errors %}u-has-error-v1{% endif %}">
+                        <h4 id="lfgContainer" class="g-mt-15"></h4>
+                        <div class="input-group">
+                            <select id="lfgInput" class="form-control rounded-0 u-form-control0 u-select-v1">
+                                <option value>---------</option>
+                                <option value="Man">Man</option>
+                                <option value="Woman">Woman</option>
+                                <option value="Other">Other</option>
+                            </select>
+                            <span class="input-group-btn">
+                                <button class="btn u-btn-primary rounded-0" type="button" id="addLfg">Add</button>
+                            </span>
+                        </div>
+                        {% if form.lookingForGenderList.errors %}
+                        <small class="form-control-feedback">{{form.lookingForGenderList.errors}}</small>
+                        {% endif %}
+                        {{ form.lookingForGenderList }}
+                    </div>
+
+                    <h4>Age range</h4>
+                    <div class="row">
+                        <div class="col-lg-6">
+                            <!-- Looking for age min -->
+                            <div class="form-group g-mb-20 {% if form.lookingForAgeMin.errors %}u-has-error-v1{% endif %}">
+                                <div class="input-group g-brd-primary--focus">
+                                    {{ form.lookingForAgeMin }}
+                                </div>
+                                {% if form.lookingForAgeMin.errors %}
+                                <small class="form-control-feedback">{{form.lookingForAgeMin.errors}}</small>
+                                {% endif %}
+                            </div>
+                        </div>
+                        <div class="col-lg-6">
+                            <!-- Looking for age max -->
+                            <div class="form-group g-mb-20 {% if form.lookingForAgeMax.errors %}u-has-error-v1{% endif %}">
+                                <div class="input-group g-brd-primary--focus">
+                                    {{ form.lookingForAgeMax }}
+                                </div>
+                                {% if form.lookingForAgeMax.errors %}
+                                <small class="form-control-feedback">{{form.lookingForAgeMax.errors}}</small>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Looking for connections list -->
+                    <h4>Kinds of connections you are looking for</h4>
+                    <div class="form-group g-mb-20 {% if form.lookingForConnectionsList.errors %}u-has-error-v1{% endif %}">
+                        <h4 id="lfcContainer" class="g-mt-15"></h4>
+                        <div class="input-group">
+                            <select id="lfcInput" class="form-control rounded-0 u-form-control0 u-select-v1">
+                                <option value>---------</option>
+                                <option value="Hookup">Hookup</option>
+                                <option value="Friendship">Friendship</option>
+                                <option value="Short-term dating">Short-term dating</option>
+                                <option value="Long-term dating">Long-term dating</option>
+                                <option value="Marriage">Marriage</option>
+                            </select>
+                            <span class="input-group-btn">
+                                <button class="btn u-btn-primary rounded-0" type="button" id="addLfc">Add</button>
+                            </span>
+                        </div>
+                        {% if form.lookingForConnectionsList.errors %}
+                        <small class="form-control-feedback">{{form.lookingForConnectionsList.errors}}</small>
+                        {% endif %}
+                        {{ form.lookingForConnectionsList }}
+                    </div>
+
+                    <hr class="g-brd-gray-light-v4 g-my-20">
+
+                    <br/>
+
+                    <button type="submit" class="btn btn-lg btn-block u-btn-primary g-mb-10 rounded-0">Save changes
+                    </button>
+                    <a href="{% url 'account:view' %}" class="btn btn-lg btn-block u-btn-bluegray g-mb-10 rounded-0">Cancel</a>
+                </div>
+            </div>
+        </div>
+    </form>
+</section>
+<!-- End User Block -->
+{% endblock %}
 
 {% block javascript %}
 <script>
-setActiveLink($("#details_link"));
+function initMap() {
+    let options = {
+        types: ['(cities)']
+    }
+
+    let input = document.getElementById('id_locationName')
+    let autocomplete = new google.maps.places.Autocomplete(input, options)
+
+    google.maps.event.addListener(autocomplete, 'place_changed', function () {
+        let place = autocomplete.getPlace()
+        document.getElementById('id_cityName').value = place.name
+        document.getElementById('id_cityLat').value = place.geometry.location.lat()
+        document.getElementById('id_cityLng').value = place.geometry.location.lng()
+    })
+}
+
+google.maps.event.addDomListener(window, 'load', initMap);
 </script>
 
+<!-- jQuery UI Core -->
+<script src="{% static 'web/vendor/jquery-ui/ui/widget.js' %}"></script>
+<script src="{% static 'web/vendor/jquery-ui/ui/version.js' %}"></script>
+<script src="{% static 'web/vendor/jquery-ui/ui/keycode.js' %}"></script>
+<script src="{% static 'web/vendor/jquery-ui/ui/position.js' %}"></script>
+<script src="{% static 'web/vendor/jquery-ui/ui/unique-id.js' %}"></script>
+<script src="{% static 'web/vendor/jquery-ui/ui/safe-active-element.js' %}"></script>
+
+<!-- jQuery UI Helpers -->
+<script src="{% static 'web/vendor/jquery-ui/ui/widgets/menu.js' %}"></script>
+<script src="{% static 'web/vendor/jquery-ui/ui/widgets/mouse.js' %}"></script>
+
+<!-- jQuery UI Widgets -->
+<script src="{% static 'web/vendor/jquery-ui/ui/widgets/datepicker.js' %}"></script>
+
+<!-- JS Unify -->
+<script src="{% static 'web/js/components/hs.datepicker.js' %}"></script>
+
+<!-- JS Plugins Init. -->
 <script>
-$(function() {
+$(document).on('ready', function () {
+    // Init date picker
+    $.HSCore.components.HSDatepicker.init('#id_birthDate', {dateFormat: 'yy-mm-dd'})
 
-    /* SCRIPT TO OPEN THE MODAL WITH THE PREVIEW */
-    $("#id_upload_image").change(function() {
-        if (this.files && this.files[0]) {
-            var reader = new FileReader();
-            reader.onload = function(e) {
-                $("#image").attr("src", e.target.result);
-                $("#modalCrop").modal("show");
-            }
-            reader.readAsDataURL(this.files[0]);
+    // Listen to changes on orientation and identity selects
+    let so = $('#id_sexualOrientation')
+    let soog = $('#sexualOrientationOtherGroup')
+
+    if (so.val() === 'other') {
+        soog.show()
+    } else {
+        soog.hide()
+    }
+
+    so.change(function() {
+        if (so.val() === 'other') {
+            soog.show()
+        } else {
+            soog.hide()
         }
+    })
+
+    let si = $('#id_sexualIdentity')
+    let siog = $('#sexualIdentityOtherGroup')
+
+    if (si.val() === 'other') {
+        siog.show()
+    } else {
+        siog.hide()
+    }
+
+    si.change(function() {
+        if (si.val() === 'other') {
+            siog.show()
+        } else {
+            siog.hide()
+        }
+    })
+
+    // Connect height inputs
+    let h_cm = $('#id_height')
+    let h_ft = $('#id_height_ft')
+    let h_in = $('#id_height_in')
+
+    function setHeightByCm() {
+        let cm = h_cm.val()
+        let inches = (cm*0.393700787).toFixed(0)
+        let feet = Math.floor(inches / 12)
+        inches %= 12
+
+        h_ft.val(feet)
+        h_in.val(inches)
+    }
+
+    function setHeightByFtIn() {
+        let feet = h_ft.val()
+        let inches = h_in.val()
+        let cm = (inches * 2.54 + feet * 30.48).toFixed(0)
+
+        h_cm.val(cm)
+    }
+
+    setHeightByCm()
+
+    h_cm.change(function() {
+        setHeightByCm()
+    })
+
+    h_in.change(function() {
+        setHeightByFtIn()
+    })
+
+    h_ft.change(function() {
+        setHeightByFtIn()
+    })
+
+    // Tag list functions
+    // Create all existing tags
+    function initTags(containerElement, outputElement) {
+        let val = outputElement.val()
+        if (val === undefined || val === '') {
+            return []
+        }
+        let array = val.split('|')
+        for (let i = 0; i < array.length; i++) {
+            value = array[i]
+            containerElement.append(getTagElement(value));
+        }
+
+        return array
+    }
+
+    function addTag(inputElement, containerElement, outputElement, storageArray) {
+        let value = inputElement.val().trim()
+        if (value === undefined || value === '') {
+            return
+        }
+        if (storageArray.indexOf(value) >= 0) {
+            return
+        }
+        inputElement.val('')
+        storageArray.push(value)
+        containerElement.append(getTagElement(value))
+        outputElement.val(storageArray.join('|'))
+    }
+
+    function getTagElement(value) {
+        return '<span class="tag u-label g-bg-primary u-label--lg g-px-15 g-py-8 g-mr-10"><span>' + value +
+         '</span><a><i class="remove icon-close"></i></a></span>'
+    }
+
+    // Ethnicity tags
+    let ethnicityInput = $('#ethnicityInput')
+    let ethnicityListContainer = $('#ethnicityListContainer')
+    let ethnicityList = $('#id_ethnicityList')
+    let ethnicityArray = []
+
+    ethnicityArray = initTags(ethnicityListContainer, ethnicityList)
+
+    $('#addEthnicity').click(function() {
+        addTag(ethnicityInput, ethnicityListContainer, ethnicityList, ethnicityArray)
+    })
+
+    // Handle clicks on delete buttons
+    ethnicityListContainer.on("click", "span a", function() {
+        value = $(this).closest('span').text()
+        $(this).closest('span').remove();
+        let index = ethnicityArray.indexOf(value)
+        ethnicityArray.splice(index, 1)
+        ethnicityList.val(ethnicityArray.join('|'))
     });
 
-    /* SCRIPTS TO HANDLE THE CROPPER BOX */
-    var image = document.getElementById('image');
-    var cropBoxData;
-    var canvasData;
-    var cropper;
+    // Language tags
+    let languageInput = $('#languageInput')
+    let languageListContainer = $('#languageListContainer')
+    let languageList = $('#id_languageList')
+    let languageArray = []
 
-    $("#modalCrop").on("shown.bs.modal", function() {
-        cropper = new Cropper(image, {
-            viewMode: 1,
-            aspectRatio: 1 / 1,
-            minCropBoxWidth: 200,
-            minCropBoxHeight: 200,
-            ready: function() {
-                cropper.setCropBoxData(cropBoxData).setCanvasData(canvasData);
-            }
-        });
-    }).on("hidden.bs.modal", function() {
-        cropBoxData = cropper.getCropBoxData();
-        canvasData = cropper.getCanvasData();
-        cropper.destroy();
+    languageArray = initTags(languageListContainer, languageList)
+
+    $('#addLanguage').click(function() {
+        addTag(languageInput, languageListContainer, languageList, languageArray)
+    })
+
+    // Handle clicks on delete buttons
+    languageListContainer.on("click", "span a", function() {
+        value = $(this).closest('span').text()
+        $(this).closest('span').remove();
+        let index = languageArray.indexOf(value)
+        languageArray.splice(index, 1)
+        languageList.val(languageArray.join('|'))
     });
 
-    // Enable zoom in button
-    $(".js-zoom-in").click(function() {
-        cropper.zoom(0.1);
+    // Pet tags
+    let petInput = $('#petInput')
+    let petListContainer = $('#petListContainer')
+    let petList = $('#id_petList')
+    let petArray = []
+
+    petArray = initTags(petListContainer, petList)
+
+    $('#addPet').click(function() {
+        addTag(petInput, petListContainer, petList, petArray)
+    })
+
+    // Handle clicks on delete buttons
+    petListContainer.on("click", "span a", function() {
+        value = $(this).closest('span').text()
+        $(this).closest('span').remove();
+        let index = petArray.indexOf(value)
+        petArray.splice(index, 1)
+        petList.val(petArray.join('|'))
     });
 
-    // Enable zoom out button
-    $(".js-zoom-out").click(function() {
-        cropper.zoom(-0.1);
+    // Looking for gender tags
+    let lfgInput = $('#lfgInput')
+    let lfgContainer = $('#lfgContainer')
+    let lfgList = $('#id_lookingForGenderList')
+    let lfgArray = []
+
+    lfgArray = initTags(lfgContainer, lfgList)
+
+    $('#addLfg').click(function() {
+        addTag(lfgInput, lfgContainer, lfgList, lfgArray)
+    })
+
+    // Handle clicks on delete buttons
+    lfgContainer.on("click", "span a", function() {
+        value = $(this).closest('span').text()
+        $(this).closest('span').remove();
+        let index = lfgArray.indexOf(value)
+        lfgArray.splice(index, 1)
+        lfgList.val(lfgArray.join('|'))
     });
 
-    /* SCRIPT TO COLLECT THE DATA AND POST TO THE SERVER */
-    $(".js-crop").click(function() {
-        var cropData = cropper.getData();
-        $("#id_crop_x").val(cropData["x"]);
-        $("#id_crop_y").val(cropData["y"]);
-        $("#id_crop_h").val(cropData["height"]);
-        $("#id_crop_w").val(cropData["width"]);
-        $("#modalCrop").modal("hide");
+    // Looking for connections tags
+    let lfcInput = $('#lfcInput')
+    let lfcContainer = $('#lfcContainer')
+    let lfcList = $('#id_lookingForConnectionsList')
+    let lfcArray = []
+
+    lfcArray = initTags(lfcContainer, lfcList)
+
+    $('#addLfc').click(function() {
+        addTag(lfcInput, lfcContainer, lfcList, lfcArray)
+    })
+
+    // Handle clicks on delete buttons
+    lfcContainer.on("click", "span a", function() {
+        value = $(this).closest('span').text()
+        $(this).closest('span').remove();
+        let index = lfcArray.indexOf(value)
+        lfcArray.splice(index, 1)
+        lfcList.val(lfcArray.join('|'))
     });
 
-    $(".js-crop-dismiss").click(function() {
-        $("#id_upload_image").val("");
-    });
+    // Update kids want select
+    let kidsHave = $("#id_kidsHave")
+    let kidsWant = $("#id_kidsWant")
+
+    function updateKidsWant() {
+        let val = kidsHave.val()
+        kidsWant.children('option').show()
+
+        if (val === 'has') {
+            kidsWant.children('option[value=might_want]').hide()
+            kidsWant.children('option[value=wants]').hide()
+            kidsWant.children('option[value=doesnt_want]').hide()
+        } else if (val === 'doesnt_have') {
+            kidsWant.children('option[value=might_want2]').hide()
+            kidsWant.children('option[value=wants2]').hide()
+            kidsWant.children('option[value=doesnt_want2]').hide()
+        } else if (val === '') {
+        kidsWant.children('option[value=might_want]').hide()
+            kidsWant.children('option[value=wants]').hide()
+            kidsWant.children('option[value=doesnt_want]').hide()
+            kidsWant.children('option[value=might_want2]').hide()
+            kidsWant.children('option[value=wants2]').hide()
+            kidsWant.children('option[value=doesnt_want2]').hide()
+        }
+    }
+
+    kidsHave.change(function () {
+        kidsWant.val('')
+        updateKidsWant()
+    })
+
+    updateKidsWant()
 });
 </script>
 
-<script>
-	function initMap() {
-			var autocomplete = new google.maps.places.Autocomplete(document.getElementById('searchBox'));
-			var geocoder = new google.maps.Geocoder();
-			document.getElementById('searchBox').addEventListener('change', function() {
-         		 geocodeAddress(geocoder);
-        	});
-        }
-function geocodeAddress(geocoder) {
-	var address = document.getElementById('searchBox').value;
-		geocoder.geocode({'address': address}, function(results, status) {
-          if (status === 'OK') {
-            console.log("Longitude: " + results[0].geometry.location.lng());
-            console.log("Latitude: " + results[0].geometry.location.lat());
-			for (component in results[0].address_components)
-			{
-				for (type in results[0].address_components[component].types)
-				{
-					if (results[0].address_components[component].types[type] == 'locality')
-					{
-						console.log("City: " + results[0].address_components[component].long_name);
-					}
-					if (results[0].address_components[component].types[type] == 'administrative_area_level_1')
-					{
-						console.log("State: " + results[0].address_components[component].short_name);
-					}
-				}
-			}
-          } else {
-            console.log('Geocode was not successful for the following reason: ' + status);
-          }
-        });
-}
-</script>
-
-
-
-<script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBLJqyRqu7Mfr0xJ1OFwFxFxmCZDxX7fxQ&callback=initMap&libraries=places"
-  type="text/javascript"></script>
-
-
-<script>
-
-setActiveLink($("#details_link"));
-</script>
-
 {% endblock %}
-

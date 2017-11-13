@@ -10,35 +10,54 @@
 <section class="g-mb-100">
     <div class="container g-brd-around g-brd-gray-light-v4 g-pa-20 g-mb-40">
         <div class="row">
-            <div class="col-lg-4 g-mb-40 g-mb-0--lg">
+            <div class="col-lg-4">
                 <!-- User Image -->
                 <div class="g-mb-20">
-                    {% ifequal account.photo '' %}
-                    <img class="img-fluid w-100" src="{% static 'account/images/default-avatar.png' %}"
-                         alt="Default avatar" id="default_avatar"/>
-                    {% else %}
-                    <img class="img-fluid w-100" src="{{ account.photo.url }}" alt="A picture of Me" id="avatar"/>
-                    {% endifequal %}
+                    <form id="image_form" method="post" enctype="multipart/form-data"
+                          action="{% url 'account:update_photo' %}">
+                        {% csrf_token %}
+
+                        {% if account.photo is None or account.photo.name == '' %}
+                        <img class="img-fluid w-100" src="{% static 'account/images/default-avatar.png' %}"
+                             alt="Default picture" id="default_avatar"/>
+                        {% else %}
+                        <img class="img-fluid w-100" src="{{ account.photo.url }}" alt="Profile picture" id="avatar"/>
+                        {% endif %}
+
+                        <!-- errors -->
+                        {% if form.errors %}
+                        <div class="alert fade show g-bg-red-opacity-0_1 g-color-lightred rounded-0" role="alert">
+                            <div class="media">
+                                <div class="d-flex g-mr-10">
+                                    <i></i>
+                                </div>
+                                <div class="media-body">
+                                    <strong>Failed to upload image, please try again.</strong>
+                                </div>
+                            </div>
+                        </div>
+                        {% endif %}
+
+                        <div class="form-group mb-0">
+                            <h2 class="g-font-weight-300 g-mr-10">Upload new profile picture</h2>
+                            <label class="u-file-attach-v2 g-color-gray-dark-v5 mb-0">
+                                {{ photo_form.upload_image }}
+                                <i class="icon-cloud-upload g-font-size-16 g-pos-rel g-top-2 g-mr-5"></i>
+                                <span class="js-value">Attach file</span>
+                            </label>
+                            {{ photo_form.crop_x }}{{ photo_form.crop_y }}{{ photo_form.crop_w }}{{ photo_form.crop_h }}
+                        </div>
+                    </form>
                 </div>
-                <!-- End User Image -->
 
-                <!-- User Contact Button -->
-                <a class="btn btn-block u-btn-outline-primary g-rounded-50 g-py-12 g-mb-10" href="#">
-                    <i class="icon-envelope-letter g-pos-rel g-top-1 g-mr-5"></i> Contact Me
-                </a>
-                <!-- End User Contact Button -->
+                <!-- Contact info -->
                 <h2 class="g-font-weight-300 g-mr-10">Contact info</h2>
-                <small>This section will be only visible to your matches</small>
+                <p><i>This section will be only visible to your matches</i></p>
                 <p>{{ account.contactInfo }}</p>
-
-                <hr/>
-
-                <h2 class="g-font-weight-300 g-mr-10">Notes</h2>
             </div>
 
-            <div class="col-lg-8">
+            <div class="col-lg-4">
                 <!-- Name -->
-                <h2 class="g-font-weight-600 g-mr-10">{{ user.username }}</h2>
                 <h2 class="g-font-weight-300 g-mr-10">{{ account.fullName }}</h2>
 
                 <!-- Basic info -->
@@ -46,120 +65,189 @@
                     {{ account.age }} | {{ account.locationName }}
                 </h4>
 
-
                 <!-- Edit Button -->
-                <a class="btn u-btn-primary g-rounded-50 g-py-12" href="{% url 'account:edit' %}">
+                <a class="btn btn-lg u-btn-primary rounded-0 g-py-12" href="{% url 'account:edit' %}">
                     <i class="icon-pencil g-pos-rel g-top-1 g-mr-5"></i> Edit Profile
                 </a>
                 <!-- End Edit Button -->
 
                 <hr class="g-brd-gray-light-v4 g-my-20">
+                <h3>Self-summary</h3>
+                <p class="lead g-line-height-1_8">{{ account.summary }}</p>
+            </div>
 
-                <div class="row">
-                    <div class="col-lg-8">
-                        <h3>Self-summary</h3>
-                        <p class="lead g-line-height-1_8">{{ account.summary }}</p>
-                    </div>
-                    <div class="col-lg-4">
-                        <!-- Basic info -->
-                        <div class="u-shadow-v22 g-bg-secondary text-center g-rounded-5 g-pb-30 g-mb-50">
-                            <span class="d-block g-color-primary g-font-size-40 g-mb-10">
+            <div class="col-lg-4">
+                <!-- Basic info -->
+                <div class="u-shadow-v22 g-bg-white rounded g-pa-20 g-mb-30">
+                    <div class="media">
+                        <div class="d-flex align-self-center mr-3">
+                            <span class="u-icon-v3 g-bg-primary g-color-white g-rounded-5">
                                 <i class="icon-heart"></i>
                             </span>
-                            <p class="g-color-gray-dark-v4 g-mb-20">
-                                <strong>
-                                    {{ account.sexualOrientation }},
-                                    {{ account.sexualIdentity }},
-                                    {{ account.relationshipStatus }},
-                                    {{ account.relationshipType }},
-                                    {{ account.height }},
-                                    {{ account.bodyType }}
-                                </strong>
-                            </p>
                         </div>
-
-                        <!-- Background -->
-                        <div class="u-shadow-v22 g-bg-secondary text-center g-rounded-5 g-pb-30 g-mb-50">
-                            <span class="d-block g-color-primary g-font-size-40 g-mb-10">
-                                <i class="icon-globe"></i>
-                            </span>
-                            <p class="g-color-gray-dark-v4 g-mb-20">
-                                <strong>
-                                    {{ account.ethnicity }},
-                                    Speaks {{ account.languages }},
-                                    {{ account.religion }},
-                                    Attended {{ account.education }}
-                                </strong>
-                            </p>
-                        </div>
-
-                        <!-- Details -->
-                        <div class="u-shadow-v22 g-bg-secondary text-center g-rounded-5 g-pb-30 g-mb-50">
-                            <span class="d-block g-color-primary g-font-size-40 g-mb-10">
-                                <i class="icon-info"></i>
-                            </span>
-                            <p class="g-color-gray-dark-v4 g-mb-20">
-                                <strong>
-                                    {{ account.kids }},
-                                    {{ account.pets }},
-                                    {{ account.vices }},
-                                    {{ account.diet }}
-                                </strong>
-                            </p>
-                        </div>
-
-                        <!-- Looking for -->
-                        <div class="u-shadow-v1-5 g-bg-primary text-center g-rounded-5 g-pb-30 g-mb-50">
-                            <span class="d-block g-color-white g-font-size-40 g-mb-10">
-                                <i class="icon-eyeglass"></i>
-                            </span>
-                            <p class="g-color-white g-mb-20">
-                                <strong>
-                                    Looking for Woman, 18-33
-                                </strong>
+                        <div class="media-body align-self-center">
+                            <p class="mb-0 g-font-weight-600">
+                                {{ account.basicInfo | join:", " }}
                             </p>
                         </div>
                     </div>
                 </div>
+
+                <!-- Background -->
+                <div class="u-shadow-v22 g-bg-white rounded g-pa-20 g-mb-30">
+                    <div class="media">
+                        <div class="d-flex align-self-center mr-3">
+                            <span class="u-icon-v3 g-bg-primary g-color-white g-rounded-5">
+                                <i class="icon-globe"></i>
+                            </span>
+                        </div>
+                        <div class="media-body align-self-center">
+                            <p class="mb-0 g-font-weight-600">
+                                {{ account.background | join:", " }}
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Details -->
+                <div class="u-shadow-v22 g-bg-white rounded g-pa-20 g-mb-30">
+                    <div class="media">
+                        <div class="d-flex align-self-center mr-3">
+                            <span class="u-icon-v3 g-bg-primary g-color-white g-rounded-5">
+                                <i class="icon-info"></i>
+                            </span>
+                        </div>
+                        <div class="media-body align-self-center">
+                            <p class="mb-0 g-font-weight-600">
+                                {{ account.details | join:", " }}
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Looking for -->
+                <div class="u-shadow-v22 g-bg-secondary rounded g-pa-20 g-mb-30">
+                    <div class="media">
+                        <div class="d-flex align-self-center mr-3">
+                            <span class="u-icon-v3 g-bg-primary g-color-white g-rounded-5">
+                                <i class="icon-eyeglass"></i>
+                            </span>
+                        </div>
+                        <div class="media-body align-self-center">
+                            <p class="mb-0 g-font-weight-600">
+                                <strong>Looking for: </strong>{{ account.lookingFor | join:", " }}
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
             </div>
         </div>
     </div>
 </section>
 <!-- End User Block -->
-{% endblock %}
 
-<!--=== Profile ===-->
-<div class="container content profile">
-    <div class="row">
-        <!-- Profile Content -->
-        <div class="col-md-12">
-            <div class="profile-body">
-                <div class="profile-bio">
-
-                    <hr>
-
-                    <div class="row">
-                        <h4>This information is only shown to your matches:</h4>
-                        <h5>&nbsp; How matches contact you: {{ account.contactInfo }} </h5>
-
-                    </div><!--/end row-->
-
-                    <hr>
-
-                    <div class="row">
-                        <small>&nbsp Account Created: {{ account.created }}</small>
-                        <br/>
-                        <small>&nbsp Account Last Created: {{ account.updated }}</small>
-                    </div><!--/end row-->
-
-                    <hr>
-
-                    <div class="row" style="text-align: center;">
-                        <a class="btn-u btn-u-lg rounded" href="{% url 'account:edit' %}">Edit Profile</a>
-                    </div><!--/end row-->
+<!-- Modal for cropper -->
+<div class="modal fade" id="modalCrop" aria-labelledby="modalLabel" role="dialog" tabindex="-1">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content modal-lg">
+            <div class="modal-header">
+                <button type="button" class="close js-crop-dismiss" data-dismiss="modal"
+                        aria-label="Close">
+                    <span>&times;</span>
+                </button>
+                <h4 class="modal-title" id="modalLabel">Crop the image</h4>
+            </div>
+            <div class="modal-body">
+                <div>
+                    <img src="" id="image" style="max-width: 100%;">
                 </div>
             </div>
-            <!-- End Profile Content -->
+            <div class="modal-footer">
+                <div class="btn-group pull-left" role="group">
+                    <button type="button" class="btn btn-default js-zoom-in">
+                        <i class="icon-magnifier-add"></i>
+                    </button>
+                    <button type="button" class="btn btn-default js-zoom-out">
+                        <i class="icon-magnifier-remove"></i>
+                    </button>
+                </div>
+                <button type="button" class="btn btn-default js-crop-dismiss" data-dismiss="modal">
+                    Cancel
+                </button>
+                <button type="button" class="btn btn-primary js-crop">Save</button>
+            </div>
         </div>
     </div>
-    <!--=== End Profile ===-->
+</div>
+<!-- End Modal for cropper -->
+{% endblock %}
+
+{% block javascript %}
+<script>
+$(function() {
+
+    /* SCRIPT TO OPEN THE MODAL WITH THE PREVIEW */
+    $("#id_upload_image").change(function() {
+    console.log('id_upload_image');
+        if (this.files && this.files[0]) {
+            var reader = new FileReader();
+            reader.onload = function(e) {
+                $("#image").attr("src", e.target.result);
+                $("#modalCrop").modal("show");
+            }
+            reader.readAsDataURL(this.files[0]);
+        }
+    });
+
+    /* SCRIPTS TO HANDLE THE CROPPER BOX */
+    var image = document.getElementById('image');
+    var cropBoxData;
+    var canvasData;
+    var cropper;
+
+    $("#modalCrop").on("shown.bs.modal", function() {
+        cropper = new Cropper(image, {
+            viewMode: 1,
+            aspectRatio: 1 / 1,
+            minCropBoxWidth: 200,
+            minCropBoxHeight: 200,
+            ready: function() {
+                cropper.setCropBoxData(cropBoxData).setCanvasData(canvasData);
+            }
+        });
+    }).on("hidden.bs.modal", function() {
+        cropBoxData = cropper.getCropBoxData();
+        canvasData = cropper.getCanvasData();
+        cropper.destroy();
+    });
+
+    // Enable zoom in button
+    $(".js-zoom-in").click(function() {
+        cropper.zoom(0.1);
+    });
+
+    // Enable zoom out button
+    $(".js-zoom-out").click(function() {
+        cropper.zoom(-0.1);
+    });
+
+    /* SCRIPT TO COLLECT THE DATA AND POST TO THE SERVER */
+    $(".js-crop").click(function() {
+        var cropData = cropper.getData();
+        $("#id_crop_x").val(cropData["x"]);
+        $("#id_crop_y").val(cropData["y"]);
+        $("#id_crop_h").val(cropData["height"]);
+        $("#id_crop_w").val(cropData["width"]);
+        $("#modalCrop").modal("hide");
+        // Submit image form
+        $("#image_form").submit();
+    });
+
+    $(".js-crop-dismiss").click(function() {
+        $("#id_upload_image").val("");
+    });
+});
+</script>
+
+{% endblock %}

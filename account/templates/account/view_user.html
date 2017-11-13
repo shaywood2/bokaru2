@@ -1,69 +1,137 @@
-{% extends 'web/base.html' %}
-
+{% extends 'web/base_nav.html' %}
 
 {% load staticfiles %}
-{% load imagekit %}
+
+{% block title %}Bokaru | {{ user.username }}{% endblock %}
 
 {% block content %}
 
-<!--=== Profile ===-->
-<div class="container content profile">
-    <div class="row">
-        <!-- Profile Content -->
-        <div class="col-md-12">
-            <div class="profile-body">
-                <div class="profile-bio">
-                    <div class="row">
-                        <div class="col-md-5">
-                            <img class="img-responsive md-margin-bottom-10"
-                                 src="{% static 'web/theme/img/team/img32-md.jpg' %}" alt="">
-                        </div>
-                        <div class="col-md-7">
-                            <h2>{{ account.fullName }}</h2>
-                            <span>
-                            {% ifequal account.photo '' %}
-                            <img src="{% static 'account/images/default-avatar.png' %}" alt="Default avatar" id="avatar"/>
-                            {% else %}
-                            {% thumbnail '200x200' account.photo -- alt="A picture of Me" id="avatar" %}
-                            {% endifequal %}
-                            </span>
-                            <span><strong>Location:</strong> [CITY]</span>
-                            <span><strong>Age:</strong> {{ account.age }} </span>
-                            <span><strong>Gender:</strong> {{ account.gender }} </span>
-                            <span><strong>Height:</strong> {{ account.height }} </span>
-                            <span><strong>Body Type:</strong> {{ account.bodyType }} </span>
-                            <span><strong>Education:</strong> {{ account.education }} </span>
-                            <span><strong>Profession:</strong> [JOB] </span>
-                            <span><strong>Relationship Type:</strong> {{ account.relationshipType }} </span>
-                            <span><strong>Orientation:</strong> {{ account.sexualOrientation }} </span>
-                            <span><strong>Identity:</strong> {{ account.sexualIdentity }} </span>
-                            <span><strong>Ethnicity:</strong> {{ account.ethnicity }} </span>
-                            <span><strong>Religion:</strong> {{ account.religion }} </span>
-                            <span><strong>Languages:</strong> {{ account.languages }} </span>
-                            <span><strong>Kids:</strong> {{ account.kids }} </span>
-                            <span><strong>Vices:</strong> {{ account.vices }} </span>
-                            <span><strong>Diet:</strong> {{ account.diet }} </span>
-                            <hr>
-                            <p>{{ account.summary }}</p>
-                        </div>
-                    </div>
-                </div><!--/end row-->
+<!-- User Block -->
+<section class="g-mb-100">
+    <div class="container g-brd-around g-brd-gray-light-v4 g-pa-20 g-mb-40">
+        <div class="row">
+            <div class="col-lg-4">
+                <!-- User Image -->
+                <div class="g-mb-20">
+                    {% if account.photo is None or account.photo.name == '' %}
+                    <img class="img-fluid w-100" src="{% static 'account/images/default-avatar.png' %}"
+                         alt="Default picture" id="default_avatar"/>
+                    {% else %}
+                    <img class="img-fluid w-100" src="{{ account.photo.url }}" alt="Profile picture" id="avatar"/>
+                    {% endif %}
+                </div>
 
-                <hr>
+                <!-- User Contact Button -->
+                {% if can_contact %}
+                <a class="btn btn-lg btn-block u-btn-primary rounded-0 g-py-12" href="#contact"
+                   data-modal-target="#contact" data-modal-effect="superscaled">
+                    <i class="icon-envelope-letter g-pos-rel g-top-1 g-mr-5"></i> Contact Me
+                </a>
+                <div id="contact" class="text-left g-max-width-600 g-bg-white g-overflow-y-auto g-pa-20"
+                     style="display: none;">
+                    <button type="button" class="close" onclick="Custombox.modal.close();">
+                        <i class="hs-icon hs-icon-close"></i>
+                    </button>
+                    <h4 class="g-mb-20">You are a match!</h4>
+                    <p>Please do not forget to be excellent to each other!</p>
+                    <p>Email: <a href="mailto:{{user.email}}" target="_blank">{{user.email}}</a></p>
+                    <p>{{ account.contactInfo }}</p>
+                </div>
+                {% endif %}
 
-
-                <div class="row" style="text-align: center;">
-                    <h3>Here's how you can reach this match: {{ account.contactInfo }}</h3>
-                </div><!--/end row-->
-
-
+                <!-- Notes -->
+                {% if show_notes %}
+                <h2 class="g-font-weight-300 g-mr-10">Your Notes</h2>
+                {% endif %}
             </div>
 
+            <div class="col-lg-4">
+                <!-- Name -->
+                <h2 class="g-font-weight-300 g-mr-10">{{ account.fullName }}</h2>
 
+                <!-- Basic info -->
+                <h4 class="h6 g-font-weight-300 g-mb-10">
+                    {{ account.age }} | {{ account.locationName }}
+                </h4>
+
+                <hr class="g-brd-gray-light-v4 g-my-20">
+                <h3>Self-summary</h3>
+                <p class="lead g-line-height-1_8">{{ account.summary }}</p>
+            </div>
+
+            <div class="col-lg-4">
+                <!-- Basic info -->
+                <div class="u-shadow-v22 g-bg-white rounded g-pa-20 g-mb-30">
+                    <div class="media">
+                        <div class="d-flex align-self-center mr-3">
+                            <span class="u-icon-v3 g-bg-primary g-color-white g-rounded-5">
+                                <i class="icon-heart"></i>
+                            </span>
+                        </div>
+                        <div class="media-body align-self-center">
+                            <p class="mb-0 g-font-weight-600">
+                                {{ account.basicInfo | join:", " }}
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Background -->
+                <div class="u-shadow-v22 g-bg-white rounded g-pa-20 g-mb-30">
+                    <div class="media">
+                        <div class="d-flex align-self-center mr-3">
+                            <span class="u-icon-v3 g-bg-primary g-color-white g-rounded-5">
+                                <i class="icon-globe"></i>
+                            </span>
+                        </div>
+                        <div class="media-body align-self-center">
+                            <p class="mb-0 g-font-weight-600">
+                                {{ account.background | join:", " }}
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Details -->
+                <div class="u-shadow-v22 g-bg-white rounded g-pa-20 g-mb-30">
+                    <div class="media">
+                        <div class="d-flex align-self-center mr-3">
+                            <span class="u-icon-v3 g-bg-primary g-color-white g-rounded-5">
+                                <i class="icon-info"></i>
+                            </span>
+                        </div>
+                        <div class="media-body align-self-center">
+                            <p class="mb-0 g-font-weight-600">
+                                {{ account.details | join:", " }}
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Looking for -->
+                <div class="u-shadow-v22 g-bg-secondary rounded g-pa-20 g-mb-30">
+                    <div class="media">
+                        <div class="d-flex align-self-center mr-3">
+                            <span class="u-icon-v3 g-bg-primary g-color-white g-rounded-5">
+                                <i class="icon-eyeglass"></i>
+                            </span>
+                        </div>
+                        <div class="media-body align-self-center">
+                            <p class="mb-0 g-font-weight-600">
+                                <strong>Looking for: </strong>{{ account.lookingFor | join:", " }}
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
         </div>
-        <!-- End Profile Content -->
     </div>
-</div>
-<!--=== End Profile ===-->
+</section>
+<!-- End User Block -->
+
 {% endblock %}
 
+{% block javascript %}
+
+{% endblock %}

@@ -36,6 +36,9 @@ CACHES = {
     }
 }
 
+# Session storage
+SESSION_ENGINE = 'django.contrib.sessions.backends.cached_db'
+
 # Console email backend
 EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 DEFAULT_FROM_EMAIL = 'Bokaru <admin@dev.bokaru.com>'

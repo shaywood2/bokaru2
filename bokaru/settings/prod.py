@@ -45,6 +45,9 @@ CACHES = {
     }
 }
 
+# Session storage
+SESSION_ENGINE = 'django.contrib.sessions.backends.cached_db'
+
 # Mailgun backend
 EMAIL_BACKEND = 'django_mailgun.MailgunBackend'
 MAILGUN_ACCESS_KEY = os.environ['MG_KEY']
