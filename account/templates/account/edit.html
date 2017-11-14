@@ -6,7 +6,8 @@
 {% block title %}Bokaru | Edit profile{% endblock %}
 
 {% block header %}
-<script src="//maps.googleapis.com/maps/api/js?libraries=places&key=AIzaSyBTwfHuVilarsPOOE4Opm4GaG9I2dfbyCw" type="text/javascript"></script>
+<script src="//maps.googleapis.com/maps/api/js?libraries=places&key=AIzaSyBTwfHuVilarsPOOE4Opm4GaG9I2dfbyCw"
+        type="text/javascript"></script>
 {% endblock %}
 
 {% block content %}
@@ -36,7 +37,6 @@
                     <div class="form-group g-mb-20 {% if form.contactInfo.errors %}u-has-error-v1{% endif %}">
                         <div class="u-input-group-v2">
                             {{ form.contactInfo }}
-                            <!--<label for="id_contactInfo">Contact Info</label>-->
                         </div>
                         {% if form.contactInfo.errors %}
                         <small class="form-control-feedback">{{form.contactInfo.errors}}</small>
@@ -230,23 +230,18 @@
                     <div class="form-group g-mb-20">
                         <h4>Ethnicity</h4>
                         <h4 id="ethnicityListContainer" class="g-mt-15"></h4>
-                        <div class="input-group">
-                            <select id="ethnicityInput" class="form-control rounded-0 u-form-control0 u-select-v1">
-                                <option value>---------</option>
-                                <option value="Asian">Asian</option>
-                                <option value="Black">Black</option>
-                                <option value="Hispanic / Latin">Hispanic / Latin</option>
-                                <option value="Indian">Indian</option>
-                                <option value="Middle Eastern">Middle Eastern</option>
-                                <option value="Native American">Native American</option>
-                                <option value="Pacific Islander">Pacific Islander</option>
-                                <option value="White">White</option>
-                                <option value="Other">Other</option>
-                            </select>
-                            <span class="input-group-btn">
-                                <button class="btn u-btn-primary rounded-0" type="button" id="addEthnicity">Add</button>
-                            </span>
-                        </div>
+                        <select id="ethnicityInput" class="form-control rounded-0 u-form-control0 u-select-v1">
+                            <option value>---------</option>
+                            <option value="Asian">Asian</option>
+                            <option value="Black">Black</option>
+                            <option value="Hispanic / Latin">Hispanic / Latin</option>
+                            <option value="Indian">Indian</option>
+                            <option value="Middle Eastern">Middle Eastern</option>
+                            <option value="Native American">Native American</option>
+                            <option value="Pacific Islander">Pacific Islander</option>
+                            <option value="White">White</option>
+                            <option value="Other">Other</option>
+                        </select>
                         {{ form.ethnicityList }}
                     </div>
 
@@ -254,94 +249,89 @@
                     <div class="form-group g-mb-20">
                         <h4>Languages</h4>
                         <h4 id="languageListContainer" class="g-mt-15"></h4>
-                        <div class="input-group">
-                            <select id="languageInput" class="form-control rounded-0 u-form-control0 u-select-v1">
-                                <option value>---------</option>
-                                <option value="English">English</option>
-                                <option value="Afrikaans">Afrikaans</option>
-                                <option value="Albanian">Albanian</option>
-                                <option value="Arabic">Arabic</option>
-                                <option value="Armenian">Armenian</option>
-                                <option value="Basque">Basque</option>
-                                <option value="Belarusian">Belarusian</option>
-                                <option value="Bengali">Bengali</option>
-                                <option value="Breton">Breton</option>
-                                <option value="Bulgarian">Bulgarian</option>
-                                <option value="Catalan">Catalan</option>
-                                <option value="Cebuano">Cebuano</option>
-                                <option value="Chechen">Chechen</option>
-                                <option value="Chinese">Chinese</option>
-                                <option value="Chinese (Cantonese)">Chinese (Cantonese)</option>
-                                <option value="Chinese (Mandarin)">Chinese (Mandarin)</option>
-                                <option value="C++">C++</option>
-                                <option value="Croatian">Croatian</option>
-                                <option value="Czech">Czech</option>
-                                <option value="Danish">Danish</option>
-                                <option value="Dutch">Dutch</option>
-                                <option value="Esperanto">Esperanto</option>
-                                <option value="Rstonian">Estonian</option>
-                                <option value="Finnish">Finnish</option>
-                                <option value="French">French</option>
-                                <option value="Frisian">Frisian</option>
-                                <option value="Georgian">Georgian</option>
-                                <option value="German">German</option>
-                                <option value="Greek">Greek</option>
-                                <option value="Gujarati">Gujarati</option>
-                                <option value="Ancient_greek">Ancient Greek</option>
-                                <option value="Hawaiian">Hawaiian</option>
-                                <option value="Hebrew">Hebrew</option>
-                                <option value="Hindi">Hindi</option>
-                                <option value="Hungarian">Hungarian</option>
-                                <option value="Icelandic">Icelandic</option>
-                                <option value="Ilongo">Ilongo</option>
-                                <option value="Indonesian">Indonesian</option>
-                                <option value="Irish">Irish</option>
-                                <option value="Italian">Italian</option>
-                                <option value="Japanese">Japanese</option>
-                                <option value="Khmer">Khmer</option>
-                                <option value="Klingon">Klingon</option>
-                                <option value="Korean">Korean</option>
-                                <option value="Latin">Latin</option>
-                                <option value="Latvian">Latvian</option>
-                                <option value="LISP">LISP</option>
-                                <option value="Lithuanian">Lithuanian</option>
-                                <option value="Malay">Malay</option>
-                                <option value="Maori">Maori</option>
-                                <option value="Mongolian">Mongolian</option>
-                                <option value="Norwegian">Norwegian</option>
-                                <option value="Occitan">Occitan</option>
-                                <option value="Other">Other</option>
-                                <option value="Persian">Persian</option>
-                                <option value="Polish">Polish</option>
-                                <option value="Portuguese">Portuguese</option>
-                                <option value="Punjabi">Punjabi</option>
-                                <option value="Romanian">Romanian</option>
-                                <option value="Rotuman">Rotuman</option>
-                                <option value="Russian">Russian</option>
-                                <option value="Sanskrit">Sanskrit</option>
-                                <option value="Sardinian">Sardinian</option>
-                                <option value="Serbian">Serbian</option>
-                                <option value="Sign Language">Sign Language</option>
-                                <option value="Slovak">Slovak</option>
-                                <option value="Slovenian">Slovenian</option>
-                                <option value="Spanish">Spanish</option>
-                                <option value="Swahili">Swahili</option>
-                                <option value="Swedish">Swedish</option>
-                                <option value="Tagalog">Tagalog</option>
-                                <option value="Tamil">Tamil</option>
-                                <option value="Thai">Thai</option>
-                                <option value="Tibetan">Tibetan</option>
-                                <option value="Turkish">Turkish</option>
-                                <option value="Ukrainian">Ukrainian</option>
-                                <option value="Urdu">Urdu</option>
-                                <option value="Vietnamese">Vietnamese</option>
-                                <option value="Welsh">Welsh</option>
-                                <option value="Yiddish">Yiddish</option>
-                            </select>
-                            <span class="input-group-btn">
-                                <button class="btn u-btn-primary rounded-0" type="button" id="addLanguage">Add</button>
-                            </span>
-                        </div>
+                        <select id="languageInput" class="form-control rounded-0 u-form-control0 u-select-v1">
+                            <option value>---------</option>
+                            <option value="English">English</option>
+                            <option value="Afrikaans">Afrikaans</option>
+                            <option value="Albanian">Albanian</option>
+                            <option value="Arabic">Arabic</option>
+                            <option value="Armenian">Armenian</option>
+                            <option value="Basque">Basque</option>
+                            <option value="Belarusian">Belarusian</option>
+                            <option value="Bengali">Bengali</option>
+                            <option value="Breton">Breton</option>
+                            <option value="Bulgarian">Bulgarian</option>
+                            <option value="Catalan">Catalan</option>
+                            <option value="Cebuano">Cebuano</option>
+                            <option value="Chechen">Chechen</option>
+                            <option value="Chinese">Chinese</option>
+                            <option value="Chinese (Cantonese)">Chinese (Cantonese)</option>
+                            <option value="Chinese (Mandarin)">Chinese (Mandarin)</option>
+                            <option value="C++">C++</option>
+                            <option value="Croatian">Croatian</option>
+                            <option value="Czech">Czech</option>
+                            <option value="Danish">Danish</option>
+                            <option value="Dutch">Dutch</option>
+                            <option value="Esperanto">Esperanto</option>
+                            <option value="Rstonian">Estonian</option>
+                            <option value="Finnish">Finnish</option>
+                            <option value="French">French</option>
+                            <option value="Frisian">Frisian</option>
+                            <option value="Georgian">Georgian</option>
+                            <option value="German">German</option>
+                            <option value="Greek">Greek</option>
+                            <option value="Gujarati">Gujarati</option>
+                            <option value="Ancient_greek">Ancient Greek</option>
+                            <option value="Hawaiian">Hawaiian</option>
+                            <option value="Hebrew">Hebrew</option>
+                            <option value="Hindi">Hindi</option>
+                            <option value="Hungarian">Hungarian</option>
+                            <option value="Icelandic">Icelandic</option>
+                            <option value="Ilongo">Ilongo</option>
+                            <option value="Indonesian">Indonesian</option>
+                            <option value="Irish">Irish</option>
+                            <option value="Italian">Italian</option>
+                            <option value="Japanese">Japanese</option>
+                            <option value="Khmer">Khmer</option>
+                            <option value="Klingon">Klingon</option>
+                            <option value="Korean">Korean</option>
+                            <option value="Latin">Latin</option>
+                            <option value="Latvian">Latvian</option>
+                            <option value="LISP">LISP</option>
+                            <option value="Lithuanian">Lithuanian</option>
+                            <option value="Malay">Malay</option>
+                            <option value="Maori">Maori</option>
+                            <option value="Mongolian">Mongolian</option>
+                            <option value="Norwegian">Norwegian</option>
+                            <option value="Occitan">Occitan</option>
+                            <option value="Other">Other</option>
+                            <option value="Persian">Persian</option>
+                            <option value="Polish">Polish</option>
+                            <option value="Portuguese">Portuguese</option>
+                            <option value="Punjabi">Punjabi</option>
+                            <option value="Romanian">Romanian</option>
+                            <option value="Rotuman">Rotuman</option>
+                            <option value="Russian">Russian</option>
+                            <option value="Sanskrit">Sanskrit</option>
+                            <option value="Sardinian">Sardinian</option>
+                            <option value="Serbian">Serbian</option>
+                            <option value="Sign Language">Sign Language</option>
+                            <option value="Slovak">Slovak</option>
+                            <option value="Slovenian">Slovenian</option>
+                            <option value="Spanish">Spanish</option>
+                            <option value="Swahili">Swahili</option>
+                            <option value="Swedish">Swedish</option>
+                            <option value="Tagalog">Tagalog</option>
+                            <option value="Tamil">Tamil</option>
+                            <option value="Thai">Thai</option>
+                            <option value="Tibetan">Tibetan</option>
+                            <option value="Turkish">Turkish</option>
+                            <option value="Ukrainian">Ukrainian</option>
+                            <option value="Urdu">Urdu</option>
+                            <option value="Vietnamese">Vietnamese</option>
+                            <option value="Welsh">Welsh</option>
+                            <option value="Yiddish">Yiddish</option>
+                        </select>
                         {{ form.languageList }}
                     </div>
 
@@ -443,21 +433,16 @@
                     <div class="form-group g-mb-20">
                         <h4>Pets</h4>
                         <h4 id="petListContainer" class="g-mt-15"></h4>
-                        <div class="input-group">
-                            <select id="petInput" class="form-control rounded-0 u-form-control0 u-select-v1">
-                                <option value>---------</option>
-                                <option value="Dogs">Dogs</option>
-                                <option value="Cats">Cats</option>
-                                <option value="Birds">Birds</option>
-                                <option value="Fish">Fish</option>
-                                <option value="Reptiles">Reptiles</option>
-                                <option value="Rock">Rock</option>
-                                <option value="Other">Other</option>
-                            </select>
-                            <span class="input-group-btn">
-                                <button class="btn u-btn-primary rounded-0" type="button" id="addPet">Add</button>
-                            </span>
-                        </div>
+                        <select id="petInput" class="form-control rounded-0 u-form-control0 u-select-v1">
+                            <option value>---------</option>
+                            <option value="Dogs">Dogs</option>
+                            <option value="Cats">Cats</option>
+                            <option value="Birds">Birds</option>
+                            <option value="Fish">Fish</option>
+                            <option value="Reptiles">Reptiles</option>
+                            <option value="Rock">Rock</option>
+                            <option value="Other">Other</option>
+                        </select>
                         {{ form.petList }}
                     </div>
 
@@ -485,17 +470,12 @@
                     <h4>Gender(s)</h4>
                     <div class="form-group g-mb-20 {% if form.lookingForGenderList.errors %}u-has-error-v1{% endif %}">
                         <h4 id="lfgContainer" class="g-mt-15"></h4>
-                        <div class="input-group">
-                            <select id="lfgInput" class="form-control rounded-0 u-form-control0 u-select-v1">
-                                <option value>---------</option>
-                                <option value="Man">Man</option>
-                                <option value="Woman">Woman</option>
-                                <option value="Other">Other</option>
-                            </select>
-                            <span class="input-group-btn">
-                                <button class="btn u-btn-primary rounded-0" type="button" id="addLfg">Add</button>
-                            </span>
-                        </div>
+                        <select id="lfgInput" class="form-control rounded-0 u-form-control0 u-select-v1">
+                            <option value>---------</option>
+                            <option value="Man">Man</option>
+                            <option value="Woman">Woman</option>
+                            <option value="Other">Other</option>
+                        </select>
                         {% if form.lookingForGenderList.errors %}
                         <small class="form-control-feedback">{{form.lookingForGenderList.errors}}</small>
                         {% endif %}
@@ -532,19 +512,14 @@
                     <h4>Kinds of connections you are looking for</h4>
                     <div class="form-group g-mb-20 {% if form.lookingForConnectionsList.errors %}u-has-error-v1{% endif %}">
                         <h4 id="lfcContainer" class="g-mt-15"></h4>
-                        <div class="input-group">
-                            <select id="lfcInput" class="form-control rounded-0 u-form-control0 u-select-v1">
-                                <option value>---------</option>
-                                <option value="Hookup">Hookup</option>
-                                <option value="Friendship">Friendship</option>
-                                <option value="Short-term dating">Short-term dating</option>
-                                <option value="Long-term dating">Long-term dating</option>
-                                <option value="Marriage">Marriage</option>
-                            </select>
-                            <span class="input-group-btn">
-                                <button class="btn u-btn-primary rounded-0" type="button" id="addLfc">Add</button>
-                            </span>
-                        </div>
+                        <select id="lfcInput" class="form-control rounded-0 u-form-control0 u-select-v1">
+                            <option value>---------</option>
+                            <option value="Hookup">Hookup</option>
+                            <option value="Friendship">Friendship</option>
+                            <option value="Short-term dating">Short-term dating</option>
+                            <option value="Long-term dating">Long-term dating</option>
+                            <option value="Marriage">Marriage</option>
+                        </select>
                         {% if form.lookingForConnectionsList.errors %}
                         <small class="form-control-feedback">{{form.lookingForConnectionsList.errors}}</small>
                         {% endif %}
@@ -567,26 +542,6 @@
 {% endblock %}
 
 {% block javascript %}
-<script>
-function initMap() {
-    let options = {
-        types: ['(cities)']
-    }
-
-    let input = document.getElementById('id_locationName')
-    let autocomplete = new google.maps.places.Autocomplete(input, options)
-
-    google.maps.event.addListener(autocomplete, 'place_changed', function () {
-        let place = autocomplete.getPlace()
-        document.getElementById('id_cityName').value = place.name
-        document.getElementById('id_cityLat').value = place.geometry.location.lat()
-        document.getElementById('id_cityLng').value = place.geometry.location.lng()
-    })
-}
-
-google.maps.event.addDomListener(window, 'load', initMap);
-</script>
-
 <!-- jQuery UI Core -->
 <script src="{% static 'web/vendor/jquery-ui/ui/widget.js' %}"></script>
 <script src="{% static 'web/vendor/jquery-ui/ui/version.js' %}"></script>
@@ -605,7 +560,6 @@ google.maps.event.addDomListener(window, 'load', initMap);
 <!-- JS Unify -->
 <script src="{% static 'web/js/components/hs.datepicker.js' %}"></script>
 
-<!-- JS Plugins Init. -->
 <script>
 $(document).on('ready', function () {
     // Init date picker
@@ -737,7 +691,7 @@ $(document).on('ready', function () {
 
     ethnicityArray = initTags(ethnicityListContainer, ethnicityList)
 
-    $('#addEthnicity').click(function() {
+    ethnicityInput.change(function() {
         addTag(ethnicityInput, ethnicityListContainer, ethnicityList, ethnicityArray)
     })
 
@@ -758,7 +712,7 @@ $(document).on('ready', function () {
 
     languageArray = initTags(languageListContainer, languageList)
 
-    $('#addLanguage').click(function() {
+    languageInput.change(function() {
         addTag(languageInput, languageListContainer, languageList, languageArray)
     })
 
@@ -779,7 +733,7 @@ $(document).on('ready', function () {
 
     petArray = initTags(petListContainer, petList)
 
-    $('#addPet').click(function() {
+    petInput.change(function() {
         addTag(petInput, petListContainer, petList, petArray)
     })
 
@@ -800,7 +754,7 @@ $(document).on('ready', function () {
 
     lfgArray = initTags(lfgContainer, lfgList)
 
-    $('#addLfg').click(function() {
+    lfgInput.change(function() {
         addTag(lfgInput, lfgContainer, lfgList, lfgArray)
     })
 
@@ -821,7 +775,7 @@ $(document).on('ready', function () {
 
     lfcArray = initTags(lfcContainer, lfcList)
 
-    $('#addLfc').click(function() {
+    lfcInput.change(function() {
         addTag(lfcInput, lfcContainer, lfcList, lfcArray)
     })
 
@@ -866,7 +820,28 @@ $(document).on('ready', function () {
     })
 
     updateKidsWant()
-});
+})
+
+// Google maps script
+
+function initMap() {
+    let options = {
+        types: ['(cities)']
+    }
+
+    let input = document.getElementById('id_locationName')
+    let autocomplete = new google.maps.places.Autocomplete(input, options)
+
+    google.maps.event.addListener(autocomplete, 'place_changed', function () {
+        let place = autocomplete.getPlace()
+        document.getElementById('id_cityName').value = place.name
+        document.getElementById('id_cityLat').value = place.geometry.location.lat()
+        document.getElementById('id_cityLng').value = place.geometry.location.lng()
+    })
+}
+
+google.maps.event.addDomListener(window, 'load', initMap);
+
 </script>
 
 {% endblock %}

@@ -10,6 +10,7 @@ from registration.backends.hmac.views import RegistrationView as BaseRegistratio
 
 from money.models import UserPaymentInfo
 from money.payment_service import create_customer, delete_card, create_card
+from web.models import Memo, Pick
 from .forms import RegistrationForm, AccountForm, UserPreferenceForm, PhotoForm
 from .models import Account, UserPreference
 
@@ -69,17 +70,25 @@ def view(request):
 
 
 def view_user(request, username):
+    current_user = request.user
     user = get_object_or_404(User, username=username)
     account = Account.objects.get(user=user)
     profile_incomplete = account.status == Account.CREATED
     profile_suspended = account.status == Account.SUSPENDED
     can_contact = False
-    show_notes = False
+    show_memo = False
+    memo = None
 
-    if request.user.is_authenticated:
-        # TODO: figure out connection status
-        can_contact = True
-        show_notes = True
+    if current_user.is_authenticated:
+        can_contact = Pick.objects.is_a_match(current_user, user)
+        show_memo = True
+
+        # Get memo text
+        memo = Memo.objects.get_memo_content(current_user, user)
+
+        # Redirect to view own profile
+        if current_user.id == user.id:
+            return HttpResponseRedirect(reverse('account:view'))
 
     context = {
         'user': user,
@@ -87,7 +96,8 @@ def view_user(request, username):
         'profile_incomplete': profile_incomplete,
         'profile_suspended': profile_suspended,
         'can_contact': can_contact,
-        'show_notes': show_notes
+        'show_memo': show_memo,
+        'memo': memo
     }
 
     return render(request, 'account/view_user.html', context)

@@ -130,7 +130,7 @@ class Event(models.Model):
     @property
     def endDateTime(self):
         return self.startDateTime + timedelta(
-                seconds=self.maxParticipantsInGroup * (self.dateDuration + self.breakDuration))
+            seconds=self.maxParticipantsInGroup * (self.dateDuration + self.breakDuration))
 
     objects = EventManager()
 
@@ -363,6 +363,17 @@ class PickManager(models.Manager):
 
         return self.pick(user, picked, event, response)
 
+    def is_a_match(self, user, picked):
+        # Check if the pick exists in both directions
+        for users_pick in self.filter(picker=user, picked=picked, response=Pick.YES):
+            try:
+                self.get(picker=picked, picked=user, event=users_pick.event, response=Pick.YES)
+                return True
+            except Pick.DoesNotExist:
+                continue
+
+        return False
+
 
 class Pick(models.Model):
     # Choice
@@ -415,6 +426,13 @@ class MemoManager(models.Manager):
         about = get_user_model().objects.get(id=about_id)
 
         return self.create_or_update_memo(owner, about, content)
+
+    def get_memo_content(self, owner, about):
+        try:
+            m = self.get(owner=owner, about=about)
+            return m.content
+        except Memo.DoesNotExist:
+            return None
 
 
 class Memo(models.Model):

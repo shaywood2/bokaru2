@@ -58,11 +58,15 @@
                         </div>
                         {% endif %}
 
-                        <!-- Notes -->
-                        {% if show_notes %}
-                        <h4 class="g-mt-15">Your Notes</h4>
+                        <!-- Memo -->
+                        {% if show_memo %}
+                        <h4 class="g-mt-15">Your Memo</h4>
                         <p><i>This section is only visible to you.</i></p>
-                        <textarea>Note here 123</textarea>
+                        <div class="form-group g-mb-20">
+                            <textarea id="memo" class="form-control form-control-md rounded-0" rows="5"
+                                      placeholder="Memo">{{memo}}</textarea>
+                            <small id="saving">Saving...</small>
+                        </div>
                         {% endif %}
                     </div>
                     {% endif %}
@@ -158,9 +162,36 @@
         </div>
     </div>
 </section>
+
+{% csrf_token %}
+
 <!-- End User Block -->
 {% endblock %}
 
 {% block javascript %}
+
+<script>
+$(document).on('ready', function () {
+    let csrftoken = $('[name=csrfmiddlewaretoken]').val()
+    let memo = $('#memo')
+    let saving = $('#saving')
+    saving.hide()
+
+    // Save notes on edit
+    memo.blur(function() {
+        let text = memo.val()
+        $.ajaxSetup({
+            headers: {
+                'X-CSRFToken': csrftoken
+            }
+        })
+        saving.show()
+        $.post('/memo/about/{{user.id}}/', text, function() {
+            saving.hide()
+        });
+    })
+})
+
+</script>
 
 {% endblock %}

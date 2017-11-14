@@ -71,9 +71,9 @@ class AccountForm(ModelForm):
     }
 
     contactInfo = forms.CharField(max_length=150, required=False, widget=forms.Textarea(
-        attrs={'class': 'form-control form-control-md u-textarea-expandable rounded-0'}))
+        attrs={'class': 'form-control form-control-md rounded-0'}))
     summary = forms.CharField(max_length=2000, required=False, widget=forms.Textarea(
-        attrs={'class': 'form-control form-control-md u-textarea-expandable rounded-0'}))
+        attrs={'class': 'form-control form-control-md rounded-0'}))
     # Additional location fields
     cityName = forms.CharField(widget=forms.HiddenInput(), required=False)
     cityLat = forms.FloatField(widget=forms.HiddenInput(), required=False)
