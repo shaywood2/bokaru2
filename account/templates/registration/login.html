@@ -1,11 +1,10 @@
 {% extends 'web/base_auth.html' %}
 {% load staticfiles %}
-{% load filters %}
+{% load widget_tweaks %}
 
 {% block title %}Bokaru | Log In{% endblock %}
 
 {% block content %}
-
 
 <form class="g-brd-around g-brd-gray-light-v4 g-pa-30 g-mb-30" method="post">
     <h2 class="h4 g-font-weight-700 mb-4">Log In</h2>
@@ -30,10 +29,10 @@
     <!-- username -->
     <div class="form-group g-mb-20 {% if form.username.errors %}u-has-error-v1{% endif %}">
         <div class="input-group g-brd-primary--focus">
-            <div class="input-group-addon d-flex align-items-center g-color-gray-light-v1 rounded-5">
+            <div class="input-group-addon d-flex align-items-center g-color-gray-light-v1 rounded-0">
                 <i class="icon-user"></i>
             </div>
-            {{ form.username|add_attrs:"class=form-control form-control-md border-left-0 rounded-5 pl-0&placeholder=Username" }}
+            {% render_field form.username class="form-control form-control-md border-left-0 rounded-0 pl-0" placeholder="Username" %}
         </div>
         {% if form.username.errors %}
         <small class="form-control-feedback">{{form.username.errors}}</small>
@@ -43,10 +42,10 @@
     <!-- password -->
     <div class="form-group g-mb-20 {% if form.password.errors %}u-has-error-v1{% endif %}">
         <div class="input-group g-brd-primary--focus">
-            <div class="input-group-addon d-flex align-items-center g-bg-white g-color-gray-light-v1 rounded-5">
+            <div class="input-group-addon d-flex align-items-center g-bg-white g-color-gray-light-v1 rounded-0">
                 <i class="icon-lock"></i>
             </div>
-            {{ form.password|add_attrs:"class=form-control form-control-md border-left-0 rounded-5 pl-0&placeholder=Password" }}
+            {% render_field form.password class="form-control form-control-md border-left-0 rounded-0 pl-0" placeholder="Password" %}
         </div>
         {% if form.password.errors %}
         <small class="form-control-feedback">{{form.password.errors}}</small>
@@ -55,9 +54,9 @@
 
     <p class="pull-right"><a href="{% url 'auth_password_reset' %}">Forgot password?</a></p>
 
-    <button type="submit" class="btn btn-lg btn-block u-btn-primary g-mb-10">Sign In</button>
+    <button type="submit" class="btn btn-lg btn-block u-btn-primary g-mb-10 rounded-0">Sign In</button>
 
-    <a href="{% url 'auth_register' %}" class="btn btn-lg btn-block u-btn-primary g-mb-10">Register</a>
+    <a href="{% url 'auth_register' %}" class="btn btn-lg btn-block u-btn-primary g-mb-10 rounded-0">Register</a>
 </form>
 
 {% endblock %}

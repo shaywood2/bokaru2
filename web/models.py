@@ -430,9 +430,9 @@ class MemoManager(models.Manager):
     def get_memo_content(self, owner, about):
         try:
             m = self.get(owner=owner, about=about)
-            return m.content
+            return str(m.content)
         except Memo.DoesNotExist:
-            return None
+            return ''
 
 
 class Memo(models.Model):

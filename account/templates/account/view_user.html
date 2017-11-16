@@ -54,7 +54,7 @@
                             <h4 class="g-mb-20">You are a match!</h4>
                             <p>Please do not forget to be excellent to each other!</p>
                             <p>Email: <a href="mailto:{{user.email}}" target="_blank">{{user.email}}</a></p>
-                            <p>{{ account.contactInfo }}</p>
+                            {{ account.contactInfo | linebreaks }}
                         </div>
                         {% endif %}
 
@@ -79,7 +79,7 @@
                         <hr class="g-brd-gray-light-v4 g-my-20">
                         <!-- Summary -->
                         <h3>Self-summary</h3>
-                        <p class="lead g-line-height-1_8">{{ account.summary }}</p>
+                        <span class="lead g-line-height-1_8">{{ account.summary | linebreaks }}</span>
                     </div>
                 </div>
                 {% endif %}

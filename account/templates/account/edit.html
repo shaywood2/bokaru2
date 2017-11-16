@@ -1,7 +1,7 @@
 {% extends 'web/base_nav.html' %}
 
 {% load staticfiles %}
-{% load filters %}
+{% load widget_tweaks %}
 
 {% block title %}Bokaru | Edit profile{% endblock %}
 
@@ -36,7 +36,7 @@
                     <p></p>
                     <div class="form-group g-mb-20 {% if form.contactInfo.errors %}u-has-error-v1{% endif %}">
                         <div class="u-input-group-v2">
-                            {{ form.contactInfo }}
+                            {% render_field form.contactInfo class="form-control form-control-md rounded-0" %}
                         </div>
                         {% if form.contactInfo.errors %}
                         <small class="form-control-feedback">{{form.contactInfo.errors}}</small>
@@ -72,7 +72,7 @@
                     <!-- Name -->
                     <div class="form-group g-mb-20 {% if form.fullName.errors %}u-has-error-v1{% endif %}">
                         <div class="u-input-group-v2">
-                            {{ form.fullName }}
+                            {% render_field form.fullName class="form-control rounded-0 u-form-control0" %}
                             <label for="id_fullName">Full name</label>
                         </div>
                         {% if form.fullName.errors %}
@@ -83,7 +83,7 @@
                     <!-- Birth Date -->
                     <div class="form-group g-mb-20 {% if form.birthDate.errors %}u-has-error-v1{% endif %}">
                         <div class="input-group u-input-group-v2 g-brd-primary--focus">
-                            {{ form.birthDate }}
+                            {% render_field form.birthDate class="form-control form-control-md u-datepicker-v1 g-brd-right-none rounded-0" %}
                             <label for="id_birthDate" style="z-index: 2;">Birth date</label>
                             <div class="input-group-addon d-flex align-items-center g-bg-white g-color-gray-dark-v5 rounded-0">
                                 <i class="icon-calendar"></i>
@@ -97,7 +97,7 @@
                     <!-- Location -->
                     <div class="form-group g-mb-20 {% if form.locationName.errors %}u-has-error-v1{% endif %}">
                         <div class="u-input-group-v2">
-                            {{ form.locationName }}
+                            {% render_field form.locationName class="form-control rounded-0 u-form-control0" %}
                             <label for="id_locationName">Location</label>
                         </div>
                         {% if form.locationName.errors %}
@@ -113,15 +113,14 @@
                         </div>
                         <div class="col-lg-6">
                             <div class="form-group g-mb-20 {% if form.sexualOrientation.errors %}u-has-error-v1{% endif %}">
-                                {{ form.sexualOrientation }}
+                                {% render_field form.sexualOrientation class="form-control rounded-0 u-form-control0 u-select-v1" %}
                                 {% if form.sexualOrientation.errors %}
                                 <small class="form-control-feedback">{{form.sexualOrientation.errors}}</small>
                                 {% endif %}
                             </div>
-                            <div class="form-group g-mb-20 {% if form.sexualOrientationOther.errors %}u-has-error-v1{% endif %}"
-                                 id="sexualOrientationOtherGroup">
+                            <div class="form-group g-mb-20 {% if form.sexualOrientationOther.errors %}u-has-error-v1{% endif %}" id="sexualOrientationOtherGroup">
                                 <div class="u-input-group-v2">
-                                    {{ form.sexualOrientationOther }}
+                                    {% render_field form.sexualOrientationOther class="form-control rounded-0 u-form-control0" %}
                                     <label for="id_sexualOrientationOther">Other sexual orientation</label>
                                 </div>
                                 {% if form.sexualOrientationOther.errors %}
@@ -131,15 +130,14 @@
                         </div>
                         <div class="col-lg-6">
                             <div class="form-group g-mb-20 {% if form.sexualIdentity.errors %}u-has-error-v1{% endif %}">
-                                {{ form.sexualIdentity }}
+                                {% render_field form.sexualIdentity class="form-control rounded-0 u-form-control0 u-select-v1" %}
                                 {% if form.sexualIdentity.errors %}
                                 <small class="form-control-feedback">{{form.sexualIdentity.errors}}</small>
                                 {% endif %}
                             </div>
-                            <div class="form-group g-mb-20 {% if form.sexualIdentityOther.errors %}u-has-error-v1{% endif %}"
-                                 id="sexualIdentityOtherGroup">
+                            <div class="form-group g-mb-20 {% if form.sexualIdentityOther.errors %}u-has-error-v1{% endif %}" id="sexualIdentityOtherGroup">
                                 <div class="u-input-group-v2">
-                                    {{ form.sexualIdentityOther }}
+                                    {% render_field form.sexualIdentityOther class="form-control rounded-0 u-form-control0" %}
                                     <label for="id_sexualIdentityOther">Other sexual identity</label>
                                 </div>
                                 {% if form.sexualIdentityOther.errors %}
@@ -154,7 +152,7 @@
                         <div class="col-lg-6">
                             <h4>Relationship Status</h4>
                             <div class="form-group g-mb-20 {% if form.relationshipStatus.errors %}u-has-error-v1{% endif %}">
-                                {{ form.relationshipStatus }}
+                                {% render_field form.relationshipStatus class="form-control rounded-0 u-form-control0 u-select-v1" %}
                                 {% if form.relationshipStatus.errors %}
                                 <small class="form-control-feedback">{{form.relationshipStatus.errors}}</small>
                                 {% endif %}
@@ -164,7 +162,7 @@
                         <div class="col-lg-6">
                             <h4>Relationship Type</h4>
                             <div class="form-group g-mb-20 {% if form.relationshipType.errors %}u-has-error-v1{% endif %}">
-                                {{ form.relationshipType }}
+                                {% render_field form.relationshipType class="form-control rounded-0 u-form-control0 u-select-v1" %}
                                 {% if form.relationshipType.errors %}
                                 <small class="form-control-feedback">{{form.relationshipType.errors}}</small>
                                 {% endif %}
@@ -178,7 +176,7 @@
                             <h4>Height</h4>
                             <div class="form-group g-mb-20 {% if form.height.errors %}u-has-error-v1{% endif %}">
                                 <div class="input-group g-brd-primary--focus">
-                                    {{ form.height }}
+                                    {% render_field form.height class="form-control rounded-0 u-form-control0" %}
                                     <div class="input-group-addon d-flex align-items-center g-bg-white g-color-gray-dark-v5 rounded-0">
                                         cm
                                     </div>
@@ -192,8 +190,7 @@
                         <div class="col-lg-3">
                             <div class="form-group g-mt-10">
                                 <div class="input-group g-brd-primary--focus">
-                                    <input type="number" class="form-control rounded-0 u-form-control0"
-                                           id="id_height_ft" min="0">
+                                    <input type="number" class="form-control rounded-0 u-form-control0" id="id_height_ft" min="0">
                                     <div class="input-group-addon d-flex align-items-center g-bg-white g-color-gray-dark-v5 rounded-0">
                                         ft
                                     </div>
@@ -201,8 +198,7 @@
                             </div>
                             <div class="form-group">
                                 <div class="input-group g-brd-primary--focus">
-                                    <input type="number" class="form-control rounded-0 u-form-control0"
-                                           id="id_height_in" min="0" max="11">
+                                    <input type="number" class="form-control rounded-0 u-form-control0" id="id_height_in" min="0" max="11">
                                     <div class="input-group-addon d-flex align-items-center g-bg-white g-color-gray-dark-v5 rounded-0">
                                         in
                                     </div>
@@ -213,7 +209,7 @@
                         <div class="col-lg-6">
                             <h4>Body Type</h4>
                             <div class="form-group g-mb-20 {% if form.bodyType.errors %}u-has-error-v1{% endif %}">
-                                {{ form.bodyType }}
+                                {% render_field form.bodyType class="form-control rounded-0 u-form-control0 u-select-v1" %}
                                 {% if form.bodyType.errors %}
                                 <small class="form-control-feedback">{{form.bodyType.errors}}</small>
                                 {% endif %}
@@ -340,7 +336,7 @@
                         <div class="col-lg-6">
                             <h4>Education</h4>
                             <div class="form-group g-mb-20 {% if form.education.errors %}u-has-error-v1{% endif %}">
-                                {{ form.education }}
+                                {% render_field form.education class="form-control rounded-0 u-form-control0 u-select-v1" %}
                                 {% if form.education.errors %}
                                 <small class="form-control-feedback">{{form.education.errors}}</small>
                                 {% endif %}
@@ -351,7 +347,7 @@
                         <div class="col-lg-6">
                             <h4>Religion</h4>
                             <div class="form-group g-mb-20 {% if form.religion.errors %}u-has-error-v1{% endif %}">
-                                {{ form.religion }}
+                                {% render_field form.religion class="form-control rounded-0 u-form-control0 u-select-v1" %}
                                 {% if form.religion.errors %}
                                 <small class="form-control-feedback">{{form.religion.errors}}</small>
                                 {% endif %}
@@ -369,7 +365,7 @@
                         <div class="col-lg-4">
                             <h4>Smoking</h4>
                             <div class="form-group g-mb-20 {% if form.viceSmoking.errors %}u-has-error-v1{% endif %}">
-                                {{ form.viceSmoking }}
+                                {% render_field form.viceSmoking class="form-control rounded-0 u-form-control0 u-select-v1" %}
                                 {% if form.viceSmoking.errors %}
                                 <small class="form-control-feedback">{{form.viceSmoking.errors}}</small>
                                 {% endif %}
@@ -379,7 +375,7 @@
                         <div class="col-lg-4">
                             <h4>Drinking</h4>
                             <div class="form-group g-mb-20 {% if form.viceDrinking.errors %}u-has-error-v1{% endif %}">
-                                {{ form.viceDrinking }}
+                                {% render_field form.viceDrinking class="form-control rounded-0 u-form-control0 u-select-v1" %}
                                 {% if form.viceDrinking.errors %}
                                 <small class="form-control-feedback">{{form.viceDrinking.errors}}</small>
                                 {% endif %}
@@ -389,7 +385,7 @@
                         <div class="col-lg-4">
                             <h4>Drugs</h4>
                             <div class="form-group g-mb-20 {% if form.viceDrugs.errors %}u-has-error-v1{% endif %}">
-                                {{ form.viceDrugs }}
+                                {% render_field form.viceDrugs class="form-control rounded-0 u-form-control0 u-select-v1" %}
                                 {% if form.viceDrugs.errors %}
                                 <small class="form-control-feedback">{{form.viceDrugs.errors}}</small>
                                 {% endif %}
@@ -402,7 +398,7 @@
                         <div class="col-lg-4">
                             <h4>Diet</h4>
                             <div class="form-group g-mb-20 {% if form.diet.errors %}u-has-error-v1{% endif %}">
-                                {{ form.diet }}
+                                {% render_field form.diet class="form-control rounded-0 u-form-control0 u-select-v1" %}
                                 {% if form.diet.errors %}
                                 <small class="form-control-feedback">{{form.diet.errors}}</small>
                                 {% endif %}
@@ -412,7 +408,7 @@
                         <div class="col-lg-4">
                             <h4>Kids</h4>
                             <div class="form-group g-mb-20 {% if form.kidsHave.errors %}u-has-error-v1{% endif %}">
-                                {{ form.kidsHave }}
+                                {% render_field form.kidsHave class="form-control rounded-0 u-form-control0 u-select-v1" %}
                                 {% if form.kidsHave.errors %}
                                 <small class="form-control-feedback">{{form.kidsHave.errors}}</small>
                                 {% endif %}
@@ -421,7 +417,7 @@
                         <div class="col-lg-4">
                             <h4>&nbsp;</h4>
                             <div class="form-group g-mb-20 {% if form.kidsWant.errors %}u-has-error-v1{% endif %}">
-                                {{ form.kidsWant }}
+                                {% render_field form.kidsWant class="form-control rounded-0 u-form-control0 u-select-v1" %}
                                 {% if form.kidsWant.errors %}
                                 <small class="form-control-feedback">{{form.kidsWant.errors}}</small>
                                 {% endif %}
@@ -455,7 +451,7 @@
                     <p></p>
                     <div class="form-group g-mb-20 {% if form.summary.errors %}u-has-error-v1{% endif %}">
                         <div class="u-input-group-v2">
-                            {{ form.summary }}
+                            {% render_field form.summary class="form-control form-control-md rounded-0" %}
                         </div>
                         {% if form.summary.errors %}
                         <small class="form-control-feedback">{{form.summary.errors}}</small>
@@ -488,7 +484,7 @@
                             <!-- Looking for age min -->
                             <div class="form-group g-mb-20 {% if form.lookingForAgeMin.errors %}u-has-error-v1{% endif %}">
                                 <div class="input-group g-brd-primary--focus">
-                                    {{ form.lookingForAgeMin }}
+                                    {% render_field form.lookingForAgeMin class="form-control rounded-0 u-form-control0" %}
                                 </div>
                                 {% if form.lookingForAgeMin.errors %}
                                 <small class="form-control-feedback">{{form.lookingForAgeMin.errors}}</small>
@@ -499,7 +495,7 @@
                             <!-- Looking for age max -->
                             <div class="form-group g-mb-20 {% if form.lookingForAgeMax.errors %}u-has-error-v1{% endif %}">
                                 <div class="input-group g-brd-primary--focus">
-                                    {{ form.lookingForAgeMax }}
+                                    {% render_field form.lookingForAgeMax class="form-control rounded-0 u-form-control0" %}
                                 </div>
                                 {% if form.lookingForAgeMax.errors %}
                                 <small class="form-control-feedback">{{form.lookingForAgeMax.errors}}</small>

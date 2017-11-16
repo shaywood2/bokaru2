@@ -29,7 +29,8 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'imagekit'
+    'imagekit',
+    'widget_tweaks'
 ]
 
 MIDDLEWARE_CLASSES = [
@@ -67,7 +68,6 @@ WSGI_APPLICATION = 'bokaru.wsgi.application'
 
 # Password validation
 # https://docs.djangoproject.com/en/1.10/topics/auth/passwords/#module-django.contrib.auth.password_validation
-
 AUTH_PASSWORD_VALIDATORS = [
     {
         'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',
@@ -83,8 +83,14 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
-# TODO: switch to the recommended password hash algorithm
 # https://docs.djangoproject.com/en/1.10/topics/auth/passwords/#using-argon2-with-django
+PASSWORD_HASHERS = [
+    'django.contrib.auth.hashers.Argon2PasswordHasher',
+    'django.contrib.auth.hashers.PBKDF2PasswordHasher',
+    'django.contrib.auth.hashers.PBKDF2SHA1PasswordHasher',
+    'django.contrib.auth.hashers.BCryptSHA256PasswordHasher',
+    'django.contrib.auth.hashers.BCryptPasswordHasher',
+]
 
 # Authentication settings
 LOGIN_URL = '/login/'

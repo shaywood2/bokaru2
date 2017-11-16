@@ -32,6 +32,7 @@ class RegistrationView(BaseRegistrationView):
         # Create user preferences object
         pref = UserPreference()
         pref.user = new_user
+        pref.receiveNewsletter = form.cleaned_data.get('newsletter')
         pref.save()
 
 

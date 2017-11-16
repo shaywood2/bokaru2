@@ -334,18 +334,18 @@ class UserPreference(models.Model):
 
     user = models.ForeignKey(settings.AUTH_USER_MODEL)
     # Event preferences
-    ageMin = models.PositiveSmallIntegerField(validators=[MinValueValidator(18)], blank=True)
-    ageMax = models.PositiveSmallIntegerField(validators=[MinValueValidator(18)], blank=True)
+    ageMin = models.PositiveSmallIntegerField(validators=[MinValueValidator(18)], default=18)
+    ageMax = models.PositiveSmallIntegerField(validators=[MinValueValidator(18)], default=99)
     numGroups = models.PositiveSmallIntegerField(validators=[MinValueValidator(1), MaxValueValidator(2)],
-                                                 choices=Event.NUM_GROUPS, blank=True)
-    eventType = models.PositiveSmallIntegerField(choices=Event.TYPES, blank=True)
-    eventSize = models.PositiveSmallIntegerField(choices=EVENT_SIZES, blank=True)
+                                                 choices=Event.NUM_GROUPS, blank=True, null=True)
+    eventType = models.PositiveSmallIntegerField(choices=Event.TYPES, blank=True, null=True)
+    eventSize = models.PositiveSmallIntegerField(choices=EVENT_SIZES, blank=True, null=True)
 
     # Communication preferences
-    receiveNewsletter = models.BooleanField(default=True)
+    receiveNewsletter = models.BooleanField(default=False)
 
     # Misc preferences
-    units = models.CharField(max_length=3, choices=UNITS, blank=True)
+    units = models.CharField(max_length=3, choices=UNITS, default='km')
 
     # Automatic timestamps
     created = models.DateTimeField(auto_now_add=True)

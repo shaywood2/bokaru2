@@ -1,6 +1,6 @@
 {% extends 'web/base_auth.html' %}
 {% load staticfiles %}
-{% load filters %}
+{% load widget_tweaks %}
 
 {% block title %}Bokaru | Register{% endblock %}
 
@@ -29,10 +29,10 @@
     <!-- username -->
     <div class="form-group g-mb-20 {% if form.username.errors %}u-has-error-v1{% endif %}">
         <div class="input-group g-brd-primary--focus">
-            <div class="input-group-addon d-flex align-items-center g-color-gray-light-v1 rounded-5">
+            <div class="input-group-addon d-flex align-items-center g-color-gray-light-v1 rounded-0">
                 <i class="icon-user"></i>
             </div>
-            {{ form.username|add_attrs:"class=form-control form-control-md border-left-0 rounded-5 pl-0&placeholder=Username" }}
+            {% render_field form.username class="form-control form-control-md border-left-0 rounded-0 pl-0" placeholder="Username" %}
         </div>
         {% if form.username.errors %}
         <small class="form-control-feedback">{{form.username.errors}}</small>
@@ -42,10 +42,10 @@
     <!-- name -->
     <div class="form-group g-mb-20 {% if form.fullName.errors %}u-has-error-v1{% endif %}">
         <div class="input-group g-brd-primary--focus">
-            <div class="input-group-addon d-flex align-items-center g-color-gray-light-v1 rounded-5">
+            <div class="input-group-addon d-flex align-items-center g-color-gray-light-v1 rounded-0">
                 <i class="icon-pencil"></i>
             </div>
-            {{ form.fullName|add_attrs:"class=form-control form-control-md border-left-0 rounded-5 pl-0&placeholder=Full Name" }}
+            {% render_field form.fullName class="form-control form-control-md border-left-0 rounded-0 pl-0" placeholder="Full Name" %}
         </div>
         {% if form.fullName.errors %}
         <small class="form-control-feedback">{{form.fullName.errors}}</small>
@@ -55,10 +55,10 @@
     <!-- email -->
     <div class="form-group g-mb-20 {% if form.email.errors %}u-has-error-v1{% endif %}">
         <div class="input-group g-brd-primary--focus">
-            <div class="input-group-addon d-flex align-items-center g-color-gray-light-v1 rounded-5">
+            <div class="input-group-addon d-flex align-items-center g-color-gray-light-v1 rounded-0">
                 <i class="icon-envelope-open"></i>
             </div>
-            {{ form.email|add_attrs:"class=form-control form-control-md border-left-0 rounded-5 pl-0&placeholder=Email" }}
+            {% render_field form.email class="form-control form-control-md border-left-0 rounded-0 pl-0" placeholder="Email" %}
         </div>
         {% if form.email.errors %}
         <small class="form-control-feedback">{{form.email.errors}}</small>
@@ -68,10 +68,10 @@
     <!-- password 1 -->
     <div class="form-group g-mb-20 {% if form.password1.errors %}u-has-error-v1{% endif %}">
         <div class="input-group g-brd-primary--focus">
-            <div class="input-group-addon d-flex align-items-center g-color-gray-light-v1 rounded-5">
+            <div class="input-group-addon d-flex align-items-center g-color-gray-light-v1 rounded-0">
                 <i class="icon-lock"></i>
             </div>
-            {{ form.password1|add_attrs:"class=form-control form-control-md border-left-0 rounded-5 pl-0&placeholder=Password" }}
+            {% render_field form.password1 class="form-control form-control-md border-left-0 rounded-0 pl-0" placeholder="Password" %}
         </div>
         {% if form.password1.errors %}
         <small class="form-control-feedback">{{form.password1.errors}}</small>
@@ -81,10 +81,10 @@
     <!-- password 2 -->
     <div class="form-group g-mb-20 {% if form.password2.errors %}u-has-error-v1{% endif %}">
         <div class="input-group g-brd-primary--focus">
-            <div class="input-group-addon d-flex align-items-center g-color-gray-light-v1 rounded-5">
+            <div class="input-group-addon d-flex align-items-center g-color-gray-light-v1 rounded-0">
                 <i class="icon-lock"></i>
             </div>
-            {{ form.password2|add_attrs:"class=form-control form-control-md border-left-0 rounded-5 pl-0&placeholder=Repeat Password" }}
+            {% render_field form.password2 class="form-control form-control-md border-left-0 rounded-0 pl-0" placeholder="Repeat Password" %}
         </div>
         {% if form.password2.errors %}
         <small class="form-control-feedback">{{form.password2.errors}}</small>
@@ -96,7 +96,7 @@
         <div class="col-md-6">
             <div class="form-group g-mb-10 {% if form.terms.errors %}u-has-error-v1{% endif %}">
                 <label class="u-check g-pl-25">
-                    {{form.terms|add_attrs:"class=g-hidden-xs-up g-pos-abs g-top-0 g-left-0&placeholder="}}
+                    {% render_field form.terms class="g-hidden-xs-up g-pos-abs g-top-0 g-left-0" %}
                     <div class="u-check-icon-checkbox-v6 g-absolute-centered--y g-left-0">
                         <i></i>
                     </div>
@@ -110,7 +110,7 @@
 
             <div class="form-group g-mb-10">
                 <label class="u-check g-pl-25">
-                    {{form.newsletter|add_attrs:"class=g-hidden-xs-up g-pos-abs g-top-0 g-left-0&placeholder="}}
+                    {% render_field form.newsletter class="g-hidden-xs-up g-pos-abs g-top-0 g-left-0" %}
                     <div class="u-check-icon-checkbox-v6 g-absolute-centered--y g-left-0">
                         <i></i>
                     </div>
@@ -120,7 +120,7 @@
         </div>
     </div>
 
-    <button type="submit" class="btn btn-lg btn-block u-btn-primary g-mb-10">Register</button>
+    <button type="submit" class="btn btn-lg btn-block u-btn-primary g-mb-10 rounded-0">Register</button>
 </form>
 
 {% endblock %}

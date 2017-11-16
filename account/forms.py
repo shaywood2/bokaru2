@@ -22,19 +22,6 @@ class RegistrationForm(RegistrationFormUniqueEmail):
     terms = forms.BooleanField(required=False)
     newsletter = forms.BooleanField(required=False)
 
-    def __init__(self, *args, **kwargs):
-        super(RegistrationFormUniqueEmail, self).__init__(*args, **kwargs)
-        if 'username' in self.fields:
-            self.fields['username'].widget.attrs.update({'placeholder': _(u'Your username'), 'autofocus': ''})
-        if 'fullName' in self.fields:
-            self.fields['fullName'].widget.attrs.update({'placeholder': _(u'Your name')})
-        if 'email' in self.fields:
-            self.fields['email'].widget.attrs.update({'placeholder': _(u'Your email')})
-        if 'password1' in self.fields:
-            self.fields['password1'].widget.attrs.update({'placeholder': _(u'Enter password')})
-        if 'password2' in self.fields:
-            self.fields['password2'].widget.attrs.update({'placeholder': _(u'Confirm password')})
-
     def clean_password2(self):
         # Passwords must match
         password1 = self.cleaned_data.get('password1')
@@ -70,10 +57,17 @@ class AccountForm(ModelForm):
         'under_18': _('You must be older than 18 to register.')
     }
 
-    contactInfo = forms.CharField(max_length=150, required=False, widget=forms.Textarea(
-        attrs={'class': 'form-control form-control-md rounded-0'}))
-    summary = forms.CharField(max_length=2000, required=False, widget=forms.Textarea(
-        attrs={'class': 'form-control form-control-md rounded-0'}))
+    # Change widget type to TextArea
+    contactInfo = forms.CharField(max_length=150, required=False, widget=forms.Textarea())
+    summary = forms.CharField(max_length=2000, required=False, widget=forms.Textarea())
+
+    # Hide list fields
+    ethnicityList = forms.CharField(widget=forms.HiddenInput(), required=False)
+    languageList = forms.CharField(widget=forms.HiddenInput(), required=False)
+    petList = forms.CharField(widget=forms.HiddenInput(), required=False)
+    lookingForGenderList = forms.CharField(widget=forms.HiddenInput(), required=False)
+    lookingForConnectionsList = forms.CharField(widget=forms.HiddenInput(), required=False)
+
     # Additional location fields
     cityName = forms.CharField(widget=forms.HiddenInput(), required=False)
     cityLat = forms.FloatField(widget=forms.HiddenInput(), required=False)
@@ -86,42 +80,6 @@ class AccountForm(ModelForm):
         self.fields['birthDate'].required = True
         self.fields['lookingForAgeMin'].required = True
         self.fields['lookingForAgeMax'].required = True
-
-        # Add styles
-        self.fields['fullName'].widget.attrs.update({'class': 'form-control rounded-0 u-form-control0'})
-        self.fields['locationName'].widget.attrs.update({'class': 'form-control rounded-0 u-form-control0'})
-        self.fields['sexualIdentity'].widget.attrs.update(
-            {'class': 'form-control rounded-0 u-form-control0 u-select-v1'})
-        self.fields['sexualIdentityOther'].widget.attrs.update({'class': 'form-control rounded-0 u-form-control0'})
-        self.fields['sexualOrientation'].widget.attrs.update(
-            {'class': 'form-control rounded-0 u-form-control0 u-select-v1'})
-        self.fields['sexualOrientationOther'].widget.attrs.update({'class': 'form-control rounded-0 u-form-control0'})
-        self.fields['birthDate'].widget.attrs.update(
-            {'class': 'form-control form-control-md u-datepicker-v1 g-brd-right-none rounded-0'})
-        self.fields['relationshipStatus'].widget.attrs.update(
-            {'class': 'form-control rounded-0 u-form-control0 u-select-v1'})
-        self.fields['relationshipType'].widget.attrs.update(
-            {'class': 'form-control rounded-0 u-form-control0 u-select-v1'})
-        self.fields['height'].widget.attrs.update({'class': 'form-control rounded-0 u-form-control0'})
-        self.fields['bodyType'].widget.attrs.update({'class': 'form-control rounded-0 u-form-control0 u-select-v1'})
-
-        self.fields['ethnicityList'].widget.attrs.update({'style': 'display: none'})
-        self.fields['languageList'].widget.attrs.update({'style': 'display: none'})
-        self.fields['education'].widget.attrs.update({'class': 'form-control rounded-0 u-form-control0 u-select-v1'})
-        self.fields['religion'].widget.attrs.update({'class': 'form-control rounded-0 u-form-control0 u-select-v1'})
-
-        self.fields['viceSmoking'].widget.attrs.update({'class': 'form-control rounded-0 u-form-control0 u-select-v1'})
-        self.fields['viceDrinking'].widget.attrs.update({'class': 'form-control rounded-0 u-form-control0 u-select-v1'})
-        self.fields['viceDrugs'].widget.attrs.update({'class': 'form-control rounded-0 u-form-control0 u-select-v1'})
-        self.fields['diet'].widget.attrs.update({'class': 'form-control rounded-0 u-form-control0 u-select-v1'})
-        self.fields['kidsHave'].widget.attrs.update({'class': 'form-control rounded-0 u-form-control0 u-select-v1'})
-        self.fields['kidsWant'].widget.attrs.update({'class': 'form-control rounded-0 u-form-control0 u-select-v1'})
-        self.fields['petList'].widget.attrs.update({'style': 'display: none'})
-
-        self.fields['lookingForGenderList'].widget.attrs.update({'style': 'display: none'})
-        self.fields['lookingForAgeMin'].widget.attrs.update({'class': 'form-control rounded-0 u-form-control0'})
-        self.fields['lookingForAgeMax'].widget.attrs.update({'class': 'form-control rounded-0 u-form-control0'})
-        self.fields['lookingForConnectionsList'].widget.attrs.update({'style': 'display: none'})
 
     class Meta:
         model = Account

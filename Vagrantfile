@@ -80,6 +80,7 @@ Vagrant.configure(2) do |config|
     sudo apt-get install -y libjpeg8
     sudo apt-get install -y libjpeg-dev
     sudo apt-get install -y zlib1g
+    sudo apt-get install -y build-essential libssl-dev libffi-dev python-dev
 
     # Install Python dependencies
     sudo pip3 install -r /home/vagrant/bokaru/requirements/common.txt
