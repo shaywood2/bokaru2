@@ -1,3 +1,5 @@
+import dj_database_url
+
 from bokaru.settings.common import *
 
 # Secret key
@@ -5,7 +7,7 @@ SECRET_KEY = os.environ['DJANGO_SECRET_KEY']
 
 INSTALLED_APPS += ('storages',)
 
-# Set up S3 bucket as storage
+# S3 bucket as storage
 AWS_ACCESS_KEY_ID = os.environ['AWS_ACCESS_KEY_ID']
 AWS_SECRET_ACCESS_KEY = os.environ['AWS_SECRET_ACCESS_KEY']
 AWS_STORAGE_BUCKET_NAME = 'bokaru-files'
@@ -23,6 +25,66 @@ STATICFILES_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'
 MEDIA_URL = 'https://%s/%s/' % (AWS_S3_CUSTOM_DOMAIN, AWS_MEDIA_LOCATION)
 DEFAULT_FILE_STORAGE = 'bokaru.storage_backends.MediaStorage'
 
-# Set up ElastiCache
-CACHES['default']['BACKEND'] = 'django_elasticache.memcached.ElastiCache'
-CACHES['default']['LOCATION'] = os.environ['CACHE_URL']
+# Database
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+    }
+}
+# Update database configuration with $DATABASE_URL
+db_from_env = dj_database_url.config(conn_max_age=500)
+DATABASES['default'].update(db_from_env)
+DATABASES['default']['ENGINE'] = 'django.contrib.gis.db.backends.postgis'
+
+# ElastiCache
+CACHES = {
+    'default': {
+        'BACKEND': 'django_elasticache.memcached.ElastiCache',
+        'LOCATION': os.environ['CACHE_URL']
+    }
+}
+
+# Session storage
+SESSION_ENGINE = 'django.contrib.sessions.backends.cached_db'
+
+# Mailgun backend
+EMAIL_BACKEND = 'django_mailgun.MailgunBackend'
+MAILGUN_ACCESS_KEY = os.environ['MG_KEY']
+MAILGUN_SERVER_NAME = os.environ['MG_SERVER']
+DEFAULT_FROM_EMAIL = 'Bokaru <admin@bokaru.com>'
+SERVER_EMAIL = 'server@bokaru.com'
+
+DEBUG = False
+
+# Logging
+# Will output to console
+# TODO: set up proper logging
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'handlers': {
+        'console': {
+            'class': 'logging.StreamHandler',
+        },
+    },
+    'loggers': {
+        'django': {
+            'handlers': ['console'],
+            'level': os.getenv('DJANGO_LOG_LEVEL', 'INFO'),
+        },
+    },
+}
+
+# Security
+ALLOWED_HOSTS = ['bokaru.com', '*.bokaru.com', 'localhost']
+# TODO: set to 1 year (31536000)
+# SECURE_HSTS_SECONDS = 3600
+# SECURE_HSTS_PRELOAD = True
+# SECURE_HSTS_INCLUDE_SUBDOMAINS = True
+SECURE_CONTENT_TYPE_NOSNIFF = True
+SECURE_BROWSER_XSS_FILTER = True
+# SECURE_SSL_REDIRECT = True
+# SESSION_COOKIE_SECURE = True
+# CSRF_COOKIE_SECURE = True
+X_FRAME_OPTIONS = 'DENY'

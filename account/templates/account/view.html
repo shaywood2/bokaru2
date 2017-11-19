@@ -1,79 +1,297 @@
-{% extends 'web/base.html' %}
-
+{% extends 'web/base_nav.html' %}
 
 {% load staticfiles %}
 
+{% block title %}Bokaru | {{ user.username }}{% endblock %}
+
+{% block nav_location %}nav_profile{% endblock %}
+
 {% block content %}
 
-<!--=== Profile ===-->
-<div class="container content profile">
-    <div class="row">
-        <!-- Profile Content -->
-        <div class="col-md-12">
-            <div class="profile-body">
-                <div class="profile-bio">
-                    <div class="row">
-                        <div class="col-md-5">
-                            {% ifequal account.photo '' %}
-                            <img src="{% static 'account/images/default-avatar.png' %}" alt="Default avatar" id="default_avatar"/>
-                            {% else %}
-                            <img src="{{ account.photo.url }}" alt="A picture of Me" id="avatar" class="img-responsive md-margin-bottom-10"/>
-                            {% endifequal %}
-                            </span>
-                        </div>
-                        <div class="col-md-7">
-                            <h2>{{ account.fullName }}</h2>
+<!-- User Block -->
+<section class="g-mb-100">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8">
+                <div class="row">
+                    <div class="col-lg-6">
+                        <!-- User Image -->
+                        <div class="g-mb-20">
+                            <form id="image_form" method="post" enctype="multipart/form-data"
+                                  action="{% url 'account:update_photo' %}">
+                                {% csrf_token %}
 
-                            <span>
+                                {% if account.photo is None or account.photo.name == '' %}
+                                <img class="img-fluid w-100" src="{% static 'account/images/default-avatar.png' %}"
+                                     alt="Default picture" id="default_avatar"/>
+                                {% else %}
+                                <img class="img-fluid w-100" src="{{ account.photo.url }}" alt="Profile picture"
+                                     id="avatar"/>
+                                {% endif %}
 
-                            <span><strong>Location:</strong> [CITY]</span>
-                            <span><strong>Age:</strong> {{ account.age }} </span>
-                            <span><strong>Gender:</strong> {{ account.gender }} </span>
-                            <span><strong>Height:</strong> {{ account.height }} </span>
-                            <span><strong>Body Type:</strong> {{ account.bodyType }} </span>
-                            <span><strong>Education:</strong> {{ account.education }} </span>
-                            <span><strong>Profession:</strong> [JOB] </span>
-                            <span><strong>Relationship Type:</strong> {{ account.relationshipType }} </span>
-                            <span><strong>Orientation:</strong> {{ account.sexualOrientation }} </span>
-                            <span><strong>Identity:</strong> {{ account.sexualIdentity }} </span>
-                            <span><strong>Ethnicity:</strong> {{ account.ethnicity }} </span>
-                            <span><strong>Religion:</strong> {{ account.religion }} </span>
-                            <span><strong>Languages:</strong> {{ account.languages }} </span>
-                            <span><strong>Kids:</strong> {{ account.kids }} </span>
-                            <span><strong>Vices:</strong> {{ account.vices }} </span>
-                            <span><strong>Diet:</strong> {{ account.diet }} </span>
-                            <hr>
-                            <p>{{ account.summary }}</p>
+                                <!-- errors -->
+                                {% if form.errors %}
+                                <div class="alert fade show g-bg-red-opacity-0_1 g-color-lightred rounded-0"
+                                     role="alert">
+                                    <div class="media">
+                                        <div class="d-flex g-mr-10">
+                                            <i></i>
+                                        </div>
+                                        <div class="media-body">
+                                            <strong>Failed to upload image, please try again.</strong>
+                                        </div>
+                                    </div>
+                                </div>
+                                {% endif %}
+
+                                <div class="form-group mb-0">
+                                    <label class="u-file-attach-v2 g-color-gray-dark-v5 mb-0">
+                                        {{ photo_form.upload_image }}
+                                        <i class="icon-cloud-upload g-font-size-16 g-pos-rel g-top-2 g-mr-5"></i>
+                                        <span class="js-value">Upload new profile picture</span>
+                                    </label>
+                                    {{ photo_form.crop_x }}
+                                    {{ photo_form.crop_y }}
+                                    {{ photo_form.crop_w }}
+                                    {{ photo_form.crop_h }}
+                                </div>
+                            </form>
                         </div>
                     </div>
-                </div><!--/end row-->
+                    {% if profile_incomplete %}
+                    <div class="col-lg-6">
+                        <h2 class="g-font-weight-300 g-mr-10 g-my-100" style="text-align: center;">
+                            Nothing here yet.
+                        </h2>
 
-                <hr>
+                        <!-- Create Button -->
+                        <a class="btn btn-lg btn-block u-btn-primary rounded-0 g-py-12" href="{% url 'account:edit' %}">
+                            <i class="icon-pencil g-pos-rel g-top-1 g-mr-5"></i> Create Profile
+                        </a>
+                    </div>
+                    {% else %}
+                    <div class="col-lg-6">
+                        <!-- Name -->
+                        <h2 class="g-font-weight-300 g-mr-10">{{ account.fullName }}</h2>
 
+                        <!-- Age and location -->
+                        <h4 class="h6 g-font-weight-300 g-mb-10">
+                            {{ account.age }} | {{ account.locationName }}
+                        </h4>
+
+                        <!-- Edit Button -->
+                        <a class="btn btn-lg u-btn-primary rounded-0 g-py-12" href="{% url 'account:edit' %}">
+                            <i class="icon-pencil g-pos-rel g-top-1 g-mr-5"></i> Edit Profile
+                        </a>
+
+                        <!--Contact info-->
+                        <h4 class="g-mt-50">Contact info</h4>
+                        <p><i>This information will be only visible to your matches.</i></p>
+                        <p>{{ user.email }}</p>
+                        {{ account.contactInfo | linebreaks }}
+                    </div>
+                    {% endif %}
+                </div>
+
+                {% if account.summary %}
                 <div class="row">
-                    <h4>This information is only shown to your matches:</h4>
-                    <h5>&nbsp; How matches contact you: {{ account.contactInfo }} </h5>
+                    <div class="col-lg-12">
+                        <hr class="g-brd-gray-light-v4 g-my-20">
+                        <!-- Summary -->
+                        <h3>Self-summary</h3>
+                        <span class="lead g-line-height-1_8">{{ account.summary | linebreaks }}</span>
+                    </div>
+                </div>
+                {% endif %}
+            </div>
 
-                </div><!--/end row-->
+            <div class="col-lg-4">
+                <!-- Basic info -->
+                {% if account.basicInfo %}
+                <div class="u-shadow-v22 g-bg-white rounded g-pa-20 g-mb-30">
+                    <div class="media">
+                        <div class="d-flex align-self-center mr-3">
+                            <span class="u-icon-v3 g-bg-primary g-color-white g-rounded-5">
+                                <i class="icon-heart"></i>
+                            </span>
+                        </div>
+                        <div class="media-body align-self-center">
+                            <p class="mb-0 g-font-weight-600">
+                                {{ account.basicInfo | join:", " }}
+                            </p>
+                        </div>
+                    </div>
+                </div>
+                {% endif %}
 
-                <hr>
+                <!-- Background -->
+                {% if account.background %}
+                <div class="u-shadow-v22 g-bg-white rounded g-pa-20 g-mb-30">
+                    <div class="media">
+                        <div class="d-flex align-self-center mr-3">
+                            <span class="u-icon-v3 g-bg-primary g-color-white g-rounded-5">
+                                <i class="icon-globe"></i>
+                            </span>
+                        </div>
+                        <div class="media-body align-self-center">
+                            <p class="mb-0 g-font-weight-600">
+                                {{ account.background | join:", " }}
+                            </p>
+                        </div>
+                    </div>
+                </div>
+                {% endif %}
 
-                <div class="row">
-                    <small>&nbsp Account Created: {{ account.created }}</small>
-                    <br/>
-                    <small>&nbsp Account Last Created: {{ account.updated }}</small>
-                </div><!--/end row-->
+                <!-- Details -->
+                {% if account.details %}
+                <div class="u-shadow-v22 g-bg-white rounded g-pa-20 g-mb-30">
+                    <div class="media">
+                        <div class="d-flex align-self-center mr-3">
+                            <span class="u-icon-v3 g-bg-primary g-color-white g-rounded-5">
+                                <i class="icon-info"></i>
+                            </span>
+                        </div>
+                        <div class="media-body align-self-center">
+                            <p class="mb-0 g-font-weight-600">
+                                {{ account.details | join:", " }}
+                            </p>
+                        </div>
+                    </div>
+                </div>
+                {% endif %}
 
-                <hr>
-
-                <div class="row" style="text-align: center;">
-                    <a class="btn-u btn-u-lg rounded" href="{% url 'account:edit' %}">Edit Profile</a>
-                </div><!--/end row-->
+                <!-- Looking for -->
+                {% if account.lookingFor %}
+                <div class="u-shadow-v22 g-bg-secondary rounded g-pa-20 g-mb-30">
+                    <div class="media">
+                        <div class="d-flex align-self-center mr-3">
+                            <span class="u-icon-v3 g-bg-primary g-color-white g-rounded-5">
+                                <i class="icon-eyeglass"></i>
+                            </span>
+                        </div>
+                        <div class="media-body align-self-center">
+                            <p class="mb-0 g-font-weight-600">
+                                <strong>Looking for: </strong>{{ account.lookingFor | join:", " }}
+                            </p>
+                        </div>
+                    </div>
+                </div>
+                {% endif %}
             </div>
         </div>
-        <!-- End Profile Content -->
+    </div>
+</section>
+<!-- End User Block -->
+
+<!-- Modal for cropper -->
+<div class="modal fade" id="modalCrop" aria-labelledby="modalLabel" role="dialog" tabindex="-1">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content modal-lg">
+            <div class="modal-header">
+                <button type="button" class="close js-crop-dismiss" data-dismiss="modal"
+                        aria-label="Close">
+                    <span>&times;</span>
+                </button>
+                <h4 class="modal-title" id="modalLabel">Crop the image</h4>
+            </div>
+            <div class="modal-body">
+                <div>
+                    <img src="" id="image" style="max-width: 100%;">
+                </div>
+            </div>
+            <div class="modal-footer">
+                <div class="btn-group pull-left" role="group">
+                    <button type="button" class="btn btn-default js-zoom-in">
+                        <i class="icon-magnifier-add"></i>
+                    </button>
+                    <button type="button" class="btn btn-default js-zoom-out">
+                        <i class="icon-magnifier-remove"></i>
+                    </button>
+                </div>
+                <button type="button" class="btn btn-default js-crop-dismiss" data-dismiss="modal">
+                    Cancel
+                </button>
+                <button type="button" class="btn btn-primary js-crop">Save</button>
+            </div>
+        </div>
     </div>
 </div>
-<!--=== End Profile ===-->
+<!-- End Modal for cropper -->
 {% endblock %}
 
+{% block javascript %}
+<script>
+$(function() {
+
+    /* SCRIPT TO OPEN THE MODAL WITH THE PREVIEW */
+    $("#id_upload_image").change(function() {
+    console.log('id_upload_image');
+        if (this.files && this.files[0]) {
+            var reader = new FileReader();
+            reader.onload = function(e) {
+                $("#image").attr("src", e.target.result);
+                $("#modalCrop").modal("show");
+            }
+            reader.readAsDataURL(this.files[0]);
+        }
+    });
+
+    /* SCRIPTS TO HANDLE THE CROPPER BOX */
+    var image = document.getElementById('image');
+    var cropBoxData;
+    var canvasData;
+    var cropper;
+
+    $("#modalCrop").on("shown.bs.modal", function() {
+        cropper = new Cropper(image, {
+            viewMode: 1,
+            aspectRatio: 1 / 1,
+            minCropBoxWidth: 200,
+            minCropBoxHeight: 200,
+            ready: function() {
+                cropper.setCropBoxData(cropBoxData).setCanvasData(canvasData);
+            }
+        });
+    }).on("hidden.bs.modal", function() {
+        cropBoxData = cropper.getCropBoxData();
+        canvasData = cropper.getCanvasData();
+        cropper.destroy();
+    });
+
+    // Enable zoom in button
+    $(".js-zoom-in").click(function() {
+        cropper.zoom(0.1);
+    });
+
+    // Enable zoom out button
+    $(".js-zoom-out").click(function() {
+        cropper.zoom(-0.1);
+    });
+
+    /* SCRIPT TO COLLECT THE DATA AND POST TO THE SERVER */
+    $(".js-crop").click(function() {
+        var cropData = cropper.getData();
+        $("#id_crop_x").val(cropData["x"]);
+        $("#id_crop_y").val(cropData["y"]);
+        $("#id_crop_h").val(cropData["height"]);
+        $("#id_crop_w").val(cropData["width"]);
+        $("#modalCrop").modal("hide");
+        // Submit image form
+        $("#image_form").submit();
+    });
+
+    $(".js-crop-dismiss").click(function() {
+        $("#id_upload_image").val("");
+    });
+});
+
+
+
+
+
+
+
+
+</script>
+
+{% endblock %}

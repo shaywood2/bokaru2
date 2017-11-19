@@ -8,15 +8,15 @@ from account.views import RegistrationView
 
 urlpatterns = [
     url(r'^', include('web.urls')),
-    url(r'^profile/', include('account.urls')),
+    url(r'^', include('account.urls')),
     url(r'^chat/', include('chat.urls')),
     url(r'^admin/', admin.site.urls),
     # Registration and authentication views
-    url(r'^account/register/$',
+    url(r'^register/$',
         RegistrationView.as_view(
             form_class=RegistrationForm
         ),
-        name='registration_register',
+        name='auth_register',
         ),
-    url(r'^account/', include('registration.backends.hmac.urls')),
+    url(r'^', include('registration.backends.hmac.urls')),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

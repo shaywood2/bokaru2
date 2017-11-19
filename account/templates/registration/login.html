@@ -1,74 +1,62 @@
-{% extends 'web/noheader.html' %}
-
+{% extends 'web/base_auth.html' %}
 {% load staticfiles %}
+{% load widget_tweaks %}
+
+{% block title %}Bokaru | Log In{% endblock %}
 
 {% block content %}
-<!--=== Content Part ===-->
-<div class="container-fluid">
-    <div class="row equal-height-columns">
-        <div class="col-md-6 col-sm-6 hidden-xs image-block equal-height-column owl-background-repeat"></div>
 
-        <div class="col-md-6 col-sm-6 form-block equal-height-column">
-            <a href="{% url 'web:index' %}">
-                <img src="{% static 'web/theme/img/bokaru-logo.png' %}" alt="">
+<form class="g-brd-around g-brd-gray-light-v4 g-pa-30 g-mb-30" method="post">
+    <h2 class="h4 g-font-weight-700 mb-4">Log In</h2>
 
-            </a>
-            <h2 class="margin-bottom-30">Login To Your Account</h2>
-
-            {% if form.errors %}
-            <ul>
-                {% for field, errors in form.errors.items %}
-                    {% for error in errors %}
-                    <li><strong>{{ error|escape }}</strong></li>
-                    {% endfor %}
+    <!-- errors -->
+    {% if form.non_field_errors %}
+    <div class="alert fade show g-bg-red-opacity-0_1 g-color-lightred rounded-0" role="alert">
+        <div class="media">
+            <div class="d-flex g-mr-10">
+                <i></i>
+            </div>
+            <div class="media-body">
+                {% for error in form.non_field_errors %}
+                <strong>{{ error|escape }}</strong>
                 {% endfor %}
-            </ul>
-            {% endif %}
-
-            <form method="post">
-                {% csrf_token %}
-                <div class="login-block">
-                    <div class="input-group margin-bottom-20">
-                        <span class="input-group-addon rounded-left"><i class="icon-user color-red"></i></span>
-                        <!--<input type="text" class="form-control rounded-right" placeholder="Username">-->
-                        <span class="form-control rounded-right django-form-field-text">{{ form.username }}</span>
-                    </div>
-
-                    <div class="input-group margin-bottom-20">
-                        <span class="input-group-addon rounded-left"><i class="icon-lock color-red"></i></span>
-                        <!--<input type="password" class="form-control rounded-right" placeholder="Password">-->
-                        <span class="form-control rounded-right django-form-field-text">{{ form.password }}</span>
-                    </div>
-                    <input type="hidden" name="next" value="{{ next }}"/>
-
-                    <div class="checkbox">
-                        <ul class="list-inline">
-                            <li>
-                                <label>
-                                    <input type="checkbox"> Remember me
-                                </label>
-                            </li>
-
-                            <li class="pull-right">
-                                <a href="{% url 'auth_password_reset' %}">Forgot password?</a>
-                            </li>
-                        </ul>
-                    </div>
-
-                    <div class="row margin-bottom-70">
-                        <div class="col-md-12">
-                            <button type="submit" class="btn-u btn-u-red btn-block rounded">Sign In</button>
-                        </div>
-                          <div class="col-md-12 margin-top-20">
-                            <button type="submit" class="btn-u btn-u-red btn-block rounded">Register</button>
-                        </div>
-                    </div>
-
-
-                </div>
-            </form>
+            </div>
         </div>
     </div>
-</div><!--/container-->
-<!--=== End Content Part ===-->
- {% endblock %}
+    {% endif %}
+
+    {% csrf_token %}
+    <!-- username -->
+    <div class="form-group g-mb-20 {% if form.username.errors %}u-has-error-v1{% endif %}">
+        <div class="input-group g-brd-primary--focus">
+            <div class="input-group-addon d-flex align-items-center g-color-gray-light-v1 rounded-0">
+                <i class="icon-user"></i>
+            </div>
+            {% render_field form.username class="form-control form-control-md border-left-0 rounded-0 pl-0" placeholder="Username" %}
+        </div>
+        {% if form.username.errors %}
+        <small class="form-control-feedback">{{form.username.errors}}</small>
+        {% endif %}
+    </div>
+
+    <!-- password -->
+    <div class="form-group g-mb-20 {% if form.password.errors %}u-has-error-v1{% endif %}">
+        <div class="input-group g-brd-primary--focus">
+            <div class="input-group-addon d-flex align-items-center g-bg-white g-color-gray-light-v1 rounded-0">
+                <i class="icon-lock"></i>
+            </div>
+            {% render_field form.password class="form-control form-control-md border-left-0 rounded-0 pl-0" placeholder="Password" %}
+        </div>
+        {% if form.password.errors %}
+        <small class="form-control-feedback">{{form.password.errors}}</small>
+        {% endif %}
+    </div>
+
+    <p class="pull-right"><a href="{% url 'auth_password_reset' %}">Forgot password?</a></p>
+
+    <button type="submit" class="btn btn-lg btn-block u-btn-primary g-mb-10 rounded-0">Sign In</button>
+
+    <a href="{% url 'auth_register' %}" class="btn btn-lg btn-block u-btn-primary g-mb-10 rounded-0">Register</a>
+</form>
+
+{% endblock %}

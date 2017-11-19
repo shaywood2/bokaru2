@@ -27,15 +27,8 @@ def index(request):
     if request.user.is_authenticated():
         return render(request, 'web/index.html', context)
     else:
-        return render(request, 'web/test.html', context)
-
-
-def test(request):
-    context = {
-        'test': "Test Page",
-    }
-
-    return render(request, 'web/test.html', context)
+        # messages.success(request, 'Profile details updated.')
+        return render(request, 'web/index_landing.html', context)
 
 
 def search(request):
@@ -332,9 +325,7 @@ def privacy_policy(request):
 
 
 @login_required
-@csrf_exempt
 def create_or_update_memo(request, about_user_id):
-    # TODO: add crsf protection: https://docs.djangoproject.com/en/1.11/ref/csrf/
     if request.method == 'POST':
         # Get content from the body
         content = request.body.decode('utf-8')

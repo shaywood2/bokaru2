@@ -1,390 +1,236 @@
 <!DOCTYPE html>
-
-
-<!--[if IE 8]>
-<html lang="en" class="ie8"> <![endif]-->
-<!--[if IE 9]>
-<html lang="en" class="ie9"> <![endif]-->
-<!--[if !IE]><!-->
-<html lang="en"> <!--<![endif]-->
-
-
 {% load staticfiles %}
 
+<html lang="en">
 
 <head>
+    <!-- Title -->
     <title>{% block title %}Bokaru{% endblock %}</title>
 
-    <!-- Meta -->
+    <!-- Required Meta Tags Always Come First -->
     <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="">
-    <meta name="author" content="">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
 
     <!-- Favicon -->
     <link rel="shortcut icon" href="favicon.ico">
 
-    <!-- Web Fonts -->
-    <link rel="stylesheet" href="//fonts.googleapis.com/css?family=Open+Sans:400,300,600&amp;subset=cyrillic,latin">
+    <!-- Google Fonts -->
+    <link rel="stylesheet" href="//fonts.googleapis.com/css?family=Open+Sans%3A400%2C300%2C500%2C600%2C700">
 
-    <!-- CSS Global Compulsory -->
-    <link rel="stylesheet" href="{% static 'web/theme/plugins/bootstrap/css/bootstrap.min.css' %}">
-    <link rel="stylesheet" href="{% static 'web/theme/css/style.css' %}">
+    <!-- CSS Compulsory -->
+    <link rel="stylesheet" href="{% static 'web/vendor/bootstrap/bootstrap.min.css' %}">
+    <link rel="stylesheet" href="{% static 'web/vendor/bootstrap/offcanvas.css' %}">
 
+    <!-- CSS Icons -->
+    <link rel="stylesheet" href="{% static 'web/vendor/icon-awesome/css/font-awesome.min.css' %}">
+    <link rel="stylesheet" href="{% static 'web/vendor/icon-line/css/simple-line-icons.css' %}">
+    <link rel="stylesheet" href="{% static 'web/vendor/hamburgers/hamburgers.min.css' %}">
+    <link rel="stylesheet" href="{% static 'web/vendor/icon-hs/style.css' %}">
 
-    <!-- CSS Header and Footer -->
-    <link rel="stylesheet" href="{% static 'web/theme/css/headers/header-v6.css' %}">
+    <!-- CSS Plugins -->
+    <link rel="stylesheet" href="{% static 'web/vendor/animate.css' %}">
+    <link rel="stylesheet" href="{% static 'web/vendor/dzsparallaxer/dzsparallaxer.css' %}">
+    <link rel="stylesheet" href="{% static 'web/vendor/dzsparallaxer/dzsscroller/scroller.css' %}">
+    <link rel="stylesheet" href="{% static 'web/vendor/dzsparallaxer/advancedscroller/plugin.css' %}">
+    <link rel="stylesheet" href="{% static 'web/vendor/hs-megamenu/src/hs.megamenu.css' %}">
+    <link rel="stylesheet" href="{% static 'web/vendor/hs-megamenu/src/hs.megamenu.css' %}">
+    <link rel="stylesheet" href="{% static 'web/vendor/cropper/cropper.min.css' %}">
+    <link rel="stylesheet" href="{% static 'web/vendor/jquery-ui/themes/base/jquery-ui.min.css' %}">
+    <link rel="stylesheet" href="{% static 'web/vendor/custombox/custombox.min.css' %}">
 
-    <link rel="stylesheet" href="{% static 'web/theme/css/footers/footer-v6.css' %}">
+    <!-- CSS Unify -->
+    <link rel="stylesheet" href="{% static 'web/css/unify-core.css' %}">
+    <link rel="stylesheet" href="{% static 'web/css/unify-components.css' %}">
+    <link rel="stylesheet" href="{% static 'web/css/unify-globals.css' %}">
 
-
-    <!-- CSS Implementing Plugins -->
-    <link rel="stylesheet" href="{% static 'web/theme/plugins/animate.css' %}">
-
-    <link rel="stylesheet" href="{% static 'web/theme/plugins/line-icons/line-icons.css' %}">
-
-    <link rel="stylesheet" href="{% static 'web/theme/plugins/font-awesome/css/font-awesome.min.css' %}">
-
-    <link rel="stylesheet" href="{% static 'web/theme/plugins/sliding-panel/style.css' %}">
-
-    <link rel="stylesheet" href="{% static 'web/cropper/cropper.min.css' %}">
-
-
-    <!-- CSS Page Style -->
-    <link rel="stylesheet" href="{% static 'web/theme/css/pages/profile.css' %}">
-
-    <link rel="stylesheet" href="{% static 'web/theme/css/pages/shortcode_timeline2.css' %}">
-
-    <!-- CSS Theme -->
-    <link rel="stylesheet" href="{% static 'web/theme/css/theme-colors/red.css' %}" id="style_color">
-
-    <link rel="stylesheet" href="{% static 'web/theme/css/theme-skins/dark.css' %}">
-
+    <!-- CSS Customization -->
+    <link rel="stylesheet" href="{% static 'web/css/custom.css' %}">
 
     {% block header %}
     {% endblock %}
-
-    <!-- CSS Customization -->
-    <link rel="stylesheet" href="{% static 'web/theme/css/custom.css' %}">
 </head>
-<body class="header-fixed header-fixed-space promo-padding-top sliding-panel-ini sliding-panel-flag-right">
-<div class="wrapper">
-    <!--=== Header v6 ===-->
-    <div class="header-v6 header-classic-white header-sticky">
-        <!-- Navbar -->
-        <div class="navbar mega-menu" role="navigation">
-            <div class="container">
-                <!-- Brand and toggle get grouped for better mobile display -->
-                <div class="menu-container">
-                    <!-- Navbar Brand -->
-                    <div class="navbar-brand">
-                        <a href="{% url 'web:index' %}">
 
-                            <img class="shrink-logo" src="{% static 'web/images/outline-owl.jpg' %}" alt="Logo">
-
-                        </a>
-
-
-                    </div>
-                    <div class="navbar-brand">
-                        <a href="{% url 'web:index' %}">
-
-                            <img class="shrink-logo" src="{% static 'web/theme/img/bokaru-logo.png' %}" alt="Logo">
-
-
-                        </a>
-                    </div>
-
-
-                    <div type="button" style="cursor: pointer"
-                         class="navbar-toggle sliding-panel__btn sliding-panel__btn--dark">
-                        <span class="sr-only">Toggle navigation</span>
-                        <span class="icon-bar"></span>
-                        <span class="icon-bar"></span>
-                        <span class="icon-bar"></span>
-                    </div>
-
-
-                    <!-- ENd Navbar Brand -->
-
-                    <!-- Header Inner Right -->
-                    <div class="header-inner-right">
-
-                    </div>
-                    <!-- End Header Inner Right -->
-                </div>
-            </div>
-            {% load event_notification_tag %}
-            {% autoescape off %}{% event_notification request %}{% endautoescape %}
-
-        </div>
-        <!-- End Navbar -->
-    </div>
-
-
-    <!--=== End Header v6 ===-->
-
-
-    {% block content %}
+<body>
+<main>
+    {% block main %}
     {% endblock %}
+</main>
 
+<!-- Footer -->
+<footer class="g-bg-black-opacity-0_9 g-color-white-opacity-0_6 g-py-60">
+    <div class="container">
+        <div class="row">
+            <!-- Footer Content -->
+            <div class="col-lg-4 g-mb-40 g-mb-0--lg">
+                <a class="d-block g-mb-20" href="/">
+                    <img class="img-fluid g-opacity-0_6 g-mb-5" src="{% static 'web/images/bokaru-logo.png' %}"
+                         alt="Logo">
+                </a>
 
-    <!--=== Footer v6 ===-->
-    <div id="footer-v6" class="footer-v6">
-        <div class="footer">
-            <div class="container">
-                <div class="row">
-                    <!-- About Us -->
-                    <div class="col-md-3 sm-margin-bottom-40">
-                        <div class="heading-footer"><h2>About Bokaru</h2></div>
-                        <p>A site to date and find your mate.</p>
-                    </div>
-                    <!-- End About Us -->
-
-                    <!-- Recent News -->
-                    <div class="col-md-3 sm-margin-bottom-40">
-                        <div class="heading-footer"><h2>Recent News</h2></div>
-                        <ul class="list-unstyled link-news">
-                            <li>
-                                <a href="#">Apple Conference</a>
-                                <small>12 July, 2014</small>
-                            </li>
-                            <li>
-                                <a href="#">Bootstrap Update</a>
-                                <small>12 July, 2014</small>
-                            </li>
-                            <li>
-                                <a href="#">Themeforest Templates</a>
-                                <small>12 July, 2014</small>
-                            </li>
-                        </ul>
-                    </div>
-                    <!-- End Recent News -->
-
-                    <!-- Useful Links -->
-                    <div class="col-md-3 sm-margin-bottom-40">
-                        <div class="heading-footer"><h2>Links</h2></div>
-                        <ul class="list-unstyled footer-link-list">
-                            <li><a href="#">Find Events</a></li>
-                            <li><a href="#">My Matches</a></li>
-                            <li><a href="#">My Events</a></li>
-                            <li><a href="#">Profile Settings</a></li>
-                        </ul>
-                    </div>
-                    <!-- End Useful Links -->
-
-                    <!-- Contacts -->
-                    <div class="col-md-3">
-                        <div class="heading-footer"><h2>Contact Us</h2></div>
-                        <ul class="list-unstyled contacts">
-
-
-                            <li>
-                                <i class="radius-3x fa fa-globe"></i>
-                                <a href="#">webmaster@gmail.com</a><br>
-                                <a href="#">www.toronto.com</a>
-                            </li>
-                        </ul>
-                    </div>
-                    <!-- End Contacts -->
+                <div class="g-mb-20">
+                    <p>About Bokaru dolor sit amet, consec tetur adipiscing elit. Maecenas eget nisl id libero
+                        tincidunt.</p>
+                    <small class="g-font-size-default mb-0">&copy; 2017 All right reserved. Bokaru Inc.
+                    </small>
                 </div>
-            </div><!--/container -->
-        </div>
 
-        <div class="copyright">
-            <div class="container">
-                <div class="row">
-                    <div class="col-md-8 sm-margon-bottom-10">
-                        <ul class="list-inline terms-menu">
-                            <li class="silver"> &copy; 2016 All right reserved. Bokaru LLP</li>
-                            <li><a href="{% url 'web:termsofuse' %}">Terms of Use</a></li>
-                            <li><a href="{% url 'web:privacypolicy' %}">Privacy and Policy</a></li>
-                            <li><a href="#">Terms of Use</a></li>
-                            <li><a href="#">Privacy and Policy</a></li>
-                            <li><a href="#">License</a></li>
-                            <li><a href="#">Support</a></li>
-                        </ul>
-                    </div>
-                    <div class="col-md-4">
-                        <ul class="list-inline dark-social pull-right space-bottom-0">
-                            <li>
-                                <a data-placement="top" data-toggle="tooltip" class="tooltips"
-                                   data-original-title="Facebook" href="#">
-                                    <i class="fa fa-facebook"></i>
-                                </a>
-                            </li>
-                            <li>
-                                <a data-placement="top" data-toggle="tooltip" class="tooltips"
-                                   data-original-title="Twitter" href="#">
-                                    <i class="fa fa-twitter"></i>
-                                </a>
-                            </li>
-                            <li>
-                                <a data-placement="top" data-toggle="tooltip" class="tooltips"
-                                   data-original-title="Vine" href="#">
-                                    <i class="fa fa-vine"></i>
-                                </a>
-                            </li>
-                            <li>
-                                <a data-placement="top" data-toggle="tooltip" class="tooltips"
-                                   data-original-title="Google plus" href="#">
-                                    <i class="fa fa-google-plus"></i>
-                                </a>
-                            </li>
-                            <li>
-                                <a data-placement="top" data-toggle="tooltip" class="tooltips"
-                                   data-original-title="Pinterest" href="#">
-                                    <i class="fa fa-pinterest"></i>
-                                </a>
-                            </li>
-                            <li>
-                                <a data-placement="top" data-toggle="tooltip" class="tooltips"
-                                   data-original-title="Instagram" href="#">
-                                    <i class="fa fa-instagram"></i>
-                                </a>
-                            </li>
-                            <li>
-                                <a data-placement="top" data-toggle="tooltip" class="tooltips"
-                                   data-original-title="Tumblr" href="#">
-                                    <i class="fa fa-tumblr"></i>
-                                </a>
-                            </li>
-                            <li>
-                                <a data-placement="top" data-toggle="tooltip" class="tooltips"
-                                   data-original-title="Youtube" href="#">
-                                    <i class="fa fa-youtube"></i>
-                                </a>
-                            </li>
-                            <li>
-                                <a data-placement="top" data-toggle="tooltip" class="tooltips"
-                                   data-original-title="Soundcloud" href="#">
-                                    <i class="fa fa-soundcloud"></i>
-                                </a>
-                            </li>
-                        </ul>
-                    </div>
-                </div>
+                <ul class="list-inline mb-0">
+                    <li class="list-inline-item g-mr-10">
+                        <a class="u-icon-v3 u-icon-size--xs g-color-white g-color-primary--hover g-bg-white-opacity-0_1 g-bg-white--hover"
+                           href="#">
+                            <i class="fa fa-facebook"></i>
+                        </a>
+                    </li>
+                    <li class="list-inline-item g-mr-10">
+                        <a class="u-icon-v3 u-icon-size--xs g-color-white g-color-primary--hover g-bg-white-opacity-0_1 g-bg-white--hover"
+                           href="#">
+                            <i class="fa fa-instagram"></i>
+                        </a>
+                    </li>
+                    <li class="list-inline-item g-mr-10">
+                        <a class="u-icon-v3 u-icon-size--xs g-color-white g-color-primary--hover g-bg-white-opacity-0_1 g-bg-white--hover"
+                           href="#">
+                            <i class="fa fa-twitter"></i>
+                        </a>
+                    </li>
+                    <li class="list-inline-item g-mr-10">
+                        <a class="u-icon-v3 u-icon-size--xs g-color-white g-color-primary--hover g-bg-white-opacity-0_1 g-bg-white--hover"
+                           href="#">
+                            <i class="fa fa-dribbble"></i>
+                        </a>
+                    </li>
+                </ul>
             </div>
+            <!-- End Footer Content -->
+
+            <!-- Footer Content -->
+            <div class="col-lg-2 g-mb-30 g-mb-0--lg">
+                <h2 class="h6 g-color-white text-uppercase g-font-weight-700 g-mb-20">Useful Links</h2>
+                <ul class="list-unstyled mb-0">
+                    <li class="d-flex align-items-baseline g-mb-12">
+                        <i class="fa fa-angle-double-right g-mr-8"></i>
+                        <a class="g-color-white-opacity-0_6 g-color-white--hover" href="#">Blog</a>
+                    </li>
+                    <li class="d-flex align-items-baseline g-mb-12">
+                        <i class="fa fa-angle-double-right g-mr-8"></i>
+                        <a class="g-color-white-opacity-0_6 g-color-white--hover" href="#">Support</a>
+                    </li>
+                    <li class="d-flex align-items-baseline g-mb-12">
+                        <i class="fa fa-angle-double-right g-mr-8"></i>
+                        <a class="g-color-white-opacity-0_6 g-color-white--hover" href="#">Community</a>
+                    </li>
+                    <li class="d-flex align-items-baseline g-mb-12">
+                        <i class="fa fa-angle-double-right g-mr-8"></i>
+                        <a class="g-color-white-opacity-0_6 g-color-white--hover" href="#">Pricing/Plans</a>
+                    </li>
+                    <li class="d-flex align-items-baseline g-mb-12">
+                        <i class="fa fa-angle-double-right g-mr-8"></i>
+                        <a class="g-color-white-opacity-0_6 g-color-white--hover" href="#">UI Freebies</a>
+                    </li>
+                    <li class="d-flex align-items-baseline">
+                        <i class="fa fa-angle-double-right g-mr-8"></i>
+                        <a class="g-color-white-opacity-0_6 g-color-white--hover" href="#">Careers</a>
+                    </li>
+                </ul>
+            </div>
+            <!-- End Footer Content -->
         </div>
     </div>
-    <!--=== End Footer v6 ===-->
-</div><!--/wrapper-->
+</footer>
+<!-- End Footer -->
 
-<!-- Sliding Panel -->
-<div class="sliding-panel bg-color-darker">
-    <div class="sliding-panel-inner sliding-panel-scrollable fullscreen">
-        <ul class="sliding-navigation">
-            <li><a href="index.html">Home</a></li>
-            <li><a href="{% url 'web:search' %}">Find Events</a></li>
-            <li><a href="{% url 'account:view' %}">Profile</a></li>
-            <li><a href="{% url 'web:matches' %}">Matches</a></li>
-            <li><a href="{% url 'web:myevents' %}">My Events</a></li>
-
-        </ul>
-
-        <h4>My Profile - <span style="font-size: 9pt;"><a href="#">Update</a></span></h4>
-        <address>
-            testUser2<br>
-            New York, US<br>
-            Age 30<br>
-            Male<br>
-            <a href="mailto:#">info@bokaru.com</a><br>
-        </address>
-
-        <ul class="list-inline social-icons-v1 social-icons-v1--dark">
-            <li><a href="#"><i class="fa fa-twitter"></i></a></li>
-            <li><a href="#"><i class="fa fa-facebook"></i></a></li>
-            <li><a href="#"><i class="fa fa-google-plus"></i></a></li>
-            <li><a href="#"><i class="fa fa-linkedin"></i></a></li>
-        </ul>
-    </div>
-
-    <a href="javascript:void(0);" class="sliding-panel__close">Close</a>
-</div>
-
-<!-- End Sliding Panel -->
-
+<!-- Go To -->
+<a class="js-go-to u-go-to-v2" href="#" data-type="fixed" data-position='{
+     "bottom": 15,
+     "right": 15
+   }' data-offset-top="400" data-compensation="#js-header" data-show-effect="zoomIn">
+    <i class="fa fa-chevron-up"></i>
+</a>
+<!-- End Go To -->
 
 <!-- JS Global Compulsory -->
-<script src="{% static 'web/theme/plugins/jquery/jquery.min.js' %}"></script>
-
-<script src="{% static 'web/theme/plugins/jquery/jquery-migrate.min.js' %}"></script>
-
-<script src="{% static 'web/theme/plugins/bootstrap/js/bootstrap.min.js' %}"></script>
-
-<!-- JS Implementing Plugins -->
-<script src="{% static 'web/theme/plugins/back-to-top.js' %}"></script>
-
-<script src="{% static 'web/theme/plugins/smoothScroll.js' %}"></script>
-
-
-<!-- JS Global Compulsory -->
-<script type="text/javascript" src="{% static 'web/theme/plugins/jquery/jquery.min.js' %}"></script>
-
-
-<script type="text/javascript" src="{% static 'web/theme/plugins/jquery/jquery-migrate.min.js' %}"></script>
-
-
-<script type="text/javascript" src="{% static 'web/theme/plugins/bootstrap/js/bootstrap.min.js' %}"></script>
-
+<script src="{% static 'web/vendor/jquery/jquery.min.js' %}"></script>
+<script src="{% static 'web/vendor/jquery-migrate/jquery-migrate.min.js' %}"></script>
+<script src="{% static 'web/vendor/jquery.easing/js/jquery.easing.js' %}"></script>
+<script src="{% static 'web/vendor/popper.min.js' %}"></script>
+<script src="{% static 'web/vendor/bootstrap/bootstrap.min.js' %}"></script>
+<script src="{% static 'web/vendor/bootstrap/offcanvas.js' %}"></script>
 
 <!-- JS Implementing Plugins -->
-<script type="text/javascript" src="{% static 'web/theme/plugins/back-to-top.js' %}"></script>
+<script src="{% static 'web/vendor/hs-megamenu/src/hs.megamenu.js' %}"></script>
+<script src="{% static 'web/vendor/appear.js' %}"></script>
+<script src="{% static 'web/vendor/dzsparallaxer/dzsparallaxer.js' %}"></script>
+<script src="{% static 'web/vendor/dzsparallaxer/dzsscroller/scroller.js' %}"></script>
+<script src="{% static 'web/vendor/dzsparallaxer/advancedscroller/plugin.js' %}"></script>
+<script src="{% static 'web/vendor/cropper/cropper.min.js' %}"></script>
+<script src="{% static 'web/vendor/custombox/custombox.min.js' %}"></script>
 
+<!-- JS Unify -->
+<script src="{% static 'web/js/hs.core.js' %}"></script>
 
-<script type="text/javascript" src="{% static 'web/theme/plugins/smoothScroll.js' %}"></script>
+<script src="{% static 'web/js/components/hs.header.js' %}"></script>
+<script src="{% static 'web/js/components/hs.scrollbar.js' %}"></script>
+<script src="{% static 'web/js/components/hs.popup.js' %}"></script>
+<script src="{% static 'web/js/components/hs.go-to.js' %}"></script>
+<script src="{% static 'web/js/components/hs.dropdown.js' %}"></script>
+<script src="{% static 'web/js/components/hs.onscroll-animation.js' %}"></script>
+<script src="{% static 'web/js/components/hs.counter.js' %}"></script>
+<script src="{% static 'web/js/components/hs.modal-window.js' %}"></script>
+<script src="{% static 'web/js/helpers/hs.not-empty-state.js' %}"></script>
 
+<!-- jQuery UI Helpers -->
+<script src="{% static 'web/js/helpers/hs.hamburgers.js' %}"></script>
+<script src="{% static 'web/js/helpers/hs.focus-state.js' %}"></script>
+<script src="{% static 'web/js/helpers/hs.height-calc.js' %}"></script>
 
-<script type="text/javascript" src="{% static 'web/theme/plugins/circles-master/circles.js' %}"></script>
+<!-- JS Custom -->
+<script src="{% static 'web/js/custom.js' %}"></script>
 
+<!-- Stripe -->
+<script src="https://js.stripe.com/v3/"></script>
 
-<script type="text/javascript"
-        src="{% static 'web/theme/plugins/scrollbar/js/jquery.mCustomScrollbar.concat.min.js' %}"></script>
+<!-- JS Plugins Init. -->
+<script>
+$(document).on('ready', function () {
+    // initialization of go to
+    $.HSCore.components.HSGoTo.init('.js-go-to');
 
+    // initialization of forms
+    $.HSCore.helpers.HSFocusState.init();
+    $.HSCore.helpers.HSNotEmptyState.init();
 
-<script src="{% static 'web/theme/plugins/wow-animations/js/wow.min.js' %}"></script>
+    // initialization of HSScrollBar component
+    $.HSCore.components.HSScrollBar.init($('.js-scrollbar'));
 
-<script src="{% static 'web/theme/plugins/sliding-panel/jquery.sliding-panel.js' %}"></script>
+    // initialization of scroll animation
+    $.HSCore.components.HSOnScrollAnimation.init('[data-animation]');
 
+    // initialization of HSDropdown component
+    $.HSCore.components.HSDropdown.init($('[data-dropdown-target]'));
 
-<script src="{% static 'web/cropper/cropper.min.js' %}"></script>
+    // initialization of counters
+    var counters = $.HSCore.components.HSCounter.init('[class*="js-counter"]');
 
-<!-- JS Page Level -->
-<script src="{% static 'web/theme/js/app.js' %}"></script>
+    // initialization of popups
+    $.HSCore.components.HSModalWindow.init('[data-modal-target]');
+});
 
-<script src="{% static 'web/theme/js/plugins/style-switcher.js' %}"></script>
-
-<script src="{% static 'web/theme/js/plugins/owl-carousel.js' %}"></script>
-
-<script type="text/javascript" src="{% static 'web/theme/js/plugins/circles-master.js' %}"></script>
-<!-- JS Customization -->
-<script src="{% static 'web/theme/js/custom.js' %}"></script>
-
+$(window).on('load', function () {
+    // initialization of header
+    $.HSCore.components.HSHeader.init($('#js-header'));
+    $.HSCore.helpers.HSHamburgers.init('.hamburger');
+    // initialization of HSMegaMenu component
+    $('.js-mega-menu').HSMegaMenu({
+        event: 'hover',
+        pageContainer: $('.container'),
+        breakpoint: 991
+    });
+});
+</script>
 
 {% block javascript %}
 {% endblock %}
-<!-- JS Initialization -->
-<script type="text/javascript">
-		jQuery(document).ready(function() {
-			App.init();
-
-		});
-
-</script>
-
-
-<!--[if lt IE 9]>
-<script src="{% static 'web/theme/plugins/respond.js' %}"></script>
-
-<script src="{% static 'web/theme/plugins/html5shiv.js' %}"></script>
-
-<script src="{% static 'web/theme/plugins/placeholder-IE-fixes.js' %}"></script>
-
-<![endif]-->
-
 
 </body>
 </html>
-
-
-

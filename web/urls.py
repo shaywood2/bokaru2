@@ -6,7 +6,6 @@ app_name = 'web'
 urlpatterns = [
     # ex: /
     url(r'^$', views.index, name='index'),
-    url(r'^test/$', views.test, name='test'),
     url(r'^search/$', views.search, name='search'),
     url(r'^results/$', views.results, name='results'),
     url(r'^event/(?P<event_id>\d+)$', views.event_view, name='event_view'),

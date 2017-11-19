@@ -1,0 +1,23 @@
+{% extends 'web/base.html' %}
+{% load staticfiles %}
+
+{% block main %}
+<section class="container-fluid g-px-0">
+    <div class="row no-gutters">
+        <div class="col-md-6 order-md-2">
+            <div class="g-pa-15x">
+                <div class="g-mb-50">
+                    <img src="{% static 'web/images/bokaru-logo.png' %}" alt="logo">
+                </div>
+                <div class="row">
+                    <div class="col-md-12 order-md-2 g-mb-50 g-mb-0--md">
+                        {% block content %}
+                        {% endblock %}
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6 order-md-1 g-hidden-sm-down g-bg-pos-top-center g-min-height-600 image-block owl-background-repeat"></div>
+    </div>
+</section>
+{% endblock %}

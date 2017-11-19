@@ -1,0 +1,42 @@
+{% extends 'account/base_preferences.html' %}
+
+{% load staticfiles %}
+{% load widget_tweaks %}
+
+{% block title %}Bokaru | Preferences {% endblock %}
+
+{% block sub_nav_location %}sub-nav-close{% endblock %}
+
+{% block profile_content %}
+<form method="post">
+    {% csrf_token %}
+
+    <h2>Close account</h2>
+    <h5>Your account will be marked as disabled, but we will keep it in our system in case you ever want to come back.</h5>
+
+    <label class="form-check-inline u-check g-pl-25 g-my-25">
+        <input class="g-hidden-xs-up g-pos-abs g-top-0 g-left-0" type="checkbox" id="confirmation">
+        <div class="u-check-icon-checkbox-v6 g-absolute-centered--y g-left-0">
+            <i class="fa" data-check-icon=""></i>
+        </div>
+        Check to confirm that you want to close the account.
+    </label>
+
+    <button id="close_button" type="submit" class="btn btn-lg btn-block u-btn-red g-mb-10 rounded-0" disabled>Close account</button>
+</form>
+{% endblock %}
+
+{% block javascript %}
+<script type="text/javascript">
+    let confirmation = $('#confirmation')
+    let close_button = $('#close_button')
+
+    confirmation.change(function() {
+        if (this.checked) {
+            close_button.prop('disabled', false)
+        } else {
+            close_button.prop('disabled', true)
+        }
+    })
+</script>
+{% endblock %}

@@ -1,0 +1,57 @@
+{% extends 'web/base_nav.html' %}
+
+{% load staticfiles %}
+
+{% block title %}Bokaru | Preferences{% endblock %}
+
+{% block nav_location %}nav_account{% endblock %}
+
+{% block content %}
+<!-- Preferences block -->
+<section class="g-mb-100">
+    <div class="container">
+        <div class="row">
+            <!-- Profile Sidebar -->
+            <div class="col-lg-4 g-mb-50 g-mb-0--lg">
+                <!-- User Image -->
+                <div>
+                    {% if request.session.photo_url is None or request.session.photo_url == '' %}
+                    <img class="img-fluid w-100" src="{% static 'account/images/default-avatar.png' %}"
+                         alt="Default picture" id="default_avatar"/>
+                    {% else %}
+                    <img class="img-fluid w-100" src="{{ request.session.photo_url }}" alt="Profile picture" id="avatar"/>
+                    {% endif %}
+                </div>
+
+                <!-- Sidebar Navigation -->
+                <div class="list-group list-group-border-0 g-mb-40">
+                    <a id="sub-nav-preferences" href="{% url 'account:preferences' %}" class="list-group-item list-group-item-action justify-content-between">
+                        <span><i class="icon-settings g-pos-rel g-top-1 g-mr-8"></i> Preferences</span>
+                    </a>
+                    <a id="sub-nav-password" href="{% url 'auth_password_change' %}" class="list-group-item list-group-item-action justify-content-between">
+                        <span><i class="icon-lock g-pos-rel g-top-1 g-mr-8"></i> Password</span>
+                    </a>
+                    <a id="sub-nav-payment" href="{% url 'account:payment' %}" class="list-group-item list-group-item-action justify-content-between">
+                        <span><i class="icon-credit-card g-pos-rel g-top-1 g-mr-8"></i> Payment method</span>
+                    </a>
+                    <a id="sub-nav-close" href="{% url 'account:close' %}" class="list-group-item list-group-item-action justify-content-between">
+                        <span><i class="icon-power g-pos-rel g-top-1 g-mr-8"></i> Close account</span>
+                    </a>
+                </div>
+            </div>
+            <div class="col-lg-8">
+                {% block profile_content %}
+                {% endblock %}
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Sub-navigation script -->
+<script type="text/javascript">
+    let subNavLocation = '{% block sub_nav_location %}{% endblock %}'
+    let snl = document.getElementById(subNavLocation)
+    if (!!snl)
+        snl.className += ' active'
+</script>
+{% endblock %}

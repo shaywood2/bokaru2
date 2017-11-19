@@ -1,35 +1,9 @@
-{% extends 'web/noheader.html' %}
-
+{% extends 'web/base_auth.html' %}
 {% load staticfiles %}
 
+{% block title %}Bokaru | Registration Complete{% endblock %}
+
 {% block content %}
-
-<!--=== Content Part ===-->
-<div class="container-fluid">
-    <div class="row equal-height-columns">
-        <div class="col-md-6 col-sm-6 hidden-xs image-block equal-height-column owl-background-repeat"></div>
-
-        <div class="col-md-6 col-sm-6 form-block equal-height-column">
-            <div class="reg-block" style="border-top: none">
-                <a href="{% url 'web:index' %}">
-                    <img src="{% static 'web/theme/img/bokaru-logo.png' %}" alt="">
-
-                </a>
-                <h2 class="margin-bottom-30">Thank you for registering</h2>
-             <h3 class="margin-bottom-30">Please check your email to complete the registration.</h3>
-
-             <div style="height: 400px"></div>
-
-
-            </div>
-        </div>
-    </div>
-</div><!--/container-->
-<!--=== End Content Part ===-->
-
-
-
-
-
-
- {% endblock %}
+<h2 class="h4 g-font-weight-700 mb-4">Thank you for registering!</h2>
+<p>Please check your email to complete the registration.</p>
+{% endblock %}

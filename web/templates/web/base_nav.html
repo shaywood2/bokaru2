@@ -1,0 +1,127 @@
+{% extends 'web/base.html' %}
+{% load staticfiles %}
+
+{% block main %}
+<!-- Header -->
+<header id="js-header" class="u-header u-header--absolute-top g-mb-25">
+    <!-- Message Bar -->
+    {% if request.session.profile_incomplete or request.session.profile_suspended %}
+    <div class="u-header__section u-header__section--hidden u-header__section--dark g-bg-black g-transition-0_3 g-py-10">
+        <div class="container">
+            <div class="row flex-column flex-sm-row justify-content-between align-items-center text-uppercase g-font-weight-600 g-color-white g-font-size-12 g-mx-0--lg">
+                {% if request.session.profile_incomplete %}
+                <div class="col-auto" style="margin-left: auto; margin-right: auto;">
+                    <i class="fa fa-warning g-font-size-18 g-valign-middle g-color-primary g-mr-10 g-mt-minus-2"></i>
+                    Please complete your <a href="{% url 'account:edit' %}">profile</a>, otherwise you will not able to
+                    join any events.
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    {% endif %}
+    <!-- Message Bar End -->
+
+    <div class="u-header__section u-header__section--light g-bg-white u-shadow-v18">
+        <nav class="js-mega-menu navbar navbar-expand-lg">
+            <!-- Responsive Toggle Button -->
+            <button class="navbar-toggler navbar-toggler-right btn g-line-height-1 g-brd-none g-pa-0 g-pos-abs g-top-3 g-right-0"
+                    type="button" aria-label="Toggle navigation" aria-expanded="false" aria-controls="navBar"
+                    data-toggle="collapse" data-target="#navBar">
+                    <span class="hamburger hamburger--slider">
+                        <span class="hamburger-box">
+                            <span class="hamburger-inner"></span>
+                        </span>
+                    </span>
+            </button>
+            <!-- End Responsive Toggle Button -->
+            <!-- Logo -->
+            <a href="{% url 'web:index' %}" class="navbar-brand u-header__logo">
+                <img src="{% static 'web/images/bokaru-logo.png' %}" style="max-height: 40px" alt="Logo">
+            </a>
+            <!-- End Logo -->
+
+            <!-- Navigation -->
+            <div class="js-mega-menu collapse navbar-collapse align-items-center flex-sm-row" id="navBar">
+                <ul class="navbar-nav text-uppercase g-font-weight-600 ml-auto u-main-nav-v5">
+                    <li id="nav_home" class="nav-item g-mx-20--lg g-mb-5 g-mb-0--lg">
+                        <a href="{% url 'web:index' %}" class="nav-link">Home</a>
+                    </li>
+                    <li id="nav_search" class="nav-item g-mx-20--lg">
+                        <a href="{% url 'web:search' %}" class="nav-link">Find Events</a>
+                    </li>
+
+                    <!-- User links -->
+                    {% if user.is_authenticated %}
+                    <li id="nav_create_event"  class="nav-item g-mx-20--lg">
+                        <a href="{% url 'web:myevents' %}" class="nav-link">Create Event</a>
+                    </li>
+                    <li id="nav_events" class="nav-item g-mx-20--lg">
+                        <a href="{% url 'web:myevents' %}" class="nav-link">My Events</a>
+                    </li>
+                    <li id="nav_matches" class="nav-item g-mx-20--lg">
+                        <a href="{% url 'web:matches' %}" class="nav-link">Matches</a>
+                    </li>
+                    <!-- Account submenu -->
+                    <li class="nav-item hs-has-sub-menu g-mx-20--lg" data-event="click">
+                        <a href="#" class="nav-link dropdown-toggle g-py-0 g-brd-none" id="account-dropdown-invoker"
+                           aria-haspopup="true" aria-expanded="false" aria-controls="account-dropdown">
+                            {% if request.session.thumbnail_url is None or request.session.thumbnail_url == '' %}
+                            <img class="img-fluid rounded-circle" src="{% static 'account/images/default-avatar.png' %}"
+                                 width="30px" height="30px" alt="Default picture" id="default_avatar"/>
+                            {% else %}
+                            <img class="img-fluid rounded-circle" src="{{ request.session.thumbnail_url }}" alt="Profile picture"/>
+                            {% endif %}
+                            <!-- username -->
+                            <span class="g-hidden-md-up">{{user.username}}</span>
+
+                        </a>
+                        <ul id="account-dropdown"
+                            class="hs-sub-menu list-unstyled g-text-transform-none g-min-width-200 g-mt-15 g-mt-10--lg--scrolling u-shadow-v1-5 g-brd-top g-brd-primary g-brd-top-2"
+                            aria-labelledby="account-dropdown-invoker">
+                            <li id="nav_profile" class="dropdown-item">
+                                <a class="nav-link g-px-0"
+                                   href="{% url 'account:view' %}">View Profile</a>
+                            </li>
+                            <li id="nav_account" class="dropdown-item">
+                                <a class="nav-link g-px-0"
+                                   href="{% url 'account:preferences' %}">Edit Account</a>
+                            </li>
+                            <li class="dropdown-item">
+                                <a class="nav-link g-px-0"
+                                   href="{% url 'auth_logout' %}">Logout</a>
+                            </li>
+                        </ul>
+                        <!-- End Profile links -->
+                    </li>
+
+                    <!-- Guest links -->
+                    {% else %}
+                    <li class="nav-item g-mx-20--lg">
+                        <a href="{% url 'auth_register' %}" class="nav-link">Register</a>
+                    </li>
+
+                    <li class="nav-item g-mx-20--lg">
+                        <a href="{% url 'auth_login' %}" class="nav-link">Log in</a>
+                    </li>
+                    {% endif %}
+                </ul>
+            </div>
+            <!-- End Navigation -->
+        </nav>
+    </div>
+</header>
+<!-- Header End -->
+
+<!-- Navigation script -->
+<script type="text/javascript">
+    let navLocation = '{% block nav_location %}{% endblock %}'
+    let e = document.getElementById(navLocation)
+    if (!!e)
+        e.className += ' active'
+</script>
+
+{% block content %}
+{% endblock %}
+
+{% endblock %}

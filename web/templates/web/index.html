@@ -1,118 +1,189 @@
-{% extends 'web/base.html' %}
+{% extends 'web/base_nav.html' %}
 
 {% load staticfiles %}
 
-
-{% block header %}
-
-<link rel="stylesheet" href="{% static 'web/css/search.css' %}">
-
-
-{% endblock %}
-
+{% block nav_location %}nav_home{% endblock %}
 
 {% block content %}
-
-
-
-
 <div class="container content-md">
-
-
-
-
-
     <h2 class="heading-md search_title">Find Events Near You</h2>
-     <form method="post" action="{% url 'web:search' %}">
+    <form method="post" action="{% url 'web:search' %}">
         <div class="row">
             <div class="col-md-12 margin-bottom-40" style="text-align: center">
-
-                    {% csrf_token %}
-
-
-                <input type="text" id="id_search_term" name="search_term" class="search_input" placeholder="{{search_placeholder}}"></input>
-                <select id="id_distance" name="distance" class="distance_input"><option>Distance</option><option>5</option><option>10</option><option>20</option><option>50</option><option>100</option></select>
+                {% csrf_token %}
+                <input type="text" id="id_search_term" name="search_term" class="search_input"
+                       placeholder="{{search_placeholder}}"/>
+                <select id="id_distance" name="distance" class="distance_input">
+                    <option>Distance</option>
+                    <option>5</option>
+                    <option>10</option>
+                    <option>20</option>
+                    <option>50</option>
+                    <option>100</option>
+                </select>
             </div>
         </div>
 
-          <div class="row md-margin-bottom-80">
+        <div class="row md-margin-bottom-80">
             <div class="col-md-12 margin-bottom-80" style="text-align: center">
-
-
-
-                    <input type="submit" class="btn-u btn-u-lg btn-u-red" value="Search"/>
-
-
+                <input type="submit" class="btn-u btn-u-lg btn-u-red" value="Search"/>
             </div>
         </div>
-      </form>
+    </form>
 
     <div class="heading heading-v4 margin-bottom-40">
         <h2>My Events</h2>
     </div>
 
 
-<div class="row news-v1 margin-bottom-40">
+    <div class="row news-v1 margin-bottom-40">
+        <div class="col-md-4 md-margin-bottom-40">
+            <div class="news-v1-in">
+                <a href="#"><img class="img-responsive" src="{% static 'web/theme/img/main/img11.jpg' %}" alt=""></a>
 
-				<div class="col-md-4 md-margin-bottom-40">
-					<div class="news-v1-in">
-						<a href="#"><img class="img-responsive" src="{% static 'web/theme/img/main/img11.jpg' %}" alt=""></a>
+                <h3><a href="#">Dog Lovers</a></h3>
+                <p>Event Description</p>
+                <ul class="list-inline news-v1-info">
+                    <li><a href="#">Toronto</a></li>
+                    <li>|</li>
+                    <li><i class="fa fa-clock-o"></i> July 11 @ 8PM</li>
+                    <li class="pull-right"><a href="#"><i class="fa fa-comments-o"></i> 14</a></li>
+                </ul>
+            </div>
+        </div>
+    </div>
 
-						<h3><a href="#">Dog Lovers</a></h3>
-						<p>Event Description</p>
-						<ul class="list-inline news-v1-info">
-							<li><a href="#">Toronto</a></li>
-							<li>|</li>
-							<li><i class="fa fa-clock-o"></i> July 11 @ 8PM</li>
-							<li class="pull-right"><a href="#"><i class="fa fa-comments-o"></i> 14</a></li>
-						</ul>
-					</div>
-				</div>
-
-
-
-			</div>
-
-	<div class="heading heading-v4 margin-bottom-40">
+    <div class="heading heading-v4 margin-bottom-40">
         <h2>Events Near You</h2>
     </div>
 
 
-	<div class="row news-v1">
+    <div class="row news-v1">
+        <div class="col-md-4 md-margin-bottom-40">
+            <div class="news-v1-in">
+                <a href="#"><img class="img-responsive" src="{% static 'web/theme/img/main/img11.jpg' %}" alt=""></a>
 
-				<div class="col-md-4 md-margin-bottom-40">
-					<div class="news-v1-in">
-						<a href="#"><img class="img-responsive" src="{% static 'web/theme/img/main/img11.jpg' %}" alt=""></a>
-
-						<h3><a href="#">Runners</a></h3>
-						<p>Event Description</p>
-						<ul class="list-inline news-v1-info">
-							<li><a href="#">Toronto</a></li>
-							<li>|</li>
-							<li><i class="fa fa-clock-o"></i> July 11 @ 8PM</li>
-							<li class="pull-right"><a href="#"><i class="fa fa-comments-o"></i> 14</a></li>
-						</ul>
-					</div>
-				</div>
-
-
-
-			</div>
-
+                <h3><a href="#">Runners</a></h3>
+                <p>Event Description</p>
+                <ul class="list-inline news-v1-info">
+                    <li><a href="#">Toronto</a></li>
+                    <li>|</li>
+                    <li><i class="fa fa-clock-o"></i> July 11 @ 8PM</li>
+                    <li class="pull-right"><a href="#"><i class="fa fa-comments-o"></i> 14</a></li>
+                </ul>
+            </div>
+        </div>
     </div>
 
+    <div class="row news-v1">
+        <div class="col-md-4 md-margin-bottom-40">
+            <div class="news-v1-in">
+                <a href="#"><img class="img-responsive" src="{% static 'web/theme/img/main/img11.jpg' %}" alt=""></a>
 
+                <h3><a href="#">Runners</a></h3>
+                <p>Event Description</p>
+                <ul class="list-inline news-v1-info">
+                    <li><a href="#">Toronto</a></li>
+                    <li>|</li>
+                    <li><i class="fa fa-clock-o"></i> July 11 @ 8PM</li>
+                    <li class="pull-right"><a href="#"><i class="fa fa-comments-o"></i> 14</a></li>
+                </ul>
+            </div>
+        </div>
+    </div>
 
+    <div class="row news-v1">
+        <div class="col-md-4 md-margin-bottom-40">
+            <div class="news-v1-in">
+                <a href="#"><img class="img-responsive" src="{% static 'web/theme/img/main/img11.jpg' %}" alt=""></a>
 
+                <h3><a href="#">Runners</a></h3>
+                <p>Event Description</p>
+                <ul class="list-inline news-v1-info">
+                    <li><a href="#">Toronto</a></li>
+                    <li>|</li>
+                    <li><i class="fa fa-clock-o"></i> July 11 @ 8PM</li>
+                    <li class="pull-right"><a href="#"><i class="fa fa-comments-o"></i> 14</a></li>
+                </ul>
+            </div>
+        </div>
+    </div>
 
+    <div class="row news-v1">
+        <div class="col-md-4 md-margin-bottom-40">
+            <div class="news-v1-in">
+                <a href="#"><img class="img-responsive" src="{% static 'web/theme/img/main/img11.jpg' %}" alt=""></a>
 
+                <h3><a href="#">Runners</a></h3>
+                <p>Event Description</p>
+                <ul class="list-inline news-v1-info">
+                    <li><a href="#">Toronto</a></li>
+                    <li>|</li>
+                    <li><i class="fa fa-clock-o"></i> July 11 @ 8PM</li>
+                    <li class="pull-right"><a href="#"><i class="fa fa-comments-o"></i> 14</a></li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <div class="row news-v1">
+        <div class="col-md-4 md-margin-bottom-40">
+            <div class="news-v1-in">
+                <a href="#"><img class="img-responsive" src="{% static 'web/theme/img/main/img11.jpg' %}" alt=""></a>
+
+                <h3><a href="#">Runners</a></h3>
+                <p>Event Description</p>
+                <ul class="list-inline news-v1-info">
+                    <li><a href="#">Toronto</a></li>
+                    <li>|</li>
+                    <li><i class="fa fa-clock-o"></i> July 11 @ 8PM</li>
+                    <li class="pull-right"><a href="#"><i class="fa fa-comments-o"></i> 14</a></li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <div class="row news-v1">
+        <div class="col-md-4 md-margin-bottom-40">
+            <div class="news-v1-in">
+                <a href="#"><img class="img-responsive" src="{% static 'web/theme/img/main/img11.jpg' %}" alt=""></a>
+
+                <h3><a href="#">Runners</a></h3>
+                <p>Event Description</p>
+                <ul class="list-inline news-v1-info">
+                    <li><a href="#">Toronto</a></li>
+                    <li>|</li>
+                    <li><i class="fa fa-clock-o"></i> July 11 @ 8PM</li>
+                    <li class="pull-right"><a href="#"><i class="fa fa-comments-o"></i> 14</a></li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <div class="row news-v1">
+        <div class="col-md-4 md-margin-bottom-40">
+            <div class="news-v1-in">
+                <a href="#"><img class="img-responsive" src="{% static 'web/theme/img/main/img11.jpg' %}" alt=""></a>
+
+                <h3><a href="#">Runners</a></h3>
+                <p>Event Description</p>
+                <ul class="list-inline news-v1-info">
+                    <li><a href="#">Toronto</a></li>
+                    <li>|</li>
+                    <li><i class="fa fa-clock-o"></i> July 11 @ 8PM</li>
+                    <li class="pull-right"><a href="#"><i class="fa fa-comments-o"></i> 14</a></li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
 {% endblock %}
 
 
 {% block javascript %}
 
-<script type="text/javascript"
-        src="{% static 'web/theme/plugins/cube-portfolio/cubeportfolio/js/jquery.cubeportfolio.min.js' %}"></script>
-<script type="text/javascript" src="{% static 'web/theme/js/plugins/cube-portfolio/cube-portfolio-2.js' %}"></script>
+<!--<script type="text/javascript"-->
+<!--src="{% static 'web/theme/plugins/cube-portfolio/cubeportfolio/js/jquery.cubeportfolio.min.js' %}"></script>-->
+<!--<script type="text/javascript" src="{% static 'web/theme/js/plugins/cube-portfolio/cube-portfolio-2.js' %}"></script>-->
 
 {% endblock %}
