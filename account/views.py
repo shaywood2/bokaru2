@@ -41,7 +41,8 @@ def stuff_session(sender, user, request, **kwargs):
     try:
         account = Account.objects.get(user=user)
         if account.photo is not None and account.photo.name != '':
-            request.session['photo_url'] = account.photoThumbnail.url
+            request.session['photo_url'] = account.photo.url
+            request.session['thumbnail_url'] = account.photoThumbnail.url
 
         request.session['profile_incomplete'] = account.status == Account.CREATED
     except Account.DoesNotExist:
@@ -154,86 +155,104 @@ def update_photo(request):
 
 
 @login_required
-def password(request):
-    context = {}
-
-    return render(request, 'account/changepassword.html', context)
-
-
-@login_required
 def preferences(request):
     current_user = request.user
     preference = UserPreference.objects.get(user=current_user)
 
     if request.method == 'POST':
-        form = UserPreferenceForm(request.POST, request.FILES, instance=preference)
+        form = UserPreferenceForm(request.POST, instance=preference)
         if form.is_valid():
             form.save()
             # Redirect to view profile page
-            return HttpResponseRedirect(reverse('account:preferences'))
+            return HttpResponseRedirect(reverse('account:view'))
     else:
-        form = AccountForm(instance=preference)
+        form = UserPreferenceForm(instance=preference)
 
     return render(request, 'account/preferences.html', {'form': form})
 
 
 @login_required
-def history(request):
-    context = {}
+def preferences_payment(request):
+    current_user = request.user
 
-    return render(request, 'account/history.html', context)
+    if request.method == 'POST':
+        token = request.POST['stripeToken']
 
+        try:
+            # Retrieve the payment information for the user
+            payment_info = UserPaymentInfo.objects.get(user=request.user)
 
-@login_required
-def settings(request):
-    context = {
-        'test': "Account Settings Page",
-    }
+            # Delete existing credit card
+            if payment_info.credit_card_id != 0:
+                delete_card(payment_info.stripe_customer_id, payment_info.credit_card_id)
 
-    return render(request, 'account/settings.html', context)
+            # Create a card for an existing Customer
+            credit_card = create_card(payment_info.stripe_customer_id, token)
+            # Store the payment info
+            payment_info.credit_card_id = credit_card.id
+            payment_info.credit_card_brand = credit_card.brand
+            payment_info.credit_card_last_4 = credit_card.last4
+            payment_info.credit_card_exp_month = credit_card.exp_month
+            payment_info.credit_card_exp_year = credit_card.exp_year
+            payment_info.save()
+        except UserPaymentInfo.DoesNotExist:
+            # Create a Customer with a credit card
+            stripe_customer = create_customer(token, current_user.id, current_user.first_name + ' '
+                                              + current_user.last_name, current_user.email)
+
+            credit_card = stripe_customer.sources.data[0]
+
+            # Store the payment info
+            UserPaymentInfo.objects.get_or_create(
+                user=current_user,
+                defaults={'stripe_customer_id': stripe_customer.id,
+                          'credit_card_id': credit_card.id,
+                          'credit_card_brand': credit_card.brand,
+                          'credit_card_last_4': credit_card.last4,
+                          'credit_card_exp_month': credit_card.exp_month,
+                          'credit_card_exp_year': credit_card.exp_year}
+            )
+
+        return HttpResponseRedirect(reverse('account:payment'))
+    else:
+        # Retrieve the payment information for the user
+        try:
+            payment_info = UserPaymentInfo.objects.get(user=current_user)
+            if payment_info.has_card():
+                credit_card = {
+                    'brand': payment_info.credit_card_brand,
+                    'last4': payment_info.credit_card_last_4,
+                    'exp_month': payment_info.credit_card_exp_month,
+                    'exp_year': payment_info.credit_card_exp_year,
+                    'id': payment_info.credit_card_id,
+                }
+            else:
+                credit_card = None
+        except UserPaymentInfo.DoesNotExist:
+            credit_card = None
+
+        return render(request, 'account/preferences_payment.html', {
+            'credit_card': credit_card
+        })
 
 
 @login_required
 def close(request):
-    context = {
-        'test': "Close Account Page",
-    }
+    current_user = request.user
 
-    return render(request, 'account/close.html', context)
-
-
-@login_required
-def credit_card_view(request):
-    # Retrieve the payment information for the user
-    try:
-        payment_info = UserPaymentInfo.objects.get(user=request.user)
-        # stripe_id = payment_info.stripe_customer_id
-        # LOGGER.debug('Creating a test charge')
-        # create_charge(12345, 'cad', 'testing', 'cus_AQF6ZlxYXIKq0I')
-        # stripe_customer = retrieve_customer(stripe_id)
-        # if stripe_customer is not None:
-        #    credit_card = stripe_customer.sources.data[0]
-        if payment_info.has_card():
-            credit_card = {
-                'brand': payment_info.credit_card_brand,
-                'last4': payment_info.credit_card_last_4,
-                'exp_month': payment_info.credit_card_exp_month,
-                'exp_year': payment_info.credit_card_exp_year,
-                'id': payment_info.credit_card_id,
-            }
-        else:
-            credit_card = None
-    except UserPaymentInfo.DoesNotExist:
-        credit_card = None
-
-    return render(request, 'account/credit_card/view.html', {'credit_card': credit_card})
+    if request.method == 'POST':
+        current_user.is_active = False
+        current_user.save()
+        return HttpResponseRedirect(reverse('web:index'))
+    else:
+        return render(request, 'account/preferences_close_account.html')
 
 
 @login_required
-def credit_card_edit(request):
-    # Retrieve the payment information for the user
+def history(request):
+    current_user = request.user
 
-    return render(request, 'account/credit_card/edit.html')
+    return render(request, 'account/history.html')
 
 
 @login_required
@@ -360,70 +379,20 @@ def credit_card_register_and_pay(request, group_id):
 
     return HttpResponseRedirect(reverse('web:event_join', kwargs={'group_id': group_id}))
 
-
-@login_required
-def credit_card_register_orig(request):
-    current_user = request.user
-    card_found = False
-
-    # Get the credit card details submitted by the form
-    token = request.POST['stripeToken']
-
-    try:
-        # Retrieve the payment information for the user
-        payment_info = UserPaymentInfo.objects.get(user=request.user)
-        if payment_info.has_card():
-            card_found = True
-        else:
-            # Create a card for an existing Customer
-            credit_card = create_card(payment_info.stripe_customer_id, token)
-            # Store the payment info
-            payment_info.credit_card_id = credit_card.id
-            payment_info.credit_card_brand = credit_card.brand
-            payment_info.credit_card_last_4 = credit_card.last4
-            payment_info.credit_card_exp_month = credit_card.exp_month
-            payment_info.credit_card_exp_year = credit_card.exp_year
-            payment_info.save()
-    except UserPaymentInfo.DoesNotExist:
-        # Create a Customer with a credit card
-        stripe_customer = create_customer(token, current_user.id, current_user.first_name + ' '
-                                          + current_user.last_name, current_user.email)
-
-        credit_card = stripe_customer.sources.data[0]
-
-        # Store the payment info
-        payment_info, created = UserPaymentInfo.objects.get_or_create(
-            user=current_user,
-            defaults={'stripe_customer_id': stripe_customer.id,
-                      'credit_card_id': credit_card.id,
-                      'credit_card_brand': credit_card.brand,
-                      'credit_card_last_4': credit_card.last4,
-                      'credit_card_exp_month': credit_card.exp_month,
-                      'credit_card_exp_year': credit_card.exp_year}
-        )
-
-    context = {
-        'payment_info': payment_info,
-        'card_found': card_found
-    }
-
-    return render(request, 'account/credit_card/register_success.html', context)
-
-
-@login_required
-def credit_card_remove(request):
-    deleted = False
-
-    try:
-        # Retrieve the payment information for the user
-        payment_info = UserPaymentInfo.objects.get(user=request.user)
-        if payment_info.has_card():
-            deleted = delete_card(payment_info.stripe_customer_id, payment_info.credit_card_id)
-            payment_info.delete_card()
-            card_found = True
-        else:
-            card_found = False
-    except UserPaymentInfo.DoesNotExist:
-        card_found = False
-
-    return render(request, 'account/credit_card/delete_card.html', {'deleted': deleted, 'card_found': card_found})
+# @login_required
+# def credit_card_remove(request):
+#     deleted = False
+#
+#     try:
+#         # Retrieve the payment information for the user
+#         payment_info = UserPaymentInfo.objects.get(user=request.user)
+#         if payment_info.has_card():
+#             deleted = delete_card(payment_info.stripe_customer_id, payment_info.credit_card_id)
+#             payment_info.delete_card()
+#             card_found = True
+#         else:
+#             card_found = False
+#     except UserPaymentInfo.DoesNotExist:
+#         card_found = False
+#
+#     return render(request, 'account/credit_card/delete_card.html', {'deleted': deleted, 'card_found': card_found})

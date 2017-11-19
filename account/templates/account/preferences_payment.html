@@ -1,0 +1,121 @@
+{% extends 'account/base_preferences.html' %}
+
+{% load staticfiles %}
+{% load widget_tweaks %}
+
+{% block title %}Bokaru | Preferences {% endblock %}
+
+{% block sub_nav_location %}sub-nav-payment{% endblock %}
+
+{% block profile_content %}
+<h2>Manage your Payment Methods</h2>
+<h5>Register a credit card that you will use to pay for events.</h5>
+<p>You will be charged 24 hours before the event's start.</p>
+
+{% if credit_card %}
+<div class="row">
+    <div class="col-lg-8">
+        <div class="u-shadow-v22 g-bg-white g-pa-30 g-my-30">
+            <div class="media">
+                <div class="d-flex mr-4">
+                <span class="g-color-gray-dark-v4 g-font-size-26">
+                    <i class="icon-credit-card"></i>
+                </span>
+                </div>
+                <div class="media-body">
+                    <h5 class="g-color-black mb-20"><strong>{{ credit_card.brand }}</strong>&nbsp xxxx xxxx xxxx {{ credit_card.last4 }}</h5>
+                    <p>Expiration: {{ credit_card.exp_month }}/{{ credit_card.exp_year }}</p>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-12">
+        <button id="update_button" class="btn btn-lg btn-block u-btn-primary g-mb-10 rounded-0">Update payment method</button>
+    </div>
+</div>
+{% endif %}
+
+<form method="post" id="stripe-form" style="display: none">
+    {% csrf_token %}
+    <div class="row">
+        <div class="col-lg-8">
+            <div id="card-element">
+                <!-- a Stripe Element will be inserted here. -->
+            </div>
+
+            <!-- Used to display form errors -->
+            <div id="card-errors" role="alert"></div>
+        </div>
+        <div class="col-lg-4">
+            <button id="register_button" class="btn btn-lg btn-block u-btn-primary g-mb-10 rounded-0">Register Credit Card</button>
+        </div>
+    </div>
+</form>
+
+{% endblock %}
+
+{% block javascript %}
+<script type="text/javascript">
+{% if credit_card %}
+let stripe_form = $('#stripe-form')
+
+let update_button = $('#update_button')
+update_button.click(function() {
+    stripe_form.show()
+    update_button.hide()
+})
+{% else %}
+let stripe_form = $('#stripe-form')
+stripe_form.show()
+{% endif %}
+
+// Stripe script
+let stripe = Stripe('pk_test_UiyVevDApASul2gRmo7TcDjF')
+let elements = stripe.elements()
+let card = elements.create('card')
+card.mount('#card-element')
+let register_button = $('#register_button')
+
+// Handle real-time validation errors from the card Element.
+card.addEventListener('change', function(event) {
+  var displayError = document.getElementById('card-errors')
+  if (event.error) {
+    displayError.textContent = event.error.message;
+  } else {
+    displayError.textContent = ''
+  }
+});
+
+// Handle form submission
+var form = document.getElementById('stripe-form')
+form.addEventListener('submit', function(event) {
+  event.preventDefault();
+  register_button.prop('disabled', true)
+
+  stripe.createToken(card).then(function(result) {
+    if (result.error) {
+      // Inform the user if there was an error
+      var errorElement = document.getElementById('card-errors')
+      errorElement.textContent = result.error.message
+      register_button.prop('disabled', false)
+    } else {
+      // Send the token to your server
+      stripeTokenHandler(result.token)
+    }
+  });
+});
+
+function stripeTokenHandler(token) {
+  // Insert the token ID into the form so it gets submitted to the server
+  var form = document.getElementById('stripe-form')
+  var hiddenInput = document.createElement('input')
+  hiddenInput.setAttribute('type', 'hidden')
+  hiddenInput.setAttribute('name', 'stripeToken')
+  hiddenInput.setAttribute('value', token.id)
+  form.appendChild(hiddenInput)
+
+  // Submit the form
+  form.submit()
+}
+</script>
+{% endblock %}

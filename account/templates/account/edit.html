@@ -6,8 +6,7 @@
 {% block title %}Bokaru | Edit profile{% endblock %}
 
 {% block header %}
-<script src="//maps.googleapis.com/maps/api/js?libraries=places&key=AIzaSyBTwfHuVilarsPOOE4Opm4GaG9I2dfbyCw"
-        type="text/javascript"></script>
+<script src="//maps.googleapis.com/maps/api/js?libraries=places&key=AIzaSyBTwfHuVilarsPOOE4Opm4GaG9I2dfbyCw" type="text/javascript"></script>
 {% endblock %}
 
 {% block content %}
@@ -62,7 +61,7 @@
                     </div>
                     {% endif %}
 
-                    <!-- Name -->
+                    <!-- Username -->
                     <h2 class="g-font-weight-600 g-mr-10">{{ user.username }}</h2>
                     <hr class="g-brd-gray-light-v4 g-my-20">
 
@@ -837,6 +836,7 @@ function initMap() {
 }
 
 google.maps.event.addDomListener(window, 'load', initMap);
+
 
 </script>
 

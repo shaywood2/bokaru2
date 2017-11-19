@@ -44,33 +44,33 @@
             <!-- Navigation -->
             <div class="js-mega-menu collapse navbar-collapse align-items-center flex-sm-row" id="navBar">
                 <ul class="navbar-nav text-uppercase g-font-weight-600 ml-auto u-main-nav-v5">
-                    <li class="nav-item g-mx-20--lg g-mb-5 g-mb-0--lg {% if request.path == '/' %}active{% endif %}">
+                    <li id="nav_home" class="nav-item g-mx-20--lg g-mb-5 g-mb-0--lg">
                         <a href="{% url 'web:index' %}" class="nav-link">Home</a>
                     </li>
-                    <li class="nav-item g-mx-20--lg">
+                    <li id="nav_search" class="nav-item g-mx-20--lg">
                         <a href="{% url 'web:search' %}" class="nav-link">Find Events</a>
                     </li>
 
                     <!-- User links -->
                     {% if user.is_authenticated %}
-                    <li class="nav-item g-mx-20--lg">
+                    <li id="nav_create_event"  class="nav-item g-mx-20--lg">
                         <a href="{% url 'web:myevents' %}" class="nav-link">Create Event</a>
                     </li>
-                    <li class="nav-item g-mx-20--lg">
+                    <li id="nav_events" class="nav-item g-mx-20--lg">
                         <a href="{% url 'web:myevents' %}" class="nav-link">My Events</a>
                     </li>
-                    <li class="nav-item g-mx-20--lg">
+                    <li id="nav_matches" class="nav-item g-mx-20--lg">
                         <a href="{% url 'web:matches' %}" class="nav-link">Matches</a>
                     </li>
                     <!-- Account submenu -->
                     <li class="nav-item hs-has-sub-menu g-mx-20--lg" data-event="click">
                         <a href="#" class="nav-link dropdown-toggle g-py-0 g-brd-none" id="account-dropdown-invoker"
                            aria-haspopup="true" aria-expanded="false" aria-controls="account-dropdown">
-                            {% if request.session.photo_url is None or request.session.photo_url == '' %}
+                            {% if request.session.thumbnail_url is None or request.session.thumbnail_url == '' %}
                             <img class="img-fluid rounded-circle" src="{% static 'account/images/default-avatar.png' %}"
                                  width="30px" height="30px" alt="Default picture" id="default_avatar"/>
                             {% else %}
-                            <img class="img-fluid rounded-circle" src="{{ request.session.photo_url }}" alt="Profile picture"/>
+                            <img class="img-fluid rounded-circle" src="{{ request.session.thumbnail_url }}" alt="Profile picture"/>
                             {% endif %}
                             <!-- username -->
                             <span class="g-hidden-md-up">{{user.username}}</span>
@@ -79,21 +79,17 @@
                         <ul id="account-dropdown"
                             class="hs-sub-menu list-unstyled g-text-transform-none g-min-width-200 g-mt-15 g-mt-10--lg--scrolling u-shadow-v1-5 g-brd-top g-brd-primary g-brd-top-2"
                             aria-labelledby="account-dropdown-invoker">
-                            <li class="dropdown-item {% if request.path == '/profile/' %}active{% endif %}">
+                            <li id="nav_profile" class="dropdown-item">
                                 <a class="nav-link g-px-0"
                                    href="{% url 'account:view' %}">View Profile</a>
                             </li>
-                            <li class="dropdown-item">
+                            <li id="nav_account" class="dropdown-item">
                                 <a class="nav-link g-px-0"
-                                   href="{% url 'account:preferences' %}">My Account</a>
+                                   href="{% url 'account:preferences' %}">Edit Account</a>
                             </li>
                             <li class="dropdown-item">
                                 <a class="nav-link g-px-0"
-                                   href="{% url 'account:settings' %}">Settings</a>
-                            </li>
-                            <li class="dropdown-item">
-                                <a class="nav-link g-px-0"
-                                   href="{% url 'auth_logout' %}">Log out</a>
+                                   href="{% url 'auth_logout' %}">Logout</a>
                             </li>
                         </ul>
                         <!-- End Profile links -->
@@ -116,6 +112,14 @@
     </div>
 </header>
 <!-- Header End -->
+
+<!-- Navigation script -->
+<script type="text/javascript">
+    let navLocation = '{% block nav_location %}{% endblock %}'
+    let e = document.getElementById(navLocation)
+    if (!!e)
+        e.className += ' active'
+</script>
 
 {% block content %}
 {% endblock %}

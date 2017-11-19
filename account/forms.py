@@ -190,4 +190,4 @@ class PhotoForm(forms.Form):
 class UserPreferenceForm(ModelForm):
     class Meta:
         model = UserPreference
-        exclude = ['user', 'locationCoordinates']
+        exclude = ['user', 'ageMin', 'ageMax', 'numGroups', 'eventType', 'eventSize']

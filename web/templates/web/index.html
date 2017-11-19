@@ -2,8 +2,9 @@
 
 {% load staticfiles %}
 
-{% block content %}
+{% block nav_location %}nav_home{% endblock %}
 
+{% block content %}
 <div class="container content-md">
     <h2 class="heading-md search_title">Find Events Near You</h2>
     <form method="post" action="{% url 'web:search' %}">
