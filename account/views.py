@@ -249,13 +249,6 @@ def close(request):
 
 
 @login_required
-def history(request):
-    current_user = request.user
-
-    return render(request, 'account/history.html')
-
-
-@login_required
 def event_pay(request, group_id):
     # Retrieve the payment information for the user
     try:
