@@ -3,7 +3,8 @@
 
 {% block main %}
 <!-- Header -->
-<header id="js-header" class="u-header u-header--absolute-top g-mb-25">
+<!--<header id="js-header" class="u-header u-header&#45;&#45;absolute-top g-mb-25">-->
+<header id="js-header" class="u-header u-header--sticky-top u-header--change-logo u-header--change-appearance" data-header-fix-moment="100">
     <!-- Message Bar -->
     {% if request.session.profile_incomplete or request.session.profile_suspended %}
     <div class="u-header__section u-header__section--hidden u-header__section--dark g-bg-black g-transition-0_3 g-py-10">
@@ -22,7 +23,10 @@
     {% endif %}
     <!-- Message Bar End -->
 
-    <div class="u-header__section u-header__section--light g-bg-white u-shadow-v18">
+    <div class="u-header__section u-header__section--light g-bg-white-opacity-0_7 g-transition-0_3 g-py-10"
+         data-header-fix-moment-exclude="u-header__section--light g-bg-white-opacity-0_7 g-py-10"
+         data-header-fix-moment-classes="u-header__section--light g-bg-white u-shadow-v18 g-py-0">
+        <!--<div class="u-header__section u-header__section&#45;&#45;light g-bg-white u-shadow-v18">-->
         <nav class="js-mega-menu navbar navbar-expand-lg">
             <!-- Responsive Toggle Button -->
             <button class="navbar-toggler navbar-toggler-right btn g-line-height-1 g-brd-none g-pa-0 g-pos-abs g-top-3 g-right-0"
@@ -53,8 +57,8 @@
 
                     <!-- User links -->
                     {% if request.user.is_authenticated %}
-                    <li id="nav_create_event"  class="nav-item g-mx-20--lg">
-                        <a href="{% url 'web:search' %}" class="nav-link">Create Event</a>
+                    <li id="nav_create_event" class="nav-item g-mx-20--lg">
+                        <a href="{% url 'event:create' %}" class="nav-link">Create Event</a>
                     </li>
                     <li id="nav_events" class="nav-item g-mx-20--lg">
                         <a href="{% url 'web:search' %}" class="nav-link">My Events</a>
@@ -111,7 +115,13 @@
         </nav>
     </div>
 </header>
-<!-- Header End -->
+
+<!-- Owl banner -->
+<section class="g-py-80--md g-mb-minus-20--md g-py-50 g-mb-20 owl-background-repeat"></section>
+<!-- End Owl banner -->
+
+{% block content %}
+{% endblock %}
 
 <!-- Navigation script -->
 <script type="text/javascript">
@@ -120,8 +130,4 @@
     if (!!e)
         e.className += ' active'
 </script>
-
-{% block content %}
-{% endblock %}
-
 {% endblock %}

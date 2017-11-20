@@ -18,7 +18,7 @@
             <div class="row">
                 <div class="col-lg-4 g-mb-40 g-mb-0--lg">
                     <!-- User Image -->
-                    <div class="g-mb-20">
+                    <div class="u-shadow-v2 g-brd-around g-brd-gray-light-v4 g-line-height-2 g-mb-20">
                         {% if photo_url == None %}
                         <img class="img-fluid w-100" src="{% static 'account/images/default-avatar.png' %}"
                              alt="Default picture" id="default_avatar"/>
@@ -44,7 +44,7 @@
                     <small>This section will be only visible to your matches.</small>
                 </div>
 
-                <div class="col-lg-8">
+                <div class="col-lg-8 g-mt-25--md">
                     <!-- errors -->
                     {% if form.non_field_errors %}
                     <div class="alert fade show g-bg-red-opacity-0_1 g-color-lightred rounded-0" role="alert">

@@ -21,13 +21,15 @@
                                   action="{% url 'account:update_photo' %}">
                                 {% csrf_token %}
 
-                                {% if account.photo is None or account.photo.name == '' %}
-                                <img class="img-fluid w-100" src="{% static 'account/images/default-avatar.png' %}"
-                                     alt="Default picture" id="default_avatar"/>
-                                {% else %}
-                                <img class="img-fluid w-100" src="{{ account.photo.url }}" alt="Profile picture"
-                                     id="avatar"/>
-                                {% endif %}
+                                <div class="u-shadow-v2 g-brd-around g-brd-gray-light-v4 g-line-height-2 g-mb-20">
+                                    {% if account.photo is None or account.photo.name == '' %}
+                                    <img class="img-fluid w-100" src="{% static 'account/images/default-avatar.png' %}"
+                                         alt="Default picture" id="default_avatar"/>
+                                    {% else %}
+                                    <img class="img-fluid w-100" src="{{ account.photo.url }}" alt="Profile picture"
+                                         id="avatar"/>
+                                    {% endif %}
+                                </div>
 
                                 <!-- errors -->
                                 {% if form.errors %}
@@ -59,7 +61,7 @@
                         </div>
                     </div>
                     {% if profile_incomplete %}
-                    <div class="col-lg-6">
+                    <div class="col-lg-6 g-mt-25--md">
                         <h2 class="g-font-weight-300 g-mr-10 g-my-100" style="text-align: center;">
                             Nothing here yet.
                         </h2>
@@ -70,7 +72,7 @@
                         </a>
                     </div>
                     {% else %}
-                    <div class="col-lg-6">
+                    <div class="col-lg-6 g-mt-25--md">
                         <!-- Name -->
                         <h2 class="g-font-weight-300 g-mr-10">{{ account.fullName }}</h2>
 

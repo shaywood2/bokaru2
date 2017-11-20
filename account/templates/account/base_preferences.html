@@ -14,7 +14,7 @@
             <!-- Profile Sidebar -->
             <div class="col-lg-4 g-mb-50 g-mb-0--lg">
                 <!-- User Image -->
-                <div>
+                <div class="u-shadow-v2 g-brd-around g-brd-bottom-none g-brd-gray-light-v4 g-line-height-2">
                     {% if request.session.photo_url is None or request.session.photo_url == '' %}
                     <img class="img-fluid w-100" src="{% static 'account/images/default-avatar.png' %}"
                          alt="Default picture" id="default_avatar"/>
@@ -39,7 +39,7 @@
                     </a>
                 </div>
             </div>
-            <div class="col-lg-8">
+            <div class="col-lg-8 g-mt-25--md">
                 {% block profile_content %}
                 {% endblock %}
             </div>

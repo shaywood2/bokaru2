@@ -15,7 +15,7 @@ from .models import Event, EventGroup
 logger = logging.getLogger(__name__)
 
 
-def event_view(request, event_id):
+def view(request, event_id):
     selected_event = get_object_or_404(Event, pk=event_id)
     event_groups = list(selected_event.eventgroup_set.all())
 
@@ -62,7 +62,7 @@ def event_view(request, event_id):
 
 
 @login_required
-def event_create(request):
+def create(request):
     current_user = request.user
 
     group_formset = formset_factory(EventGroupForm, extra=1, min_num=1, validate_min=True)
@@ -108,7 +108,7 @@ def event_create(request):
 
 
 @login_required
-def event_join(request, group_id):
+def join(request, group_id):
     current_user = request.user
     selected_group = get_object_or_404(EventGroup, pk=group_id)
     selected_event = selected_group.event
