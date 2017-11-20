@@ -10,6 +10,8 @@ urlpatterns = [
     url(r'^account$', views.preferences, name='preferences'),
     url(r'^account/payment$', views.preferences_payment, name='payment'),
     url(r'^account/close$', views.close, name='close'),
+    # Usage example: $.post( "/memo/about/2/", "lorem ipsum dolor sit amet");
+    url(r'^memo/about/(?P<about_user_id>\d+)/$', views.create_or_update_memo, name='memo')
     # url(r'^account/payment/edit$', views.credit_card_edit, name='credit_card_edit'),
     # url(r'^event/pay/(?P<group_id>\d+)$', views.event_pay, name='event_pay'),
     # url(r'^credit_card/register$', views.credit_card_register, name='credit_card_register'),

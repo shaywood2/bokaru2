@@ -8,13 +8,13 @@ from django.utils import timezone
 
 from chat import utils
 from money.models import Product
-from web.models import Event, EventGroup
+from event.models import Event, EventGroup
 
 # Disable logging
 logging.disable(logging.CRITICAL)
 
 
-# Test the model EventGroup
+# Test the scheduling algorithms
 class UtilsTest(TestCase):
     def test_generate_date_matrix_two_groups(self):
         cache.clear()

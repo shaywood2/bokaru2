@@ -2,6 +2,11 @@
     background: url(../images/background-owls.jpg) repeat;
 }
 
+.btn.disabled, .btn:disabled {
+    opacity: .5;
+    cursor: not-allowed;
+}
+
 .bg-color-medium-grey {
     background-color: #404041 !important;
 }

@@ -8,7 +8,8 @@ from django.core.cache import cache
 from django.utils.timezone import utc
 
 from account.models import Account
-from web.models import Event, Memo
+from event.models import Event
+from account.models import Memo
 
 LOGGER = logging.getLogger(__name__)
 
@@ -190,8 +191,6 @@ def get_current_date(user_id, event_id):
         # Check if the date number is not in the matrix
         if date_num not in date_matrix[user_id]:
             return None
-
-
 
         # Get the paired user based on the date matrix
         date = date_matrix[user_id][date_num]

@@ -3,6 +3,7 @@ import logging
 
 from PIL import Image
 from django.conf import settings
+from django.contrib.auth import get_user_model
 from django.contrib.gis.db import models as gis_models
 from django.contrib.gis.geos import Point
 from django.core.files.storage import default_storage
@@ -13,7 +14,7 @@ from django.utils.crypto import get_random_string
 from imagekit.models import ImageSpecField
 from imagekit.processors import ResizeToFill
 
-from web.models import Event
+from event.models import Event
 
 logger = logging.getLogger(__name__)
 
@@ -353,3 +354,45 @@ class UserPreference(models.Model):
 
     def __str__(self):
         return str(self.user)
+
+
+class MemoManager(models.Manager):
+    def create_or_update_memo(self, owner, about, content):
+        # Check if the memo exists
+        try:
+            m = self.get(owner=owner, about=about)
+            # Update content
+            m.content = content
+        except Memo.DoesNotExist:
+            m = Memo(owner=owner, about=about, content=content)
+
+        m.save()
+        return m
+
+    def create_or_update_memo_by_id(self, owner, about_id, content):
+        about = get_user_model().objects.get(id=about_id)
+
+        return self.create_or_update_memo(owner, about, content)
+
+    def get_memo_content(self, owner, about):
+        try:
+            m = self.get(owner=owner, about=about)
+            return str(m.content)
+        except Memo.DoesNotExist:
+            return ''
+
+
+class Memo(models.Model):
+    owner = models.ForeignKey(settings.AUTH_USER_MODEL, related_name='owner')
+    about = models.ForeignKey(settings.AUTH_USER_MODEL, related_name='about')
+    content = models.TextField(max_length=2000, blank=True)
+
+    # Automatic timestamps
+    created = models.DateTimeField(auto_now_add=True)
+    updated = models.DateTimeField(auto_now=True)
+
+    # Custom manager
+    objects = MemoManager()
+
+    def __str__(self):
+        return str(self.owner) + ' (' + str(self.about) + '): ' + self.content

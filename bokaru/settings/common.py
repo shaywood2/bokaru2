@@ -21,6 +21,7 @@ INSTALLED_APPS = [
     'web.apps.WebConfig',
     'money.apps.MoneyConfig',
     'account.apps.AccountConfig',
+    'event.apps.EventConfig',
     'chat.apps.ChatConfig',
     'django.contrib.admin',
     'django.contrib.auth',
@@ -30,7 +31,8 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'imagekit',
-    'widget_tweaks'
+    'widget_tweaks',
+    'formtools'
 ]
 
 MIDDLEWARE_CLASSES = [

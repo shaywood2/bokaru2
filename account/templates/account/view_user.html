@@ -65,8 +65,9 @@
                         <div class="form-group g-mb-20">
                             <textarea id="memo" class="form-control form-control-md rounded-0" rows="5"
                                       placeholder="Memo">{{memo}}</textarea>
-                            <small id="saving">Saving...</small>
                         </div>
+                        <button id="save_memo_button" class="btn btn-lg btn-block u-btn-primary rounded-0 g-py-12">Save memo</button>
+                        <small id="saving" style="display: none">Saving...</small>
                         {% endif %}
                     </div>
                     {% endif %}
@@ -162,10 +163,10 @@
         </div>
     </div>
 </section>
+<!-- End User Block -->
 
 {% csrf_token %}
 
-<!-- End User Block -->
 {% endblock %}
 
 {% block javascript %}
@@ -175,10 +176,9 @@ $(document).on('ready', function () {
     let csrftoken = $('[name=csrfmiddlewaretoken]').val()
     let memo = $('#memo')
     let saving = $('#saving')
-    saving.hide()
+    let save_memo_button = $('#save_memo_button')
 
-    // Save notes on edit
-    memo.blur(function() {
+    save_memo_button.click(function() {
         let text = memo.val()
         $.ajaxSetup({
             headers: {
@@ -191,7 +191,6 @@ $(document).on('ready', function () {
         });
     })
 })
-
 </script>
 
 {% endblock %}
