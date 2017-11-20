@@ -52,7 +52,7 @@
                     </li>
 
                     <!-- User links -->
-                    {% if user.is_authenticated %}
+                    {% if request.user.is_authenticated %}
                     <li id="nav_create_event"  class="nav-item g-mx-20--lg">
                         <a href="{% url 'web:search' %}" class="nav-link">Create Event</a>
                     </li>
