@@ -4,7 +4,7 @@ from django.contrib.auth.models import User
 from django.utils import timezone
 
 from money.models import Product
-from web.models import Event, EventGroup
+from event.models import Event, EventGroup
 from account.models import Account
 
 

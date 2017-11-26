@@ -4,15 +4,16 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 from django.contrib.auth.signals import user_logged_in
 from django.http import HttpResponseRedirect
+from django.http import JsonResponse
 from django.shortcuts import get_object_or_404, render
 from django.urls import reverse
 from registration.backends.hmac.views import RegistrationView as BaseRegistrationView
 
 from money.models import UserPaymentInfo
 from money.payment_service import create_customer, delete_card, create_card
-from web.models import Memo, Pick
+from event.models import Pick
 from .forms import RegistrationForm, AccountForm, UserPreferenceForm, PhotoForm
-from .models import Account, UserPreference
+from .models import Account, UserPreference, Memo
 
 logger = logging.getLogger(__name__)
 
@@ -45,6 +46,7 @@ def stuff_session(sender, user, request, **kwargs):
             request.session['thumbnail_url'] = account.photoThumbnail.url
 
         request.session['profile_incomplete'] = account.status == Account.CREATED
+        request.session['profile_suspended'] = account.status == Account.SUSPENDED
     except Account.DoesNotExist:
         return
 
@@ -249,13 +251,6 @@ def close(request):
 
 
 @login_required
-def history(request):
-    current_user = request.user
-
-    return render(request, 'account/history.html')
-
-
-@login_required
 def event_pay(request, group_id):
     # Retrieve the payment information for the user
     try:
@@ -396,3 +391,13 @@ def credit_card_register_and_pay(request, group_id):
 #         card_found = False
 #
 #     return render(request, 'account/credit_card/delete_card.html', {'deleted': deleted, 'card_found': card_found})
+
+
+@login_required
+def create_or_update_memo(request, about_user_id):
+    if request.method == 'POST':
+        # Get content from the body
+        content = request.body.decode('utf-8')
+        memo = Memo.objects.create_or_update_memo_by_id(request.user, about_user_id, content)
+
+        return JsonResponse({'owner': str(memo.owner), 'about': str(memo.about), 'content': str(memo.content)})

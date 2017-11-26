@@ -3,6 +3,7 @@ import logging
 
 from PIL import Image
 from django.conf import settings
+from django.contrib.auth import get_user_model
 from django.contrib.gis.db import models as gis_models
 from django.contrib.gis.geos import Point
 from django.core.files.storage import default_storage
@@ -12,8 +13,6 @@ from django.utils import timezone
 from django.utils.crypto import get_random_string
 from imagekit.models import ImageSpecField
 from imagekit.processors import ResizeToFill
-
-from web.models import Event
 
 logger = logging.getLogger(__name__)
 
@@ -265,7 +264,7 @@ class Account(models.Model):
         result = []
 
         if self.lookingForGenderList != '':
-            result.append('Looking for ' + ', '.join(self.lookingForGenderList.split('|')))
+            result.append(', '.join(self.lookingForGenderList.split('|')))
 
         if self.lookingForAgeMin and self.lookingForAgeMax:
             result.append('ages ' + str(self.lookingForAgeMin) + '-' + str(self.lookingForAgeMax))
@@ -331,14 +330,30 @@ class UserPreference(models.Model):
         ('km', 'Kilometers'),
         ('m', 'Miles')
     )
+    NUM_GROUPS = [
+        (1, 'One group (talk to everyone)'),
+        (2, 'Two groups (talk to all members of the opposite group)')
+    ]
+    SERIOUS = 1
+    CASUAL = 2
+    HOOKUP = 3
+    FRIENDSHIP = 4
+    MARRIAGE = 5
+    TYPES = [
+        (MARRIAGE, 'Marriage'),
+        (SERIOUS, 'Serious relationship'),
+        (CASUAL, 'Casual dating'),
+        (HOOKUP, 'Casual hookup'),
+        (FRIENDSHIP, 'Friendship')
+    ]
 
     user = models.ForeignKey(settings.AUTH_USER_MODEL)
     # Event preferences
     ageMin = models.PositiveSmallIntegerField(validators=[MinValueValidator(18)], default=18)
     ageMax = models.PositiveSmallIntegerField(validators=[MinValueValidator(18)], default=99)
     numGroups = models.PositiveSmallIntegerField(validators=[MinValueValidator(1), MaxValueValidator(2)],
-                                                 choices=Event.NUM_GROUPS, blank=True, null=True)
-    eventType = models.PositiveSmallIntegerField(choices=Event.TYPES, blank=True, null=True)
+                                                 choices=NUM_GROUPS, blank=True, null=True)
+    eventType = models.PositiveSmallIntegerField(choices=TYPES, blank=True, null=True)
     eventSize = models.PositiveSmallIntegerField(choices=EVENT_SIZES, blank=True, null=True)
 
     # Communication preferences
@@ -353,3 +368,45 @@ class UserPreference(models.Model):
 
     def __str__(self):
         return str(self.user)
+
+
+class MemoManager(models.Manager):
+    def create_or_update_memo(self, owner, about, content):
+        # Check if the memo exists
+        try:
+            m = self.get(owner=owner, about=about)
+            # Update content
+            m.content = content
+        except Memo.DoesNotExist:
+            m = Memo(owner=owner, about=about, content=content)
+
+        m.save()
+        return m
+
+    def create_or_update_memo_by_id(self, owner, about_id, content):
+        about = get_user_model().objects.get(id=about_id)
+
+        return self.create_or_update_memo(owner, about, content)
+
+    def get_memo_content(self, owner, about):
+        try:
+            m = self.get(owner=owner, about=about)
+            return str(m.content)
+        except Memo.DoesNotExist:
+            return ''
+
+
+class Memo(models.Model):
+    owner = models.ForeignKey(settings.AUTH_USER_MODEL, related_name='owner')
+    about = models.ForeignKey(settings.AUTH_USER_MODEL, related_name='about')
+    content = models.TextField(max_length=2000, blank=True)
+
+    # Automatic timestamps
+    created = models.DateTimeField(auto_now_add=True)
+    updated = models.DateTimeField(auto_now=True)
+
+    # Custom manager
+    objects = MemoManager()
+
+    def __str__(self):
+        return str(self.owner) + ' (' + str(self.about) + '): ' + self.content

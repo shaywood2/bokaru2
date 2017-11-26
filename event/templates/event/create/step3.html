@@ -1,0 +1,239 @@
+{% extends 'web/base_nav.html' %}
+
+{% load staticfiles %}
+{% load widget_tweaks %}
+
+{% block title %}Bokaru | Create event{% endblock %}
+
+{% block nav_location %}nav_create_event{% endblock %}
+
+{% block content %}
+<!-- Event Block -->
+<section class="g-mb-100">
+    <form method="post">
+        {% csrf_token %}
+        {{ wizard.management_form }}
+        <div class="container">
+            <div class="row g-mt-50--md g-mb-25">
+                <div class="col-lg-12 text-center">
+                    <h2>Create a new event</h2>
+                </div>
+            </div>
+
+            <!-- Progress bar -->
+            <div class="row g-mb-25">
+                <div class="col-lg-2">
+                    <div class="text-center">
+                        <i class="u-dot-line-v2-2 g-brd-transparent--before g-brd-gray-light-v2--after g-mt-5">
+                            <span class="u-dot-line-v2__inner g-bg-white--before g-brd-gray-light-v2--before"></span>
+                        </i>
+                    </div>
+                </div>
+                <div class="col-lg-2">
+                    <div class="text-center">
+                        <i class="u-dot-line-v2-2 g-brd-gray-light-v2--before g-brd-gray-light-v2--after g-mt-5">
+                            <span class="u-dot-line-v2__inner g-bg-white--before g-brd-gray-light-v2--before"></span>
+                        </i>
+                    </div>
+                </div>
+                <!-- Big dot -->
+                <div class="col-lg-2">
+                    <div class="text-center">
+                        <i class="u-dot-line-v1-2 g-brd-gray-light-v2--before g-brd-gray-light-v2--after">
+                            <span class="u-dot-line-v1__inner g-bg-white g-bg-primary--before g-brd-gray-light-v2"></span>
+                        </i>
+                    </div>
+                </div>
+                <div class="col-lg-2">
+                    <div class="text-center">
+                        <i class="u-dot-line-v2-2 g-brd-gray-light-v2--before g-brd-gray-light-v2--after g-mt-5">
+                            <span class="u-dot-line-v2__inner g-bg-white--before g-brd-gray-light-v2--before"></span>
+                        </i>
+                    </div>
+                </div>
+                <div class="col-lg-2">
+                    <div class="text-center">
+                        <i class="u-dot-line-v2-2 g-brd-gray-light-v2--before g-brd-gray-light-v2--after g-mt-5">
+                            <span class="u-dot-line-v2__inner g-bg-white--before g-brd-gray-light-v2--before"></span>
+                        </i>
+                    </div>
+                </div>
+                <div class="col-lg-2">
+                    <div class="text-center">
+                        <i class="u-dot-line-v2-2 g-brd-gray-light-v2--before g-brd-transparent--after g-mt-5">
+                            <span class="u-dot-line-v2__inner g-bg-white--before g-brd-gray-light-v2--before"></span>
+                        </i>
+                    </div>
+                </div>
+            </div>
+            <!-- Progress bar end -->
+
+            <div class="row g-mb-25">
+                <div class="col-lg-12 text-center">
+                    <h3>How many groups will your event have?</h3>
+                    <h5>Select one option</h5>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-6 g-offset-md-3">
+                    <!-- errors -->
+                    {% if wizard.form.non_field_errors %}
+                    <div class="alert fade show g-bg-red-opacity-0_1 g-color-lightred rounded-0" role="alert">
+                        <div class="media">
+                            <div class="d-flex g-mr-10">
+                                <i></i>
+                            </div>
+                            <div class="media-body">
+                                {% for error in wizard.form.non_field_errors %}
+                                <strong>{{ error|escape }}</strong>
+                                {% endfor %}
+                            </div>
+                        </div>
+                    </div>
+                    {% endif %}
+
+                    <!-- Number of groups -->
+                    <div class="row">
+                        <!-- One group -->
+                        <div class="col-md-6">
+                            <div id="select_one_group" class="u-shadow-v22 rounded-0 g-px-30 g-pb-30 g-mb-30 custom-radio text-center">
+                                <span class="u-icon-v3 g-bg-secondary g-color-primary g-rounded-5 g-pull-50x-up g-mb-5">
+                                    <i class="fa fa-mars-double"></i>
+                                </span>
+                                <h3>One group</h3>
+                                <h5>Everyone talks to everyone else<br/>&nbsp;</h5>
+                            </div>
+                        </div>
+
+                        <!-- Two groups -->
+                        <div class="col-md-6">
+                            <div id="select_two_groups" class="u-shadow-v22 rounded-0 g-px-30 g-pb-30 g-mb-30 custom-radio text-center">
+                                <span class="u-icon-v3 g-bg-secondary g-color-primary g-rounded-5 g-pull-50x-up g-mb-5">
+                                    <i class="fa fa-venus-mars"></i>
+                                </span>
+                                <h3>Two groups</h3>
+                                <h5>Members of one group talk to all members of another group</h5>
+                            </div>
+                        </div>
+                    </div>
+                    {{ wizard.form.numGroups }}
+                    {% if wizard.form.numGroups.errors %}
+                    <small class="form-control-feedback" style="color: #f00;">{{wizard.form.numGroups.errors}}</small>
+                    {% endif %}
+
+                    <!-- Event size -->
+                    <h3>Size of the event</h3>
+                    <div class="form-group g-mb-20 {% if wizard.form.eventSize.errors %}u-has-error-v1{% endif %}">
+                        {% render_field wizard.form.eventSize class="form-control rounded-0 u-form-control0 u-select-v1" %}
+                        {% if wizard.form.eventSize.errors %}
+                        <small class="form-control-feedback">{{wizard.form.eventSize.errors}}</small>
+                        {% endif %}
+                    </div>
+
+                    <!-- Event Info -->
+                    <div class="g-brd-around g-brd-gray-light-v4 g-brd-left-4 g-brd-primary-left g-line-height-1_8 g-rounded-3 g-pa-20 g-mb-30" role="alert">
+                        <h3 class="g-color-primary g-font-weight-600">Event Info</h3>
+                        <p class="mb-0 g-font-size-16">
+                            <i class="icon-people"></i> Number of participants: <span id="num_participants" class="u-label g-rounded-3 g-bg-primary g-mr-10 g-mb-15">&hellip;</span>
+                        </p>
+                        <p class="mb-0 g-font-size-16">
+                            <i class="icon-clock"></i> Total duration: <span id="duration" class="u-label g-rounded-3 g-bg-primary g-mr-10 g-mb-15">&hellip;</span>
+                        </p>
+                        <p class="mb-0 g-font-size-16">
+                            <i class="icon-bubble"></i> Duration of each date: <span class="u-label g-rounded-3 g-bg-primary g-mr-10 g-mb-15">5 minutes</span>
+                        </p>
+                        <p class="mb-0 g-font-size-16">
+                            <i class="icon-cup"></i> Duration of a break: <span class="u-label g-rounded-3 g-bg-primary g-mr-10 g-mb-15">1 minute</span>
+                        </p>
+                    </div>
+                </div>
+
+                <div class="col-md-6 g-offset-md-3">
+                    <button type="submit" class="btn btn-lg btn-block u-btn-primary g-mb-10 rounded-0">
+                        Next
+                        <i class="fa fa-arrow-right g-mr-3"></i>
+                    </button>
+                    <button type="submit" class="btn btn-lg btn-block u-btn-bluegray g-mb-10 rounded-0"
+                            name="wizard_goto_step" value="{{ wizard.steps.prev }}" formnovalidate>
+                        <i class="fa fa-arrow-left g-mr-3"></i>
+                        Back
+                    </button>
+                </div>
+            </div>
+        </div>
+    </form>
+</section>
+<!-- Event Block End -->
+{% endblock %}
+
+
+{% block javascript %}
+
+<script>
+$(document).on('ready', function () {
+    let numGroups = $('#id_step3-numGroups')
+    let selectOne = $('#select_one_group')
+    let selectTwo = $('#select_two_groups')
+
+    selectOne.click(function() {
+        selectOne.removeClass('custom-radio')
+        selectOne.addClass('custom-radio-active')
+
+        selectTwo.removeClass('custom-radio-active')
+        selectTwo.addClass('custom-radio')
+
+        numGroups.val('1')
+        showEventInfo()
+    })
+
+    selectTwo.click(function() {
+        selectTwo.removeClass('custom-radio')
+        selectTwo.addClass('custom-radio-active')
+
+        selectOne.removeClass('custom-radio-active')
+        selectOne.addClass('custom-radio')
+
+        numGroups.val('2')
+        showEventInfo()
+    })
+
+    if (numGroups.val() === '1' || numGroups.val() === 1) {
+        selectOne.removeClass('custom-radio')
+        selectOne.addClass('custom-radio-active')
+    } else if (numGroups.val() === '2' || numGroups.val() === 2) {
+        selectTwo.removeClass('custom-radio')
+        selectTwo.addClass('custom-radio-active')
+    }
+
+    let eventSize = $('#id_step3-eventSize')
+    eventSize.change(function() {
+        showEventInfo()
+    })
+
+    let numParticipants = $('#num_participants')
+    let duration = $('#duration')
+
+    function showEventInfo() {
+        let groups = numGroups.val()
+        let size = eventSize.val()
+
+        if (groups === '2') {
+            numParticipants.text(size)
+            // Hardcoded duration of each date event to 6 minutes
+            duration.text(size * 3 + ' minutes')
+        } else if (groups === '1') {
+            numParticipants.text(size / 2 + 1)
+            // Hardcoded duration of each date event to 6 minutes
+            duration.text(size * 3 + ' minutes')
+        } else {
+            numParticipants.html('&hellip;')
+            duration.html('&hellip;')
+        }
+    }
+
+    showEventInfo()
+})
+
+</script>
+{% endblock %}

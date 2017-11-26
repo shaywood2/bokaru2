@@ -14,11 +14,11 @@
 <section class="g-mb-100">
     <form method="post">
         {% csrf_token %}
-        <div class="container g-brd-around g-brd-gray-light-v4 g-pa-20 g-mb-40">
+        <div class="container">
             <div class="row">
                 <div class="col-lg-4 g-mb-40 g-mb-0--lg">
                     <!-- User Image -->
-                    <div class="g-mb-20">
+                    <div class="u-shadow-v2 g-brd-around g-brd-gray-light-v4 g-line-height-2 g-mb-20">
                         {% if photo_url == None %}
                         <img class="img-fluid w-100" src="{% static 'account/images/default-avatar.png' %}"
                              alt="Default picture" id="default_avatar"/>
@@ -44,7 +44,7 @@
                     <small>This section will be only visible to your matches.</small>
                 </div>
 
-                <div class="col-lg-8">
+                <div class="col-lg-8 g-mt-25--md">
                     <!-- errors -->
                     {% if form.non_field_errors %}
                     <div class="alert fade show g-bg-red-opacity-0_1 g-color-lightred rounded-0" role="alert">
@@ -525,8 +525,7 @@
 
                     <br/>
 
-                    <button type="submit" class="btn btn-lg btn-block u-btn-primary g-mb-10 rounded-0">Save changes
-                    </button>
+                    <button type="submit" class="btn btn-lg btn-block u-btn-primary g-mb-10 rounded-0">Save changes</button>
                     <a href="{% url 'account:view' %}" class="btn btn-lg btn-block u-btn-bluegray g-mb-10 rounded-0">Cancel</a>
                 </div>
             </div>
@@ -836,8 +835,6 @@ function initMap() {
 }
 
 google.maps.event.addDomListener(window, 'load', initMap);
-
-
 </script>
 
 {% endblock %}

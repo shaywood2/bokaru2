@@ -4,7 +4,7 @@ from django.contrib.sessions.models import Session
 from django.contrib.gis.db import models
 from django.forms.widgets import Textarea
 
-from .models import Account, UserPreference
+from .models import Account, UserPreference, Memo
 
 
 # Register session objects in admin console
@@ -25,3 +25,4 @@ class DirectGeoAdmin(admin.ModelAdmin):
 admin.site.register(Account, DirectGeoAdmin)
 admin.site.register(UserPreference)
 admin.site.register(Session, SessionAdmin)
+admin.site.register(Memo)

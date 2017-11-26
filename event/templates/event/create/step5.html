@@ -1,0 +1,183 @@
+{% extends 'web/base_nav.html' %}
+
+{% load staticfiles %}
+{% load widget_tweaks %}
+
+{% block title %}Bokaru | Create event{% endblock %}
+
+{% block nav_location %}nav_create_event{% endblock %}
+
+{% block content %}
+<!-- Event Block -->
+<section class="g-mb-100">
+    <form method="post">
+        {% csrf_token %}
+        {{ wizard.management_form }}
+        <div class="container">
+            <div class="row g-mt-50--md g-mb-25">
+                <div class="col-lg-12 text-center">
+                    <h2>Create a new event</h2>
+                </div>
+            </div>
+
+            <!-- Progress bar -->
+            <div class="row g-mb-25">
+                <div class="col-lg-2">
+                    <div class="text-center">
+                        <i class="u-dot-line-v2-2 g-brd-transparent--before g-brd-gray-light-v2--after g-mt-5">
+                            <span class="u-dot-line-v2__inner g-bg-white--before g-brd-gray-light-v2--before"></span>
+                        </i>
+                    </div>
+                </div>
+                <div class="col-lg-2">
+                    <div class="text-center">
+                        <i class="u-dot-line-v2-2 g-brd-gray-light-v2--before g-brd-gray-light-v2--after g-mt-5">
+                            <span class="u-dot-line-v2__inner g-bg-white--before g-brd-gray-light-v2--before"></span>
+                        </i>
+                    </div>
+                </div>
+                <div class="col-lg-2">
+                    <div class="text-center">
+                        <i class="u-dot-line-v2-2 g-brd-gray-light-v2--before g-brd-gray-light-v2--after g-mt-5">
+                            <span class="u-dot-line-v2__inner g-bg-white--before g-brd-gray-light-v2--before"></span>
+                        </i>
+                    </div>
+                </div>
+                <div class="col-lg-2">
+                    <div class="text-center">
+                        <i class="u-dot-line-v2-2 g-brd-gray-light-v2--before g-brd-gray-light-v2--after g-mt-5">
+                            <span class="u-dot-line-v2__inner g-bg-white--before g-brd-gray-light-v2--before"></span>
+                        </i>
+                    </div>
+                </div>
+                <!-- Big dot -->
+                <div class="col-lg-2">
+                    <div class="text-center">
+                        <i class="u-dot-line-v1-2 g-brd-gray-light-v2--before g-brd-gray-light-v2--after">
+                            <span class="u-dot-line-v1__inner g-bg-white g-bg-primary--before g-brd-gray-light-v2"></span>
+                        </i>
+                    </div>
+                </div>
+                <div class="col-lg-2">
+                    <div class="text-center">
+                        <i class="u-dot-line-v2-2 g-brd-gray-light-v2--before g-brd-transparent--after g-mt-5">
+                            <span class="u-dot-line-v2__inner g-bg-white--before g-brd-gray-light-v2--before"></span>
+                        </i>
+                    </div>
+                </div>
+            </div>
+            <!-- Progress bar end -->
+
+            <div class="row g-mb-25">
+                <div class="col-lg-12 text-center">
+                    <h3>Select a picture for your event</h3>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-6 g-offset-md-3">
+                    <!-- errors -->
+                    {% if wizard.form.errors %}
+                    <div class="alert fade show g-bg-red-opacity-0_1 g-color-lightred rounded-0" role="alert">
+                        <div class="media">
+                            <div class="d-flex g-mr-10">
+                                <i></i>
+                            </div>
+                            <div class="media-body">
+                                {% for error in wizard.form.non_field_errors %}
+                                <strong>{{ error|escape }}</strong>
+                                {% endfor %}
+                                {% for field in wizard.form %}
+                                <strong>{{ field.errors|striptags }}</strong>
+                                {% endfor %}
+                            </div>
+                        </div>
+                    </div>
+                    {% endif %}
+
+                    <div>
+                        <img src="{{ wizard.form.image_data.value }}" id="image" class="img-fluid w-100">
+                    </div>
+                    <div class="form-group">
+                        <div class="input-group u-file-attach-v1 g-brd-gray-light-v2">
+                            <input id="filename" class="form-control form-control-md rounded-0" type="text" placeholder="Filename" readonly=""
+                                   value="{{ wizard.form.image_name.value | default_if_none:'' }}">
+
+                            <div class="input-group-btn">
+                                <button class="btn btn-md u-btn-primary rounded-0" type="submit">Browse</button>
+                                <input type="file" id="upload_image">
+                            </div>
+                        </div>
+                    </div>
+
+                    <a id="clear_image" class="btn btn-xs btn-block u-btn-outline-darkgray g-mb-10 rounded-0">Remove picture</a>
+
+                    {{ wizard.form.image_data }}
+                    {{ wizard.form.image_name }}
+                </div>
+
+                <div class="col-md-6 g-offset-md-3">
+                    <button type="submit" class="btn btn-lg btn-block u-btn-primary g-mb-10 rounded-0">
+                        Next
+                        <i class="fa fa-arrow-right g-mr-3"></i>
+                    </button>
+                    <button type="submit" class="btn btn-lg btn-block u-btn-bluegray g-mb-10 rounded-0"
+                            name="wizard_goto_step" value="{{ wizard.steps.prev }}" formnovalidate>
+                        <i class="fa fa-arrow-left g-mr-3"></i>
+                        Back
+                    </button>
+                </div>
+            </div>
+        </div>
+    </form>
+</section>
+<!-- Event Block End -->
+{% endblock %}
+
+{% block javascript %}
+<script>
+$(document).on('ready', function () {
+    let cropper = null
+
+    $('#upload_image').change(function() {
+        if (this.files && this.files[0]) {
+            let reader = new FileReader()
+            reader.onload = function(e) {
+                $('#image').attr('src', e.target.result)
+                let img = document.getElementById('image')
+                cropper = new Cropper(img, {
+                    viewMode: 1,
+                    aspectRatio: 1 / 1,
+                    minCropBoxWidth: 200,
+                    minCropBoxHeight: 200,
+                    crop: function(e) {
+                        let canvas = cropper.getCroppedCanvas({
+                            minWidth: 256,
+                            minHeight: 256,
+                            maxWidth: 800,
+                            maxHeight: 800,
+                            fillColor: '#fff',
+                            imageSmoothingEnabled: true,
+                            imageSmoothingQuality: 'high',
+                        })
+                        $('#id_step5-image_data').val(canvas.toDataURL('image/jpeg'))
+                    }
+                })
+            }
+            reader.readAsDataURL(this.files[0])
+            $('#filename').val(this.files[0].name)
+            $('#id_step5-image_name').val(this.files[0].name)
+        }
+    })
+
+    $('#clear_image').click(function() {
+        if (!!cropper)
+            cropper.destroy()
+        $('#image').attr('src', '')
+        $('#filename').val('')
+        $('#id_step5-image_data').val('')
+        $('#id_step5-image_name').val('')
+    })
+})
+</script>
+{% endblock %}

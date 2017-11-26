@@ -14,7 +14,7 @@
                 <div class="row">
                     <div class="col-lg-6">
                         <!-- User Image -->
-                        <div class="g-mb-20">
+                        <div class="u-shadow-v2 g-brd-around g-brd-gray-light-v4 g-line-height-2 g-mb-20">
                             {% if account.photo is None or account.photo.name == '' %}
                             <img class="img-fluid w-100" src="{% static 'account/images/default-avatar.png' %}"
                                  alt="Default picture" id="default_avatar"/>
@@ -25,13 +25,13 @@
                         </div>
                     </div>
                     {% if profile_incomplete %}
-                    <div class="col-lg-6">
+                    <div class="col-lg-6 g-mt-25--md">
                         <h2 class="g-font-weight-300 g-mr-10 g-my-100" style="text-align: center;">
                             Nothing here yet.
                         </h2>
                     </div>
                     {% else %}
-                    <div class="col-lg-6">
+                    <div class="col-lg-6 g-mt-25--md">
                         <!-- Name -->
                         <h2 class="g-font-weight-300 g-mr-10">{{ account.fullName }}</h2>
 
@@ -65,8 +65,9 @@
                         <div class="form-group g-mb-20">
                             <textarea id="memo" class="form-control form-control-md rounded-0" rows="5"
                                       placeholder="Memo">{{memo}}</textarea>
-                            <small id="saving">Saving...</small>
                         </div>
+                        <button id="save_memo_button" class="btn btn-lg btn-block u-btn-primary rounded-0 g-py-12">Save memo</button>
+                        <small id="saving" style="display: none">Saving...</small>
                         {% endif %}
                     </div>
                     {% endif %}
@@ -162,10 +163,10 @@
         </div>
     </div>
 </section>
+<!-- End User Block -->
 
 {% csrf_token %}
 
-<!-- End User Block -->
 {% endblock %}
 
 {% block javascript %}
@@ -175,10 +176,9 @@ $(document).on('ready', function () {
     let csrftoken = $('[name=csrfmiddlewaretoken]').val()
     let memo = $('#memo')
     let saving = $('#saving')
-    saving.hide()
+    let save_memo_button = $('#save_memo_button')
 
-    // Save notes on edit
-    memo.blur(function() {
+    save_memo_button.click(function() {
         let text = memo.val()
         $.ajaxSetup({
             headers: {
@@ -191,7 +191,6 @@ $(document).on('ready', function () {
         });
     })
 })
-
 </script>
 
 {% endblock %}

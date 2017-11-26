@@ -1,0 +1,225 @@
+{% extends 'web/base_nav.html' %}
+
+{% load staticfiles %}
+{% load widget_tweaks %}
+
+{% block title %}Bokaru | Create event{% endblock %}
+
+{% block nav_location %}nav_create_event{% endblock %}
+
+{% block header %}
+<script src="//maps.googleapis.com/maps/api/js?libraries=places&key=AIzaSyBTwfHuVilarsPOOE4Opm4GaG9I2dfbyCw" type="text/javascript"></script>
+{% endblock %}
+
+{% block content %}
+<!-- Event Block -->
+<section class="g-mb-100">
+    <form method="post">
+        {% csrf_token %}
+        {{ wizard.management_form }}
+        <div class="container">
+            <div class="row g-mt-50--md g-mb-25">
+                <div class="col-lg-12 text-center">
+                    <h2>Create a new event</h2>
+                </div>
+            </div>
+
+            <!-- Progress bar -->
+            <div class="row g-mb-25">
+                <!-- Big dot -->
+                <div class="col-lg-2">
+                    <div class="text-center">
+                        <i class="u-dot-line-v1-2 g-brd-transparent--before g-brd-gray-light-v2--after">
+                            <span class="u-dot-line-v1__inner g-bg-white g-bg-primary--before g-brd-gray-light-v2"></span>
+                        </i>
+                    </div>
+                </div>
+                <div class="col-lg-2">
+                    <div class="text-center">
+                        <i class="u-dot-line-v2-2 g-brd-gray-light-v2--before g-brd-gray-light-v2--after g-mt-5">
+                            <span class="u-dot-line-v2__inner g-bg-white--before g-brd-gray-light-v2--before"></span>
+                        </i>
+                    </div>
+                </div>
+                <div class="col-lg-2">
+                    <div class="text-center">
+                        <i class="u-dot-line-v2-2 g-brd-gray-light-v2--before g-brd-gray-light-v2--after g-mt-5">
+                            <span class="u-dot-line-v2__inner g-bg-white--before g-brd-gray-light-v2--before"></span>
+                        </i>
+                    </div>
+                </div>
+                <div class="col-lg-2">
+                    <div class="text-center">
+                        <i class="u-dot-line-v2-2 g-brd-gray-light-v2--before g-brd-gray-light-v2--after g-mt-5">
+                            <span class="u-dot-line-v2__inner g-bg-white--before g-brd-gray-light-v2--before"></span>
+                        </i>
+                    </div>
+                </div>
+                <div class="col-lg-2">
+                    <div class="text-center">
+                        <i class="u-dot-line-v2-2 g-brd-gray-light-v2--before g-brd-gray-light-v2--after g-mt-5">
+                            <span class="u-dot-line-v2__inner g-bg-white--before g-brd-gray-light-v2--before"></span>
+                        </i>
+                    </div>
+                </div>
+                <div class="col-lg-2">
+                    <div class="text-center">
+                        <i class="u-dot-line-v2-2 g-brd-gray-light-v2--before g-brd-transparent--after g-mt-5">
+                            <span class="u-dot-line-v2__inner g-bg-white--before g-brd-gray-light-v2--before"></span>
+                        </i>
+                    </div>
+                </div>
+            </div>
+            <!-- Progress bar end -->
+
+            <div class="row g-mb-25">
+                <div class="col-lg-12 text-center">
+                    <h3>Let's start with some basic details!</h3>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-6 g-offset-md-3">
+                    <!-- errors -->
+                    {% if wizard.form.non_field_errors %}
+                    <div class="alert fade show g-bg-red-opacity-0_1 g-color-lightred rounded-0" role="alert">
+                        <div class="media">
+                            <div class="d-flex g-mr-10">
+                                <i></i>
+                            </div>
+                            <div class="media-body">
+                                {% for error in wizard.form.non_field_errors %}
+                                <strong>{{ error|escape }}</strong>
+                                {% endfor %}
+                            </div>
+                        </div>
+                    </div>
+                    {% endif %}
+
+                    <!-- Name -->
+                    <div class="form-group g-mb-20 {% if wizard.form.name.errors %}u-has-error-v1{% endif %}">
+                        <div class="u-input-group-v2">
+                            {% render_field wizard.form.name class="form-control rounded-0 u-form-control0" %}
+                            <label for="id_step1-name">Event name</label>
+                        </div>
+                        {% if wizard.form.name.errors %}
+                        <small class="form-control-feedback">{{wizard.form.name.errors}}</small>
+                        {% endif %}
+                    </div>
+
+                    <!-- Type -->
+                    <div class="form-group g-mb-20 {% if wizard.form.type.errors %}u-has-error-v1{% endif %}">
+                        <label for="id_step1-type">Purpose of the event</label>
+                        {% render_field wizard.form.type class="form-control rounded-0 u-form-control0 u-select-v1" %}
+                        {% if wizard.form.type.errors %}
+                        <small class="form-control-feedback">{{wizard.form.type.errors}}</small>
+                        {% endif %}
+                    </div>
+
+                    <!-- Date -->
+                    <div class="form-group g-mb-20 {% if wizard.form.date.errors %}u-has-error-v1{% endif %}">
+                        <div class="input-group u-input-group-v2 g-brd-primary--focus">
+                            {% render_field wizard.form.date class="form-control form-control-md u-datepicker-v1 g-brd-right-none rounded-0" %}
+                            <label for="id_step1-date" style="z-index: 2;">Date</label>
+                            <div class="input-group-addon d-flex align-items-center g-bg-white g-color-gray-dark-v5 rounded-0">
+                                <i class="icon-calendar"></i>
+                            </div>
+                        </div>
+                        {% if wizard.form.date.errors %}
+                        <small class="form-control-feedback">{{wizard.form.date.errors}}</small>
+                        {% endif %}
+                    </div>
+
+                    <!-- Time -->
+                    <div class="form-group g-mb-20 {% if wizard.form.time.errors %}u-has-error-v1{% endif %}">
+                        {% render_field wizard.form.time class="form-control rounded-0 u-form-control0 u-select-v1" %}
+                        {% if wizard.form.time.errors %}
+                        <small class="form-control-feedback">{{wizard.form.time.errors}}</small>
+                        {% endif %}
+                    </div>
+
+                    <!-- Location -->
+                    <div class="form-group g-mb-20 {% if wizard.form.locationName.errors %}u-has-error-v1{% endif %}">
+                        <div class="u-input-group-v2">
+                            {% render_field wizard.form.locationName class="form-control rounded-0 u-form-control0" %}
+                            <label for="id_step1-locationName">Location</label>
+                        </div>
+                        {% if form.locationName.errors %}
+                        <small class="form-control-feedback">{{wizard.form.locationName.errors}}</small>
+                        {% endif %}
+                        <small>Technically, the location of the event is right in your living room, but pick a location for the purposes of search anyway.</small>
+                        {{ wizard.form.cityName }}{{ wizard.form.cityLat }}{{ wizard.form.cityLng }}
+                    </div>
+                </div>
+
+                <div class="col-md-6 g-offset-md-3">
+                    <button type="submit" class="btn btn-lg btn-block u-btn-primary g-mb-10 rounded-0">
+                        Next
+                        <i class="fa fa-arrow-right g-mr-3"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </form>
+</section>
+<!-- Event Block End -->
+{% endblock %}
+
+{% block javascript %}
+<!-- jQuery UI Core -->
+<script src="{% static 'web/vendor/jquery-ui/ui/widget.js' %}"></script>
+<script src="{% static 'web/vendor/jquery-ui/ui/version.js' %}"></script>
+<script src="{% static 'web/vendor/jquery-ui/ui/keycode.js' %}"></script>
+<script src="{% static 'web/vendor/jquery-ui/ui/position.js' %}"></script>
+<script src="{% static 'web/vendor/jquery-ui/ui/unique-id.js' %}"></script>
+<script src="{% static 'web/vendor/jquery-ui/ui/safe-active-element.js' %}"></script>
+
+<!-- jQuery UI Helpers -->
+<script src="{% static 'web/vendor/jquery-ui/ui/widgets/menu.js' %}"></script>
+<script src="{% static 'web/vendor/jquery-ui/ui/widgets/mouse.js' %}"></script>
+
+<!-- jQuery UI Widgets -->
+<script src="{% static 'web/vendor/jquery-ui/ui/widgets/datepicker.js' %}"></script>
+
+<!-- JS Unify -->
+<script src="{% static 'web/js/components/hs.datepicker.js' %}"></script>
+
+<script>
+$(document).on('ready', function () {
+    // Init date picker
+    $.HSCore.components.HSDatepicker.init('#id_step1-date', {dateFormat: 'yy-mm-dd'})
+
+    $('#id_step1-date').on('change', function () {
+        var $this = $(this),
+            thisVal = $this.val();
+
+        if (thisVal != 0) {
+            $this.addClass('g-state-not-empty');
+        } else {
+            $this.removeClass('g-state-not-empty');
+        }
+    });
+})
+
+// Google maps script
+function initMap() {
+    let options = {
+        types: ['(cities)']
+    }
+
+    let input = document.getElementById('id_step1-locationName')
+    let autocomplete = new google.maps.places.Autocomplete(input, options)
+
+    google.maps.event.addListener(autocomplete, 'place_changed', function () {
+        let place = autocomplete.getPlace()
+        document.getElementById('id_step1-cityName').value = place.name
+        document.getElementById('id_step1-cityLat').value = place.geometry.location.lat()
+        document.getElementById('id_step1-cityLng').value = place.geometry.location.lng()
+    })
+}
+
+google.maps.event.addDomListener(window, 'load', initMap);
+
+</script>
+
+{% endblock %}
