@@ -36,10 +36,10 @@ class UtilsTest(TestCase):
                            maxParticipantsInGroup=5, numGroups=2, product=self.product1)
         self.event.save()
 
-        self.group1 = EventGroup(event=self.event, name='group1', ageMin=20, ageMax=30)
+        self.group1 = EventGroup(event=self.event, sexualIdentity='male', ageMin=20, ageMax=30)
         self.group1.save()
 
-        self.group2 = EventGroup(event=self.event, name='group2', ageMin=20, ageMax=30)
+        self.group2 = EventGroup(event=self.event, sexualIdentity='male', ageMin=20, ageMax=30)
         self.group2.save()
 
         self.group1.add_participant(self.user1)
@@ -95,7 +95,7 @@ class UtilsTest(TestCase):
                            maxParticipantsInGroup=5, numGroups=1, product=self.product1)
         self.event.save()
 
-        self.group1 = EventGroup(event=self.event, name='group1', ageMin=20, ageMax=30)
+        self.group1 = EventGroup(event=self.event, sexualIdentity='male', ageMin=20, ageMax=30)
         self.group1.save()
 
         self.group1.add_participant(self.user1)

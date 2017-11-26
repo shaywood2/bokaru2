@@ -57,10 +57,10 @@ class EventModelTestCase(TestCase):
                            maxParticipantsInGroup=10, numGroups=2, product=self.product1)
         self.event.save()
 
-        self.group1 = EventGroup(event=self.event, name='group1', ageMin=20, ageMax=30)
+        self.group1 = EventGroup(event=self.event, sexualIdentity='male', ageMin=20, ageMax=30)
         self.group1.save()
 
-        self.group2 = EventGroup(event=self.event, name='group2', ageMin=20, ageMax=30)
+        self.group2 = EventGroup(event=self.event, sexualIdentity='male', ageMin=20, ageMax=30)
         self.group2.save()
 
         ep1 = EventParticipant(group=self.group1, user=self.user1, status='registered')
@@ -116,10 +116,10 @@ class EventGroupModelTestCase(TestCase):
                            maxParticipantsInGroup=3, numGroups=2, product=self.product1)
         self.event.save()
 
-        self.group1 = EventGroup(event=self.event, name='group1', ageMin=20, ageMax=30)
+        self.group1 = EventGroup(event=self.event, sexualIdentity='male', ageMin=20, ageMax=30)
         self.group1.save()
 
-        self.group2 = EventGroup(event=self.event, name='group2', ageMin=20, ageMax=30)
+        self.group2 = EventGroup(event=self.event, sexualIdentity='male', ageMin=20, ageMax=30)
         self.group2.save()
 
         self.ep1 = EventParticipant(group=self.group1, user=self.user1, status='registered')
