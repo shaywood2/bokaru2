@@ -18,9 +18,19 @@ from django.utils.crypto import get_random_string
 from django.utils.timezone import utc
 from django.utils.translation import ugettext_lazy as _
 
+from account.models import Account
 from money.models import Product
 
 logger = logging.getLogger(__name__)
+
+
+# Return a value from a tuple list by key
+def get_value(tuples, key):
+    dictionary = dict(tuples)
+    if key in dictionary:
+        return dictionary[key]
+
+    return ''
 
 
 # Splits the query string in individual keywords, getting rid of unnecessary spaces and grouping quoted words together.
@@ -84,12 +94,20 @@ class EventManager(models.Manager):
 class Event(models.Model):
     # The event must be at least 70% full to be confirmed
     CONFIRMED_MIN_PARTICIPANTS = 0.7
+    # Date is 5 minutes long by default
+    DEFAULT_DATE_DURATION = 300
+    # Date is 1 minute long by default
+    DEFAULT_BREAK_DURATION = 60
+    # Event sizes
+    SMALL = 10
+    MEDIUM = 20
+    LARGE = 30
 
     # Number of groups
-    NUM_GROUPS = (
+    NUM_GROUPS = [
         (1, 'One group (talk to everyone)'),
         (2, 'Two groups (talk to all members of the opposite group)')
-    )
+    ]
 
     # Event types
     SERIOUS = 1
@@ -97,30 +115,37 @@ class Event(models.Model):
     HOOKUP = 3
     FRIENDSHIP = 4
     MARRIAGE = 5
-    TYPES = (
+
+    TYPES = [
         (MARRIAGE, 'Marriage'),
         (SERIOUS, 'Serious relationship'),
         (CASUAL, 'Casual dating'),
         (HOOKUP, 'Casual hookup'),
         (FRIENDSHIP, 'Friendship')
-    )
+    ]
 
+    # General info
     creator = models.ForeignKey(settings.AUTH_USER_MODEL)
     name = models.CharField(max_length=150)
-    photo = models.ImageField(blank=True)
+    type = models.PositiveSmallIntegerField(choices=TYPES, default=SERIOUS)
+    startDateTime = models.DateTimeField()
     locationName = models.CharField(max_length=150)
     locationCoordinates = gis_models.PointField(srid=4326, default=Point(0, 0))
+    # Description
     description = models.TextField(max_length=2000, blank=True)
+    # Group settings
     numGroups = models.PositiveSmallIntegerField(validators=[MinValueValidator(1), MaxValueValidator(2)],
                                                  choices=NUM_GROUPS, default=2)
     maxParticipantsInGroup = models.PositiveSmallIntegerField(validators=[MinValueValidator(5), MaxValueValidator(25)])
-    startDateTime = models.DateTimeField()
+    # Date settings
     dateDuration = models.PositiveSmallIntegerField(validators=[MinValueValidator(60 * 3), MaxValueValidator(60 * 10)],
-                                                    default=60 * 5)
+                                                    default=DEFAULT_DATE_DURATION)
     breakDuration = models.PositiveSmallIntegerField(validators=[MinValueValidator(60 / 2), MaxValueValidator(60 * 5)],
-                                                     default=60)
+                                                     default=DEFAULT_BREAK_DURATION)
+    # Image
+    photo = models.ImageField(blank=True)
+    # Associated product
     product = models.ForeignKey(Product)
-    type = models.PositiveSmallIntegerField(choices=TYPES, default=SERIOUS)
 
     # Automatic timestamps
     created = models.DateTimeField(auto_now_add=True)
@@ -195,14 +220,16 @@ class Event(models.Model):
         hour_ago = now - timedelta(hours=1)
         return now >= self.endDateTime >= hour_ago
 
-    def add_photo(self, new_photo, x, y, w, h, size):
-        # Open the stream as an image
-        stream = io.BytesIO(new_photo)
-        image = Image.open(stream)
+    # Add a photo from a byte stream
+    def add_photo(self, byte_stream, size=800, x=None, y=None, w=None, h=None):
+        image = Image.open(byte_stream)
 
-        # Crop and resize the image
-        cropped_image = image.crop((x, y, w + x, h + y))
-        final_image = cropped_image.resize((size, size), Image.ANTIALIAS)
+        if x and y and w and h:
+            # Crop and resize the image
+            cropped_image = image.crop((x, y, w + x, h + y))
+            final_image = cropped_image.resize((size, size), Image.ANTIALIAS)
+        else:
+            final_image = image.resize((size, size), Image.ANTIALIAS)
 
         # Save the image
         stream = io.BytesIO()
@@ -229,17 +256,44 @@ class Event(models.Model):
         self.photo = path
         self.save(update_fields=['photo'])
 
+    # Add a photo by reading a file
+    def add_photo_from_file(self, file, size, x, y, w, h):
+        # Open the stream as an image
+        stream = io.BytesIO(file)
+        self.add_photo(stream, size, x, y, w, h)
+
 
 class EventGroup(models.Model):
+    IDENTITY_CHOICES = (
+        ('female', 'Women only'),
+        ('male', 'Men only'),
+        ('other', 'Other (please specify)'),
+        ('any', 'Anyone welcome')
+    )
+
     event = models.ForeignKey(Event, on_delete=models.CASCADE)
-    name = models.CharField(max_length=150)
+    sexualIdentity = models.CharField(max_length=50, choices=IDENTITY_CHOICES, blank=True)
+    sexualIdentityOther = models.CharField(max_length=150, blank=True)
     ageMin = models.PositiveSmallIntegerField(validators=[MinValueValidator(18)])
     ageMax = models.PositiveSmallIntegerField(validators=[MinValueValidator(18)])
+
+    @property
+    def displaySexualIdentity(self):
+        if self.sexualIdentity == 'other':
+            return self.sexualIdentityOther
+        else:
+            return get_value(EventGroup.IDENTITY_CHOICES, self.sexualIdentity)
 
     def get_registered_participants(self):
         participants = EventParticipant.objects.filter(group=self, status=EventParticipant.REGISTERED) \
             .order_by('created')
         return participants
+
+    def get_registered_participants_accounts(self):
+        users = []
+        for participant in self.get_registered_participants():
+            users.append(participant.user)
+        return Account.objects.filter(user__in=users)
 
     def count_registered_participants(self):
         participants = EventParticipant.objects.filter(group=self, status=EventParticipant.REGISTERED)
@@ -295,7 +349,7 @@ class EventGroup(models.Model):
         raise Exception('Function not implemented: register_participant_from_waiting_list')
 
     def __str__(self):
-        return self.name + ' [' + str(self.ageMin) + ' - ' + str(self.ageMax) + '] in event: ' + self.event.name
+        return self.sexualIdentity + ' [' + str(self.ageMin) + ' - ' + str(self.ageMax) + '] in event: ' + self.event.name
 
 
 class EventParticipant(models.Model):

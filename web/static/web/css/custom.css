@@ -15,6 +15,21 @@
     background-color: #fff0f0;
 }
 
+.custom-radio {
+    cursor: pointer;
+    background-color: #fff;
+}
+
+.custom-radio:hover {
+    background-color: #e74c3c;
+    color: #fff;
+}
+
+.custom-radio-active {
+    background-color: #e74c3c;
+    color: #fff;
+}
+
 .tag {
     display: inline-block;
     max-width: 100%;
@@ -92,7 +107,30 @@
   background-color: #fefde5 !important;
 }
 
-/* Replace this with SASS later */
+/*------------------------------------
+  Offsets
+------------------------------------*/
+@media (min-width: 768px) {
+  .g-offset-md-3 {
+    margin-left: 25%; } }
+
+@media (min-width: 992px) {
+  .g-offset-lg-3 {
+    margin-left: 25%; } }
+
+.u-slider-v1-2.ui-slider .ui-slider-handle, .u-slider-v1-3.ui-slider .ui-slider-handle {
+  border-color: #e74c3c;
+}
+
+.blur {
+  -webkit-filter: blur(5px);
+  -moz-filter: blur(5px);
+  -o-filter: blur(5px);
+  -ms-filter: blur(5px);
+  filter: blur(5px);
+}
+
+/* TODO: Replace this with SASS later */
 
 .u-header__section--light .navbar-nav:not([class*="u-main-nav-v"]) .open > .nav-link,
 .u-header__section--light .navbar-nav:not([class*="u-main-nav-v"]) .active > .nav-link,

@@ -1,0 +1,258 @@
+{% extends 'web/base_nav.html' %}
+
+{% load staticfiles %}
+{% load widget_tweaks %}
+
+{% block title %}Bokaru | Create event{% endblock %}
+
+{% block nav_location %}nav_create_event{% endblock %}
+
+{% block content %}
+<!-- Event Block -->
+<section class="g-mb-100">
+    <form method="post">
+        {% csrf_token %}
+        {{ wizard.management_form }}
+        <div class="container">
+            <div class="row g-mt-50--md g-mb-25">
+                <div class="col-lg-12 text-center">
+                    <h2>Create a new event</h2>
+                </div>
+            </div>
+
+            <!-- Progress bar -->
+            <div class="row g-mb-25">
+                <div class="col-lg-2">
+                    <div class="text-center">
+                        <i class="u-dot-line-v2-2 g-brd-transparent--before g-brd-gray-light-v2--after g-mt-5">
+                            <span class="u-dot-line-v2__inner g-bg-white--before g-brd-gray-light-v2--before"></span>
+                        </i>
+                    </div>
+                </div>
+                <div class="col-lg-2">
+                    <div class="text-center">
+                        <i class="u-dot-line-v2-2 g-brd-gray-light-v2--before g-brd-gray-light-v2--after g-mt-5">
+                            <span class="u-dot-line-v2__inner g-bg-white--before g-brd-gray-light-v2--before"></span>
+                        </i>
+                    </div>
+                </div>
+                <div class="col-lg-2">
+                    <div class="text-center">
+                        <i class="u-dot-line-v2-2 g-brd-gray-light-v2--before g-brd-gray-light-v2--after g-mt-5">
+                            <span class="u-dot-line-v2__inner g-bg-white--before g-brd-gray-light-v2--before"></span>
+                        </i>
+                    </div>
+                </div>
+                <!-- Big dot -->
+                <div class="col-lg-2">
+                    <div class="text-center">
+                        <i class="u-dot-line-v1-2 g-brd-gray-light-v2--before g-brd-gray-light-v2--after">
+                            <span class="u-dot-line-v1__inner g-bg-white g-bg-primary--before g-brd-gray-light-v2"></span>
+                        </i>
+                    </div>
+                </div>
+                <div class="col-lg-2">
+                    <div class="text-center">
+                        <i class="u-dot-line-v2-2 g-brd-gray-light-v2--before g-brd-gray-light-v2--after g-mt-5">
+                            <span class="u-dot-line-v2__inner g-bg-white--before g-brd-gray-light-v2--before"></span>
+                        </i>
+                    </div>
+                </div>
+                <div class="col-lg-2">
+                    <div class="text-center">
+                        <i class="u-dot-line-v2-2 g-brd-gray-light-v2--before g-brd-transparent--after g-mt-5">
+                            <span class="u-dot-line-v2__inner g-bg-white--before g-brd-gray-light-v2--before"></span>
+                        </i>
+                    </div>
+                </div>
+            </div>
+            <!-- Progress bar end -->
+
+            <div class="row g-mb-25">
+                <div class="col-lg-12 text-center">
+                    <h3>Group details</h3>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-6 g-offset-md-3">
+                    <!-- errors -->
+                    {% if wizard.form.non_field_errors %}
+                    <div class="alert fade show g-bg-red-opacity-0_1 g-color-lightred rounded-0" role="alert">
+                        <div class="media">
+                            <div class="d-flex g-mr-10">
+                                <i></i>
+                            </div>
+                            <div class="media-body">
+                                {% for error in wizard.form.non_field_errors %}
+                                <strong>{{ error|escape }}</strong>
+                                {% endfor %}
+                            </div>
+                        </div>
+                    </div>
+                    {% endif %}
+                </div>
+
+                <div class="col-md-6">
+                    <!-- Identity -->
+                    <h5>This group is for:</h5>
+                    <div class="form-group g-mb-20 {% if wizard.form.sexualIdentity1.errors %}u-has-error-v1{% endif %}">
+                        {% render_field wizard.form.sexualIdentity1 class="form-control rounded-0 u-form-control0 u-select-v1" %}
+                        {% if wizard.form.sexualIdentity1.errors %}
+                        <small class="form-control-feedback">{{wizard.form.sexualIdentity1.errors}}</small>
+                        {% endif %}
+                    </div>
+                    <div class="form-group g-mb-20 {% if wizard.form.sexualIdentityOther1.errors %}u-has-error-v1{% endif %}" style="display: none;" id="sexualIdentityOtherGroup1">
+                        <div class="u-input-group-v2">
+                            {% render_field wizard.form.sexualIdentityOther1 class="form-control rounded-0 u-form-control0" %}
+                            <label for="id_step4b-sexualIdentityOther1">Other sexual identity</label>
+                        </div>
+                        {% if wizard.form.sexualIdentityOther1.errors %}
+                        <small class="form-control-feedback">{{wizard.form.sexualIdentityOther1.errors}}</small>
+                        {% endif %}
+                    </div>
+
+                    <!-- Age range -->
+                    <h5>Ages: <span id="ageRangeSliderAmount1" class="u-label u-label--lg g-bg-primary g-rounded-3 g-mr-10 g-mb-15">
+                        {{wizard.form.ageMin1.value}} - {{wizard.form.ageMax1.value}}
+                    </span></h5>
+                    <div class="form-group g-mb-40">
+                        <div id="ageRangeSlider1" class="u-slider-v1-2"
+                             data-result-container="ageRangeSliderAmount1" data-range="1"
+                             data-default="{{wizard.form.ageMin1.value}}, {{wizard.form.ageMax1.value}}" data-min="18" data-max="120"></div>
+                    </div>
+                    {{wizard.form.ageMin1}}
+                    {{wizard.form.ageMax1}}
+                </div>
+
+                <div class="col-md-6">
+                    <!-- Identity -->
+                    <h5>This group is for:</h5>
+                    <div class="form-group g-mb-20 {% if wizard.form.sexualIdentity2.errors %}u-has-error-v1{% endif %}">
+                        {% render_field wizard.form.sexualIdentity2 class="form-control rounded-0 u-form-control0 u-select-v1" %}
+                        {% if wizard.form.sexualIdentity2.errors %}
+                        <small class="form-control-feedback">{{wizard.form.sexualIdentity2.errors}}</small>
+                        {% endif %}
+                    </div>
+                    <div class="form-group g-mb-20 {% if wizard.form.sexualIdentityOther2.errors %}u-has-error-v1{% endif %}" style="display: none;" id="sexualIdentityOtherGroup2">
+                        <div class="u-input-group-v2">
+                            {% render_field wizard.form.sexualIdentityOther2 class="form-control rounded-0 u-form-control0" %}
+                            <label for="id_step4b-sexualIdentityOther2">Other sexual identity</label>
+                        </div>
+                        {% if wizard.form.sexualIdentityOther2.errors %}
+                        <small class="form-control-feedback">{{wizard.form.sexualIdentityOther2.errors}}</small>
+                        {% endif %}
+                    </div>
+
+                    <!-- Age range -->
+                    <h5>Ages: <span id="ageRangeSliderAmount2" class="u-label u-label--lg g-bg-primary g-rounded-3 g-mr-10 g-mb-15">
+                        {{wizard.form.ageMin2.value}} - {{wizard.form.ageMax2.value}}
+                    </span></h5>
+                    <div class="form-group g-mb-40">
+                        <div id="ageRangeSlider2" class="u-slider-v1-2"
+                             data-result-container="ageRangeSliderAmount2" data-range="1"
+                             data-default="{{wizard.form.ageMin2.value}}, {{wizard.form.ageMax2.value}}" data-min="18" data-max="120"></div>
+                    </div>
+                    {{wizard.form.ageMin2}}
+                    {{wizard.form.ageMax2}}
+                </div>
+
+                <div class="col-md-6 g-offset-md-3">
+                    <button type="submit" class="btn btn-lg btn-block u-btn-primary g-mb-10 rounded-0">
+                        Next
+                        <i class="fa fa-arrow-right g-mr-3"></i>
+                    </button>
+                    <button type="submit" class="btn btn-lg btn-block u-btn-bluegray g-mb-10 rounded-0"
+                            name="wizard_goto_step" value="{{ wizard.steps.prev }}" formnovalidate>
+                        <i class="fa fa-arrow-left g-mr-3"></i>
+                        Back
+                    </button>
+                </div>
+            </div>
+        </div>
+    </form>
+</section>
+<!-- Event Block End -->
+{% endblock %}
+
+{% block javascript %}
+<!-- jQuery UI Core -->
+<script src="{% static 'web/vendor/jquery-ui/ui/widget.js'%}"></script>
+<script src="{% static 'web/vendor/jquery-ui/ui/version.js'%}"></script>
+<script src="{% static 'web/vendor/jquery-ui/ui/keycode.js'%}"></script>
+<script src="{% static 'web/vendor/jquery-ui/ui/position.js'%}"></script>
+<script src="{% static 'web/vendor/jquery-ui/ui/unique-id.js'%}"></script>
+<script src="{% static 'web/vendor/jquery-ui/ui/safe-active-element.js'%}"></script>
+
+<!-- jQuery UI Helpers -->
+<script src="{% static 'web/vendor/jquery-ui/ui/widgets/menu.js'%}"></script>
+<script src="{% static 'web/vendor/jquery-ui/ui/widgets/mouse.js'%}"></script>
+
+<!-- jQuery UI Widgets -->
+<script src="{% static 'web/vendor/jquery-ui/ui/widgets/slider.js'%}"></script>
+
+<!-- JS Unify -->
+<script src="{% static 'web/js/components/hs.slider.js'%}"></script>
+
+<script>
+$(document).on('ready', function () {
+    $.HSCore.components.HSSlider.init('#ageRangeSlider1, #ageRangeSlider2')
+
+    let si = $('#id_step4b-sexualIdentity1')
+    let siog = $('#sexualIdentityOtherGroup1')
+
+    if (si.val() === 'other') {
+        siog.show()
+    } else {
+        siog.hide()
+    }
+
+    si.change(function() {
+        if (si.val() === 'other') {
+            siog.show()
+        } else {
+            siog.hide()
+        }
+    })
+
+    let ageMin = $('#id_step4b-ageMin1')
+    let ageMax = $('#id_step4b-ageMax1')
+
+    $('#ageRangeSlider1').slider({change: function( event, ui ) {
+        if (ui.handleIndex === 0) {
+            ageMin.val(ui.value)
+        } else if (ui.handleIndex === 1) {
+            ageMax.val(ui.value)
+        }
+    }})
+
+    let si2 = $('#id_step4b-sexualIdentity2')
+    let siog2 = $('#sexualIdentityOtherGroup2')
+
+    if (si2.val() === 'other') {
+        siog2.show()
+    } else {
+        siog2.hide()
+    }
+
+    si2.change(function() {
+        if (si2.val() === 'other') {
+            siog2.show()
+        } else {
+            siog2.hide()
+        }
+    })
+
+    let ageMin2 = $('#id_step4b-ageMin2')
+    let ageMax2 = $('#id_step4b-ageMax2')
+
+    $('#ageRangeSlider2').slider({change: function( event, ui ) {
+        if (ui.handleIndex === 0) {
+            ageMin2.val(ui.value)
+        } else if (ui.handleIndex === 1) {
+            ageMax2.val(ui.value)
+        }
+    }})
+})
+</script>
+{% endblock %}

@@ -14,8 +14,6 @@ from django.utils.crypto import get_random_string
 from imagekit.models import ImageSpecField
 from imagekit.processors import ResizeToFill
 
-from event.models import Event
-
 logger = logging.getLogger(__name__)
 
 
@@ -266,7 +264,7 @@ class Account(models.Model):
         result = []
 
         if self.lookingForGenderList != '':
-            result.append('Looking for ' + ', '.join(self.lookingForGenderList.split('|')))
+            result.append(', '.join(self.lookingForGenderList.split('|')))
 
         if self.lookingForAgeMin and self.lookingForAgeMax:
             result.append('ages ' + str(self.lookingForAgeMin) + '-' + str(self.lookingForAgeMax))
@@ -332,14 +330,30 @@ class UserPreference(models.Model):
         ('km', 'Kilometers'),
         ('m', 'Miles')
     )
+    NUM_GROUPS = [
+        (1, 'One group (talk to everyone)'),
+        (2, 'Two groups (talk to all members of the opposite group)')
+    ]
+    SERIOUS = 1
+    CASUAL = 2
+    HOOKUP = 3
+    FRIENDSHIP = 4
+    MARRIAGE = 5
+    TYPES = [
+        (MARRIAGE, 'Marriage'),
+        (SERIOUS, 'Serious relationship'),
+        (CASUAL, 'Casual dating'),
+        (HOOKUP, 'Casual hookup'),
+        (FRIENDSHIP, 'Friendship')
+    ]
 
     user = models.ForeignKey(settings.AUTH_USER_MODEL)
     # Event preferences
     ageMin = models.PositiveSmallIntegerField(validators=[MinValueValidator(18)], default=18)
     ageMax = models.PositiveSmallIntegerField(validators=[MinValueValidator(18)], default=99)
     numGroups = models.PositiveSmallIntegerField(validators=[MinValueValidator(1), MaxValueValidator(2)],
-                                                 choices=Event.NUM_GROUPS, blank=True, null=True)
-    eventType = models.PositiveSmallIntegerField(choices=Event.TYPES, blank=True, null=True)
+                                                 choices=NUM_GROUPS, blank=True, null=True)
+    eventType = models.PositiveSmallIntegerField(choices=TYPES, blank=True, null=True)
     eventSize = models.PositiveSmallIntegerField(choices=EVENT_SIZES, blank=True, null=True)
 
     # Communication preferences

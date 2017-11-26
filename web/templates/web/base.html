@@ -165,6 +165,7 @@
 <script src="{% static 'web/vendor/dzsparallaxer/advancedscroller/plugin.js' %}"></script>
 <script src="{% static 'web/vendor/cropper/cropper.min.js' %}"></script>
 <script src="{% static 'web/vendor/custombox/custombox.min.js' %}"></script>
+<script src="{% static 'web/vendor/jquery.countdown.min.js' %}"></script>
 
 <!-- JS Unify -->
 <script src="{% static 'web/js/hs.core.js' %}"></script>
@@ -178,6 +179,7 @@
 <script src="{% static 'web/js/components/hs.counter.js' %}"></script>
 <script src="{% static 'web/js/components/hs.modal-window.js' %}"></script>
 <script src="{% static 'web/js/helpers/hs.not-empty-state.js' %}"></script>
+<script src="{% static 'web/js/components/hs.countdown.js' %}"></script>
 
 <!-- jQuery UI Helpers -->
 <script src="{% static 'web/js/helpers/hs.hamburgers.js' %}"></script>
@@ -214,6 +216,16 @@ $(document).on('ready', function () {
 
     // initialization of popups
     $.HSCore.components.HSModalWindow.init('[data-modal-target]');
+
+    // initialization of countdowns
+    var countdowns = $.HSCore.components.HSCountdown.init('.js-countdown', {
+        yearsElSelector: '.js-cd-years',
+        monthElSelector: '.js-cd-month',
+        daysElSelector: '.js-cd-days',
+        hoursElSelector: '.js-cd-hours',
+        minutesElSelector: '.js-cd-minutes',
+        secondsElSelector: '.js-cd-seconds'
+    });
 });
 
 $(window).on('load', function () {

@@ -46,6 +46,7 @@ def stuff_session(sender, user, request, **kwargs):
             request.session['thumbnail_url'] = account.photoThumbnail.url
 
         request.session['profile_incomplete'] = account.status == Account.CREATED
+        request.session['profile_suspended'] = account.status == Account.SUSPENDED
     except Account.DoesNotExist:
         return
 
