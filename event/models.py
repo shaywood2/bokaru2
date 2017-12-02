@@ -125,7 +125,7 @@ class Event(models.Model):
     ]
 
     # General info
-    creator = models.ForeignKey(settings.AUTH_USER_MODEL)
+    creator = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.PROTECT)
     name = models.CharField(max_length=150)
     type = models.PositiveSmallIntegerField(choices=TYPES, default=SERIOUS)
     startDateTime = models.DateTimeField()
@@ -145,7 +145,10 @@ class Event(models.Model):
     # Image
     photo = models.ImageField(blank=True)
     # Associated product
-    product = models.ForeignKey(Product)
+    product = models.ForeignKey(Product, on_delete=models.PROTECT)
+
+    # Deleted flag
+    deleted = models.BooleanField(default=False)
 
     # Automatic timestamps
     created = models.DateTimeField(auto_now_add=True)
@@ -283,7 +286,7 @@ class EventGroup(models.Model):
         (ANY, 'Anyone welcome')
     )
 
-    event = models.ForeignKey(Event, on_delete=models.CASCADE)
+    event = models.ForeignKey(Event, on_delete=models.PROTECT)
     sexualIdentity = models.CharField(max_length=50, choices=IDENTITY_CHOICES, blank=True)
     sexualIdentityOther = models.CharField(max_length=150, blank=True)
     ageMin = models.PositiveSmallIntegerField(validators=[MinValueValidator(18)])
@@ -388,7 +391,7 @@ class EventParticipant(models.Model):
     PAYMENT_FAILURE = 'payment_failure'
 
     group = models.ForeignKey(EventGroup, on_delete=models.PROTECT)
-    user = models.ForeignKey(settings.AUTH_USER_MODEL)
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.PROTECT)
     STATUSES = (
         (REGISTERED, 'registered'),
         (WAITING_LIST, 'waiting_list'),
@@ -463,9 +466,9 @@ class Pick(models.Model):
     NO = 0
     MAYBE = 2
 
-    picker = models.ForeignKey(settings.AUTH_USER_MODEL, related_name='picked_by')
-    picked = models.ForeignKey(settings.AUTH_USER_MODEL, related_name='picked')
-    event = models.ForeignKey(Event)
+    picker = models.ForeignKey(settings.AUTH_USER_MODEL, related_name='picked_by', on_delete=models.PROTECT)
+    picked = models.ForeignKey(settings.AUTH_USER_MODEL, related_name='picked', on_delete=models.PROTECT)
+    event = models.ForeignKey(Event, on_delete=models.PROTECT)
     RESPONSES = (
         (YES, 'liked'),
         (NO, 'did not like'),
