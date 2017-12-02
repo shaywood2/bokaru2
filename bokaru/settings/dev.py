@@ -2,9 +2,6 @@ import dj_database_url
 
 from bokaru.settings.common import *
 
-# Simplified static file serving.
-# https://warehouse.python.org/project/whitenoise/
-# whitenoise.storage.CompressedManifestStaticFilesStorage
 STATICFILES_STORAGE = 'django.contrib.staticfiles.storage.StaticFilesStorage'
 DEFAULT_FILE_STORAGE = 'django.core.files.storage.FileSystemStorage'
 
@@ -55,15 +52,49 @@ DEBUG = True
 LOGGING = {
     'version': 1,
     'disable_existing_loggers': False,
+    'formatters': {
+        'verbose': {
+            'format': '%(levelname)s %(asctime)s %(module)s %(message)s'
+        },
+        'simple': {
+            'format': '%(levelname)s %(message)s'
+        },
+    },
     'handlers': {
         'console': {
+            'level': 'INFO',
             'class': 'logging.StreamHandler',
+            'formatter': 'verbose'
         },
     },
     'loggers': {
         'django': {
             'handlers': ['console'],
-            'level': os.getenv('DJANGO_LOG_LEVEL', 'INFO'),
+            'level': 'INFO',
+        },
+        'bokaru': {
+            'handlers': ['console'],
+            'level': 'DEBUG',
+        },
+        'event': {
+            'handlers': ['console'],
+            'level': 'DEBUG',
+        },
+        'account': {
+            'handlers': ['console'],
+            'level': 'DEBUG',
+        },
+        'money': {
+            'handlers': ['console'],
+            'level': 'DEBUG',
+        },
+        'web': {
+            'handlers': ['console'],
+            'level': 'DEBUG',
+        },
+        'chat': {
+            'handlers': ['console'],
+            'level': 'DEBUG',
         },
     },
 }

@@ -93,8 +93,9 @@ Vagrant.configure(2) do |config|
 
     # Create image folders
     mkdir /home/vagrant/bokaru/www
-    mkdir /home/vagrant/bokaru/www/event-photos
-    mkdir /home/vagrant/bokaru/www/user-photos
+    mkdir /home/vagrant/bokaru/www/uploads
+    mkdir /home/vagrant/bokaru/www/uploads/event-photos
+    mkdir /home/vagrant/bokaru/www/uploads/user-photos
 
     SHELL
 end

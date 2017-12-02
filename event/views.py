@@ -12,6 +12,7 @@ from django.utils.dateparse import parse_time
 from formtools.wizard.views import SessionWizardView
 
 from money.billing_logic import get_product_by_participant_number
+from money.models import UserPaymentInfo
 from .forms import CreateEventStep1, CreateEventStep2, CreateEventStep3, CreateEventStep4a, \
     CreateEventStep4b, CreateEventStep5, CreateEventStep6
 from .models import Event, EventGroup
@@ -37,6 +38,7 @@ def view(request, event_id):
     display_num_participants = None
     display_duration = None
     num_groups = selected_event.numGroups
+    display_price = float(selected_event.product.amount) / 100
     if num_groups == 1:
         display_num_participants = selected_event.maxParticipantsInGroup
         display_duration = (selected_event.maxParticipantsInGroup - 1) * 6
@@ -53,25 +55,31 @@ def view(request, event_id):
 
     # First group info
     group1_participants = group1.get_registered_participants_accounts()
-    group1_filled_percentage = float(group1_participants.count()) / selected_event.maxParticipantsInGroup * 100
-    group1_spots_left = selected_event.maxParticipantsInGroup - group1_participants.count()
+    group1_filled_count = group1_participants.count()
+    group1_filled_percentage = float(group1_filled_count) / selected_event.maxParticipantsInGroup * 100
     group1_can_join = False
 
     # Second group info
     group2_participants = []
     group2_filled_percentage = 0
-    group2_spots_left = 0
+    group2_filled_count = 0
     group2_can_join = False
-    if group2:
+    if num_groups == 2:
         group2_participants = group2.get_registered_participants_accounts()
-        group2_filled_percentage = float(
-            group2_participants.count()) / selected_event.maxParticipantsInGroup * 100
-        group2_spots_left = selected_event.maxParticipantsInGroup - group2_participants.count()
+        group2_filled_count = group2_participants.count()
+        group2_filled_percentage = float(group2_filled_count) / selected_event.maxParticipantsInGroup * 100
 
-    # Check if user is registered
-    is_registered = False
-    if request.user.is_authenticated() and request.user is not None:
-        is_registered = selected_event.is_registered(request.user)
+    # Check if user can join each group
+    if request.user.is_authenticated and request.user is not None:
+        try:
+            group1_can_join = group1.can_user_register(request.user)
+        except Exception:
+            group1_can_join = False
+        if num_groups == 2:
+            try:
+                group2_can_join = group2.can_user_register(request.user)
+            except Exception:
+                group2_can_join = False
 
     context = {
         'event': selected_event,
@@ -80,19 +88,17 @@ def view(request, event_id):
         'num_groups': num_groups,
         'group1_filled_percentage': group1_filled_percentage,
         'group2_filled_percentage': group2_filled_percentage,
-        'group1_spots_left': group1_spots_left,
-        'group2_spots_left': group2_spots_left,
+        'group1_filled_count': group1_filled_count,
+        'group2_filled_count': group2_filled_count,
         'group1_participants': group1_participants,
         'group2_participants': group2_participants,
-        'is_registered': is_registered,
         'group1_can_join': group1_can_join,
         'group2_can_join': group2_can_join,
-        'displayType': display_type,
-        'displayNumParticipants': display_num_participants,
-        'displayDuration': display_duration
+        'display_type': display_type,
+        'display_num_participants': display_num_participants,
+        'display_duration': display_duration,
+        'display_price': display_price
     }
-
-    # event.update({'displayTime': get_value(CreateEventStep1.TIME_CHOICES, all_data.get('time'))})
 
     return render(request, 'event/view.html', context)
 
@@ -143,6 +149,7 @@ class CreateEventWizard(SessionWizardView):
         context = super(CreateEventWizard, self).get_context_data(form=form, **kwargs)
         if self.steps.current == 'step6':
             all_data = self.get_all_cleaned_data()
+
             # Convert certain values into display format
             all_data.update({'displayTime': get_value(CreateEventStep1.TIME_CHOICES, all_data.get('time'))})
             all_data.update({'displayType': get_value(Event.TYPES, int(all_data.get('type')))})
@@ -150,7 +157,7 @@ class CreateEventWizard(SessionWizardView):
             if all_data.get('numGroups') == 1:
                 all_data.update({'displayNumParticipants': int(all_data.get('eventSize')) / 2 + 1})
                 all_data.update({'displayDuration': int(all_data.get('eventSize')) * 3})
-                all_data.update({'displaySpotsLeft': int(all_data.get('eventSize')) / 2 + 1})
+                all_data.update({'displayNumParticipantsPerGroup': int(all_data.get('eventSize')) / 2 + 1})
 
                 display_sexual_identity1 = get_value(EventGroup.IDENTITY_CHOICES, all_data.get('sexualIdentity'))
                 if all_data.get('sexualIdentity') == 'other':
@@ -161,7 +168,7 @@ class CreateEventWizard(SessionWizardView):
             elif all_data.get('numGroups') == 2:
                 all_data.update({'displayNumParticipants': int(all_data.get('eventSize'))})
                 all_data.update({'displayDuration': int(all_data.get('eventSize')) * 3})
-                all_data.update({'displaySpotsLeft': int(all_data.get('eventSize')) / 2})
+                all_data.update({'displayNumParticipantsPerGroup': int(all_data.get('eventSize')) / 2})
 
                 display_sexual_identity1 = get_value(EventGroup.IDENTITY_CHOICES, all_data.get('sexualIdentity1'))
                 if all_data.get('sexualIdentity1') == 'other':
@@ -182,8 +189,7 @@ class CreateEventWizard(SessionWizardView):
         start_time = all_data.get('time')
         start_time = parse_time(start_time)
         start_date_time = datetime.combine(start_date, start_time)
-        # TODO: figure out the timezone as well
-
+        # TODO: figure out the timezone
         logger.info('startDateTime ' + str(start_date_time))
 
         lat = all_data.get('cityLat')
@@ -216,16 +222,11 @@ class CreateEventWizard(SessionWizardView):
         )
         event.save()
 
-        logger.info('saved event ' + str(event.id))
-
         # Add photo
         if all_data.get('image_data') and len(all_data.get('image_data')) > 0:
             img_format, img_data = all_data.get('image_data').split(';base64,')
             byte_stream = io.BytesIO(base64.b64decode(img_data))
-
             event.add_photo(byte_stream, 800)
-
-            logger.info('saved photo')
 
         # Save event groups
         if all_data.get('numGroups') == 1:
@@ -237,7 +238,6 @@ class CreateEventWizard(SessionWizardView):
                 ageMax=all_data.get('ageMax')
             )
             group.save()
-            logger.info('saved group ' + str(group.id))
         else:
             group1 = EventGroup(
                 event=event,
@@ -247,7 +247,7 @@ class CreateEventWizard(SessionWizardView):
                 ageMax=all_data.get('ageMax1')
             )
             group1.save()
-            logger.info('saved group ' + str(group1.id))
+
             group2 = EventGroup(
                 event=event,
                 sexualIdentity=all_data.get('sexualIdentity2'),
@@ -256,7 +256,9 @@ class CreateEventWizard(SessionWizardView):
                 ageMax=all_data.get('ageMax2')
             )
             group2.save()
-            logger.info('saved group ' + str(group2.id))
+
+        messages.add_message(self.request, messages.SUCCESS,
+                             'Congratulations, your new event is scheduled! Don\'t forget to register yourself.')
 
         return HttpResponseRedirect(reverse('event:view', kwargs={'event_id': event.id}))
 
@@ -266,21 +268,48 @@ def join(request, group_id):
     current_user = request.user
     selected_group = get_object_or_404(EventGroup, pk=group_id)
     selected_event = selected_group.event
+    # Retrieve the payment information for the user
+    credit_card = UserPaymentInfo.objects.find_credit_card_by_user(current_user)
+    # TODO: figure out the price for user
+    display_price = float(selected_event.product.amount) / 100
+    # TODO: figure out if event is free for the user
+    is_free = False
 
-    # Attempt to add user to the group
-    try:
-        selected_group.add_participant(current_user)
-        return HttpResponseRedirect(reverse('web:event_joined', kwargs={'event_id': selected_event.id}))
-    except Exception as e:
-        messages.add_message(request, messages.ERROR, str(e))
+    if request.method == 'POST':
+        # Check if Stripe token is present and update the saved card
+        if 'stripeToken' in request.POST:
+            token = request.POST['stripeToken']
+            credit_card = UserPaymentInfo.objects.create_or_update_credit_card(current_user, token)
 
-    return HttpResponseRedirect(reverse('web:event_view', kwargs={'event_id': selected_event.id}))
+        # Check that credit card exists
+        if not credit_card and not is_free:
+            messages.add_message(request, messages.ERROR, 'You do not have a credit card on file')
+            return HttpResponseRedirect(reverse('event:join', kwargs={'group_id': group_id}))
 
+        # Attempt to add user to the group
+        try:
+            selected_group.add_participant(current_user)
+            messages.add_message(request, messages.SUCCESS,
+                                 'Congratulations, you are registered! Don\'t forget to add event to your calendar')
+            return HttpResponseRedirect(reverse('event:view', kwargs={'event_id': selected_event.id}))
+        except Exception as e:
+            messages.add_message(request, messages.ERROR, str(e))
+            return HttpResponseRedirect(reverse('event:join', kwargs={'group_id': group_id}))
 
-@login_required
-def payment(request):
     context = {
-        'test': "Event Pay Page",
+        'event': selected_event,
+        'group': selected_group,
+        'credit_card': credit_card,
+        'display_price': display_price,
+        'is_free': is_free
     }
 
-    return render(request, 'web/payment.html', context)
+    # Check if user is able to join the group
+    try:
+        selected_group.can_user_register(current_user)
+        # TODO: Check schedule for conflicts
+    except Exception as e:
+        messages.add_message(request, messages.ERROR, str(e))
+        return HttpResponseRedirect(reverse('event:view', kwargs={'event_id': selected_event.id}))
+
+    return render(request, 'event/join.html', context)

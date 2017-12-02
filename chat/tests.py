@@ -7,8 +7,9 @@ from django.test import TestCase
 from django.utils import timezone
 
 from chat import utils
-from money.models import Product
 from event.models import Event, EventGroup
+from money.models import Product
+from . import test_data
 
 # Disable logging
 logging.disable(logging.CRITICAL)
@@ -19,14 +20,14 @@ class UtilsTest(TestCase):
     def test_generate_date_matrix_two_groups(self):
         cache.clear()
 
-        self.user1 = User.objects.create_user(username='bob1', email='bob1@alice.com', password='top_secret')
-        self.user2 = User.objects.create_user(username='bob2', email='bob2@alice.com', password='top_secret')
-        self.user3 = User.objects.create_user(username='bob3', email='bob3@alice.com', password='top_secret')
-        self.user4 = User.objects.create_user(username='bob4', email='bob4@alice.com', password='top_secret')
-        self.user5 = User.objects.create_user(username='alice1', email='bob5@alice.com', password='top_secret')
-        self.user6 = User.objects.create_user(username='alice2', email='bob6@alice.com', password='top_secret')
-        self.user7 = User.objects.create_user(username='alice3', email='bob7@alice.com', password='top_secret')
-        self.user8 = User.objects.create_user(username='alice4', email='bob8@alice.com', password='top_secret')
+        self.user1 = test_data.make_user('bob1', 'male', '1980-01-01')
+        self.user2 = test_data.make_user('bob2', 'male', '1980-01-01')
+        self.user3 = test_data.make_user('bob3', 'male', '1980-01-01')
+        self.user4 = test_data.make_user('bob4', 'male', '1980-01-01')
+        self.user5 = test_data.make_user('alice1', 'female', '1980-01-01')
+        self.user6 = test_data.make_user('alice2', 'female', '1980-01-01')
+        self.user7 = test_data.make_user('alice3', 'female', '1980-01-01')
+        self.user8 = test_data.make_user('alice4', 'female', '1980-01-01')
 
         self.product1 = Product(name='product1', short_code='product1', amount=100)
         self.product1.save()
@@ -36,10 +37,10 @@ class UtilsTest(TestCase):
                            maxParticipantsInGroup=5, numGroups=2, product=self.product1)
         self.event.save()
 
-        self.group1 = EventGroup(event=self.event, sexualIdentity='male', ageMin=20, ageMax=30)
+        self.group1 = EventGroup(event=self.event, sexualIdentity='male', ageMin=20, ageMax=99)
         self.group1.save()
 
-        self.group2 = EventGroup(event=self.event, sexualIdentity='male', ageMin=20, ageMax=30)
+        self.group2 = EventGroup(event=self.event, sexualIdentity='female', ageMin=20, ageMax=99)
         self.group2.save()
 
         self.group1.add_participant(self.user1)
@@ -81,11 +82,11 @@ class UtilsTest(TestCase):
     def test_generate_date_matrix_one_group(self):
         cache.clear()
 
-        self.user1 = User.objects.create_user(username='bob1', email='bob1@alice.com', password='top_secret')
-        self.user2 = User.objects.create_user(username='bob2', email='bob2@alice.com', password='top_secret')
-        self.user3 = User.objects.create_user(username='bob3', email='bob3@alice.com', password='top_secret')
-        self.user4 = User.objects.create_user(username='bob4', email='bob4@alice.com', password='top_secret')
-        self.user5 = User.objects.create_user(username='bob5', email='bob5@alice.com', password='top_secret')
+        self.user1 = test_data.make_user('bob1', 'male', '1980-01-01')
+        self.user2 = test_data.make_user('bob2', 'male', '1980-01-01')
+        self.user3 = test_data.make_user('bob3', 'male', '1980-01-01')
+        self.user4 = test_data.make_user('bob4', 'male', '1980-01-01')
+        self.user5 = test_data.make_user('bob5', 'male', '1980-01-01')
 
         self.product1 = Product(name='product1', short_code='product1', amount=100)
         self.product1.save()
@@ -95,7 +96,7 @@ class UtilsTest(TestCase):
                            maxParticipantsInGroup=5, numGroups=1, product=self.product1)
         self.event.save()
 
-        self.group1 = EventGroup(event=self.event, sexualIdentity='male', ageMin=20, ageMax=30)
+        self.group1 = EventGroup(event=self.event, sexualIdentity='male', ageMin=20, ageMax=90)
         self.group1.save()
 
         self.group1.add_participant(self.user1)

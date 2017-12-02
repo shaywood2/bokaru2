@@ -8,6 +8,13 @@ from event.models import Event, EventGroup
 from account.models import Account
 
 
+def make_user(name, gender, birth_date):
+    user = User.objects.create_user(username=name, email='bob1@alice.com', password='top_secret')
+    user_profile = Account(user=user, fullName=name, sexualIdentity=gender, birthDate=birth_date)
+    user_profile.save()
+    return user
+
+
 def make_products():
     product1 = Product(name='small event', short_code='smallevent', amount=1000)
     product1.save()

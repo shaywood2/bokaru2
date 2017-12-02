@@ -115,15 +115,19 @@ class Account(models.Model):
         ('halal', 'Halal')
     )
     # User model
-    user = models.ForeignKey(settings.AUTH_USER_MODEL)
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.PROTECT)
     # Account status
     status = models.CharField(max_length=20, choices=STATUS, default=CREATED)
     # Photo
     photo = models.ImageField(blank=True)
+    photoMedium = ImageSpecField(source='photo',
+                                 processors=[ResizeToFill(100, 100)],
+                                 format='JPEG',
+                                 options={'quality': 80})
     photoThumbnail = ImageSpecField(source='photo',
                                     processors=[ResizeToFill(30, 30)],
                                     format='JPEG',
-                                    options={'quality': 60})
+                                    options={'quality': 80})
     # Location
     locationName = models.CharField(max_length=150, blank=True)
     locationCoordinates = gis_models.PointField(srid=4326, default=Point(0, 0))
@@ -347,7 +351,7 @@ class UserPreference(models.Model):
         (FRIENDSHIP, 'Friendship')
     ]
 
-    user = models.ForeignKey(settings.AUTH_USER_MODEL)
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.PROTECT)
     # Event preferences
     ageMin = models.PositiveSmallIntegerField(validators=[MinValueValidator(18)], default=18)
     ageMax = models.PositiveSmallIntegerField(validators=[MinValueValidator(18)], default=99)
@@ -397,8 +401,8 @@ class MemoManager(models.Manager):
 
 
 class Memo(models.Model):
-    owner = models.ForeignKey(settings.AUTH_USER_MODEL, related_name='owner')
-    about = models.ForeignKey(settings.AUTH_USER_MODEL, related_name='about')
+    owner = models.ForeignKey(settings.AUTH_USER_MODEL, related_name='owner', on_delete=models.PROTECT)
+    about = models.ForeignKey(settings.AUTH_USER_MODEL, related_name='about', on_delete=models.PROTECT)
     content = models.TextField(max_length=2000, blank=True)
 
     # Automatic timestamps

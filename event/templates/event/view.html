@@ -2,6 +2,7 @@
 
 {% load staticfiles %}
 {% load widget_tweaks %}
+{% load account_tags %}
 
 {% block title %}Bokaru | {{ event.name }}{% endblock %}
 
@@ -49,88 +50,120 @@
 {% endblock %}
 
 {% block content %}
-<section class="g-min-height-100vhg-flex-centered g-pos-rel g-brd-bottom g-brd-gray-light-v4">
-    <div class="container g-pt-50">
-        <div class="row justify-content-between align-items-center">
+<!-- Event block -->
+<section>
+    <div class="container">
+        <div class="row">
             <div class="col-lg-6 order-md-2">
-                <div class="g-pos-rel">
-                    {% if event.photo is None or event.photo.name == '' %}
-                    <img class="img-fluid w-100" src="{% static 'web/images/event_default_image.jpg' %}" alt="Default event picture" id="default_event_image"/>
-                    {% else %}
-                    <img class="img-fluid w-100" src="{{ event.photo.url }}" alt="Event picture" id="event_image"/>
-                    {% endif %}
-                    <span class="u-icon-v1 g-width-160 g-height-80 g-brd-3 g-brd-white g-color-white g-bg-primary g-font-weight-300 g-font-size-22 g-pos-abs g-top-30 g-left-30 g-brd-around">
-                        <i class="g-font-style-normal">{{ displayType }}</i>
-                    </span>
+                <!-- Event image -->
+                <div class="g-pos-rel u-shadow-v2 g-brd-around g-brd-gray-light-v4 g-line-height-2 g-mb-20">
+                    <figure>
+                        {% if event.photo is None or event.photo.name == '' %}
+                        <img class="img-fluid w-100" src="{% static 'web/images/event_default_image.jpg' %}" alt="Default event picture" id="default_event_image"/>
+                        {% else %}
+                        <img class="img-fluid w-100" src="{{ event.photo.url }}" alt="Event picture" id="event_image"/>
+                        {% endif %}
+                    </figure>
+
+                    <!-- Event type -->
+                    <div class="g-pos-abs g-top-20 g-left-0 d-inline-block">
+                        <div class="d-flex justify-content-between w-100 g-max-width-145 g-bg-black g-color-white g-font-size-16 g-font-weight-700 text-uppercase">
+                            <span class="g-px-15 g-py-6">
+                                {% if event.type == 1 %}
+                                <i class="fa fa-heart g-mr-3"></i>
+                                {% elif event.type == 2 %}
+                                <i class="fa fa-heart-o g-mr-3"></i>
+                                {% elif event.type == 3 %}
+                                <i class="fa fa-glass g-mr-3"></i>
+                                {% elif event.type == 4 %}
+                                <i class="fa fa-handshake-o g-mr-3"></i>
+                                {% elif event.type == 5 %}
+                                <i class="fa fa-diamond g-mr-3"></i>
+                                {% endif %}
+                            </span>
+                            <span class="g-bg-primary g-font-weight-700 g-px-15 g-py-6 text-uppercase">
+                                {{ display_type }}
+                            </span>
+                        </div>
+                    </div>
                 </div>
             </div>
 
-            <div class="col-lg-6 order-md-1">
-                <div class="g-mb-30">
+            <div class="col-lg-6 order-md-1 g-mt-50--md">
+                <div>
                     <h1 class="g-color-dark g-font-weight-300 g-font-size-45 g-line-height-1 mb-4">{{ event.name }}</h1>
                     <h2 class="g-font-weight-300 g-font-size-30 mb-0">{{ event.startDateTime|date:'l, N d, Y @ P' }}</h2>
                     <h3 class="g-color-primary g-font-weight-400 g-font-size-30 mb-0">{{ event.locationName }}</h3>
                     <p class="lead">{{ event.description | linebreaks }}</p>
+                    {% if event.is_in_future %}
                     <a href="#" class="btn btn-lg btn-block u-btn-primary g-mb-30 rounded-0 js-go-to" data-target="#join_event">
                         Sounds good? Let's go!
                     </a>
+                    {% endif %}
                 </div>
 
                 <!-- Event Info -->
-                <div class="g-brd-around g-brd-gray-light-v4 g-brd-left-4 g-brd-primary-left g-line-height-1_8 g-rounded-3 g-pa-20">
-                    <h3 class="g-color-primary g-font-weight-600">Event Info</h3>
-                    <div class="row">
-                        <div class="col-md-6">
-                            <p class="mb-0 g-font-size-16">
-                                <i class="icon-people"></i> Number of participants
-                            </p>
+                <div class="card card-inverse g-bg-secondary g-brd-secondary rounded-0">
+                    <h3 class="card-header h5">
+                        <i class="fa fa-tasks g-font-size-default g-mr-5"></i>
+                        Event Info
+                    </h3>
+
+                    <div class="card-block g-pa-15">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <p class="mb-0 g-font-size-16">
+                                    <i class="icon-people"></i> Number of people you meet
+                                </p>
+                            </div>
+                            <div class="col-md-6">
+                                <span class="u-label g-rounded-3 g-bg-primary g-mr-10 g-mb-15">
+                                    {{ event.maxParticipantsInGroup }}
+                                </span>
+                            </div>
                         </div>
-                        <div class="col-md-6">
-                            <span class="u-label g-rounded-3 g-bg-primary g-mr-10 g-mb-15">
-                                {{ displayNumParticipants }}
-                            </span>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <p class="mb-0 g-font-size-16">
+                                    <i class="icon-clock"></i> Total duration
+                                </p>
+                            </div>
+                            <div class="col-md-6">
+                                <span class="u-label g-rounded-3 g-bg-primary g-mr-10 g-mb-15">
+                                    {{ display_duration }} minutes
+                                </span>
+                            </div>
                         </div>
-                    </div>
-                    <div class="row">
-                        <div class="col-md-6">
-                            <p class="mb-0 g-font-size-16">
-                                <i class="icon-clock"></i> Total duration
-                            </p>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <p class="mb-0 g-font-size-16">
+                                    <i class="icon-bubble"></i> Duration of each date
+                                </p>
+                            </div>
+                            <div class="col-md-6">
+                                <span class="u-label g-rounded-3 g-bg-primary g-mr-10 g-mb-15">5 minutes</span>
+                            </div>
                         </div>
-                        <div class="col-md-6">
-                            <span class="u-label g-rounded-3 g-bg-primary g-mr-10 g-mb-15">
-                                {{ displayDuration }} minutes
-                            </span>
-                        </div>
-                    </div>
-                    <div class="row">
-                        <div class="col-md-6">
-                            <p class="mb-0 g-font-size-16">
-                                <i class="icon-bubble"></i> Duration of each date
-                            </p>
-                        </div>
-                        <div class="col-md-6">
-                            <span class="u-label g-rounded-3 g-bg-primary g-mr-10 g-mb-15">5 minutes</span>
-                        </div>
-                    </div>
-                    <div class="row">
-                        <div class="col-md-6">
-                            <p class="mb-0 g-font-size-16">
-                                <i class="icon-cup"></i> Duration of a break
-                            </p>
-                        </div>
-                        <div class="col-md-6">
-                            <span class="u-label g-rounded-3 g-bg-primary g-mr-10 g-mb-15">1 minute</span>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <p class="mb-0 g-font-size-16">
+                                    <i class="icon-cup"></i> Duration of a break
+                                </p>
+                            </div>
+                            <div class="col-md-6">
+                                <span class="u-label g-rounded-3 g-bg-primary g-mr-10 g-mb-15">1 minute</span>
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
 
+        {% if event.is_in_future %}
         <div class="row" id="join_event">
-            <div class="col-md-12 g-bg-gray-dark-v1 g-color-white text-center g-py-30 g-my-30">
+            <div class="col-md-12">
                 <!-- Countdown -->
-                <div class="text-uppercase">
+                <div class="text-uppercase g-bg-gray-dark-v1 g-color-white text-center g-py-30 g-my-30">
                     <h5 class="g-font-size-42">Starting in</h5>
                     <div class="js-countdown u-countdown-v3 g-line-height-1_2 g-font-weight-300 g-color-white"
                          data-end-date="{{ event.startDateTime|date:'Y/m/d H:i:00' }}"
@@ -166,13 +199,30 @@
                 <!-- Countdown End -->
             </div>
         </div>
+        {% elif event.is_starting_soon %}
+        <div class="row">
+            <div class="col-md-12 g-bg-gray-dark-v1 g-color-white text-center g-py-30 g-my-30">
+                <div class="text-uppercase">
+                    Registration is closed, sorry! Why not join <a href="{% url 'web:search' %}">another event</a>?
+                </div>
+            </div>
+        </div>
+        {% else %}
+        <div class="row">
+            <div class="col-md-12 g-bg-gray-dark-v1 g-color-white text-center g-py-30 g-my-30">
+                <div class="text-uppercase">
+                    The event has ended, why not join <a href="{% url 'web:search' %}">another one</a>?
+                </div>
+            </div>
+        </div>
+        {% endif %}
 
         <div class="row">
             <div class="col-md-6 {% if not group2 %}g-offset-md-3{% endif %}">
                 <!-- Group(s) Info -->
                 <div class="g-brd-around g-brd-gray-light-v4 g-line-height-1_8 g-rounded-3 g-pa-20 g-mb-30">
                     <div class="row">
-                        <div class="col-md-6">
+                        <div class="col-md-6 text-center">
                             <div class="js-pie g-font-weight-600 g-flex-centered"
                                  data-circles-value="{{group1_filled_percentage}}"
                                  data-circles-max-value="100"
@@ -185,6 +235,9 @@
                                  data-circles-additional-text="%"
                                  data-circles-font-size="20">
                             </div>
+                            <h3>
+                                {{ group1_filled_count }} / {{ event.maxParticipantsInGroup }} participants
+                            </h3>
                         </div>
                         <div class="col-md-6">
                             <h1 class="g-color-primary g-font-weight-600">
@@ -194,34 +247,24 @@
                                 Ages: <span class="u-label u-label--lg g-rounded-3 g-bg-primary g-mr-10 g-mb-15">{{ group1.ageMin }} &mdash; {{ group1.ageMax }}</span>
                             </h2>
 
-                            <h4>{{group1_spots_left}} spots remaining</h4>
+                            {% if group1_can_join %}
+                            <a href="{% url 'event:join' group_id=group1.id %}" class="btn btn-xl u-btn-primary u-btn-content g-font-weight-600 g-letter-spacing-0_5 text-uppercase g-brd-2 rounded-0">
+                                <i class="fa fa-heart pull-left g-font-size-42"></i>
+                                <span class="float-right text-left">
+                                    Join group
+                                    <span class="d-block g-font-size-11">Event price: ${{display_price|floatformat:"2"}}</span>
+                                </span>
+                            </a>
+                            {% endif %}
                         </div>
                     </div>
 
                     <hr/>
 
-                    <button class="btn btn-lg btn-block u-btn-primary g-mb-30 rounded-0" disabled>
-                        Join this group
-                        <i class="icon-user-follow g-mr-3"></i>
-                    </button>
-
-                    <!-- Sample users -->
-                    <figure class="g-brd-around g-brd-gray-light-v4 g-rounded-4 g-pa-15">
-                        <div class="d-flex justify-content-start">
-                            <!-- User Image -->
-                            <img class="g-width-100 g-height-100 g-mr-15" src="{% static 'web/images/user_default_image.jpg'%}">
-
-                            <!-- User Info -->
-                            <div class="d-block">
-                                <div class="g-mb-10">
-                                    <h4 class="h5 g-mb-0">Test User McTestface</h4>
-                                    <em class="d-block g-color-primary g-font-style-normal g-font-size-default">18 | Middle Or Nowhere</em>
-                                </div>
-                                <em class="d-block g-color-gray-dark-v5 g-font-style-normal g-font-size-13 g-mb-2">Straight, man, single</em>
-                                <em class="d-block g-color-gray-dark-v5 g-font-style-normal g-font-size-12">Looking for: Woman, ages 18-22, Marriage, Friendship</em>
-                            </div>
-                        </div>
-                    </figure>
+                    <!-- List participants -->
+                    {% for profile in group1_participants %}
+                    {% render_profile profile %}
+                    {% endfor %}
                 </div>
             </div>
             <div class="col-md-6">
@@ -229,7 +272,7 @@
                 {% if group2 %}
                 <div class="g-brd-around g-brd-gray-light-v4 g-line-height-1_8 g-rounded-3 g-pa-20 g-mb-30">
                     <div class="row">
-                        <div class="col-md-6">
+                        <div class="col-md-6 text-center">
                             <div class="js-pie g-font-weight-600 g-flex-centered"
                                  data-circles-value="{{group2_filled_percentage}}"
                                  data-circles-max-value="100"
@@ -242,6 +285,9 @@
                                  data-circles-additional-text="%"
                                  data-circles-font-size="20">
                             </div>
+                            <h3>
+                                {{ group2_filled_count }} / {{ event.maxParticipantsInGroup }} participants
+                            </h3>
                         </div>
                         <div class="col-md-6">
                             <h1 class="g-color-primary g-font-weight-600">
@@ -250,29 +296,36 @@
                             <h2>
                                 Ages: <span class="u-label u-label--lg g-rounded-3 g-bg-primary g-mr-10 g-mb-15">{{ group2.ageMin }} &mdash; {{ group2.ageMax }}</span>
                             </h2>
-
-                            <h4>{{group2_spots_left}} spots remaining</h4>
+                            {% if group2_can_join %}
+                            <a href="{% url 'event:join' group_id=group2.id %}" class="btn btn-xl u-btn-primary u-btn-content g-font-weight-600 g-letter-spacing-0_5 text-uppercase g-brd-2 rounded-0">
+                                <i class="fa fa-heart pull-left g-font-size-42"></i>
+                                <span class="float-right text-left">
+                                    Join group
+                                    <span class="d-block g-font-size-11">Event price: ${{display_price|floatformat:"2"}}</span>
+                                </span>
+                            </a>
+                            {% endif %}
                         </div>
                     </div>
 
                     <hr/>
 
-                    <button class="btn btn-lg btn-block u-btn-primary g-mb-30 rounded-0" disabled>
-                        Join this group
-                        <i class="icon-user-follow g-mr-3"></i>
-                    </button>
+                    <!-- List participants -->
+                    {% for profile in group2_participants %}
+                    {% render_profile profile %}
+                    {% endfor %}
                 </div>
                 {% endif %}
             </div>
         </div>
     </div>
 </section>
-<!-- Preview End -->
+<!-- Event block End -->
 
 <!-- Social icons -->
 <section class="g-brd-top g-brd-bottom g-brd-gray-light-v4 g-bg-secondary">
     <div class="container text-center g-py-50--md g-py-20">
-        <h3>Promote your event</h3>
+        <h3>Share this event</h3>
         <a class="u-icon-v3 g-bg-facebook g-color-white g-color-white--hover g-mr-15 g-mb-20" href="#">
             <i class="fa fa-facebook"></i>
         </a>
@@ -303,5 +356,7 @@ $(document).on('ready', function () {
     // initialization of chart pies
     let items = $.HSCore.components.HSChartPie.init('.js-pie')
 })
+
+
 </script>
 {% endblock %}
