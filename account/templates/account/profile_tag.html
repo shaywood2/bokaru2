@@ -1,0 +1,22 @@
+{% load staticfiles %}
+
+<figure class="g-brd-around g-brd-gray-light-v4 g-rounded-4 g-pa-15 g-mb-10">
+    <div class="d-flex justify-content-start">
+        <!-- User Image -->
+        {% if profile.photo is None or profile.photo.name == '' %}
+        <img class="g-width-100 g-height-100 g-mr-15" src="{% static 'web/images/user_default_image.jpg' %}"/>
+        {% else %}
+        <img class="g-width-100 g-height-100 g-mr-15" src="{{ profile.photoMedium.url }}"/>
+        {% endif %}
+
+        <!-- User Info -->
+        <div class="d-block">
+            <div class="g-mb-10">
+                <h4 class="h5 g-mb-0"><a href="{% url 'account:view_user' username=profile.user.username %}" target="_blank">{{ profile.fullName }}</a></h4>
+                <em class="d-block g-color-primary g-font-style-normal g-font-size-default">{{ profile.age }} | {{ profile.locationName }}</em>
+            </div>
+            <em class="d-block g-color-gray-dark-v5 g-font-style-normal g-font-size-13 g-mb-2">{{ profile.basicInfo | join:", " }}</em>
+            <em class="d-block g-color-gray-dark-v5 g-font-style-normal g-font-size-12"><strong>Looking for:</strong> {{ profile.lookingFor | join:", " }}</em>
+        </div>
+    </div>
+</figure>

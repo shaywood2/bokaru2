@@ -5,24 +5,6 @@
 <!-- Header -->
 <!--<header id="js-header" class="u-header u-header&#45;&#45;absolute-top g-mb-25">-->
 <header id="js-header" class="u-header u-header--sticky-top u-header--change-logo u-header--change-appearance" data-header-fix-moment="100">
-    <!-- Message Bar -->
-    {% if request.session.profile_incomplete or request.session.profile_suspended %}
-    <div class="u-header__section u-header__section--hidden u-header__section--dark g-bg-black g-transition-0_3 g-py-10">
-        <div class="container">
-            <div class="row flex-column flex-sm-row justify-content-between align-items-center text-uppercase g-font-weight-600 g-color-white g-font-size-12 g-mx-0--lg">
-                {% if request.session.profile_incomplete %}
-                <div class="col-auto" style="margin-left: auto; margin-right: auto;">
-                    <i class="fa fa-warning g-font-size-18 g-valign-middle g-color-primary g-mr-10 g-mt-minus-2"></i>
-                    Please complete your <a href="{% url 'account:edit' %}">profile</a>, otherwise you will not able to
-                    join any events.
-                </div>
-                {% endif %}
-            </div>
-        </div>
-    </div>
-    {% endif %}
-    <!-- Message Bar End -->
-
     <div class="u-header__section u-header__section--light g-bg-white-opacity-0_7 g-transition-0_3 g-py-10"
          data-header-fix-moment-exclude="u-header__section--light g-bg-white-opacity-0_7 g-py-10"
          data-header-fix-moment-classes="u-header__section--light g-bg-white u-shadow-v18 g-py-0">
@@ -120,8 +102,177 @@
 <section class="g-py-80--md g-mb-minus-20--md g-py-50 g-mb-20 owl-background-repeat"></section>
 <!-- End Owl banner -->
 
-{% block content %}
-{% endblock %}
+<!-- Message Bar -->
+{% if request.session.profile_incomplete %}
+<section class="g-bg-primary g-color-white g-pa-30 g-mb-20 u-shadow-v1-5">
+    <div class="d-md-flex justify-content-md-center text-center">
+        <div class="align-self-md-center">
+            <p class="lead g-font-weight-400 g-mr-20--md g-mb-15 g-mb-0--md">
+                Please complete your profile, otherwise you will not able to join any events.
+            </p>
+        </div>
+        <div class="align-self-md-center">
+            <a class="btn btn-md u-btn-white" href="{% url 'account:edit' %}">Edit profile</a>
+        </div>
+    </div>
+</section>
+{% endif %}
+{% if request.session.profile_suspended %}
+<section class="g-bg-primary g-color-white g-pa-30 g-mb-20 u-shadow-v1-5">
+    <div class="d-md-flex justify-content-md-center text-center">
+        <div class="align-self-md-center">
+            <p class="lead g-font-weight-400 g-mr-20--md g-mb-15 g-mb-0--md">
+                Your profile has been suspended for breaking rules.
+            </p>
+        </div>
+        <div class="align-self-md-center">
+            <a class="btn btn-md u-btn-white" href="#">Rules</a>
+        </div>
+    </div>
+</section>
+{% endif %}
+{% if messages %}
+<section>
+    <div class="container">
+        <div class="row">
+            <div class="col-md-6 g-offset-md-3">
+                {% for message in messages %}
+                <div class="alert alert-dismissible fade show g-color-white rounded-0 text-center
+                {% if message.level == DEFAULT_MESSAGE_LEVELS.ERROR %}
+                g-bg-red
+                {% elif message.level == DEFAULT_MESSAGE_LEVELS.WARNING %}
+                g-bg-yellow
+                {% elif message.level == DEFAULT_MESSAGE_LEVELS.INFO %}
+                g-bg-gray-dark-v2
+                {% elif message.level == DEFAULT_MESSAGE_LEVELS.SUCCESS %}
+                g-bg-green
+                {% endif %}
+                " role="alert">
+                    <button type="button" class="close u-alert-close--light" data-dismiss="alert" aria-label="Close">
+                        <span aria-hidden="true">×</span>
+                    </button>
+
+                    <div class="media">
+                        <span class="d-flex g-mr-10 g-mt-5">
+                            {% if message.level == DEFAULT_MESSAGE_LEVELS.ERROR %}
+                            <i class="icon-ban g-font-size-25"></i>
+                            {% elif message.level == DEFAULT_MESSAGE_LEVELS.WARNING %}
+                            <i class="icon-exclamation g-font-size-25"></i>
+                            {% elif message.level == DEFAULT_MESSAGE_LEVELS.INFO %}
+                            <i class="icon-info g-font-size-25"></i>
+                            {% elif message.level == DEFAULT_MESSAGE_LEVELS.SUCCESS %}
+                            <i class="icon-check g-font-size-25"></i>
+                            {% endif %}
+                        </span>
+                        <span class="media-body align-self-center">
+                        {{ message }}
+                        </span>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+</section>
+{% endif %}
+<!-- Message Bar End -->
+
+<main>
+    {% block content %}
+    {% endblock %}
+</main>
+
+<!-- Footer -->
+<footer class="g-bg-black-opacity-0_3 owl-background-repeat g-color-white-opacity-0_6 g-py-60">
+    <div class="container">
+        <div class="row">
+            <!-- Footer Content -->
+            <div class="col-lg-4 g-mb-40 g-mb-0--lg">
+                <a class="d-block g-mb-20" href="/">
+                    <img class="img-fluid g-opacity-0_6 g-mb-5" src="{% static 'web/images/bokaru-logo.png' %}"
+                         alt="Logo">
+                </a>
+
+                <div class="g-mb-20">
+                    <p>About Bokaru dolor sit amet, consec tetur adipiscing elit. Maecenas eget nisl id libero
+                        tincidunt.</p>
+                    <small class="g-font-size-default mb-0">&copy; 2017 All right reserved. Bokaru Inc.
+                    </small>
+                </div>
+
+                <ul class="list-inline mb-0">
+                    <li class="list-inline-item g-mr-10">
+                        <a class="u-icon-v3 u-icon-size--xs g-color-white g-color-primary--hover g-bg-white-opacity-0_1 g-bg-white--hover"
+                           href="#">
+                            <i class="fa fa-facebook"></i>
+                        </a>
+                    </li>
+                    <li class="list-inline-item g-mr-10">
+                        <a class="u-icon-v3 u-icon-size--xs g-color-white g-color-primary--hover g-bg-white-opacity-0_1 g-bg-white--hover"
+                           href="#">
+                            <i class="fa fa-instagram"></i>
+                        </a>
+                    </li>
+                    <li class="list-inline-item g-mr-10">
+                        <a class="u-icon-v3 u-icon-size--xs g-color-white g-color-primary--hover g-bg-white-opacity-0_1 g-bg-white--hover"
+                           href="#">
+                            <i class="fa fa-twitter"></i>
+                        </a>
+                    </li>
+                    <li class="list-inline-item g-mr-10">
+                        <a class="u-icon-v3 u-icon-size--xs g-color-white g-color-primary--hover g-bg-white-opacity-0_1 g-bg-white--hover"
+                           href="#">
+                            <i class="fa fa-dribbble"></i>
+                        </a>
+                    </li>
+                </ul>
+            </div>
+            <!-- End Footer Content -->
+
+            <!-- Footer Content -->
+            <div class="col-lg-2 g-mb-30 g-mb-0--lg">
+                <h2 class="h6 g-color-white text-uppercase g-font-weight-700 g-mb-20">Useful Links</h2>
+                <ul class="list-unstyled mb-0">
+                    <li class="d-flex align-items-baseline g-mb-12">
+                        <i class="fa fa-angle-double-right g-mr-8"></i>
+                        <a class="g-color-white-opacity-0_6 g-color-white--hover" href="#">Blog</a>
+                    </li>
+                    <li class="d-flex align-items-baseline g-mb-12">
+                        <i class="fa fa-angle-double-right g-mr-8"></i>
+                        <a class="g-color-white-opacity-0_6 g-color-white--hover" href="#">Support</a>
+                    </li>
+                    <li class="d-flex align-items-baseline g-mb-12">
+                        <i class="fa fa-angle-double-right g-mr-8"></i>
+                        <a class="g-color-white-opacity-0_6 g-color-white--hover" href="#">Community</a>
+                    </li>
+                    <li class="d-flex align-items-baseline g-mb-12">
+                        <i class="fa fa-angle-double-right g-mr-8"></i>
+                        <a class="g-color-white-opacity-0_6 g-color-white--hover" href="#">Pricing/Plans</a>
+                    </li>
+                    <li class="d-flex align-items-baseline g-mb-12">
+                        <i class="fa fa-angle-double-right g-mr-8"></i>
+                        <a class="g-color-white-opacity-0_6 g-color-white--hover" href="#">UI Freebies</a>
+                    </li>
+                    <li class="d-flex align-items-baseline">
+                        <i class="fa fa-angle-double-right g-mr-8"></i>
+                        <a class="g-color-white-opacity-0_6 g-color-white--hover" href="#">Careers</a>
+                    </li>
+                </ul>
+            </div>
+            <!-- End Footer Content -->
+        </div>
+    </div>
+</footer>
+<!-- End Footer -->
+
+<!-- Go To -->
+<a class="js-go-to u-go-to-v2" href="#" data-type="fixed" data-position='{
+     "bottom": 15,
+     "right": 15
+   }' data-offset-top="400" data-compensation="#js-header" data-show-effect="zoomIn">
+    <i class="fa fa-chevron-up"></i>
+</a>
+<!-- End Go To -->
 
 <!-- Navigation script -->
 <script type="text/javascript">
@@ -129,5 +280,6 @@
     let e = document.getElementById(navLocation)
     if (!!e)
         e.className += ' active'
+
 </script>
 {% endblock %}

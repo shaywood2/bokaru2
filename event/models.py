@@ -1,4 +1,3 @@
-import datetime
 import io
 import logging
 import re
@@ -14,8 +13,9 @@ from django.contrib.postgres.search import SearchQuery, SearchRank, SearchVector
 from django.core.files.storage import default_storage
 from django.core.validators import MinValueValidator, MaxValueValidator
 from django.db import models
+from django.utils import timezone
 from django.utils.crypto import get_random_string
-from django.utils.timezone import utc
+from django.utils.functional import cached_property
 from django.utils.translation import ugettext_lazy as _
 
 from account.models import Account
@@ -69,17 +69,17 @@ class EventManager(models.Manager):
     # Get all events that belong to the given user
     def get_all_by_user(self, user):
         return self.filter(eventgroup__eventparticipant__user=user).filter(
-            startDateTime__gte=datetime.date.today()).order_by('startDateTime')
+            startDateTime__gte=timezone.now()).order_by('startDateTime')
 
     # Get next event that the user is registered for
     def get_next(self, user):
-        now = datetime.datetime.utcnow().replace(tzinfo=utc)
+        now = timezone.now()
         event = self.get_all_by_user(user).filter(startDateTime__gte=now).order_by('-startDateTime').first()
         return event
 
     # Get the event that belongs to the user and is either starting in one hour, running now or ended up to one hour ago
     def get_current(self, user):
-        now = datetime.datetime.utcnow().replace(tzinfo=utc)
+        now = timezone.now()
         hour_from_now = now + timedelta(hours=1)
         hour_ago = now - timedelta(hours=1)
         events = self.get_all_by_user(user).order_by('-startDateTime')
@@ -151,10 +151,11 @@ class Event(models.Model):
     created = models.DateTimeField(auto_now_add=True)
     updated = models.DateTimeField(auto_now=True)
 
-    # Virtual field
-    @property
+    # Virtual fields
+    # Calculate end time
+    @cached_property
     def endDateTime(self):
-        return self.startDateTime + timedelta(
+        return self.startDateTime.date() + timedelta(
             seconds=self.maxParticipantsInGroup * (self.dateDuration + self.breakDuration))
 
     objects = EventManager()
@@ -164,7 +165,7 @@ class Event(models.Model):
         return self.name + ' @ ' + self.locationName + ', [' + str(self.startDateTime) + ']'
 
     # Return True if the user is registered in any group of this event
-    def is_registered(self, user):
+    def is_user_registered(self, user):
         try:
             EventParticipant.objects.get(user=user, group__in=self.eventgroup_set.all(),
                                          status__in=[EventParticipant.REGISTERED, EventParticipant.PAYMENT_SUCCESS])
@@ -173,7 +174,7 @@ class Event(models.Model):
             return False
 
     # Return True if the user is on the waiting list
-    def is_on_waiting_list(self, user):
+    def is_user_on_waiting_list(self, user):
         try:
             EventParticipant.objects.get(user=user, group__in=self.eventgroup_set.all(),
                                          status=EventParticipant.WAITING_LIST)
@@ -184,7 +185,7 @@ class Event(models.Model):
     # Return True if the event is going to be held
     def is_confirmed(self):
         # The event must start within a day
-        now = datetime.datetime.utcnow().replace(tzinfo=utc)
+        now = timezone.now()
         time_diff = self.event.startDateTime - now
         if time_diff.days < 1:
             # Check if there are enough participants
@@ -199,24 +200,30 @@ class Event(models.Model):
 
     # Return true if the event is happening right now
     def is_in_progress(self):
-        now = datetime.datetime.utcnow().replace(tzinfo=utc)
+        now = timezone.now()
         return self.startDateTime <= now <= self.endDateTime
+
+    # Return true if the event is starting in the future (more than 1 hour from now)
+    def is_in_future(self):
+        now = timezone.now()
+        hour_from_now = now + timedelta(hours=1)
+        return self.startDateTime >= hour_from_now
 
     # Return true if the event is starting within one hour
     def is_starting_soon(self):
-        now = datetime.datetime.utcnow().replace(tzinfo=utc)
+        now = timezone.now()
         hour_from_now = now + timedelta(hours=1)
         return now <= self.startDateTime <= hour_from_now
 
     # Return true if the event is starting within one hour
     def is_starting_within_a_day(self):
-        now = datetime.datetime.utcnow().replace(tzinfo=utc)
-        day_from_now = now + timedelta(day=1)
+        now = timezone.now()
+        day_from_now = now + timedelta(days=1)
         return now <= self.startDateTime <= day_from_now
 
     # Return true if the event has ended at most one hour ago
     def is_ended_recently(self):
-        now = datetime.datetime.utcnow().replace(tzinfo=utc)
+        now = timezone.now()
         hour_ago = now - timedelta(hours=1)
         return now >= self.endDateTime >= hour_ago
 
@@ -264,11 +271,16 @@ class Event(models.Model):
 
 
 class EventGroup(models.Model):
+    FEMALE = 'female'
+    MALE = 'male'
+    OTHER = 'other'
+    ANY = 'any'
+
     IDENTITY_CHOICES = (
-        ('female', 'Women only'),
-        ('male', 'Men only'),
-        ('other', 'Other (please specify)'),
-        ('any', 'Anyone welcome')
+        (FEMALE, 'Women only'),
+        (MALE, 'Men only'),
+        (OTHER, 'Other (please specify)'),
+        (ANY, 'Anyone welcome')
     )
 
     event = models.ForeignKey(Event, on_delete=models.CASCADE)
@@ -277,12 +289,39 @@ class EventGroup(models.Model):
     ageMin = models.PositiveSmallIntegerField(validators=[MinValueValidator(18)])
     ageMax = models.PositiveSmallIntegerField(validators=[MinValueValidator(18)])
 
-    @property
+    @cached_property
     def displaySexualIdentity(self):
         if self.sexualIdentity == 'other':
             return self.sexualIdentityOther
         else:
             return get_value(EventGroup.IDENTITY_CHOICES, self.sexualIdentity)
+
+    # Check if the user is able to register and raise an appropriate exception if not
+    def can_user_register(self, user):
+        # Check if the event is in the future
+        if not self.event.is_in_future:
+            raise Exception(_('Registration is closed'))
+
+        # Check if the group has spots
+        num_participants = self.count_registered_participants()
+        if self.event.maxParticipantsInGroup <= num_participants:
+            raise Exception(_('Group is full'))
+
+        # Check that the user is not already registered
+        if self.event.is_user_registered(user):
+            raise Exception(_('You are already registered'))
+
+        # Check that sexual identity matches (male or female only)
+        account = Account.objects.get(user=user)
+        if self.sexualIdentity == EventGroup.MALE or self.sexualIdentity == EventGroup.FEMALE:
+            if self.sexualIdentity != account.sexualIdentity:
+                raise Exception(_('This group does not match your sexual identity'))
+
+        # Check that the age range includes user's age
+        if self.ageMin > account.age or self.ageMax < account.age:
+            raise Exception(_('This group does not match your age'))
+
+        return True
 
     def get_registered_participants(self):
         participants = EventParticipant.objects.filter(group=self, status=EventParticipant.REGISTERED) \
@@ -309,30 +348,18 @@ class EventGroup(models.Model):
         return participants.count()
 
     def add_participant(self, user):
-        # Check if the event is in the past
-        now = datetime.datetime.utcnow().replace(tzinfo=utc)
-        if self.event.startDateTime < now:
-            raise Exception(_('The event is in the past'))
-
-        # Check if the group is full
-        num_participants = self.count_registered_participants()
-        if self.event.maxParticipantsInGroup <= num_participants:
-            raise Exception(_('Group is full'))
-
-        # Check if the user is already registered
-        if self.event.is_registered(user):
-            raise Exception(_('You are already registered'))
+        # Check if user can register
+        self.can_user_register(user)
 
         # Check if the user is on the waiting list
-        if self.event.is_on_waiting_list(user):
+        if self.event.is_user_on_waiting_list(user):
             raise Exception(_('You are already on a waiting list'))
         else:
             participant = EventParticipant(group=self, user=user, status=EventParticipant.REGISTERED)
             participant.save()
 
         # Check if the event is starting within 24 hours and process payment
-        time_diff = self.event.startDateTime - now
-        if time_diff.days < 1:
+        if self.event.is_starting_within_a_day():
             # TODO: process payment right away
             raise Exception(_('Pay first'))
 
@@ -349,7 +376,8 @@ class EventGroup(models.Model):
         raise Exception('Function not implemented: register_participant_from_waiting_list')
 
     def __str__(self):
-        return self.sexualIdentity + ' [' + str(self.ageMin) + ' - ' + str(self.ageMax) + '] in event: ' + self.event.name
+        return self.sexualIdentity + ' [' + str(self.ageMin) + ' - ' +\
+               str(self.ageMax) + '] in event: ' + self.event.name + ' [' + str(self.event.id) + ']'
 
 
 class EventParticipant(models.Model):

@@ -120,10 +120,14 @@ class Account(models.Model):
     status = models.CharField(max_length=20, choices=STATUS, default=CREATED)
     # Photo
     photo = models.ImageField(blank=True)
+    photoMedium = ImageSpecField(source='photo',
+                                 processors=[ResizeToFill(100, 100)],
+                                 format='JPEG',
+                                 options={'quality': 80})
     photoThumbnail = ImageSpecField(source='photo',
                                     processors=[ResizeToFill(30, 30)],
                                     format='JPEG',
-                                    options={'quality': 60})
+                                    options={'quality': 80})
     # Location
     locationName = models.CharField(max_length=150, blank=True)
     locationCoordinates = gis_models.PointField(srid=4326, default=Point(0, 0))

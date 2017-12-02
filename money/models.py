@@ -2,9 +2,83 @@ from django.conf import settings
 from django.contrib.auth import get_user_model
 from django.db import models
 
+from .payment_service import create_customer, delete_card, create_card
+
 
 def get_sentinel_user():
     return get_user_model().objects.get_or_create(username='deleted')[0]
+
+
+class PaymentInfoManager(models.Manager):
+    # Create or update a credit card in Stripe and save the result
+    def create_or_update_credit_card(self, owner_user, stripe_token):
+        try:
+            # Retrieve the payment information for the user
+            payment_info = self.get(user=owner_user)
+
+            # Delete existing credit card
+            if payment_info.credit_card_id != 0:
+                delete_card(payment_info.stripe_customer_id, payment_info.credit_card_id)
+
+            # Create a card for an existing Customer
+            credit_card = create_card(payment_info.stripe_customer_id, stripe_token)
+            # Store the payment info
+            payment_info.credit_card_id = credit_card.id
+            payment_info.credit_card_brand = credit_card.brand
+            payment_info.credit_card_last_4 = credit_card.last4
+            payment_info.credit_card_exp_month = credit_card.exp_month
+            payment_info.credit_card_exp_year = credit_card.exp_year
+            payment_info.save()
+            return {
+                'brand': payment_info.credit_card_brand,
+                'last4': payment_info.credit_card_last_4,
+                'exp_month': payment_info.credit_card_exp_month,
+                'exp_year': payment_info.credit_card_exp_year,
+                'id': payment_info.credit_card_id,
+            }
+        except UserPaymentInfo.DoesNotExist:
+            # Create a Customer with a credit card
+            stripe_customer = create_customer(stripe_token, owner_user.id, owner_user.first_name + ' '
+                                              + owner_user.last_name, owner_user.email)
+
+            credit_card = stripe_customer.sources.data[0]
+
+            # Store the payment info
+            payment_info = self.create(
+                user=owner_user,
+                stripe_customer_id=stripe_customer.id,
+                credit_card_id=credit_card.id,
+                credit_card_brand=credit_card.brand,
+                credit_card_last_4=credit_card.last4,
+                credit_card_exp_month=credit_card.exp_month,
+                credit_card_exp_year=credit_card.exp_year
+            )
+            return {
+                'brand': payment_info.credit_card_brand,
+                'last4': payment_info.credit_card_last_4,
+                'exp_month': payment_info.credit_card_exp_month,
+                'exp_year': payment_info.credit_card_exp_year,
+                'id': payment_info.credit_card_id,
+            }
+
+    # Find credit card info by user
+    def find_credit_card_by_user(self, user):
+        try:
+            payment_info = self.get(user=user)
+
+            # Get the saved credit card
+            if payment_info.has_card():
+                return {
+                    'brand': payment_info.credit_card_brand,
+                    'last4': payment_info.credit_card_last_4,
+                    'exp_month': payment_info.credit_card_exp_month,
+                    'exp_year': payment_info.credit_card_exp_year,
+                    'id': payment_info.credit_card_id,
+                }
+            else:
+                return None
+        except UserPaymentInfo.DoesNotExist:
+            return None
 
 
 class UserPaymentInfo(models.Model):
@@ -20,8 +94,10 @@ class UserPaymentInfo(models.Model):
     created = models.DateTimeField(auto_now_add=True)
     updated = models.DateTimeField(auto_now=True)
 
+    objects = PaymentInfoManager()
+
     def __str__(self):
-        return self.user.first_name + ' ' + self.user.last_name + ' [' + self.stripe_customer_id + ']'
+        return self.user.username + ' [Stripe id: ' + self.stripe_customer_id + ']'
 
     # Check if the user has a card ID
     def has_card(self):

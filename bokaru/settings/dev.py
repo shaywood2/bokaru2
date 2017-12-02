@@ -55,15 +55,49 @@ DEBUG = True
 LOGGING = {
     'version': 1,
     'disable_existing_loggers': False,
+    'formatters': {
+        'verbose': {
+            'format': '%(levelname)s %(asctime)s %(module)s %(message)s'
+        },
+        'simple': {
+            'format': '%(levelname)s %(message)s'
+        },
+    },
     'handlers': {
         'console': {
+            'level': 'INFO',
             'class': 'logging.StreamHandler',
+            'formatter': 'verbose'
         },
     },
     'loggers': {
         'django': {
             'handlers': ['console'],
-            'level': os.getenv('DJANGO_LOG_LEVEL', 'INFO'),
+            'level': 'INFO',
+        },
+        'bokaru': {
+            'handlers': ['console'],
+            'level': 'DEBUG',
+        },
+        'event': {
+            'handlers': ['console'],
+            'level': 'DEBUG',
+        },
+        'account': {
+            'handlers': ['console'],
+            'level': 'DEBUG',
+        },
+        'money': {
+            'handlers': ['console'],
+            'level': 'DEBUG',
+        },
+        'web': {
+            'handlers': ['console'],
+            'level': 'DEBUG',
+        },
+        'chat': {
+            'handlers': ['console'],
+            'level': 'DEBUG',
         },
     },
 }
