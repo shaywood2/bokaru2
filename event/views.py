@@ -70,7 +70,7 @@ def view(request, event_id):
         group2_filled_percentage = float(group2_filled_count) / selected_event.maxParticipantsInGroup * 100
 
     # Check if user can join each group
-    if request.user.is_authenticated() and request.user is not None:
+    if request.user.is_authenticated and request.user is not None:
         try:
             group1_can_join = group1.can_user_register(request.user)
         except Exception:

@@ -13,7 +13,7 @@ logger = logging.getLogger(__name__)
 
 
 def index(request):
-    if request.user.is_authenticated():
+    if request.user.is_authenticated:
         return render(request, 'web/index.html', {'user': request.user})
     else:
         return render(request, 'web/index_landing.html')
