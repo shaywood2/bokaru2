@@ -1,69 +1,67 @@
-{% extends 'web/base.html' %}
-
+{% extends 'web/base_nav.html' %}
 
 {% load staticfiles %}
+{% load event_tags %}
+
+{% block nav_location %}nav_events{% endblock %}
+
+{% block title %}Bokaru | My events{% endblock %}
 
 {% block content %}
+<section>
+    <div class="container">
+        <div class="row">
+            <div class="col-md-12 g-mt-50--md">
+                <h1>Future Events</h1>
+                <ul class="row u-timeline-v2-wrap list-unstyled">
+                    {% for event in future_events %}
+                    <li class="col-md-12 g-mb-40">
+                        <div class="row">
+                            <!-- Timeline Date -->
+                            <div class="col-md-3 text-md-right g-pt-20--md g-pr-40--md g-mb-20">
+                                <h3 class="g-color-primary g-font-weight-400 g-font-size-20 mb-0">{{ event.startDateTime|date:'l, N d, Y' }}</h3>
+                                <h4>{{event.startDateTime|date:'P'}}</h4>
+                            </div>
 
-<!--=== Profile ===-->
-		<div class="container content profile">
-			<div class="row">
+                            <!-- Timeline Content -->
+                            <div class="col-md-9 g-orientation-left g-pl-40--md">
+                                <!-- Timeline Dot -->
+                                <div class="g-hidden-sm-down u-timeline-v2__icon g-top-35">
+                                    <i class="d-block g-width-18 g-height-18 g-bg-white g-brd-around g-brd-3 g-brd-gray-light-v5 rounded-circle"></i>
+                                </div>
+                                <!-- End Timeline Dot -->
 
-				<!-- Profile Content -->
-				<div class="col-md-12">
-					<div class="profile-body">
-                        <h1 style="text-align: center">My Events</h1>
-						<!--Timeline-->
-						<ul class="timeline-v2">
+                                <div class="g-pos-rel">
+                                    <!-- Timeline Arrow -->
+                                    <div class="g-hidden-sm-down u-triangle-inclusive-v1--right g-top-30 g-z-index-2">
+                                        <div class="u-triangle-inclusive-v1--right__back g-brd-gray-light-v4-right"></div>
+                                    </div>
+                                    <div class="g-hidden-md-up u-triangle-inclusive-v1--top g-left-20 g-z-index-2">
+                                        <div class="u-triangle-inclusive-v1--top__back g-brd-gray-light-v4-bottom"></div>
+                                    </div>
 
-                            {% for event in events %}
+                                    <!-- Event -->
+                                    {% render_event_large event %}
+                                    <!-- End Event -->
+                                </div>
+                            </div>
+                        </div>
+                    </li>
+                    {% endfor %}
+                </ul>
 
-
-                            <li>
-								<time class="cbp_tmtime" datetime=""><span></span> <span>{{event.startDateTime|date:'F jS Y h:iA'}}</span></time>
-								<i class="cbp_tmicon rounded-x hidden-xs"></i>
-								<div class="cbp_tmlabel">
-
-									<div class="row">
-                                        <div class="col-sm-6">
-                                            <div class="easy-block-v1">
-                                                <img class="img-responsive" src="{% static 'web/theme/img/main/img12.jpg' %}" alt="">
-
-                                                <div class="easy-block-v1-badge rgba-red">Coming Up</div>
-                                            </div>
-                                        </div>
-                                        <div class="col-sm-6">
-
-                                            <div class="projects">
-                                                <h2><a class="color-dark" href="#">{{event.name}}</a></h2>
-                                                <ul class="list-unstyled list-inline blog-info-v2">
-
-
-                                                    <li><i class="fa fa-clock-o"></i>{{event.locationName}}</li>
-                                                </ul>
-                                                <p>{{event.description}}</p>
-                                                <br>
-
-                                            </div>
-                                        </div>
-									</div>
-								</div>
-							</li>
-
-
-                             {% endfor %}
-
-
-
-
-
-						</ul>
-						<!--End Timeline-->
-					</div>
-				</div>
-				<!-- End Profile Content -->
-			</div>
-		</div><!--/container-->
-		<!--=== End Profile ===-->
-
+                <h1>Past Events</h1>
+                <div class="row">
+                {% for event in past_events %}
+                    <div class="col-md-6 col-lg-3 g-mb-30">
+                        <!-- Event -->
+                        {% render_event_small event %}
+                        <!-- End Event -->
+                    </div>
+                {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
 {% endblock %}

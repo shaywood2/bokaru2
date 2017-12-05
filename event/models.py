@@ -17,6 +17,8 @@ from django.utils import timezone
 from django.utils.crypto import get_random_string
 from django.utils.functional import cached_property
 from django.utils.translation import ugettext_lazy as _
+from imagekit.models import ImageSpecField
+from pilkit.processors import ResizeToFill
 
 from account.models import Account
 from money.models import Product
@@ -66,15 +68,20 @@ class EventManager(models.Manager):
         return self.annotate(rank=SearchRank(vector, query)).order_by('-rank', 'startDateTime')
         # return self.annotate(rank=SearchRank(vector, query)).filter(rank__gte=0.1).order_by('-rank', 'startDateTime')
 
-    # Get all events that belong to the given user
-    def get_all_by_user(self, user):
+    # Get all future events that belong to the given user
+    def get_all_future_by_user(self, user):
         return self.filter(eventgroup__eventparticipant__user=user).filter(
             startDateTime__gte=timezone.now()).order_by('startDateTime')
+
+    # Get all past events that belong to the given user
+    def get_all_past_by_user(self, user):
+        return self.filter(eventgroup__eventparticipant__user=user).filter(
+            startDateTime__lt=timezone.now()).order_by('-startDateTime')
 
     # Get next event that the user is registered for
     def get_next(self, user):
         now = timezone.now()
-        event = self.get_all_by_user(user).filter(startDateTime__gte=now).order_by('-startDateTime').first()
+        event = self.get_all_future_by_user(user).filter(startDateTime__gte=now).order_by('-startDateTime').first()
         return event
 
     # Get the event that belongs to the user and is either starting in one hour, running now or ended up to one hour ago
@@ -82,7 +89,7 @@ class EventManager(models.Manager):
         now = timezone.now()
         hour_from_now = now + timedelta(hours=1)
         hour_ago = now - timedelta(hours=1)
-        events = self.get_all_by_user(user).order_by('-startDateTime')
+        events = self.get_all_future_by_user(user).order_by('-startDateTime')
 
         for event in events:
             if event.startDateTime <= hour_from_now and event.endDateTime >= hour_ago:
@@ -123,7 +130,6 @@ class Event(models.Model):
         (HOOKUP, 'Casual hookup'),
         (FRIENDSHIP, 'Friendship')
     ]
-
     # General info
     creator = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.PROTECT)
     name = models.CharField(max_length=150)
@@ -144,6 +150,10 @@ class Event(models.Model):
                                                      default=DEFAULT_BREAK_DURATION)
     # Image
     photo = models.ImageField(blank=True)
+    photoMedium = ImageSpecField(source='photo',
+                                 processors=[ResizeToFill(250, 250)],
+                                 format='JPEG',
+                                 options={'quality': 80})
     # Associated product
     product = models.ForeignKey(Product, on_delete=models.PROTECT)
 
@@ -161,11 +171,52 @@ class Event(models.Model):
         return self.startDateTime.date() + timedelta(
             seconds=self.maxParticipantsInGroup * (self.dateDuration + self.breakDuration))
 
-    objects = EventManager()
+    @cached_property
+    def duration(self):
+        if self.numGroups == 1:
+            return int((self.maxParticipantsInGroup - 1) * (self.dateDuration + self.breakDuration) / 60)
+        elif self.numGroups == 2:
+            return int(self.maxParticipantsInGroup * (self.dateDuration + self.breakDuration) / 60)
 
-    # To string
-    def __str__(self):
-        return self.name + ' @ ' + self.locationName + ', [' + str(self.startDateTime) + ']'
+    @cached_property
+    def numPeopleYouMeet(self):
+        if self.numGroups == 1:
+            return self.maxParticipantsInGroup - 1
+        elif self.numGroups == 2:
+            return self.maxParticipantsInGroup
+
+    @cached_property
+    def displayType(self):
+        return get_value(Event.TYPES, self.type)
+
+    @property
+    def numberOfParticipants(self):
+        participants = EventParticipant.objects.filter(group__in=self.eventgroup_set.all(),
+                                                       status__in=[EventParticipant.REGISTERED,
+                                                                   EventParticipant.PAYMENT_SUCCESS])
+        return participants.count()
+
+    @property
+    def filledPercentage(self):
+        num_participants = self.numberOfParticipants
+        max_participants = self.numGroups * self.maxParticipantsInGroup
+        return max_participants / num_participants
+
+    # Return True if the event is going to be held
+    @property
+    def isConfirmed(self):
+        # The event must start within a day
+        now = timezone.now()
+        time_diff = self.event.startDateTime - now
+        if time_diff.days < 1:
+            # Check if there are enough participants
+            num_participants = self.numberOfParticipants
+            if num_participants / (self.maxParticipantsInGroup * self.numGroups) >= self.CONFIRMED_MIN_PARTICIPANTS:
+                return True
+
+        return False
+
+    objects = EventManager()
 
     # Return True if the user is registered in any group of this event
     def is_user_registered(self, user):
@@ -185,21 +236,11 @@ class Event(models.Model):
         except EventParticipant.DoesNotExist:
             return False
 
-    # Return True if the event is going to be held
-    def is_confirmed(self):
-        # The event must start within a day
+    # Get number of hours until event start time
+    def get_hours_until_start(self):
         now = timezone.now()
-        time_diff = self.event.startDateTime - now
-        if time_diff.days < 1:
-            # Check if there are enough participants
-            participants = EventParticipant.objects.filter(group__in=self.eventgroup_set.all(),
-                                                           status__in=[EventParticipant.REGISTERED,
-                                                                       EventParticipant.PAYMENT_SUCCESS])
-            num_participants = participants.count()
-            if num_participants / (self.maxParticipantsInGroup * self.numGroups) >= self.CONFIRMED_MIN_PARTICIPANTS:
-                return True
-
-        return False
+        num_seconds = (self.startDateTime - now).total_seconds()
+        return int(round(num_seconds / 3600, 0))
 
     # Return true if the event is happening right now
     def is_in_progress(self):
@@ -271,6 +312,10 @@ class Event(models.Model):
         # Open the stream as an image
         stream = io.BytesIO(file)
         self.add_photo(stream, size, x, y, w, h)
+
+    # To string
+    def __str__(self):
+        return str(self.id) + ' | ' + self.name + ' @ ' + self.locationName + ' [' + str(self.startDateTime) + ']'
 
 
 class EventGroup(models.Model):
@@ -379,8 +424,7 @@ class EventGroup(models.Model):
         raise Exception('Function not implemented: register_participant_from_waiting_list')
 
     def __str__(self):
-        return self.sexualIdentity + ' [' + str(self.ageMin) + ' - ' +\
-               str(self.ageMax) + '] in event: ' + self.event.name + ' [' + str(self.event.id) + ']'
+        return str(self.event) + ' | ' + self.sexualIdentity + ' [' + str(self.ageMin) + ' - ' + str(self.ageMax) + ']'
 
 
 class EventParticipant(models.Model):

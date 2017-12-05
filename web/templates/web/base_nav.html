@@ -22,8 +22,9 @@
             </button>
             <!-- End Responsive Toggle Button -->
             <!-- Logo -->
-            <a href="{% url 'web:index' %}" class="navbar-brand u-header__logo">
-                <img src="{% static 'web/images/bokaru-logo.png' %}" style="max-height: 40px" alt="Logo">
+            <a href="{% url 'web:index' %}" class="navbar-brand navbar-logo">
+                <img src="{% static 'web/images/outline-owl.jpg' %}" alt="Logo">
+                <span class="brand-text">b<span class="g-color-primary">o</span>karu</span>
             </a>
             <!-- End Logo -->
 
@@ -43,7 +44,7 @@
                         <a href="{% url 'event:create' %}" class="nav-link">Create Event</a>
                     </li>
                     <li id="nav_events" class="nav-item g-mx-20--lg">
-                        <a href="{% url 'web:search' %}" class="nav-link">My Events</a>
+                        <a href="{% url 'web:my_events' %}" class="nav-link">My Events</a>
                     </li>
                     <li id="nav_matches" class="nav-item g-mx-20--lg">
                         <a href="{% url 'web:search' %}" class="nav-link">Matches</a>

@@ -8,8 +8,6 @@
 
 
 {% block header %}
-
-
 <script type="application/ld+json">
 {
   "@context": "http://schema.org",
@@ -44,8 +42,6 @@
     "name": "Andy Lagunoff"
   }
 }
-
-
 </script>
 {% endblock %}
 
@@ -82,7 +78,7 @@
                                 {% endif %}
                             </span>
                             <span class="g-bg-primary g-font-weight-700 g-px-15 g-py-6 text-uppercase">
-                                {{ display_type }}
+                                {{ event.displayType }}
                             </span>
                         </div>
                     </div>
@@ -118,7 +114,7 @@
                             </div>
                             <div class="col-md-6">
                                 <span class="u-label g-rounded-3 g-bg-primary g-mr-10 g-mb-15">
-                                    {{ event.maxParticipantsInGroup }}
+                                    {{ event.numPeopleYouMeet }}
                                 </span>
                             </div>
                         </div>
@@ -130,7 +126,7 @@
                             </div>
                             <div class="col-md-6">
                                 <span class="u-label g-rounded-3 g-bg-primary g-mr-10 g-mb-15">
-                                    {{ display_duration }} minutes
+                                    {{ event.duration }} minutes
                                 </span>
                             </div>
                         </div>
@@ -356,7 +352,5 @@ $(document).on('ready', function () {
     // initialization of chart pies
     let items = $.HSCore.components.HSChartPie.init('.js-pie')
 })
-
-
 </script>
 {% endblock %}

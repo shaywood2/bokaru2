@@ -33,24 +33,14 @@ def get_value(tuples, key):
 def view(request, event_id):
     # Fetch the event by ID
     selected_event = get_object_or_404(Event, pk=event_id)
-    # Convert certain values into display format
-    display_type = get_value(Event.TYPES, selected_event.type)
-    display_num_participants = None
-    display_duration = None
-    num_groups = selected_event.numGroups
+    # TODO: Get price for user
     display_price = float(selected_event.product.amount) / 100
-    if num_groups == 1:
-        display_num_participants = selected_event.maxParticipantsInGroup
-        display_duration = (selected_event.maxParticipantsInGroup - 1) * 6
-    elif num_groups == 2:
-        display_num_participants = selected_event.maxParticipantsInGroup * 2
-        display_duration = selected_event.maxParticipantsInGroup * 6
 
     # Get group info
     event_groups = list(selected_event.eventgroup_set.all())
     group1 = event_groups[0]
     group2 = None
-    if num_groups == 2:
+    if selected_event.numGroups == 2:
         group2 = event_groups[1]
 
     # First group info
@@ -64,7 +54,7 @@ def view(request, event_id):
     group2_filled_percentage = 0
     group2_filled_count = 0
     group2_can_join = False
-    if num_groups == 2:
+    if selected_event.numGroups == 2:
         group2_participants = group2.get_registered_participants_accounts()
         group2_filled_count = group2_participants.count()
         group2_filled_percentage = float(group2_filled_count) / selected_event.maxParticipantsInGroup * 100
@@ -75,7 +65,7 @@ def view(request, event_id):
             group1_can_join = group1.can_user_register(request.user)
         except Exception:
             group1_can_join = False
-        if num_groups == 2:
+        if selected_event.numGroups == 2:
             try:
                 group2_can_join = group2.can_user_register(request.user)
             except Exception:
@@ -85,7 +75,6 @@ def view(request, event_id):
         'event': selected_event,
         'group1': group1,
         'group2': group2,
-        'num_groups': num_groups,
         'group1_filled_percentage': group1_filled_percentage,
         'group2_filled_percentage': group2_filled_percentage,
         'group1_filled_count': group1_filled_count,
@@ -94,9 +83,6 @@ def view(request, event_id):
         'group2_participants': group2_participants,
         'group1_can_join': group1_can_join,
         'group2_can_join': group2_can_join,
-        'display_type': display_type,
-        'display_num_participants': display_num_participants,
-        'display_duration': display_duration,
         'display_price': display_price
     }
 

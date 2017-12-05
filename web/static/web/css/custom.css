@@ -130,6 +130,39 @@
   filter: blur(5px);
 }
 
+/* Comfortaa font */
+.bokaru-font {
+  font-family: 'Comfortaa', cursive;
+}
+
+/* Brand */
+.navbar-logo {
+  padding: 0;
+}
+
+.navbar-logo img {
+  max-height: 50px;
+  margin-right: 10px;
+}
+
+.navbar-logo > .brand-text {
+  font-family: 'Comfortaa', cursive;
+  font-size: 50px;
+  line-height: 50px;
+  font-weight: 900;
+  color: black;
+  vertical-align: middle;
+}
+
+/* Event */
+.event {
+  border: solid 1px #eee !important;
+}
+
+.event:hover {
+  box-shadow: 2px 2px 1px rgba(0, 0, 0, 0.05)
+}
+
 /* TODO: Replace this with SASS later */
 
 .u-header__section--light .navbar-nav:not([class*="u-main-nav-v"]) .open > .nav-link,

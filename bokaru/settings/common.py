@@ -100,6 +100,7 @@ PASSWORD_RESET_TIMEOUT_DAYS = 3
 # Registration settings
 ACCOUNT_ACTIVATION_DAYS = 7
 REGISTRATION_OPEN = True
+# TODO: update before deployment
 REGISTRATION_SALT = 'helloThere!'
 
 # Internationalization
