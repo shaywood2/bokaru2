@@ -53,20 +53,6 @@ def search(request):
 
 
 @login_required
-def matches(request):
-    # Get all matches by user
-    picks = Pick.objects.get_all_matches_by_user(request.user)
-    # Sort picks by event date
-    picks = sorted(picks.items(), key=lambda pick: pick[0].startDateTime)
-
-    context = {
-        'pick_map': picks
-    }
-
-    return render(request, 'web/matches.html', context)
-
-
-@login_required
 def my_events(request):
     future_events = Event.objects.get_all_future_by_user(request.user)
     past_events = Event.objects.get_all_past_by_user(request.user)
@@ -77,6 +63,18 @@ def my_events(request):
     }
 
     return render(request, 'web/my_events.html', context)
+
+
+@login_required
+def my_matches(request):
+    # Get all matches by user
+    matches = Pick.objects.get_all_matches_by_user(request.user)
+
+    context = {
+        'match_map': matches.items()
+    }
+
+    return render(request, 'web/my_matches.html', context)
 
 
 def terms_of_use(request):

@@ -154,12 +154,21 @@
   vertical-align: middle;
 }
 
-/* Event */
+/* Event tag */
 .event {
   border: solid 1px #eee !important;
 }
 
 .event:hover {
+  box-shadow: 2px 2px 1px rgba(0, 0, 0, 0.05)
+}
+
+/* Profile tag */
+.profile {
+  border: solid 1px #eee !important;
+}
+
+.profile:hover {
   box-shadow: 2px 2px 1px rgba(0, 0, 0, 0.05)
 }
 

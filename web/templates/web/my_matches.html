@@ -1,0 +1,63 @@
+{% extends 'web/base_nav.html' %}
+
+{% load staticfiles %}
+{% load account_tags %}
+
+{% block nav_location %}nav_matches{% endblock %}
+
+{% block title %}Bokaru | My matches{% endblock %}
+
+{% block content %}
+<section>
+    <div class="container">
+        <div class="row">
+            <div class="col-md-12 g-mt-50--md">
+                <h1>My matches</h1>
+                <ul class="row u-timeline-v2-wrap list-unstyled">
+                    {% for event, picks in match_map %}
+                    <li class="col-md-12 g-mb-40">
+                        <div class="row">
+                            <!-- Timeline Date -->
+                            <div class="col-md-3 text-md-right g-pt-20--md g-pr-40--md g-mb-20">
+                                <h2 class="g-font-size-22 mb-0">{{ event.name }}</h2>
+                                <h3 class="g-color-primary g-font-weight-400 g-font-size-20 mb-0">{{ event.startDateTime|date:'l, N d, Y' }}</h3>
+                                <h4>{{event.startDateTime|date:'P'}}</h4>
+                            </div>
+
+                            <!-- Timeline Content -->
+                            <div class="col-md-9 g-orientation-left g-pl-40--md">
+                                <!-- Timeline Dot -->
+                                <div class="g-hidden-sm-down u-timeline-v2__icon g-top-35">
+                                    <i class="d-block g-width-18 g-height-18 g-bg-white g-brd-around g-brd-3 g-brd-gray-light-v5 rounded-circle"></i>
+                                </div>
+                                <!-- End Timeline Dot -->
+
+                                <div class="g-pos-rel">
+                                    <!-- Timeline Arrow -->
+                                    <div class="g-hidden-sm-down u-triangle-inclusive-v1--right g-top-30 g-z-index-2">
+                                        <div class="u-triangle-inclusive-v1--right__back g-brd-gray-light-v4-right"></div>
+                                    </div>
+                                    <div class="g-hidden-md-up u-triangle-inclusive-v1--top g-left-20 g-z-index-2">
+                                        <div class="u-triangle-inclusive-v1--top__back g-brd-gray-light-v4-bottom"></div>
+                                    </div>
+
+                                    <article class="g-brd-around g-brd-gray-light-v4 g-rounded-4 g-pa-15 g-mb-10">
+                                         <div class="row">
+                                            {% for pick in picks %}
+                                             <div class="col-sm-6">
+                                                 {% render_profile_by_user pick %}
+                                             </div>
+                                            {% endfor %}
+                                         </div>
+                                    </article>
+                                </div>
+                            </div>
+                        </div>
+                    </li>
+                    {% endfor %}
+                </ul>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

@@ -454,21 +454,19 @@ class EventParticipant(models.Model):
 
 class PickManager(models.Manager):
     def get_all_matches_by_user(self, user):
+        events = Event.objects.get_all_past_by_user(user)
         result = {}
-        # Get all picks from an event
-        for users_pick in self.filter(picker=user):
-            if len(self.filter(picker=users_pick.picked, picked=user, response=Pick.YES)) > 0:
-                if users_pick.event not in result:
-                    result[users_pick.event] = []
-
-                result[users_pick.event].append(users_pick.picked)
+        for event in reversed(events):
+            matches = self.get_all_matches_by_user_and_event(user, event)
+            if len(matches) > 0:
+                result[event] = matches
 
         return result
 
     def get_all_matches_by_user_and_event(self, user, event):
         all_matches = []
         # Get all picks from an event
-        for users_pick in self.filter(picker=user, event=event):
+        for users_pick in self.filter(picker=user, event=event, response=Pick.YES):
             if len(self.filter(picker=users_pick.picked, picked=user, event=event, response=Pick.YES)) > 0:
                 all_matches.append(users_pick.picked)
         return all_matches

@@ -121,7 +121,7 @@ class Account(models.Model):
     # Photo
     photo = models.ImageField(blank=True)
     photoMedium = ImageSpecField(source='photo',
-                                 processors=[ResizeToFill(100, 100)],
+                                 processors=[ResizeToFill(200, 200)],
                                  format='JPEG',
                                  options={'quality': 80})
     photoThumbnail = ImageSpecField(source='photo',
