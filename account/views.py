@@ -198,6 +198,7 @@ def close(request):
     if request.method == 'POST':
         current_user.is_active = False
         current_user.save()
+        # TODO: drop out of all events
         return HttpResponseRedirect(reverse('web:index'))
     else:
         return render(request, 'account/preferences_close_account.html')

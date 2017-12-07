@@ -325,8 +325,8 @@ class EventGroup(models.Model):
     ANY = 'any'
 
     IDENTITY_CHOICES = (
-        (FEMALE, 'Women only'),
-        (MALE, 'Men only'),
+        (FEMALE, 'Women'),
+        (MALE, 'Men'),
         (OTHER, 'Other (please specify)'),
         (ANY, 'Anyone welcome')
     )

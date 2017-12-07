@@ -160,6 +160,7 @@ class Account(models.Model):
     diet = models.CharField(max_length=50, choices=DIET, blank=True)
     # Summary
     summary = models.TextField(max_length=2000, blank=True)
+    icebreaker = models.TextField(max_length=2000, blank=True)
     # Contact info
     contactInfo = models.CharField(max_length=150, blank=True)
     # Looking for

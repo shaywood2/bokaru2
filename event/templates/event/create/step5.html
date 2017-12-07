@@ -107,10 +107,11 @@
                                 <button class="btn btn-md u-btn-primary rounded-0" type="submit">Browse</button>
                                 <input type="file" id="upload_image">
                             </div>
+                            <a id="clear_image" class="btn btn-md u-btn-black rounded-0">
+                                <i class="fa fa-trash g-color-white"></i>
+                            </a>
                         </div>
                     </div>
-
-                    <a id="clear_image" class="btn btn-xs btn-block u-btn-outline-darkgray g-mb-10 rounded-0">Remove picture</a>
 
                     {{ wizard.form.image_data }}
                     {{ wizard.form.image_name }}
@@ -145,6 +146,8 @@ $(document).on('ready', function () {
             reader.onload = function(e) {
                 $('#image').attr('src', e.target.result)
                 let img = document.getElementById('image')
+                if (!!cropper)
+                    cropper.destroy()
                 cropper = new Cropper(img, {
                     viewMode: 1,
                     aspectRatio: 1 / 1,
@@ -175,6 +178,7 @@ $(document).on('ready', function () {
             cropper.destroy()
         $('#image').attr('src', '')
         $('#filename').val('')
+        $('#upload_image').val('')
         $('#id_step5-image_data').val('')
         $('#id_step5-image_name').val('')
     })

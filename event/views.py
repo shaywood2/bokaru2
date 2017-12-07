@@ -183,8 +183,8 @@ class CreateEventWizard(SessionWizardView):
         point = Point(x=0, y=0, srid=4326)
 
         if lat and lng:
-            point.set_x(lat)
-            point.set_y(lng)
+            point.x = lat
+            point.y = lng
 
         num_participants = 0
         if all_data.get('numGroups') == 1:

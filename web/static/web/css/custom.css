@@ -172,6 +172,20 @@
   box-shadow: 2px 2px 1px rgba(0, 0, 0, 0.05)
 }
 
+/* Datepicker */
+.datepicker-top-left,.datepicker-top-right {
+    border-top-color: #e74c3c !important;
+}
+
+.datepicker-top-left:before, .datepicker-top-right:before {
+    border-bottom-color: #e74c3c !important;
+}
+
+.datepicker-panel>ul>li.picked, .datepicker-panel>ul>li.picked:hover {
+    color: #fff !important;
+    background-color: #e74c3c !important;
+}
+
 /* TODO: Replace this with SASS later */
 
 .u-header__section--light .navbar-nav:not([class*="u-main-nav-v"]) .open > .nav-link,
