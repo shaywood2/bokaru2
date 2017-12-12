@@ -22,7 +22,7 @@
 
                                 <div class="u-shadow-v2 g-brd-around g-brd-gray-light-v4 g-line-height-2 g-mb-20">
                                     {% if account.photo is None or account.photo.name == '' %}
-                                    <img class="img-fluid w-100" src="{% static 'account/images/default-avatar.png' %}"
+                                    <img class="img-fluid w-100" src="{% static 'web/images/user_default_image.jpg' %}"
                                          alt="Default picture" id="default_avatar"/>
                                     {% else %}
                                     <img class="img-fluid w-100" src="{{ account.photo.url }}" alt="Profile picture"

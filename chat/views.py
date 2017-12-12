@@ -1,15 +1,15 @@
 # from opentok import OpenTok, MediaModes, OutputModes
 
-import logging
+from django.conf import settings
 from django.contrib.auth.decorators import login_required
 from django.http import JsonResponse
 from django.shortcuts import render
+
 from chat import utils
 from event.models import Event, Pick
 
-
-api_key = "45689752"
-api_secret = "8b928a5fcc3d59f30bd1e8577171cef2676edecf"
+api_key = settings.TOKBOX_KEY
+api_secret = settings.TOKBOX_SECRET
 
 
 # Initialize API

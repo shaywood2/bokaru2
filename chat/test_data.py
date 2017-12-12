@@ -1,11 +1,11 @@
-from datetime import datetime, timedelta
+from datetime import timedelta
 
 from django.contrib.auth.models import User
 from django.utils import timezone
 
-from money.models import Product
-from event.models import Event, EventGroup
 from account.models import Account
+from event.models import Event, EventGroup
+from money.models import Product
 
 
 def make_user(name, gender, birth_date):
@@ -29,44 +29,26 @@ def make_products():
 
 
 def make_event_two_groups():
-    user1 = User.objects.create_user(username='bob1', email='bob1@alice.com', password='top_secret')
-    user2 = User.objects.create_user(username='bob2', email='bob2@alice.com', password='top_secret')
-    user3 = User.objects.create_user(username='bob3', email='bob3@alice.com', password='top_secret')
-    user4 = User.objects.create_user(username='bob4', email='bob4@alice.com', password='top_secret')
-    user5 = User.objects.create_user(username='alice1', email='bob5@alice.com', password='top_secret')
-    user6 = User.objects.create_user(username='alice2', email='bob6@alice.com', password='top_secret')
-    user7 = User.objects.create_user(username='alice3', email='bob7@alice.com', password='top_secret')
-    user8 = User.objects.create_user(username='alice4', email='bob8@alice.com', password='top_secret')
+    user1 = make_user('bob1', 'male', '1980-01-01')
+    user2 = make_user('bob2', 'male', '1980-01-01')
+    user3 = make_user('bob3', 'male', '1980-01-01')
+    user4 = make_user('bob4', 'male', '1980-01-01')
+    user5 = make_user('alice1', 'female', '1980-01-01')
+    user6 = make_user('alice2', 'female', '1980-01-01')
+    user7 = make_user('alice3', 'female', '1980-01-01')
+    user8 = make_user('alice4', 'female', '1980-01-01')
 
-    user_profile1 = Account(user=user1, fullName='bob 1')
-    user_profile1.save()
-    user_profile2 = Account(user=user2, fullName='bob 2')
-    user_profile2.save()
-    user_profile3 = Account(user=user3, fullName='bob 3')
-    user_profile3.save()
-    user_profile4 = Account(user=user4, fullName='bob 4')
-    user_profile4.save()
-    user_profile5 = Account(user=user5, fullName='alice 1')
-    user_profile5.save()
-    user_profile6 = Account(user=user6, fullName='alice 2')
-    user_profile6.save()
-    user_profile7 = Account(user=user7, fullName='alice 3')
-    user_profile7.save()
-    user_profile8 = Account(user=user8, fullName='alice 4')
-    user_profile8.save()
-
-    product1 = Product(name='product1_test', short_code='product1_test', amount=100)
-    product1.save()
+    product = Product.objects.get(short_code='smallevent')
 
     event = Event(creator=user1, name='test event 1', locationName='location',
-                  startDateTime=datetime.now(timezone.utc) + timedelta(days=20),
-                  maxParticipantsInGroup=5, numGroups=2, product=product1)
+                  startDateTime=timezone.now() + timedelta(days=20),
+                  maxParticipantsInGroup=5, numGroups=2, product=product)
     event.save()
 
-    group1 = EventGroup(event=event, name='group1', ageMin=20, ageMax=30)
+    group1 = EventGroup(event=event, sexualIdentity=EventGroup.MALE, ageMin=20, ageMax=60)
     group1.save()
 
-    group2 = EventGroup(event=event, name='group2', ageMin=20, ageMax=30)
+    group2 = EventGroup(event=event, sexualIdentity=EventGroup.FEMALE, ageMin=20, ageMax=60)
     group2.save()
 
     group1.add_participant(user1)
@@ -83,32 +65,20 @@ def make_event_two_groups():
 
 
 def make_event_one_group():
-    user1 = User.objects.create_user(username='bill1', email='bob1@alice2.com', password='top_secret')
-    user2 = User.objects.create_user(username='bill2', email='bob2@alice2.com', password='top_secret')
-    user3 = User.objects.create_user(username='bill3', email='bob3@alice2.com', password='top_secret')
-    user4 = User.objects.create_user(username='bill4', email='bob4@alice2.com', password='top_secret')
-    user5 = User.objects.create_user(username='bill5', email='bob5@alice2.com', password='top_secret')
+    user1 = make_user('bill1', 'male', '1980-01-01')
+    user2 = make_user('bill2', 'male', '1980-01-01')
+    user3 = make_user('bill3', 'male', '1980-01-01')
+    user4 = make_user('bill4', 'male', '1980-01-01')
+    user5 = make_user('bill5', 'male', '1980-01-01')
 
-    user_profile1 = Account(user=user1, fullName='bob 1')
-    user_profile1.save()
-    user_profile2 = Account(user=user2, fullName='bob 2')
-    user_profile2.save()
-    user_profile3 = Account(user=user3, fullName='bob 3')
-    user_profile3.save()
-    user_profile4 = Account(user=user4, fullName='bob 4')
-    user_profile4.save()
-    user_profile5 = Account(user=user5, fullName='bob 5')
-    user_profile5.save()
-
-    product1 = Product(name='product2_test', short_code='product2_test', amount=100)
-    product1.save()
+    product = Product.objects.get(short_code='smallevent')
 
     event = Event(creator=user1, name='test event 2', locationName='location',
-                  startDateTime=datetime.now(timezone.utc) + timedelta(days=2),
-                  maxParticipantsInGroup=5, numGroups=1, product=product1)
+                  startDateTime=timezone.now() + timedelta(days=10),
+                  maxParticipantsInGroup=5, numGroups=1, product=product)
     event.save()
 
-    group1 = EventGroup(event=event, name='group1', ageMin=20, ageMax=30)
+    group1 = EventGroup(event=event, sexualIdentity=EventGroup.MALE, ageMin=20, ageMax=60)
     group1.save()
 
     group1.add_participant(user1)

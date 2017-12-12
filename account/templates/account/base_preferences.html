@@ -16,7 +16,7 @@
                 <!-- User Image -->
                 <div class="u-shadow-v2 g-brd-around g-brd-bottom-none g-brd-gray-light-v4 g-line-height-2">
                     {% if request.session.photo_url is None or request.session.photo_url == '' %}
-                    <img class="img-fluid w-100" src="{% static 'account/images/default-avatar.png' %}"
+                    <img class="img-fluid w-100" src="{% static 'web/images/user_default_image.jpg' %}"
                          alt="Default picture" id="default_avatar"/>
                     {% else %}
                     <img class="img-fluid w-100" src="{{ request.session.photo_url }}" alt="Profile picture" id="avatar"/>

@@ -10,9 +10,12 @@
 {% block content %}
 <section>
     <div class="container">
-        <div class="row">
+        <div class="row g-min-height-50vh">
             <div class="col-md-12 g-mt-50--md">
                 <h1>My matches</h1>
+                {% if match_map|length == 0 %}
+                <h3>Nothing here yet, let's keep trying!</h3>
+                {% endif %}
                 <ul class="row u-timeline-v2-wrap list-unstyled">
                     {% for event, picks in match_map %}
                     <li class="col-md-12 g-mb-40">

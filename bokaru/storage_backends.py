@@ -33,10 +33,10 @@ class MediaStorage(S3Boto3Storage):
         if not content_autoclose.closed:
             content_autoclose.close()
 
-    def created_time(self, name):
+    def get_created_time(self, name):
         pass
 
-    def accessed_time(self, name):
+    def get_accessed_time(self, name):
         pass
 
     def path(self, name):

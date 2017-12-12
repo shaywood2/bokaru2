@@ -10,9 +10,12 @@
 {% block content %}
 <section>
     <div class="container">
-        <div class="row">
+        <div class="row g-min-height-50vh">
             <div class="col-md-12 g-mt-50--md">
                 <h1>Future Events</h1>
+                {% if future_events|length == 0 %}
+                <h3>Nothing here yet. Why not register for something?</h3>
+                {% endif %}
                 <ul class="row u-timeline-v2-wrap list-unstyled">
                     {% for event in future_events %}
                     <li class="col-md-12 g-mb-40">
@@ -50,6 +53,7 @@
                     {% endfor %}
                 </ul>
 
+                {% if past_events|length > 0 %}
                 <h1>Past Events</h1>
                 <div class="row">
                 {% for event in past_events %}
@@ -60,6 +64,7 @@
                     </div>
                 {% endfor %}
                 </div>
+                {% endif %}
             </div>
         </div>
     </div>
