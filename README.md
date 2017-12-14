@@ -123,4 +123,18 @@ Here is a list of custom commands that can be called using Django admin:
 Deploy to AWS
 -------------
 The deployment procedure for AWS server:
-**COMING SOON**
+1. Spin up a server instance
+2. SSH into the new server
+3. Run the following commands:
+  1. `sudo mkdir -p /usr/local/bokaru/`
+  2. `sudo chown -R ubuntu /usr/local/bokaru/`
+  3. `cd /usr/local/bokaru/`
+  4. `git clone https://github.com/dpyryesk/bokaru2.git .`
+  5. `nano configs/prod/env.json` and update the production keys
+  6. `chmod +x server_setup.sh`
+  7. `./server_setup.sh`
+
+
+Create Postgis extension in the database
+`psql -h bokaru-db.ccmerekzzbun.ca-central-1.rds.amazonaws.com -p 5432 -U bokaru`
+`CREATE EXTENSION postgis; CREATE EXTENSION postgis_topology;`

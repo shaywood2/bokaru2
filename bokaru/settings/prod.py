@@ -107,7 +107,7 @@ LOGGING = {
 }
 
 # Security
-ALLOWED_HOSTS = ['bokaru.com', '*.bokaru.com', 'localhost']
+ALLOWED_HOSTS = ['bokaru.com', '.bokaru.com', 'localhost', '.amazonaws.com']
 # TODO: set to 1 year (31536000)
 # SECURE_HSTS_SECONDS = 3600
 # SECURE_HSTS_PRELOAD = True
