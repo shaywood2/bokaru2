@@ -8,7 +8,10 @@
 {% block nav_location %}nav_create_event{% endblock %}
 
 {% block header %}
-<script src="//maps.googleapis.com/maps/api/js?libraries=places&key=AIzaSyBTwfHuVilarsPOOE4Opm4GaG9I2dfbyCw" type="text/javascript"></script>
+<script src="https://maps.googleapis.com/maps/api/js?libraries=places&key=AIzaSyBTwfHuVilarsPOOE4Opm4GaG9I2dfbyCw" type="text/javascript"></script>
+
+<!-- Datepicker -->
+<link  href="{% static 'web/vendor/datepicker/datepicker.min.css' %}" rel="stylesheet">
 {% endblock %}
 
 {% block content %}
@@ -119,7 +122,7 @@
                     <!-- Date -->
                     <div class="form-group g-mb-20 {% if wizard.form.date.errors %}u-has-error-v1{% endif %}">
                         <div class="input-group u-input-group-v2 g-brd-primary--focus">
-                            {% render_field wizard.form.date class="form-control form-control-md u-datepicker-v1 g-brd-right-none rounded-0" %}
+                            {% render_field wizard.form.date class="form-control form-control-md u-datepicker-v1 g-brd-right-none rounded-0" data-toggle="datepicker" %}
                             <label for="id_step1-date" style="z-index: 2;">Date</label>
                             <div class="input-group-addon d-flex align-items-center g-bg-white g-color-gray-dark-v5 rounded-0">
                                 <i class="icon-calendar"></i>
@@ -166,28 +169,13 @@
 {% endblock %}
 
 {% block javascript %}
-<!-- jQuery UI Core -->
-<script src="{% static 'web/vendor/jquery-ui/ui/widget.js' %}"></script>
-<script src="{% static 'web/vendor/jquery-ui/ui/version.js' %}"></script>
-<script src="{% static 'web/vendor/jquery-ui/ui/keycode.js' %}"></script>
-<script src="{% static 'web/vendor/jquery-ui/ui/position.js' %}"></script>
-<script src="{% static 'web/vendor/jquery-ui/ui/unique-id.js' %}"></script>
-<script src="{% static 'web/vendor/jquery-ui/ui/safe-active-element.js' %}"></script>
-
-<!-- jQuery UI Helpers -->
-<script src="{% static 'web/vendor/jquery-ui/ui/widgets/menu.js' %}"></script>
-<script src="{% static 'web/vendor/jquery-ui/ui/widgets/mouse.js' %}"></script>
-
-<!-- jQuery UI Widgets -->
-<script src="{% static 'web/vendor/jquery-ui/ui/widgets/datepicker.js' %}"></script>
-
-<!-- JS Unify -->
-<script src="{% static 'web/js/components/hs.datepicker.js' %}"></script>
+<!-- Datepicker -->
+<script  src="{% static 'web/vendor/datepicker/datepicker.min.js' %}"></script>
 
 <script>
 $(document).on('ready', function () {
     // Init date picker
-    $.HSCore.components.HSDatepicker.init('#id_step1-date', {dateFormat: 'yy-mm-dd'})
+    $('[data-toggle="datepicker"]').datepicker({format: 'yyyy-mm-dd', autoHide: true})
 
     $('#id_step1-date').on('change', function () {
         var $this = $(this),
@@ -221,5 +209,4 @@ function initMap() {
 google.maps.event.addDomListener(window, 'load', initMap);
 
 </script>
-
 {% endblock %}

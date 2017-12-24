@@ -249,6 +249,18 @@ class PickModelCase(TestCase):
         self.assertTrue(self.user4 in matches)
 
     def test_get_all_matches_by_user(self):
+        group1 = EventGroup(event=self.event, sexualIdentity='male', ageMin=20, ageMax=99)
+        group1.save()
+
+        ep1 = EventParticipant(group=group1, user=self.user1, status='registered')
+        ep1.save()
+
+        group2 = EventGroup(event=self.event2, sexualIdentity='male', ageMin=20, ageMax=99)
+        group2.save()
+
+        ep2 = EventParticipant(group=group2, user=self.user1, status='registered')
+        ep2.save()
+
         # Get all matches for user1
         matches = Pick.objects.get_all_matches_by_user(self.user1)
         self.assertEqual(len(matches), 2)

@@ -6,7 +6,10 @@
 {% block title %}Bokaru | Edit profile{% endblock %}
 
 {% block header %}
-<script src="//maps.googleapis.com/maps/api/js?libraries=places&key=AIzaSyBTwfHuVilarsPOOE4Opm4GaG9I2dfbyCw" type="text/javascript"></script>
+<script src="https://maps.googleapis.com/maps/api/js?libraries=places&key=AIzaSyBTwfHuVilarsPOOE4Opm4GaG9I2dfbyCw" type="text/javascript"></script>
+
+<!-- Datepicker -->
+<link  href="{% static 'web/vendor/datepicker/datepicker.min.css' %}" rel="stylesheet">
 {% endblock %}
 
 {% block content %}
@@ -20,7 +23,7 @@
                     <!-- User Image -->
                     <div class="u-shadow-v2 g-brd-around g-brd-gray-light-v4 g-line-height-2 g-mb-20">
                         {% if photo_url == None %}
-                        <img class="img-fluid w-100" src="{% static 'account/images/default-avatar.png' %}"
+                        <img class="img-fluid w-100" src="{% static 'web/images/user_default_image.jpg' %}"
                              alt="Default picture" id="default_avatar"/>
                         {% else %}
                         <img class="img-fluid w-100" src="{{ photo_url }}" alt="Profile picture" id="avatar"/>
@@ -44,7 +47,7 @@
                     <small>This section will be only visible to your matches.</small>
                 </div>
 
-                <div class="col-lg-8 g-mt-25--md">
+                <div class="col-lg-8 g-mt-50--md">
                     <!-- errors -->
                     {% if form.non_field_errors %}
                     <div class="alert fade show g-bg-red-opacity-0_1 g-color-lightred rounded-0" role="alert">
@@ -82,7 +85,7 @@
                     <!-- Birth Date -->
                     <div class="form-group g-mb-20 {% if form.birthDate.errors %}u-has-error-v1{% endif %}">
                         <div class="input-group u-input-group-v2 g-brd-primary--focus">
-                            {% render_field form.birthDate class="form-control form-control-md u-datepicker-v1 g-brd-right-none rounded-0" %}
+                            {% render_field form.birthDate class="form-control form-control-md u-datepicker-v1 g-brd-right-none rounded-0" data-toggle="datepicker" %}
                             <label for="id_birthDate" style="z-index: 2;">Birth date</label>
                             <div class="input-group-addon d-flex align-items-center g-bg-white g-color-gray-dark-v5 rounded-0">
                                 <i class="icon-calendar"></i>
@@ -107,10 +110,8 @@
 
                     <!-- Identity and orientation -->
                     <div class="row">
-                        <div class="col-lg-12">
-                            <h4>I am a&hellip;</h4>
-                        </div>
                         <div class="col-lg-6">
+                            <h4>Sexual Orientation</h4>
                             <div class="form-group g-mb-20 {% if form.sexualOrientation.errors %}u-has-error-v1{% endif %}">
                                 {% render_field form.sexualOrientation class="form-control rounded-0 u-form-control0 u-select-v1" %}
                                 {% if form.sexualOrientation.errors %}
@@ -128,6 +129,7 @@
                             </div>
                         </div>
                         <div class="col-lg-6">
+                            <h4>Sexual Identity</h4>
                             <div class="form-group g-mb-20 {% if form.sexualIdentity.errors %}u-has-error-v1{% endif %}">
                                 {% render_field form.sexualIdentity class="form-control rounded-0 u-form-control0 u-select-v1" %}
                                 {% if form.sexualIdentity.errors %}
@@ -457,6 +459,19 @@
                         {% endif %}
                     </div>
 
+                    <!-- Icebreaker -->
+                    <h2>Ask me about&hellip;</h2>
+                    <p>Write a cool icebreaker here, something you'd like to talk about.</p>
+                    <p></p>
+                    <div class="form-group g-mb-20 {% if form.icebreaker.errors %}u-has-error-v1{% endif %}">
+                        <div class="u-input-group-v2">
+                            {% render_field form.icebreaker class="form-control form-control-md rounded-0" %}
+                        </div>
+                        {% if form.icebreaker.errors %}
+                        <small class="form-control-feedback">{{form.icebreaker.errors}}</small>
+                        {% endif %}
+                    </div>
+
                     <hr class="g-brd-gray-light-v4 g-my-20">
 
                     <!-- Looking for -->
@@ -536,28 +551,13 @@
 {% endblock %}
 
 {% block javascript %}
-<!-- jQuery UI Core -->
-<script src="{% static 'web/vendor/jquery-ui/ui/widget.js' %}"></script>
-<script src="{% static 'web/vendor/jquery-ui/ui/version.js' %}"></script>
-<script src="{% static 'web/vendor/jquery-ui/ui/keycode.js' %}"></script>
-<script src="{% static 'web/vendor/jquery-ui/ui/position.js' %}"></script>
-<script src="{% static 'web/vendor/jquery-ui/ui/unique-id.js' %}"></script>
-<script src="{% static 'web/vendor/jquery-ui/ui/safe-active-element.js' %}"></script>
-
-<!-- jQuery UI Helpers -->
-<script src="{% static 'web/vendor/jquery-ui/ui/widgets/menu.js' %}"></script>
-<script src="{% static 'web/vendor/jquery-ui/ui/widgets/mouse.js' %}"></script>
-
-<!-- jQuery UI Widgets -->
-<script src="{% static 'web/vendor/jquery-ui/ui/widgets/datepicker.js' %}"></script>
-
-<!-- JS Unify -->
-<script src="{% static 'web/js/components/hs.datepicker.js' %}"></script>
+<!-- Datepicker -->
+<script  src="{% static 'web/vendor/datepicker/datepicker.min.js' %}"></script>
 
 <script>
 $(document).on('ready', function () {
-    // Init date picker
-    $.HSCore.components.HSDatepicker.init('#id_birthDate', {dateFormat: 'yy-mm-dd'})
+    // Init datepicker
+    $('[data-toggle="datepicker"]').datepicker({format: 'yyyy-mm-dd', autoHide: true})
 
     $('#id_birthDate').on('change', function () {
         var $this = $(this),
@@ -717,7 +717,7 @@ $(document).on('ready', function () {
         let index = languageArray.indexOf(value)
         languageArray.splice(index, 1)
         languageList.val(languageArray.join('|'))
-    });
+    })
 
     // Pet tags
     let petInput = $('#petInput')
@@ -738,7 +738,7 @@ $(document).on('ready', function () {
         let index = petArray.indexOf(value)
         petArray.splice(index, 1)
         petList.val(petArray.join('|'))
-    });
+    })
 
     // Looking for gender tags
     let lfgInput = $('#lfgInput')
@@ -759,7 +759,7 @@ $(document).on('ready', function () {
         let index = lfgArray.indexOf(value)
         lfgArray.splice(index, 1)
         lfgList.val(lfgArray.join('|'))
-    });
+    })
 
     // Looking for connections tags
     let lfcInput = $('#lfcInput')
@@ -780,7 +780,7 @@ $(document).on('ready', function () {
         let index = lfcArray.indexOf(value)
         lfcArray.splice(index, 1)
         lfcList.val(lfcArray.join('|'))
-    });
+    })
 
     // Update kids want select
     let kidsHave = $("#id_kidsHave")

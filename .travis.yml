@@ -22,7 +22,8 @@ install:
   - pip install -r requirements/dev.txt
 
 before_script:
-  - psql -c "CREATE DATABASE bokaru;" -U postgres
+  - psql -c "CREATE ROLE bokaru WITH LOGIN SUPERUSER PASSWORD 'bokaru123'" -U postgres
+  - psql -c "CREATE DATABASE bokaru WITH OWNER bokaru" -U postgres
   - psql -U postgres -c "create extension postgis"
   - python manage.py makemigrations
   - python manage.py migrate

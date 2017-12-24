@@ -149,7 +149,7 @@ def update_photo(request):
             account.add_photo(image_file, x, y, w, h, 400)
 
             # Update image in session
-            request.session['photo_url'] = account.photoThumbnail.url
+            request.session['thumbnail_url'] = account.photoThumbnail.url
 
     # Redirect to edit profile page
     return HttpResponseRedirect(reverse('account:view'))
@@ -198,6 +198,7 @@ def close(request):
     if request.method == 'POST':
         current_user.is_active = False
         current_user.save()
+        # TODO: drop out of all events
         return HttpResponseRedirect(reverse('web:index'))
     else:
         return render(request, 'account/preferences_close_account.html')

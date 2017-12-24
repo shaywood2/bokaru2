@@ -1,13 +1,16 @@
-import stripe
 import logging
 
-STRIPE_TEST_KEY = "sk_test_28uxXqhjVInC6y28EXbq84je"
+import stripe
+from django.conf import settings
+
+STRIPE_KEY = settings.STRIPE_KEY
+
 LOGGER = logging.getLogger(__name__)
 
 
 # Retrieve a Stripe Customer by Stripe id
 def retrieve_customer(stripe_id):
-    stripe.api_key = STRIPE_TEST_KEY
+    stripe.api_key = STRIPE_KEY
 
     try:
         customer = stripe.Customer.retrieve(stripe_id)
@@ -19,7 +22,7 @@ def retrieve_customer(stripe_id):
 
 # Create a Stripe Customer for later use, returns Stripe id
 def create_customer(stripe_token, user_id, user_name, user_email):
-    stripe.api_key = STRIPE_TEST_KEY
+    stripe.api_key = STRIPE_KEY
 
     customer = stripe.Customer.create(
         source=stripe_token,
@@ -33,7 +36,7 @@ def create_customer(stripe_token, user_id, user_name, user_email):
 
 # Create a card for the given customer
 def create_card(stripe_id, stripe_token):
-    stripe.api_key = STRIPE_TEST_KEY
+    stripe.api_key = STRIPE_KEY
 
     try:
         customer = stripe.Customer.retrieve(stripe_id)
@@ -45,7 +48,7 @@ def create_card(stripe_id, stripe_token):
 
 # Delete a card from customer's record
 def delete_card(stripe_id, stripe_card_id):
-    stripe.api_key = STRIPE_TEST_KEY
+    stripe.api_key = STRIPE_KEY
 
     try:
         LOGGER.info("Stripe deleting card with id {} for customer with id {}".format(stripe_card_id, stripe_id))
@@ -59,7 +62,7 @@ def delete_card(stripe_id, stripe_card_id):
 # Charge a customer by Stripe ID.
 # Amount is in cents
 def create_charge(amount, currency, description, stripe_id):
-    stripe.api_key = STRIPE_TEST_KEY
+    stripe.api_key = STRIPE_KEY
 
     try:
         charge = stripe.Charge.create(

@@ -1,0 +1,80 @@
+{% load staticfiles %}
+
+<article class="g-bg-white text-center rounded g-mb-5 event"
+         style="cursor: pointer;" onclick="window.location.href = '{% url 'event:view' event_id=event.id %}'">
+    <!-- Event Header -->
+    <header class="g-py-20 g-height-100">
+        <h1 class="h5 g-mb-5">{{ event.name }}</h1>
+        <div class="d-block g-color-black g-font-weight-600 g-letter-spacing-1 text-uppercase g-mb-0">
+            <h2 class="g-font-weight-300 g-font-size-10 mb-0">{{ event.startDateTime|date:'l, N d, Y @ P' }}</h2>
+            <h3 class="g-color-dark g-font-weight-400 g-font-size-10 mb-0">{{ event.locationName }}</h3>
+        </div>
+    </header>
+
+    <div class="g-pos-rel">
+        <!-- Event Image -->
+        <figure>
+            {% if event.photo is None or event.photo.name == '' %}
+            <img class="img-fluid w-100" src="{% static 'web/images/event_default_image.jpg' %}" alt="Default event picture"/>
+            {% else %}
+            <img class="img-fluid w-100" src="{{ event.photoMedium.url }}" alt="Event picture"/>
+            {% endif %}
+        </figure>
+
+        <!-- Event type -->
+        <div class="g-pos-abs g-top-0 g-left-0 d-inline-block">
+            <div class="d-flex justify-content-between w-100 g-max-width-145 g-bg-black g-color-white g-font-size-13 g-font-weight-700 text-uppercase">
+                <span class="g-px-5 g-py-2">
+                    {% if event.type == 1 %}
+                    <i class="fa fa-heart g-mr-3"></i>
+                    {% elif event.type == 2 %}
+                    <i class="fa fa-heart-o g-mr-3"></i>
+                    {% elif event.type == 3 %}
+                    <i class="fa fa-glass g-mr-3"></i>
+                    {% elif event.type == 4 %}
+                    <i class="fa fa-handshake-o g-mr-3"></i>
+                    {% elif event.type == 5 %}
+                    <i class="fa fa-diamond g-mr-3"></i>
+                    {% endif %}
+                </span>
+                <span class="g-bg-primary g-font-weight-700 g-px-5 g-py-3 text-uppercase">
+                    {{ event.displayType }}
+                </span>
+            </div>
+        </div>
+
+        {% if event.get_hours_until_start <= 24 and event.get_hours_until_start > 1 %}
+        <span class="u-badge-v1--xl g-color-white g-bg-primary g-rounded-50x g-font-size-24 g-brd-around g-brd-white g-brd-2">
+            <i class="icon-fire" data-toggle="tooltip" data-placement="right" title="Event starting in {{ event.get_hours_until_start }} hours!"></i>
+        </span>
+        {% endif %}
+        {% if event.get_hours_until_start <= 1 and event.get_hours_until_start >= 0 %}
+        <span class="u-badge-v1--xl g-color-white g-bg-primary g-rounded-50x g-font-size-24 g-brd-around g-brd-white g-brd-2">
+            <i class="icon-fire" data-toggle="tooltip" data-placement="right" title="Event starting shortly!"></i>
+        </span>
+        {% endif %}
+    </div>
+
+    <footer class="w-100">
+        <!-- Event Info -->
+        <div class="g-overflow-hidden">
+            <ul class="list-inline g-brd-top g-brd-bottom g-brd-gray-light-v3 g-font-size-12 text-center g-mx-minus-25 g-mb-0">
+                <li class="list-inline-item g-width-30x g-pa-12-5-7 mx-0 g-my-5"
+                    data-toggle="tooltip" title="Number of people you meet">
+                    <i class="align-middle icon-people g-color-gray-dark-v4 g-font-size-18 g-mr-5"></i>
+                    {{ event.numPeopleYouMeet }}
+                </li>
+                <li class="list-inline-item g-width-30x g-brd-left g-brd-gray-light-v3 g-pa-12-5-7 mx-0 g-my-5"
+                    data-toggle="tooltip" title="Total even duration">
+                    <i class="align-middle icon-clock g-color-gray-dark-v4 g-font-size-18 g-mr-5"></i>
+                    {{ event.duration }} min.
+                </li>
+                <li class="list-inline-item g-width-30x g-brd-left g-brd-gray-light-v3 g-pa-12-5-7 mx-0 g-my-5"
+                    data-toggle="tooltip" title="Filled percentage">
+                    <i class="align-middle icon-speedometer g-color-gray-dark-v4 g-font-size-18 g-mr-5"></i>
+                    {{ event.filledPercentage | floatformat:"0" }}%
+                </li>
+            </ul>
+        </div>
+    </footer>
+</article>

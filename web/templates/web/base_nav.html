@@ -22,8 +22,9 @@
             </button>
             <!-- End Responsive Toggle Button -->
             <!-- Logo -->
-            <a href="{% url 'web:index' %}" class="navbar-brand u-header__logo">
-                <img src="{% static 'web/images/bokaru-logo.png' %}" style="max-height: 40px" alt="Logo">
+            <a href="{% url 'web:index' %}" class="navbar-brand navbar-logo">
+                <img src="{% static 'web/images/outline-owl.jpg' %}" alt="Logo">
+                <span class="brand-text">bokaru</span>
             </a>
             <!-- End Logo -->
 
@@ -43,17 +44,17 @@
                         <a href="{% url 'event:create' %}" class="nav-link">Create Event</a>
                     </li>
                     <li id="nav_events" class="nav-item g-mx-20--lg">
-                        <a href="{% url 'web:search' %}" class="nav-link">My Events</a>
+                        <a href="{% url 'web:my_events' %}" class="nav-link">My Events</a>
                     </li>
                     <li id="nav_matches" class="nav-item g-mx-20--lg">
-                        <a href="{% url 'web:search' %}" class="nav-link">Matches</a>
+                        <a href="{% url 'web:my_matches' %}" class="nav-link">Matches</a>
                     </li>
                     <!-- Account submenu -->
                     <li class="nav-item hs-has-sub-menu g-mx-20--lg" data-event="click">
                         <a href="#" class="nav-link dropdown-toggle g-py-0 g-brd-none" id="account-dropdown-invoker"
                            aria-haspopup="true" aria-expanded="false" aria-controls="account-dropdown">
                             {% if request.session.thumbnail_url is None or request.session.thumbnail_url == '' %}
-                            <img class="img-fluid rounded-circle" src="{% static 'account/images/default-avatar.png' %}"
+                            <img class="img-fluid rounded-circle" src="{% static 'web/images/user_default_image.jpg' %}"
                                  width="30px" height="30px" alt="Default picture" id="default_avatar"/>
                             {% else %}
                             <img class="img-fluid rounded-circle" src="{{ request.session.thumbnail_url }}" alt="Profile picture"/>
@@ -103,7 +104,7 @@
 <!-- End Owl banner -->
 
 <!-- Message Bar -->
-{% if request.session.profile_incomplete %}
+{% if request.session.profile_incomplete and not request.path == '/profile/edit' %}
 <section class="g-bg-primary g-color-white g-pa-30 g-mb-20 u-shadow-v1-5">
     <div class="d-md-flex justify-content-md-center text-center">
         <div class="align-self-md-center">

@@ -8,7 +8,7 @@ from django.conf import settings
 from django.contrib.auth import get_user_model
 from django.contrib.gis.db import models as gis_models
 from django.contrib.gis.geos import Point
-from django.contrib.gis.measure import D
+from django.contrib.gis.measure import Distance
 from django.contrib.postgres.search import SearchQuery, SearchRank, SearchVector
 from django.core.files.storage import default_storage
 from django.core.validators import MinValueValidator, MaxValueValidator
@@ -17,6 +17,9 @@ from django.utils import timezone
 from django.utils.crypto import get_random_string
 from django.utils.functional import cached_property
 from django.utils.translation import ugettext_lazy as _
+from imagekit.models import ImageSpecField
+from pilkit.processors import ResizeToFill
+from django.db.models import Q
 
 from account.models import Account
 from money.models import Product
@@ -54,27 +57,114 @@ def get_query(query_string):
 
 
 class EventManager(models.Manager):
+    def search(self, **kwargs):
+        # Initial search by date
+        hour_from_now = timezone.now() + timedelta(hours=1)
+        filter_query = self.filter(startDateTime__gte=hour_from_now)
+
+        # Search by distance
+        if 'cityLat' in kwargs and 'cityLng' in kwargs and 'distance' in kwargs and 'distanceUnits' in kwargs:
+            lat = kwargs.get('cityLat')
+            lng = kwargs.get('cityLng')
+            distance = kwargs.get('distance')
+            distance_units = kwargs.get('distanceUnits')
+            logger.info('distance: ' + str(distance))
+            point = Point(x=lng, y=lat, srid=4326)
+            radius = Distance(km=distance)
+            if distance_units == 'mi':
+                radius = Distance(mi=distance)
+            filter_query = filter_query.filter(locationCoordinates__distance_lte=(point, radius))
+            # logger.info('found ' + str(len(filter_query)))
+
+        # Search text
+        if 'search_term' in kwargs:
+            search_term = kwargs.get('search_term')
+            if search_term:
+                logger.info('term: ' + search_term)
+                vector = SearchVector('name', weight='A') + SearchVector('description', weight='B')
+                query = get_query(search_term)
+                filter_query = filter_query.annotate(rank=SearchRank(vector, query)) \
+                    .filter(rank__gte=0.1) \
+                    .order_by('-rank')
+                # logger.info('found ' + str(len(filter_query)))
+
+        # Search by event types
+        event_type_list = kwargs.get('eventTypeList').split('|') if kwargs.get('eventTypeList') else []
+        if len(event_type_list):
+            logger.info('event_type_list: ' + str(event_type_list))
+            filter_query = filter_query.filter(type__in=event_type_list)
+            # logger.info('found ' + str(len(filter_query)))
+        event_size_list = kwargs.get('eventSizeList').split('|') if kwargs.get('eventSizeList') else []
+        if len(event_size_list):
+            logger.info('event_size_list: ' + str(event_size_list))
+            filter_query = filter_query.filter(size__in=event_size_list)
+            # logger.info('found ' + str(len(filter_query)))
+
+        # ===========
+        # Order query
+        # ===========
+        filter_query = filter_query.order_by('startDateTime')
+
+        # ================
+        # Advanced filters
+        # ================
+        result = []
+        for event in filter_query:
+            # Filter out full events
+            # TODO: search by filled percentage
+            if 'show_full' not in kwargs or kwargs.get('show_full') is False:
+                if event.filledPercentage == 100:
+                    continue
+
+            # Advanced filtering by group genders
+            sexual_identity = kwargs.get('sexual_identity')
+            age = kwargs.get('age')
+            user = {'sexualIdentity': sexual_identity, 'age': age}
+
+            looking_for_gender_list = kwargs.get('lookingForGenderList').split('|') \
+                if 'lookingForGenderList' in kwargs else []
+            looking_for_age_min = kwargs.get('lookingForAgeMin') if 'lookingForAgeMin' in kwargs else 18
+            looking_for_age_max = kwargs.get('lookingForAgeMax') if 'lookingForAgeMax' in kwargs else 120
+            looking_for = []
+            for sexual_identity in looking_for_gender_list:
+                looking_for.append(
+                    {'sexualIdentity': sexual_identity, 'ageMin': looking_for_age_min, 'ageMax': looking_for_age_max})
+            if not event.groupsMatchCriteria(user, looking_for):
+                continue
+
+            result.append(event)
+
+        return result
+
     # Filter events based on the distance from the given point
-    def filter_by_distance(self, lat, lon, distance):
-        point = Point(x=lat, y=lon, srid=4326)
-        return self.filter(locationCoordinates__distance_lte=(point, D(km=distance)))
+    def filter_by_distance(self, lng, lat, distance, distance_units='km'):
+        point = Point(x=lng, y=lat, srid=4326)
+        radius = Distance(km=distance)
+        if distance_units == 'mi':
+            radius = Distance(mi=distance)
+        return self.filter(locationCoordinates__distance_lte=(point, radius))
 
     # Search events by text in name and description
     def search_text(self, text):
         vector = SearchVector('name', weight='A') + SearchVector('description', weight='B')
         query = get_query(text)
-        return self.annotate(rank=SearchRank(vector, query)).order_by('-rank', 'startDateTime')
-        # return self.annotate(rank=SearchRank(vector, query)).filter(rank__gte=0.1).order_by('-rank', 'startDateTime')
+        # return self.annotate(rank=SearchRank(vector, query)).order_by('-rank', 'startDateTime')
+        return self.annotate(rank=SearchRank(vector, query)).filter(rank__gte=0.1).order_by('-rank', 'startDateTime')
 
-    # Get all events that belong to the given user
-    def get_all_by_user(self, user):
+    # Get all future events that belong to the given user
+    def get_all_future_by_user(self, user):
         return self.filter(eventgroup__eventparticipant__user=user).filter(
             startDateTime__gte=timezone.now()).order_by('startDateTime')
+
+    # Get all past events that belong to the given user
+    def get_all_past_by_user(self, user):
+        return self.filter(eventgroup__eventparticipant__user=user).filter(
+            startDateTime__lt=timezone.now()).order_by('-startDateTime')
 
     # Get next event that the user is registered for
     def get_next(self, user):
         now = timezone.now()
-        event = self.get_all_by_user(user).filter(startDateTime__gte=now).order_by('-startDateTime').first()
+        event = self.get_all_future_by_user(user).filter(startDateTime__gte=now).order_by('-startDateTime').first()
         return event
 
     # Get the event that belongs to the user and is either starting in one hour, running now or ended up to one hour ago
@@ -82,7 +172,7 @@ class EventManager(models.Manager):
         now = timezone.now()
         hour_from_now = now + timedelta(hours=1)
         hour_ago = now - timedelta(hours=1)
-        events = self.get_all_by_user(user).order_by('-startDateTime')
+        events = self.get_all_future_by_user(user).order_by('-startDateTime')
 
         for event in events:
             if event.startDateTime <= hour_from_now and event.endDateTime >= hour_ago:
@@ -102,6 +192,12 @@ class Event(models.Model):
     SMALL = 10
     MEDIUM = 20
     LARGE = 30
+
+    SIZES = [
+        (SMALL, 'Small'),
+        (MEDIUM, 'Medium'),
+        (LARGE, 'Large')
+    ]
 
     # Number of groups
     NUM_GROUPS = [
@@ -123,11 +219,11 @@ class Event(models.Model):
         (HOOKUP, 'Casual hookup'),
         (FRIENDSHIP, 'Friendship')
     ]
-
     # General info
     creator = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.PROTECT)
     name = models.CharField(max_length=150)
     type = models.PositiveSmallIntegerField(choices=TYPES, default=SERIOUS)
+    size = models.PositiveSmallIntegerField(choices=SIZES, default=MEDIUM)
     startDateTime = models.DateTimeField()
     locationName = models.CharField(max_length=150)
     locationCoordinates = gis_models.PointField(srid=4326, default=Point(0, 0))
@@ -144,6 +240,10 @@ class Event(models.Model):
                                                      default=DEFAULT_BREAK_DURATION)
     # Image
     photo = models.ImageField(blank=True)
+    photoMedium = ImageSpecField(source='photo',
+                                 processors=[ResizeToFill(250, 250)],
+                                 format='JPEG',
+                                 options={'quality': 80})
     # Associated product
     product = models.ForeignKey(Product, on_delete=models.PROTECT)
 
@@ -161,11 +261,66 @@ class Event(models.Model):
         return self.startDateTime.date() + timedelta(
             seconds=self.maxParticipantsInGroup * (self.dateDuration + self.breakDuration))
 
+    @cached_property
+    def duration(self):
+        if self.numGroups == 1:
+            return int((self.maxParticipantsInGroup - 1) * (self.dateDuration + self.breakDuration) / 60)
+        elif self.numGroups == 2:
+            return int(self.maxParticipantsInGroup * (self.dateDuration + self.breakDuration) / 60)
+
+    @cached_property
+    def numPeopleYouMeet(self):
+        if self.numGroups == 1:
+            return self.maxParticipantsInGroup - 1
+        elif self.numGroups == 2:
+            return self.maxParticipantsInGroup
+
+    @cached_property
+    def displayType(self):
+        return get_value(Event.TYPES, self.type)
+
+    @property
+    def numberOfParticipants(self):
+        participants = EventParticipant.objects.filter(group__in=self.eventgroup_set.all(),
+                                                       status__in=[EventParticipant.REGISTERED,
+                                                                   EventParticipant.PAYMENT_SUCCESS])
+        return participants.count()
+
+    @property
+    def filledPercentage(self):
+        num_participants = self.numberOfParticipants
+        max_participants = self.numGroups * self.maxParticipantsInGroup
+        return round(float(num_participants) / max_participants * 100)
+
+    # Return True if the event is going to be held
+    @property
+    def isConfirmed(self):
+        # The event must start within a day
+        now = timezone.now()
+        time_diff = self.event.startDateTime - now
+        if time_diff.days < 1:
+            # Check if there are enough participants
+            num_participants = self.numberOfParticipants
+            if num_participants / (self.maxParticipantsInGroup * self.numGroups) >= self.CONFIRMED_MIN_PARTICIPANTS:
+                return True
+
+        return False
+
     objects = EventManager()
 
-    # To string
-    def __str__(self):
-        return self.name + ' @ ' + self.locationName + ', [' + str(self.startDateTime) + ']'
+    # Check if the event has groups that match the given criteria
+    def groupsMatchCriteria(self, user, looking_for):
+        groups = EventGroup.objects.filter(event=self.id)
+
+        if self.numGroups == 1:
+            if groups[0].user_matches(user) and groups[0].looking_for_matches(looking_for):
+                return True
+        elif self.numGroups == 2:
+            if groups[0].user_matches(user) and groups[1].looking_for_matches(looking_for) or \
+                    groups[1].user_matches(user) and groups[0].looking_for_matches(looking_for):
+                return True
+
+        return False
 
     # Return True if the user is registered in any group of this event
     def is_user_registered(self, user):
@@ -185,21 +340,11 @@ class Event(models.Model):
         except EventParticipant.DoesNotExist:
             return False
 
-    # Return True if the event is going to be held
-    def is_confirmed(self):
-        # The event must start within a day
+    # Get number of hours until event start time
+    def get_hours_until_start(self):
         now = timezone.now()
-        time_diff = self.event.startDateTime - now
-        if time_diff.days < 1:
-            # Check if there are enough participants
-            participants = EventParticipant.objects.filter(group__in=self.eventgroup_set.all(),
-                                                           status__in=[EventParticipant.REGISTERED,
-                                                                       EventParticipant.PAYMENT_SUCCESS])
-            num_participants = participants.count()
-            if num_participants / (self.maxParticipantsInGroup * self.numGroups) >= self.CONFIRMED_MIN_PARTICIPANTS:
-                return True
-
-        return False
+        num_seconds = (self.startDateTime - now).total_seconds()
+        return int(round(num_seconds / 3600, 0))
 
     # Return true if the event is happening right now
     def is_in_progress(self):
@@ -272,6 +417,10 @@ class Event(models.Model):
         stream = io.BytesIO(file)
         self.add_photo(stream, size, x, y, w, h)
 
+    # To string
+    def __str__(self):
+        return str(self.id) + ' | ' + self.name + ' @ ' + self.locationName + ' [' + str(self.startDateTime) + ']'
+
 
 class EventGroup(models.Model):
     FEMALE = 'female'
@@ -280,8 +429,8 @@ class EventGroup(models.Model):
     ANY = 'any'
 
     IDENTITY_CHOICES = (
-        (FEMALE, 'Women only'),
-        (MALE, 'Men only'),
+        (FEMALE, 'Women'),
+        (MALE, 'Men'),
         (OTHER, 'Other (please specify)'),
         (ANY, 'Anyone welcome')
     )
@@ -298,6 +447,27 @@ class EventGroup(models.Model):
             return self.sexualIdentityOther
         else:
             return get_value(EventGroup.IDENTITY_CHOICES, self.sexualIdentity)
+
+    # Check if user's sexual identity and age matches the group
+    def user_matches(self, user):
+        if self.ageMin <= user.get('age') <= self.ageMax:
+            if self.sexualIdentity == EventGroup.ANY \
+                    or self.sexualIdentity == EventGroup.OTHER \
+                    or self.sexualIdentity == user.get('sexualIdentity'):
+                return True
+
+        return False
+
+    # Check if any object in looking_for array matches the group
+    def looking_for_matches(self, looking_for_array):
+        for looking_for in looking_for_array:
+            if self.ageMin <= looking_for.get('ageMax') and looking_for.get('ageMin') <= self.ageMax:
+                if self.sexualIdentity == EventGroup.ANY \
+                        or self.sexualIdentity == EventGroup.OTHER \
+                        or self.sexualIdentity == looking_for.get('sexualIdentity'):
+                    return True
+
+        return False
 
     # Check if the user is able to register and raise an appropriate exception if not
     def can_user_register(self, user):
@@ -379,8 +549,7 @@ class EventGroup(models.Model):
         raise Exception('Function not implemented: register_participant_from_waiting_list')
 
     def __str__(self):
-        return self.sexualIdentity + ' [' + str(self.ageMin) + ' - ' +\
-               str(self.ageMax) + '] in event: ' + self.event.name + ' [' + str(self.event.id) + ']'
+        return str(self.event) + ' | ' + self.sexualIdentity + ' [' + str(self.ageMin) + ' - ' + str(self.ageMax) + ']'
 
 
 class EventParticipant(models.Model):
@@ -410,21 +579,19 @@ class EventParticipant(models.Model):
 
 class PickManager(models.Manager):
     def get_all_matches_by_user(self, user):
+        events = Event.objects.get_all_past_by_user(user)
         result = {}
-        # Get all picks from an event
-        for users_pick in self.filter(picker=user):
-            if len(self.filter(picker=users_pick.picked, picked=user, response=Pick.YES)) > 0:
-                if users_pick.event not in result:
-                    result[users_pick.event] = []
-
-                result[users_pick.event].append(users_pick.picked)
+        for event in reversed(events):
+            matches = self.get_all_matches_by_user_and_event(user, event)
+            if len(matches) > 0:
+                result[event] = matches
 
         return result
 
     def get_all_matches_by_user_and_event(self, user, event):
         all_matches = []
         # Get all picks from an event
-        for users_pick in self.filter(picker=user, event=event):
+        for users_pick in self.filter(picker=user, event=event, response=Pick.YES):
             if len(self.filter(picker=users_pick.picked, picked=user, event=event, response=Pick.YES)) > 0:
                 all_matches.append(users_pick.picked)
         return all_matches

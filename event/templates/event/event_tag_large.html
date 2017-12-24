@@ -1,0 +1,130 @@
+{% load staticfiles %}
+
+<article class="g-rounded-4 g-py-20 event"
+         style="cursor: pointer;" onclick="window.location.href = '{% url 'event:view' event_id=event.id %}'">
+    <div class="row g-ml-0">
+        <div class="col-md-4 g-mb-0--md">
+            <div class="g-pos-rel u-shadow-v2 g-brd-around g-brd-white g-brd-2">
+                <!-- Event image -->
+                <figure>
+                    {% if event.photo is None or event.photo.name == '' %}
+                    <img class="img-fluid w-100" src="{% static 'web/images/event_default_image.jpg' %}" alt="Default event picture"/>
+                    {% else %}
+                    <img class="img-fluid w-100" src="{{ event.photoMedium.url }}" alt="Event picture"/>
+                    {% endif %}
+                </figure>
+
+                <!-- Event type -->
+                <div class="g-pos-abs g-top-0 g-left-0 d-inline-block">
+                    <div class="d-flex justify-content-between w-100 g-max-width-145 g-bg-black g-color-white g-font-size-13 g-font-weight-700 text-uppercase">
+                    <span class="g-px-5 g-py-2">
+                        {% if event.type == 1 %}
+                        <i class="fa fa-heart g-mr-3"></i>
+                        {% elif event.type == 2 %}
+                        <i class="fa fa-heart-o g-mr-3"></i>
+                        {% elif event.type == 3 %}
+                        <i class="fa fa-glass g-mr-3"></i>
+                        {% elif event.type == 4 %}
+                        <i class="fa fa-handshake-o g-mr-3"></i>
+                        {% elif event.type == 5 %}
+                        <i class="fa fa-diamond g-mr-3"></i>
+                        {% endif %}
+                    </span>
+                        <span class="g-bg-primary g-font-weight-700 g-px-5 g-py-3 text-uppercase">
+                        {{ event.displayType }}
+                    </span>
+                    </div>
+                </div>
+
+                {% if event.get_hours_until_start <= 24 and event.get_hours_until_start > 1 %}
+                <span class="u-badge-v1--xl g-color-white g-bg-primary g-rounded-50x g-font-size-24 g-brd-around g-brd-white g-brd-2">
+                    <i class="icon-fire" data-toggle="tooltip" data-placement="right" title="Event starting in {{ event.get_hours_until_start }} hours!"></i>
+                </span>
+                {% endif %}
+                {% if event.get_hours_until_start <= 1 and event.get_hours_until_start >= 0 %}
+                <span class="u-badge-v1--xl g-color-white g-bg-primary g-rounded-50x g-font-size-24 g-brd-around g-brd-white g-brd-2">
+                    <i class="icon-fire" data-toggle="tooltip" data-placement="right" title="Event starting shortly!"></i>
+                </span>
+                {% endif %}
+            </div>
+        </div>
+        <div class="col-md-8">
+            <!-- Event -->
+            <header class="g-mb-15">
+                <h1 class="g-font-weight-300 g-font-size-30 g-line-height-1">
+                    {{ event.name }}
+                </h1>
+                <h2 class="g-font-weight-300 g-color-primary g-font-size-20 mb-0">{{ event.startDateTime|date:'l, N d, Y @ P' }}</h2>
+                <h3 class="g-color-dark g-font-weight-400 g-font-size-20 mb-0">{{ event.locationName }}</h3>
+            </header>
+
+            <!-- Event Description -->
+            <p class="lead">{{ event.description | linebreaks | truncatewords:15 }}</p>
+
+            <!-- Event Info -->
+            <div class="g-overflow-hidden g-mb-15">
+                <ul class="list-inline g-brd-top g-brd-bottom g-brd-gray-light-v3 g-font-size-12 text-center g-mx-minus-25">
+                    <li class="list-inline-item g-width-30x g-pa-12-5-7 mx-0 g-my-5"
+                        data-toggle="tooltip" title="Number of people you meet">
+                        <i class="align-middle icon-people g-color-gray-dark-v4 g-font-size-18 g-mr-5"></i>
+                        {{ event.numPeopleYouMeet }}
+                    </li>
+                    <li class="list-inline-item g-width-30x g-brd-left g-brd-gray-light-v3 g-pa-12-5-7 mx-0 g-my-5"
+                        data-toggle="tooltip" title="Total even duration">
+                        <i class="align-middle icon-clock g-color-gray-dark-v4 g-font-size-18 g-mr-5"></i>
+                        {{ event.duration }} min.
+                    </li>
+                    <li class="list-inline-item g-width-30x g-brd-left g-brd-gray-light-v3 g-pa-12-5-7 mx-0 g-my-5"
+                        data-toggle="tooltip" title="Filled percentage">
+                        <i class="align-middle icon-speedometer g-color-gray-dark-v4 g-font-size-18 g-mr-5"></i>
+                        {{ event.filledPercentage | floatformat:"0" }}%
+                    </li>
+                </ul>
+            </div>
+
+            <!-- Groups -->
+            <div class="row">
+                <div class="col-6 col-md-2">
+                    <div class="js-pie g-color-black"
+                         data-circles-value="{{ group1_filled_percentage }}"
+                         data-circles-max-value="100"
+                         data-circles-bg-color="#222"
+                         data-circles-fg-color="#e74c3c"
+                         data-circles-radius="35"
+                         data-circles-stroke-width="4"
+                         data-circles-font-size="14"
+                         data-circles-font-weight="700"
+                         data-circles-additional-text="%"
+                         data-circles-duration="2000"
+                         data-circles-scroll-animate="false">
+                    </div>
+                </div>
+                <div class="col-6 col-md-4">
+                    <span class="g-color-black g-font-weight-700">{{ group1.displaySexualIdentity }}</span>
+                    <em class="d-block g-font-style-normal">Ages: {{ group1.ageMin }} &mdash; {{ group1.ageMax }}</em>
+                </div>
+                {% if group2 %}
+                <div class="col-6 col-md-2">
+                    <div class="js-pie g-color-black"
+                         data-circles-value="{{ group2_filled_percentage }}"
+                         data-circles-max-value="100"
+                         data-circles-bg-color="#222"
+                         data-circles-fg-color="#e74c3c"
+                         data-circles-radius="35"
+                         data-circles-stroke-width="4"
+                         data-circles-font-size="14"
+                         data-circles-font-weight="700"
+                         data-circles-additional-text="%"
+                         data-circles-duration="2000"
+                         data-circles-scroll-animate="false">
+                    </div>
+                </div>
+                <div class="col-6 col-md-4">
+                    <span class="g-color-black g-font-weight-700">{{ group2.displaySexualIdentity }}</span>
+                    <em class="d-block g-font-style-normal">Ages: {{ group2.ageMin }} &mdash; {{ group2.ageMax }}</em>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</article>
