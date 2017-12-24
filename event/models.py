@@ -137,7 +137,7 @@ class EventManager(models.Manager):
         return result
 
     # Filter events based on the distance from the given point
-    def filter_by_distance(self, lat, lng, distance, distance_units='km'):
+    def filter_by_distance(self, lng, lat, distance, distance_units='km'):
         point = Point(x=lng, y=lat, srid=4326)
         radius = Distance(km=distance)
         if distance_units == 'mi':
