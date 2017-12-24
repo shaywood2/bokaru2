@@ -1,8 +1,31 @@
 import os
+import json
+
+from django.core.exceptions import ImproperlyConfigured
+
 
 # Build paths
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 PROJECT_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+
+
+# Read env file
+with open(BASE_DIR + '/env.json') as f:
+    env = json.loads(f.read())
+
+
+def get_env_var(setting):
+    try:
+        val = env[setting]
+        if val == 'True':
+            val = True
+        elif val == 'False':
+            val = False
+        return val
+    except KeyError:
+        error_msg = "ImproperlyConfigured: Set {0} environment variable".format(setting)
+        raise ImproperlyConfigured(error_msg)
+
 
 # Application definition
 INSTALLED_APPS = [
@@ -96,6 +119,38 @@ TIME_ZONE = 'America/Toronto'
 USE_I18N = True
 USE_L10N = True
 USE_TZ = True
+
+# Database
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.contrib.gis.db.backends.postgis',
+        'NAME': get_env_var('DATABASE_NAME'),
+        'USER': get_env_var('DATABASE_USER'),
+        'PASSWORD': get_env_var('DATABASE_PASSWORD'),
+        'HOST': get_env_var('DATABASE_HOST'),
+        'PORT': get_env_var('DATABASE_PORT'),
+        'CONN_MAX_AGE': 500,
+    }
+}
+
+# Session storage
+SESSION_ENGINE = 'django.contrib.sessions.backends.cached_db'
+
+# ===========
+# Secret keys
+# ===========
+# TokBox
+TOKBOX_KEY = get_env_var('TOKBOX_KEY')
+TOKBOX_SECRET = get_env_var('TOKBOX_SECRET')
+
+# Stripe
+STRIPE_KEY = get_env_var('STRIPE_KEY')
+
+# Registration
+REGISTRATION_SALT = get_env_var('REGISTRATION_SALT')
+
+# Django
+SECRET_KEY = get_env_var('DJANGO_SECRET_KEY')
 
 # Honor the 'X-Forwarded-Proto' header for request.is_secure()
 SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')

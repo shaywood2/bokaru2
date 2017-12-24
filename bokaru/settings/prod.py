@@ -1,38 +1,4 @@
-import json
-
-from django.core.exceptions import ImproperlyConfigured
-
 from bokaru.settings.common import *
-
-# Read env file
-with open(BASE_DIR + '/configs/prod/env.json') as f:
-    env = json.loads(f.read())
-
-
-def get_env_var(setting):
-    try:
-        val = env[setting]
-        if val == 'True':
-            val = True
-        elif val == 'False':
-            val = False
-        return val
-    except KeyError:
-        error_msg = "ImproperlyConfigured: Set {0} environment variable".format(setting)
-        raise ImproperlyConfigured(error_msg)
-
-
-# TokBox settings
-TOKBOX_KEY = get_env_var('TOKBOX_KEY')
-TOKBOX_SECRET = get_env_var('TOKBOX_SECRET')
-
-# Stripe settings
-STRIPE_KEY = get_env_var('STRIPE_KEY')
-
-REGISTRATION_SALT = get_env_var('REGISTRATION_SALT')
-
-# Secret key
-SECRET_KEY = get_env_var('DJANGO_SECRET_KEY')
 
 INSTALLED_APPS += ('storages',)
 
@@ -54,19 +20,6 @@ STATICFILES_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'
 MEDIA_URL = 'https://%s/%s/' % (AWS_S3_CUSTOM_DOMAIN, AWS_MEDIA_LOCATION)
 DEFAULT_FILE_STORAGE = 'bokaru.storage_backends.MediaStorage'
 
-# Database
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.contrib.gis.db.backends.postgis',
-        'NAME': get_env_var('DATABASE_NAME'),
-        'USER': get_env_var('DATABASE_USER'),
-        'PASSWORD': get_env_var('DATABASE_PASSWORD'),
-        'HOST': get_env_var('DATABASE_HOST'),
-        'PORT': get_env_var('DATABASE_PORT'),
-        'CONN_MAX_AGE': 500,
-    }
-}
-
 # ElastiCache
 CACHES = {
     'default': {
@@ -74,9 +27,6 @@ CACHES = {
         'LOCATION': get_env_var('CACHE_LOCATION')
     }
 }
-
-# Session storage
-SESSION_ENGINE = 'django.contrib.sessions.backends.cached_db'
 
 # Mailgun backend
 EMAIL_BACKEND = 'django_mailgun.MailgunBackend'
