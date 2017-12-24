@@ -7,7 +7,7 @@ from django.contrib.auth import get_user_model
 from django.contrib.gis.db import models as gis_models
 from django.contrib.gis.geos import Point
 from django.core.files.storage import default_storage
-from django.core.validators import MinValueValidator, MaxValueValidator
+from django.core.validators import MinValueValidator
 from django.db import models
 from django.utils import timezone
 from django.utils.crypto import get_random_string
@@ -326,53 +326,52 @@ class Account(models.Model):
 
 
 class UserPreference(models.Model):
-    EVENT_SIZES = (
-        (10, 'Small'),
-        (20, 'Medium'),
-        (30, 'Large')
-    )
-    UNITS = (
+    DISTANCE_UNIT_CHOICES = [
         ('km', 'Kilometers'),
         ('m', 'Miles')
-    )
-    NUM_GROUPS = [
-        (1, 'One group (talk to everyone)'),
-        (2, 'Two groups (talk to all members of the opposite group)')
-    ]
-    SERIOUS = 1
-    CASUAL = 2
-    HOOKUP = 3
-    FRIENDSHIP = 4
-    MARRIAGE = 5
-    TYPES = [
-        (MARRIAGE, 'Marriage'),
-        (SERIOUS, 'Serious relationship'),
-        (CASUAL, 'Casual dating'),
-        (HOOKUP, 'Casual hookup'),
-        (FRIENDSHIP, 'Friendship')
     ]
 
-    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.PROTECT)
+    DISTANCE_CHOICES = [
+        (10, 10),
+        (50, 50),
+        (100, 100),
+        (200, 200),
+        (500, 500),
+    ]
+
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.PROTECT, blank=True, null=True)
+
+    # Search preferences
+    distanceUnits = models.CharField(max_length=3, choices=DISTANCE_UNIT_CHOICES, default='km')
+    distance = models.PositiveSmallIntegerField(choices=DISTANCE_CHOICES, default=50)
+    cityName = models.CharField(max_length=500, blank=True, null=True)
+    cityNameShort = models.CharField(max_length=100, blank=True, null=True)
+    cityLat = models.FloatField(blank=True, null=True)
+    cityLng = models.FloatField(blank=True, null=True)
+
+    # Looking for preferences
+    lookingForGenderList = models.CharField(max_length=100, blank=True)
+    lookingForAgeMin = models.PositiveSmallIntegerField(validators=[MinValueValidator(18)], default=18)
+    lookingForAgeMax = models.PositiveSmallIntegerField(validators=[MinValueValidator(18)], default=120)
+
     # Event preferences
-    ageMin = models.PositiveSmallIntegerField(validators=[MinValueValidator(18)], default=18)
-    ageMax = models.PositiveSmallIntegerField(validators=[MinValueValidator(18)], default=99)
-    numGroups = models.PositiveSmallIntegerField(validators=[MinValueValidator(1), MaxValueValidator(2)],
-                                                 choices=NUM_GROUPS, blank=True, null=True)
-    eventType = models.PositiveSmallIntegerField(choices=TYPES, blank=True, null=True)
-    eventSize = models.PositiveSmallIntegerField(choices=EVENT_SIZES, blank=True, null=True)
+    eventTypeList = models.CharField(max_length=100, blank=True, null=True)
+    eventSizeList = models.CharField(max_length=100, blank=True, null=True)
+    numGroupsList = models.CharField(max_length=100, blank=True, null=True)
 
     # Communication preferences
     receiveNewsletter = models.BooleanField(default=False)
-
-    # Misc preferences
-    units = models.CharField(max_length=3, choices=UNITS, default='km')
 
     # Automatic timestamps
     created = models.DateTimeField(auto_now_add=True)
     updated = models.DateTimeField(auto_now=True)
 
     def __str__(self):
-        return str(self.user)
+        username = 'guest'
+        if self.user:
+            username = str(self.user)
+        return username + ' | ' + str(self.lookingForAgeMin) + ' - ' + str(self.lookingForAgeMax) + ', ' \
+               + str(self.distanceUnits)
 
 
 class MemoManager(models.Manager):

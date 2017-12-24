@@ -717,7 +717,7 @@ $(document).on('ready', function () {
         let index = languageArray.indexOf(value)
         languageArray.splice(index, 1)
         languageList.val(languageArray.join('|'))
-    });
+    })
 
     // Pet tags
     let petInput = $('#petInput')
@@ -738,7 +738,7 @@ $(document).on('ready', function () {
         let index = petArray.indexOf(value)
         petArray.splice(index, 1)
         petList.val(petArray.join('|'))
-    });
+    })
 
     // Looking for gender tags
     let lfgInput = $('#lfgInput')
@@ -759,7 +759,7 @@ $(document).on('ready', function () {
         let index = lfgArray.indexOf(value)
         lfgArray.splice(index, 1)
         lfgList.val(lfgArray.join('|'))
-    });
+    })
 
     // Looking for connections tags
     let lfcInput = $('#lfcInput')
@@ -780,7 +780,7 @@ $(document).on('ready', function () {
         let index = lfcArray.indexOf(value)
         lfcArray.splice(index, 1)
         lfcList.val(lfcArray.join('|'))
-    });
+    })
 
     // Update kids want select
     let kidsHave = $("#id_kidsHave")

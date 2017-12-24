@@ -1,10 +1,11 @@
-import datetime
 import logging
 
 from django.contrib.auth.decorators import login_required
+from django.core.paginator import Paginator
+from django.forms.models import model_to_dict
 from django.shortcuts import render
-from django.utils.timezone import utc
 
+from account.models import Account, UserPreference
 from event.models import Event, Pick
 from .forms import SearchForm
 
@@ -17,39 +18,6 @@ def index(request):
         return render(request, 'web/index.html', {'user': request.user})
     else:
         return render(request, 'web/index_landing.html')
-
-
-def search(request):
-    search_result = []
-    placeholder = "Dog Lovers"
-    if request.method == 'POST':
-        form = SearchForm(request.POST)
-        # logger.error('This is an error 5: ' + form.errors.as_json())
-
-        if form.is_valid():
-            # Full text search
-            search_result = Event.objects.search_text(form.cleaned_data['search_term'])
-            # Filter out past events
-            now = datetime.datetime.utcnow().replace(tzinfo=utc)
-            search_result = search_result.filter(startDateTime__gte=now)
-            placeholder = form.cleaned_data['search_term']
-            # TODO: BASED ON USER'S PROFILE:
-            # TODO: select 1 or 2 genders
-            # TODO: select age range
-            # TODO: filter out full events
-            # TODO: search by event size
-            # TODO: search by filled percentage
-
-    else:
-        form = SearchForm
-
-    context = {
-        'search_result': search_result,
-        'form': form,
-        'search_placeholder': placeholder,
-    }
-
-    return render(request, 'web/search.html', context)
 
 
 @login_required
@@ -77,25 +45,113 @@ def my_matches(request):
     return render(request, 'web/my_matches.html', context)
 
 
-def terms_of_use(request):
+def search(request):
+    if request.user.is_authenticated:
+        # Get user's preferences
+        preferences = UserPreference.objects.get(user=request.user)
+    else:
+        # Create default preferences
+        preferences = UserPreference()
+
+    # Get default search parameters
+    search_params = model_to_dict(preferences)
+
+    # Get from from request
+    if request.GET.get('cityName'):
+        form = SearchForm(request.GET, instance=preferences)
+        if form.is_valid():
+            # Save updated search parameters
+            form.save()
+            # Update search parameters from the form
+            search_params = form.cleaned_data
+    else:
+        form = SearchForm(instance=preferences)
+
+    if request.user.is_authenticated:
+        # Get user's account
+        account = Account.objects.get(user=request.user)
+        search_params['sexual_identity'] = account.sexualIdentity
+        search_params['age'] = account.age
+
+    # logger.info('Search for: ' + str(search_params))
+
+    # Perform search
+    search_result = Event.objects.search(**search_params)
+    num_results = len(search_result)
+
+    # Figure out view type
+    view_type = request.GET.get('view_type')
+    page_size = 5
+    if not view_type:
+        view_type = 'list'
+    if view_type == 'grid':
+        page_size = 12
+
+    # Apply pagination
+    paginator = Paginator(search_result, page_size)
+    page = request.GET.get('page')
+    search_result = paginator.get_page(page)
+
     context = {
-        'test': "Terms of Use Page",
+        'view_type': view_type,
+        'search_result': search_result,
+        'num_results': num_results,
+        'page_range': range(1, paginator.num_pages + 1),
+        'form': form
     }
 
-    return render(request, 'web/terms_of_use.html', context)
+    return render(request, 'web/search.html', context)
+
+
+def search_results(request):
+    search_result = []
+    num_results = 0
+    page_size = 5
+
+    if request.user.is_authenticated:
+        # Get user's preferences
+        preferences = UserPreference.objects.get(user=request.user)
+        form = SearchForm(request.GET, instance=preferences)
+    else:
+        form = SearchForm(request.GET)
+
+    if form.is_valid():
+        # Save updated preferences
+        if request.user.is_authenticated:
+            form.save()
+            logger.info('prefs saved')
+
+        if form.cleaned_data.get('view_type') == 'grid':
+            page_size = 12
+
+        # Perform search
+        search_result = Event.objects.search(**form.cleaned_data)
+        num_results = len(search_result)
+    else:
+        logger.error(form.errors)
+
+    # Apply pagination
+    paginator = Paginator(search_result, page_size)
+    page = request.GET.get('page')
+    search_result = paginator.get_page(page)
+
+    context = {
+        'search_result': search_result,
+        'num_results': num_results,
+        'page_range': range(1, paginator.num_pages + 1),
+        'form': form
+    }
+
+    return render(request, 'web/search.html', context)
+
+
+def terms_of_use(request):
+    return render(request, 'web/terms_of_use.html')
 
 
 def how_it_works(request):
-    context = {
-        'test': "How It Works Page",
-    }
-
-    return render(request, 'web/how_it_works.html', context)
+    return render(request, 'web/how_it_works.html')
 
 
 def privacy_policy(request):
-    context = {
-        'test': "Privacy Policy Page",
-    }
-
-    return render(request, 'web/privacypolicy.html', context)
+    return render(request, 'web/privacypolicy.html')

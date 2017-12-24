@@ -14,14 +14,14 @@ def render_event_large(event):
     # First group info
     group1_participants = group1.get_registered_participants_accounts()
     group1_filled_count = group1_participants.count()
-    group1_filled_percentage = float(group1_filled_count) / event.maxParticipantsInGroup * 100
+    group1_filled_percentage = round(float(group1_filled_count) / event.maxParticipantsInGroup * 100)
 
     # Second group info
     group2_filled_percentage = 0
     if event.numGroups == 2:
         group2_participants = group2.get_registered_participants_accounts()
         group2_filled_count = group2_participants.count()
-        group2_filled_percentage = float(group2_filled_count) / event.maxParticipantsInGroup * 100
+        group2_filled_percentage = round(float(group2_filled_count) / event.maxParticipantsInGroup * 100)
 
     context = {
         'event': event,

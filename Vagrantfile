@@ -33,21 +33,15 @@ Vagrant.configure(2) do |config|
     # Install dependencies
     sudo apt-get install -y supervisor
     sudo apt-get install -y nginx
-    sudo apt-get install -y postgis postgresql-9.5-postgis-2.2
-    sudo apt-get build-dep -y psycopg2
     sudo apt-get install -y python3-pip
     sudo apt-get install -y memcached
     sudo apt-get install -y libmemcached-dev
+    sudo apt-get install -y postgis postgresql-9.5-postgis-2.2
+    sudo apt-get build-dep -y psycopg2
     sudo apt-get install -y libjpeg8
     sudo apt-get install -y libjpeg-dev
     sudo apt-get install -y zlib1g
     sudo apt-get install -y build-essential libssl-dev libffi-dev python-dev
-
-    # Install certificate dependencies
-    # sudo apt-get install -y software-properties-common
-    # sudo add-apt-repository -y ppa:certbot/certbot
-    # sudo apt-get update
-    # sudo apt-get install -y certbot
 
     # Install Python dependencies
     sudo pip3 install -r /usr/local/bokaru/requirements/common.txt
@@ -58,10 +52,9 @@ Vagrant.configure(2) do |config|
     sudo -u postgres psql -c "CREATE DATABASE bokaru WITH OWNER bokaru"
     sudo -u postgres psql -c "CREATE EXTENSION postgis; CREATE EXTENSION postgis_topology;" bokaru
 
-    # Create output folders
+    # Create upload folders
     mkdir -p /usr/local/bokaru/www/uploads/event-photos
     mkdir -p /usr/local/bokaru/www/uploads/user-photos
-    mkdir -p /usr/local/bokaru/logs/
 
     # Migrations and static files
     python3 /usr/local/bokaru/manage.py makemigrations

@@ -36,10 +36,15 @@
                     </div>
                 </div>
 
-                {% if event.get_hours_until_start <= 24 %}
+                {% if event.get_hours_until_start <= 24 and event.get_hours_until_start > 1 %}
                 <span class="u-badge-v1--xl g-color-white g-bg-primary g-rounded-50x g-font-size-24 g-brd-around g-brd-white g-brd-2">
-                <i class="icon-fire" data-toggle="tooltip" data-placement="right" title="Event starting in {{event.get_hours_until_start}} hours!"></i>
-            </span>
+                    <i class="icon-fire" data-toggle="tooltip" data-placement="right" title="Event starting in {{ event.get_hours_until_start }} hours!"></i>
+                </span>
+                {% endif %}
+                {% if event.get_hours_until_start <= 1 and event.get_hours_until_start >= 0 %}
+                <span class="u-badge-v1--xl g-color-white g-bg-primary g-rounded-50x g-font-size-24 g-brd-around g-brd-white g-brd-2">
+                    <i class="icon-fire" data-toggle="tooltip" data-placement="right" title="Event starting shortly!"></i>
+                </span>
                 {% endif %}
             </div>
         </div>

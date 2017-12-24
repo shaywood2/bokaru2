@@ -8,7 +8,7 @@ from django.conf import settings
 from django.contrib.auth import get_user_model
 from django.contrib.gis.db import models as gis_models
 from django.contrib.gis.geos import Point
-from django.contrib.gis.measure import D
+from django.contrib.gis.measure import Distance
 from django.contrib.postgres.search import SearchQuery, SearchRank, SearchVector
 from django.core.files.storage import default_storage
 from django.core.validators import MinValueValidator, MaxValueValidator
@@ -19,6 +19,7 @@ from django.utils.functional import cached_property
 from django.utils.translation import ugettext_lazy as _
 from imagekit.models import ImageSpecField
 from pilkit.processors import ResizeToFill
+from django.db.models import Q
 
 from account.models import Account
 from money.models import Product
@@ -56,17 +57,99 @@ def get_query(query_string):
 
 
 class EventManager(models.Manager):
+    def search(self, **kwargs):
+        # Initial search by date
+        hour_from_now = timezone.now() + timedelta(hours=1)
+        filter_query = self.filter(startDateTime__gte=hour_from_now)
+
+        # Search by distance
+        if 'cityLat' in kwargs and 'cityLng' in kwargs and 'distance' in kwargs and 'distanceUnits' in kwargs:
+            lat = kwargs.get('cityLat')
+            lng = kwargs.get('cityLng')
+            distance = kwargs.get('distance')
+            distance_units = kwargs.get('distanceUnits')
+            logger.info('distance: ' + str(distance))
+            point = Point(x=lng, y=lat, srid=4326)
+            radius = Distance(km=distance)
+            if distance_units == 'mi':
+                radius = Distance(mi=distance)
+            filter_query = filter_query.filter(locationCoordinates__distance_lte=(point, radius))
+            # logger.info('found ' + str(len(filter_query)))
+
+        # Search text
+        if 'search_term' in kwargs:
+            search_term = kwargs.get('search_term')
+            if search_term:
+                logger.info('term: ' + search_term)
+                vector = SearchVector('name', weight='A') + SearchVector('description', weight='B')
+                query = get_query(search_term)
+                filter_query = filter_query.annotate(rank=SearchRank(vector, query)) \
+                    .filter(rank__gte=0.1) \
+                    .order_by('-rank')
+                # logger.info('found ' + str(len(filter_query)))
+
+        # Search by event types
+        event_type_list = kwargs.get('eventTypeList').split('|') if kwargs.get('eventTypeList') else []
+        if len(event_type_list):
+            logger.info('event_type_list: ' + str(event_type_list))
+            filter_query = filter_query.filter(type__in=event_type_list)
+            # logger.info('found ' + str(len(filter_query)))
+        event_size_list = kwargs.get('eventSizeList').split('|') if kwargs.get('eventSizeList') else []
+        if len(event_size_list):
+            logger.info('event_size_list: ' + str(event_size_list))
+            filter_query = filter_query.filter(size__in=event_size_list)
+            # logger.info('found ' + str(len(filter_query)))
+
+        # ===========
+        # Order query
+        # ===========
+        filter_query = filter_query.order_by('startDateTime')
+
+        # ================
+        # Advanced filters
+        # ================
+        result = []
+        for event in filter_query:
+            # Filter out full events
+            # TODO: search by filled percentage
+            if 'show_full' not in kwargs or kwargs.get('show_full') is False:
+                if event.filledPercentage == 100:
+                    continue
+
+            # Advanced filtering by group genders
+            sexual_identity = kwargs.get('sexual_identity')
+            age = kwargs.get('age')
+            user = {'sexualIdentity': sexual_identity, 'age': age}
+
+            looking_for_gender_list = kwargs.get('lookingForGenderList').split('|') \
+                if 'lookingForGenderList' in kwargs else []
+            looking_for_age_min = kwargs.get('lookingForAgeMin') if 'lookingForAgeMin' in kwargs else 18
+            looking_for_age_max = kwargs.get('lookingForAgeMax') if 'lookingForAgeMax' in kwargs else 120
+            looking_for = []
+            for sexual_identity in looking_for_gender_list:
+                looking_for.append(
+                    {'sexualIdentity': sexual_identity, 'ageMin': looking_for_age_min, 'ageMax': looking_for_age_max})
+            if not event.groupsMatchCriteria(user, looking_for):
+                continue
+
+            result.append(event)
+
+        return result
+
     # Filter events based on the distance from the given point
-    def filter_by_distance(self, lat, lon, distance):
-        point = Point(x=lat, y=lon, srid=4326)
-        return self.filter(locationCoordinates__distance_lte=(point, D(km=distance)))
+    def filter_by_distance(self, lat, lng, distance, distance_units='km'):
+        point = Point(x=lng, y=lat, srid=4326)
+        radius = Distance(km=distance)
+        if distance_units == 'mi':
+            radius = Distance(mi=distance)
+        return self.filter(locationCoordinates__distance_lte=(point, radius))
 
     # Search events by text in name and description
     def search_text(self, text):
         vector = SearchVector('name', weight='A') + SearchVector('description', weight='B')
         query = get_query(text)
-        return self.annotate(rank=SearchRank(vector, query)).order_by('-rank', 'startDateTime')
-        # return self.annotate(rank=SearchRank(vector, query)).filter(rank__gte=0.1).order_by('-rank', 'startDateTime')
+        # return self.annotate(rank=SearchRank(vector, query)).order_by('-rank', 'startDateTime')
+        return self.annotate(rank=SearchRank(vector, query)).filter(rank__gte=0.1).order_by('-rank', 'startDateTime')
 
     # Get all future events that belong to the given user
     def get_all_future_by_user(self, user):
@@ -110,6 +193,12 @@ class Event(models.Model):
     MEDIUM = 20
     LARGE = 30
 
+    SIZES = [
+        (SMALL, 'Small'),
+        (MEDIUM, 'Medium'),
+        (LARGE, 'Large')
+    ]
+
     # Number of groups
     NUM_GROUPS = [
         (1, 'One group (talk to everyone)'),
@@ -134,6 +223,7 @@ class Event(models.Model):
     creator = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.PROTECT)
     name = models.CharField(max_length=150)
     type = models.PositiveSmallIntegerField(choices=TYPES, default=SERIOUS)
+    size = models.PositiveSmallIntegerField(choices=SIZES, default=MEDIUM)
     startDateTime = models.DateTimeField()
     locationName = models.CharField(max_length=150)
     locationCoordinates = gis_models.PointField(srid=4326, default=Point(0, 0))
@@ -200,7 +290,7 @@ class Event(models.Model):
     def filledPercentage(self):
         num_participants = self.numberOfParticipants
         max_participants = self.numGroups * self.maxParticipantsInGroup
-        return max_participants / num_participants
+        return round(float(num_participants) / max_participants * 100)
 
     # Return True if the event is going to be held
     @property
@@ -217,6 +307,20 @@ class Event(models.Model):
         return False
 
     objects = EventManager()
+
+    # Check if the event has groups that match the given criteria
+    def groupsMatchCriteria(self, user, looking_for):
+        groups = EventGroup.objects.filter(event=self.id)
+
+        if self.numGroups == 1:
+            if groups[0].user_matches(user) and groups[0].looking_for_matches(looking_for):
+                return True
+        elif self.numGroups == 2:
+            if groups[0].user_matches(user) and groups[1].looking_for_matches(looking_for) or \
+                    groups[1].user_matches(user) and groups[0].looking_for_matches(looking_for):
+                return True
+
+        return False
 
     # Return True if the user is registered in any group of this event
     def is_user_registered(self, user):
@@ -343,6 +447,27 @@ class EventGroup(models.Model):
             return self.sexualIdentityOther
         else:
             return get_value(EventGroup.IDENTITY_CHOICES, self.sexualIdentity)
+
+    # Check if user's sexual identity and age matches the group
+    def user_matches(self, user):
+        if self.ageMin <= user.get('age') <= self.ageMax:
+            if self.sexualIdentity == EventGroup.ANY \
+                    or self.sexualIdentity == EventGroup.OTHER \
+                    or self.sexualIdentity == user.get('sexualIdentity'):
+                return True
+
+        return False
+
+    # Check if any object in looking_for array matches the group
+    def looking_for_matches(self, looking_for_array):
+        for looking_for in looking_for_array:
+            if self.ageMin <= looking_for.get('ageMax') and looking_for.get('ageMin') <= self.ageMax:
+                if self.sexualIdentity == EventGroup.ANY \
+                        or self.sexualIdentity == EventGroup.OTHER \
+                        or self.sexualIdentity == looking_for.get('sexualIdentity'):
+                    return True
+
+        return False
 
     # Check if the user is able to register and raise an appropriate exception if not
     def can_user_register(self, user):

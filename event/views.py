@@ -46,7 +46,7 @@ def view(request, event_id):
     # First group info
     group1_participants = group1.get_registered_participants_accounts()
     group1_filled_count = group1_participants.count()
-    group1_filled_percentage = float(group1_filled_count) / selected_event.maxParticipantsInGroup * 100
+    group1_filled_percentage = round(float(group1_filled_count) / selected_event.maxParticipantsInGroup * 100)
     group1_can_join = False
 
     # Second group info
@@ -57,7 +57,7 @@ def view(request, event_id):
     if selected_event.numGroups == 2:
         group2_participants = group2.get_registered_participants_accounts()
         group2_filled_count = group2_participants.count()
-        group2_filled_percentage = float(group2_filled_count) / selected_event.maxParticipantsInGroup * 100
+        group2_filled_percentage = round(float(group2_filled_count) / selected_event.maxParticipantsInGroup * 100)
 
     # Check if user can join each group
     if request.user.is_authenticated and request.user is not None:
@@ -183,8 +183,8 @@ class CreateEventWizard(SessionWizardView):
         point = Point(x=0, y=0, srid=4326)
 
         if lat and lng:
-            point.x = lat
-            point.y = lng
+            point.x = lng
+            point.y = lat
 
         num_participants = 0
         if all_data.get('numGroups') == 1:
@@ -198,6 +198,7 @@ class CreateEventWizard(SessionWizardView):
             creator=self.request.user,
             name=all_data.get('name'),
             type=all_data.get('type'),
+            size=all_data.get('eventSize'),
             startDateTime=start_date_time,
             locationName=all_data.get('locationName'),
             locationCoordinates=point,

@@ -1,6 +1,7 @@
 from datetime import timedelta
 
 from django.contrib.auth.models import User
+from django.contrib.gis.geos import Point
 from django.utils import timezone
 
 from account.models import Account
@@ -88,3 +89,24 @@ def make_event_one_group():
     group1.add_participant(user5)
 
     print('Event created: ' + str(event.id))
+
+
+def make_events(num=1):
+    product = Product.objects.get(short_code='smallevent')
+
+    creator = User.objects.get(username='admin')
+
+    for i in range(0, num):
+        event = Event(creator=creator, name='test event: ' + str(i), locationName='Toronto',
+                      locationCoordinates=Point(srid=4326, x=-79.38318429999998, y=43.653226),
+                      startDateTime=timezone.now() + timedelta(days=i),
+                      maxParticipantsInGroup=5, numGroups=2, product=product)
+        event.save()
+
+        group1 = EventGroup(event=event, sexualIdentity=EventGroup.MALE, ageMin=20, ageMax=60)
+        group1.save()
+
+        group2 = EventGroup(event=event, sexualIdentity=EventGroup.FEMALE, ageMin=20, ageMax=60)
+        group2.save()
+
+        print('Event created: ' + str(event.id))

@@ -120,18 +120,13 @@ class CreateEventStep2(forms.Form):
 
 # Number of groups
 class CreateEventStep3(forms.Form):
-    SIZE_CHOICES = {
+    SIZE_CHOICES = [
         (Event.SMALL, 'Small'),
         (Event.MEDIUM, 'Medium'),
         (Event.LARGE, 'Large')
-    }
+    ]
     numGroups = forms.IntegerField(widget=forms.HiddenInput())
     eventSize = forms.ChoiceField(choices=SIZE_CHOICES, initial=Event.MEDIUM)
-
-    def __init__(self, *args, **kwargs):
-        super(CreateEventStep3, self).__init__(*args, **kwargs)
-        sorted_choices = sorted(CreateEventStep3.SIZE_CHOICES, key=lambda x: x[0])
-        self.fields['eventSize'].choices = sorted_choices
 
 
 # Group details

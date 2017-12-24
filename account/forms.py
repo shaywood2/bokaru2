@@ -172,8 +172,8 @@ class AccountForm(ModelForm):
 
         if lat and lng:
             point = self.instance.locationCoordinates
-            point.x = lat
-            point.y = lng
+            point.x = lng
+            point.y = lat
 
         super(AccountForm, self).save(commit=commit)
 

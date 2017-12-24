@@ -1,7 +1,8 @@
 from django.conf import settings
 from django.conf.urls import url, include
+from django.conf.urls.static import static
 from django.contrib import admin
-from django.contrib.staticfiles.urls import staticfiles_urlpatterns
+
 
 from account.forms import RegistrationForm
 from account.views import RegistrationView
@@ -20,7 +21,4 @@ urlpatterns = [
         name='auth_register',
         ),
     url(r'^', include('registration.backends.hmac.urls')),
-]
-
-if settings.DEBUG:
-    urlpatterns += staticfiles_urlpatterns()
+] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

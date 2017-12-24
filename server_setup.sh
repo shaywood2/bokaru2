@@ -16,6 +16,12 @@ sudo apt-get install -y libjpeg8
 sudo apt-get install -y zlib1g
 sudo apt-get install -y zlib1g-dev libssl-dev python-dev build-essential
 
+# Install certificate dependencies
+sudo apt-get install -y software-properties-common
+sudo add-apt-repository -y ppa:certbot/certbot
+sudo apt-get update
+sudo apt-get install -y certbot
+
 # Upgrade pip and install Python dependencies
 sudo -H pip3 install --upgrade pip
 sudo -H pip3 install -r /usr/local/bokaru/requirements/common.txt

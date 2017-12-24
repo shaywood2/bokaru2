@@ -1,85 +1,468 @@
-{% extends 'web/base.html' %}
+{% extends 'web/base_nav.html' %}
 
 {% load staticfiles %}
+{% load widget_tweaks %}
+{% load event_tags %}
+{% load web_tags %}
 
+
+{% block title %}Bokaru | Search events{% endblock %}
+
+{% block nav_location %}nav_search{% endblock %}
 
 {% block header %}
+<script src="https://maps.googleapis.com/maps/api/js?libraries=places&key=AIzaSyBTwfHuVilarsPOOE4Opm4GaG9I2dfbyCw" type="text/javascript"></script>
 
-<link rel="stylesheet" href="{% static 'web/css/search.css' %}">
-
-
+<!-- Datepicker -->
+<link href="{% static 'web/vendor/datepicker/datepicker.min.css' %}" rel="stylesheet">
 {% endblock %}
-
 
 {% block content %}
 
+<form method="get">
+    <section class="dzsparallaxer auto-init height-is-based-on-content use-loading" data-options='{direction: "reverse", settings_mode_oneelement_max_offset: "150"}'>
+        <!-- Parallax Image -->
+        <div class="divimage dzsparallaxer--target w-100 g-bg-cover g-bg-white-gradient-opacity-v3--after" style="height: 140%; background-image: url(http://via.placeholder.com/1920x800);"></div>
+        <!-- End Parallax Image -->
 
+        <div class="container text-center g-py-80">
+            <h2 class="h1 text-uppercase g-font-weight-300 g-mb-30">Find an event near you</h2>
 
-
-<div class="container content-md">
-
-
-
-
-
-    <h2 class="heading-md search_title">Find Events Near You</h2>
-     <form method="POST">
-        <div class="row">
-            <div class="col-md-12 margin-bottom-40" style="text-align: center">
-
-                    {% csrf_token %}
-
-
-                <input type="text" id="id_search_term" name="search_term" class="search_input" placeholder="{{search_placeholder}}"></input>
-                <select id="id_distance" name="distance" class="distance_input"><option>Distance</option><option>5</option><option>10</option><option>20</option><option>50</option><option>100</option></select>
+            <!-- Search Form -->
+            <div class="g-width-60x--md mx-auto">
+                <div class="form-group g-mb-20">
+                    <div class="input-group u-shadow-v21 rounded g-mb-15">
+                        {% render_field form.cityName class="form-control form-control-md g-brd-white g-font-size-16 border-right-0 pr-0 g-py-15" placeholder="Enter a location" required=True %}
+                        {{ form.cityNameShort }}
+                        {{ form.cityLat }}
+                        {{ form.cityLng }}
+                        <div class="input-group-addon d-flex align-items-center g-bg-white g-brd-white g-color-gray-light-v1 g-pa-2">
+                            <button class="btn u-btn-primary g-font-size-16 g-py-15 g-px-20" type="submit">
+                                <i class="icon-magnifier g-pos-rel g-top-1"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                <div class="form-text g-opacity-0_8 g-font-size-default">
+                    Search distance:
+                    <div class="form-inline g-flex-centered">
+                        <div class="form-group g-flex-centered-item">
+                            <label for="id_distance" class="sr-only">search distance</label>
+                            {% render_field form.distance class="form-control form-control-sm rounded-0" %}
+                        </div>
+                        <div class="form-group g-flex-centered-item">
+                            <label for="id_distanceUnits" class="sr-only">search distance units</label>
+                            {% render_field form.distanceUnits class="form-control form-control-sm rounded-0" %}
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
+    </section>
 
-          <div class="row md-margin-bottom-80">
-            <div class="col-md-12 margin-bottom-80" style="text-align: center">
+    <section>
+        <div class="container">
+            <div class="row g-mt-50--md">
+                <!-- Sidebar -->
+                <div class="col-lg-3 g-pr-40--lg g-mb-50 g-pb-30 g-mb-0--lg">
 
+                    <h2 class="h5 text-uppercase g-color-gray-dark-v1">Keywords</h2>
+                    <hr class="g-brd-gray-light-v4 g-my-15">
+                    <div class="input-group">
+                        {% render_field form.search_term class="form-control form-control-md rounded-0" %}
+                        <span class="input-group-btn">
+                            <button class="btn btn-md u-btn-primary rounded-0" type="submit">
+                                 <i class="icon-magnifier g-pos-rel g-top-1"></i>
+                            </button>
+                        </span>
+                    </div>
 
+                    <!-- User parameters -->
+                    <h2 class="h5 text-uppercase g-color-gray-dark-v1 g-mt-30">I am a</h2>
+                    <hr class="g-brd-gray-light-v4 g-my-15">
+                    {{ form.age }}
+                    <div class="form-group g-mb-40">
+                        <label class="g-mb-10">
+                            <span class="g-color-primary"><span id="ageResult">{{ form.age.value }}</span></span> years old
+                        </label>
+                        <div id="ageSlider" class="u-slider-v1" data-result-container="ageResult" data-default="{{ form.age.value }}" data-min="18" data-max="120"></div>
+                    </div>
+                    {% render_field form.sexual_identity class="form-control rounded-0 u-form-control0 u-select-v1" %}
 
-                    <input type="submit" class="btn-u btn-u-lg btn-u-red" value="Search"/>
+                    <!-- Looking for -->
+                    <h2 class="h5 text-uppercase g-color-gray-dark-v1 g-mt-30">Looking for</h2>
+                    <hr class="g-brd-gray-light-v4 g-my-15">
 
+                    {{ form.lookingForGenderList }}
 
+                    <div class="form-group g-mb-10">
+                        <label class="u-check g-pl-30">
+                            <input class="g-hidden-xs-up g-pos-abs g-top-0 g-left-0" type="checkbox" data-list="lookingForGenderList" data-value="female">
+                            <span class="u-check-icon-checkbox-v4 g-absolute-centered--y g-left-0">
+                                <i class="fa" data-check-icon="&#xf00c"></i>
+                            </span>
+                            Woman
+                        </label>
+                    </div>
+
+                    <div class="form-group g-mb-10">
+                        <label class="u-check g-pl-30">
+                            <input class="g-hidden-xs-up g-pos-abs g-top-0 g-left-0" type="checkbox" data-list="lookingForGenderList" data-value="male">
+                            <span class="u-check-icon-checkbox-v4 g-absolute-centered--y g-left-0">
+                                <i class="fa" data-check-icon="&#xf00c"></i>
+                            </span>
+                            Man
+                        </label>
+                    </div>
+
+                    <div class="form-group g-mb-10">
+                        <label class="u-check g-pl-30">
+                            <input class="g-hidden-xs-up g-pos-abs g-top-0 g-left-0" type="checkbox" data-list="lookingForGenderList" data-value="other">
+                            <span class="u-check-icon-checkbox-v4 g-absolute-centered--y g-left-0">
+                                <i class="fa" data-check-icon="&#xf00c"></i>
+                            </span>
+                            Other
+                        </label>
+                    </div>
+
+                    {{ form.lookingForAgeMin }}
+                    {{ form.lookingForAgeMax }}
+                    <div class="form-group g-mb-40">
+                        <label class="g-mb-10">
+                            Between <span class="g-color-primary"><span id="ageRangeResult">{{ form.lookingForAgeMin.value }} - {{ form.lookingForAgeMax.value }}</span></span> years old
+                        </label>
+                        <div id="ageRangeSlider" class="u-slider-v1" data-result-container="ageRangeResult" data-range="1"
+                             data-default="{{ form.lookingForAgeMin.value }}, {{ form.lookingForAgeMax.value }}" data-min="18" data-max="120"></div>
+                    </div>
+
+                    <button class="btn btn-md u-btn-primary rounded-0" type="submit"><i class="icon-magnifier g-pos-rel g-top-1"></i> Search</button>
+
+                    <!-- Event types -->
+                    <h2 class="h5 text-uppercase g-color-gray-dark-v1 g-mt-30">Event types</h2>
+                    <hr class="g-brd-gray-light-v4 g-my-15">
+                    {{ form.eventTypeList }}
+                    <div class="form-group g-mb-10">
+                        <label class="u-check g-pl-30">
+                            <input class="g-hidden-xs-up g-pos-abs g-top-0 g-left-0" type="checkbox" data-list="eventTypeList" data-value="5">
+                            <span class="u-check-icon-checkbox-v4 g-absolute-centered--y g-left-0">
+                                <i class="fa" data-check-icon="&#xf00c"></i>
+                            </span>
+                            Marriage
+                        </label>
+                    </div>
+
+                    <div class="form-group g-mb-10">
+                        <label class="u-check g-pl-30">
+                            <input class="g-hidden-xs-up g-pos-abs g-top-0 g-left-0" type="checkbox" data-list="eventTypeList" data-value="1">
+                            <span class="u-check-icon-checkbox-v4 g-absolute-centered--y g-left-0">
+                                <i class="fa" data-check-icon="&#xf00c"></i>
+                            </span>
+                            Serious relationship
+                        </label>
+                    </div>
+
+                    <div class="form-group g-mb-10">
+                        <label class="u-check g-pl-30">
+                            <input class="g-hidden-xs-up g-pos-abs g-top-0 g-left-0" type="checkbox" data-list="eventTypeList" data-value="2">
+                            <span class="u-check-icon-checkbox-v4 g-absolute-centered--y g-left-0">
+                                <i class="fa" data-check-icon="&#xf00c"></i>
+                            </span>
+                            Casual dating
+                        </label>
+                    </div>
+
+                    <div class="form-group g-mb-10">
+                        <label class="u-check g-pl-30">
+                            <input class="g-hidden-xs-up g-pos-abs g-top-0 g-left-0" type="checkbox" data-list="eventTypeList" data-value="3">
+                            <span class="u-check-icon-checkbox-v4 g-absolute-centered--y g-left-0">
+                                <i class="fa" data-check-icon="&#xf00c"></i>
+                            </span>
+                            Casual hookup
+                        </label>
+                    </div>
+
+                    <div class="form-group g-mb-10">
+                        <label class="u-check g-pl-30">
+                            <input class="g-hidden-xs-up g-pos-abs g-top-0 g-left-0" type="checkbox" data-list="eventTypeList" data-value="4">
+                            <span class="u-check-icon-checkbox-v4 g-absolute-centered--y g-left-0">
+                                <i class="fa" data-check-icon="&#xf00c"></i>
+                            </span>
+                            Friendship
+                        </label>
+                    </div>
+
+                    <button class="btn btn-md u-btn-primary rounded-0" type="submit"><i class="icon-magnifier g-pos-rel g-top-1"></i> Search</button>
+
+                    <!-- Event types -->
+                    <h2 class="h5 text-uppercase g-color-gray-dark-v1 g-mt-30">Event sizes</h2>
+                    <hr class="g-brd-gray-light-v4 g-my-15">
+                    {{ form.eventSizeList }}
+                    <div class="form-group g-mb-10">
+                        <label class="u-check g-pl-30">
+                            <input class="g-hidden-xs-up g-pos-abs g-top-0 g-left-0" type="checkbox" data-list="eventSizeList" data-value="10">
+                            <span class="u-check-icon-checkbox-v4 g-absolute-centered--y g-left-0">
+                                <i class="fa" data-check-icon="&#xf00c"></i>
+                            </span>
+                            Small (up to 30 minutes)
+                        </label>
+                    </div>
+
+                    <div class="form-group g-mb-10">
+                        <label class="u-check g-pl-30">
+                            <input class="g-hidden-xs-up g-pos-abs g-top-0 g-left-0" type="checkbox" data-list="eventSizeList" data-value="20">
+                            <span class="u-check-icon-checkbox-v4 g-absolute-centered--y g-left-0">
+                                <i class="fa" data-check-icon="&#xf00c"></i>
+                            </span>
+                            Medium (up to 60 minutes)
+                        </label>
+                    </div>
+
+                    <div class="form-group g-mb-10">
+                        <label class="u-check g-pl-30">
+                            <input class="g-hidden-xs-up g-pos-abs g-top-0 g-left-0" type="checkbox" data-list="eventSizeList" data-value="30">
+                            <span class="u-check-icon-checkbox-v4 g-absolute-centered--y g-left-0">
+                                <i class="fa" data-check-icon="&#xf00c"></i>
+                            </span>
+                            Large (up to 90 minutes)
+                        </label>
+                    </div>
+
+                    <button class="btn btn-md u-btn-primary rounded-0" type="submit"><i class="icon-magnifier g-pos-rel g-top-1"></i> Search</button>
+
+                    <div class="form-group g-mt-30">
+                        <label class="d-flex align-items-center justify-content-between">
+                            <span>Show sold out events</span>
+                            <span class="u-check">
+                                {% render_field form.show_full class="g-hidden-xs-up g-pos-abs g-top-0 g-right-0" %}
+                                <span class="u-check-icon-radio-v7">
+                                    <i class="d-inline-block"></i>
+                                </span>
+                            </span>
+                        </label>
+                    </div>
+
+                    <button class="btn btn-md u-btn-primary rounded-0" type="submit"><i class="icon-magnifier g-pos-rel g-top-1"></i> Search</button>
+
+                    <!-- Start date -->
+                    <!--<h2 class="h5 text-uppercase g-color-gray-dark-v1 g-mt-30">Event Date</h2>-->
+                    <!--<hr class="g-brd-gray-light-v4 g-my-15">-->
+                    <!--{% render_field form.start_date data-toggle="datepicker" %}-->
+                    <!--<div id="datepicker-container"></div>-->
+                    <!--<a class="btn btn-sm u-btn-blue-grey rounded-0">Reset</a>-->
+                    <!--<button class="btn btn-md u-btn-primary rounded-0" type="submit"><i class="icon-magnifier g-pos-rel g-top-1"></i> Search</button>-->
+
+                    <!-- Sort By -->
+                    <!--<h2 class="h5 text-uppercase g-color-gray-dark-v1 g-mt-30">Sort By</h2>-->
+                    <!--<hr class="g-brd-gray-light-v4 g-my-15">-->
+                    <!--<div class="btn-group justified-content g-mb-40">-->
+                    <!--<label class="u-check">-->
+                    <!--<input class="g-hidden-xs-up g-pos-abs g-top-0 g-left-0" name="radGroupBtn1_1" type="radio" checked>-->
+                    <!--<span class="btn btn-block u-btn-outline-lightgray g-color-white&#45;&#45;checked g-bg-primary&#45;&#45;checked rounded-0">Start Date</span>-->
+                    <!--</label>-->
+                    <!--<label class="u-check">-->
+                    <!--<input class="g-hidden-xs-up g-pos-abs g-top-0 g-left-0" name="radGroupBtn1_1" type="radio">-->
+                    <!--<span class="btn btn-block u-btn-outline-lightgray g-color-white&#45;&#45;checked g-bg-primary&#45;&#45;checked g-brd-left-none&#45;&#45;md rounded-0">Relevance</span>-->
+                    <!--</label>-->
+                    <!--</div>-->
+
+                    <!--<button class="btn btn-md u-btn-primary rounded-0 g-mb-30" type="submit"><i class="icon-magnifier g-pos-rel g-top-1"></i> Search</button>-->
+                </div>
+
+                <!-- Search Results -->
+                <div class="col-lg-9">
+                    {% if form.cityNameShort.value %}
+                    <h1>{{ form.cityNameShort.value }} events</h1>
+                    {% endif %}
+                    <!-- Search Info -->
+                    <div class="d-md-flex justify-content-between g-mb-30">
+                        <h3 class="h6 text-uppercase g-mb-10 g-mb--lg">Found <span class="g-color-gray-dark-v1">{{ num_results }}</span> events</h3>
+                        <ul class="list-inline">
+                            <li class="list-inline-item g-mr-30">
+                                <a class="u-link-v5 {% if view_type == 'list' %}g-color-gray-dark-v1{% else %}g-color-gray-dark-v5 g-color-primary--hover{% endif %}"
+                                   href="{% set_query_string_param 'view_type' 'list' %}">
+                                    <i class="icon-list g-pos-rel g-top-1 g-mr-5"></i> List View
+                                </a>
+                            </li>
+                            <li class="list-inline-item">
+                                <a class="u-link-v5 {% if view_type == 'grid' %}g-color-gray-dark-v1{% else %}g-color-gray-dark-v5 g-color-primary--hover{% endif %}"
+                                   href="{% set_query_string_param 'view_type' 'grid' %}">
+                                    <i class="icon-grid g-pos-rel g-top-1 g-mr-5"></i> Grid View
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
+
+                    {% if view_type == 'grid' %}
+                    <div class="row">
+                        {% for event in search_result %}
+                        <div class="col-md-4 g-mb-40">
+                            {% render_event_small event %}
+                        </div>
+                        {% endfor %}
+                    </div>
+                    {% else %}
+                    <div class="row">
+                        {% for event in search_result %}
+                        <div class="col-md-12 g-mb-40">
+                            {% render_event_large event %}
+                        </div>
+                        {% endfor %}
+                    </div>
+                    {% endif %}
+
+                    <!-- Pagination -->
+                    {% if search_result.paginator.num_pages > 1 %}
+                    <nav class="text-center" aria-label="Page Navigation">
+                        <ul class="list-inline">
+                            {% if search_result.has_previous %}
+                            <li class="list-inline-item float-sm-left">
+                                <a class="u-pagination-v1__item u-pagination-v1-3 g-brd-2 g-pa-4-13" href="{% set_query_string_param 'page' search_result.previous_page_number %}"
+                                   aria-label="Previous">
+                                    <span aria-hidden="true">
+                                        <i class="fa fa-angle-left g-mr-5"></i>
+                                        Previous
+                                    </span>
+                                    <span class="sr-only">Previous</span>
+                                </a>
+                            </li>
+                            {% endif %}
+                            {% for page_num in page_range %}
+                            <li class="list-inline-item g-hidden-sm-down">
+                                <a class="u-pagination-v1__item u-pagination-v1-3 g-brd-2 g-pa-4-11 {% if page_num == search_result.number %}u-pagination-v1-3--active{% endif %}"
+                                   href="{% set_query_string_param 'page' page_num %}">{{ page_num }}</a>
+                            </li>
+                            {% endfor %}
+                            {% if search_result.has_next %}
+                            <li class="list-inline-item float-sm-right">
+                                <a class="u-pagination-v1__item u-pagination-v1-3 g-brd-2 g-pa-4-13" href="{% set_query_string_param 'page' search_result.next_page_number %}" aria-label="Next">
+                                    <span aria-hidden="true">
+                                        Next
+                                        <i class="fa fa-angle-right g-ml-5"></i>
+                                    </span>
+                                    <span class="sr-only">Next</span>
+                                </a>
+                            </li>
+                            {% endif %}
+                        </ul>
+                    </nav>
+                    {% endif %}
+                </div>
             </div>
         </div>
-      </form>
-
-
-
-
-<div class="row news-v1">
-
-                {% for event in search_result %}
-
-				<div class="col-md-4 md-margin-bottom-40">
-					<div class="news-v1-in">
-						<a href="{% url 'web:event_view' event.id %}"><img class="img-responsive" src="{% static 'web/theme/img/main/img11.jpg' %}" alt=""></a>
-
-						<h3><a href="{% url 'web:event_view' event.id %}">{{event.name}}</a></h3>
-						<p>{{event.description}}</p>
-						<ul class="list-inline news-v1-info">
-							<li><a href="#">{{event.locationName}}</a></li>
-							<li>|</li>
-							<li><i class="fa fa-clock-o"></i> {{event.startDateTime}}</li>
-							<li class="pull-right"><a href="#"><i class="fa fa-comments-o"></i> 14</a></li>
-						</ul>
-					</div>
-				</div>
-     {% endfor %}
-
-
-			</div>
-    </div>
+    </section>
+</form>
 {% endblock %}
 
-
 {% block javascript %}
+<!-- Datepicker -->
+<script src="{% static 'web/vendor/datepicker/datepicker.min.js' %}"></script>
 
-<script type="text/javascript"
-        src="{% static 'web/theme/plugins/cube-portfolio/cubeportfolio/js/jquery.cubeportfolio.min.js' %}"></script>
-<script type="text/javascript" src="{% static 'web/theme/js/plugins/cube-portfolio/cube-portfolio-2.js' %}"></script>
+<!-- jQuery UI Core -->
+<script src="{% static 'web/vendor/jquery-ui/ui/widget.js'%}"></script>
+<script src="{% static 'web/vendor/jquery-ui/ui/version.js'%}"></script>
+<script src="{% static 'web/vendor/jquery-ui/ui/keycode.js'%}"></script>
+<script src="{% static 'web/vendor/jquery-ui/ui/position.js'%}"></script>
+<script src="{% static 'web/vendor/jquery-ui/ui/unique-id.js'%}"></script>
+<script src="{% static 'web/vendor/jquery-ui/ui/safe-active-element.js'%}"></script>
 
+<!-- jQuery UI Helpers -->
+<script src="{% static 'web/vendor/jquery-ui/ui/widgets/menu.js'%}"></script>
+<script src="{% static 'web/vendor/jquery-ui/ui/widgets/mouse.js'%}"></script>
+
+<!-- jQuery UI Widgets -->
+<script src="{% static 'web/vendor/jquery-ui/ui/widgets/slider.js'%}"></script>
+
+<!-- JS Unify -->
+<script src="{% static 'web/js/components/hs.slider.js'%}"></script>
+
+<script>
+$(document).on('ready', function () {
+    // Init date picker
+    $('[data-toggle="datepicker"]').datepicker({format: 'yyyy-mm-dd', inline: true, container: '#datepicker-container'})
+
+    // Init age sliders
+    $.HSCore.components.HSSlider.init('#ageSlider, #ageRangeSlider');
+
+    let age = $('#id_age')
+
+    $('#ageSlider').slider({change: function( event, ui ) {
+        if (ui.handleIndex === 0) {
+            age.val(ui.value)
+        }
+    }})
+
+    let ageMin = $('#id_lookingForAgeMin')
+    let ageMax = $('#id_lookingForAgeMax')
+
+    $('#ageRangeSlider').slider({change: function( event, ui ) {
+        if (ui.handleIndex === 0) {
+            ageMin.val(ui.value)
+        } else if (ui.handleIndex === 1) {
+            ageMax.val(ui.value)
+        }
+    }})
+
+    // List functions
+    function initList(listName) {
+        let listElement = $('#id_' + listName)
+        if (listElement === undefined) {
+            return
+        }
+        let array = []
+        if (!!listElement.val()) {
+            array = listElement.val().split('|')
+        }
+
+        let checkboxes = $('[data-list="' + listName + '"]')
+
+        checkboxes.each(function() {
+            val = $(this).data("value").toString()
+            if (array.indexOf(val) >= 0) {
+                this.checked = true
+            } else {
+                this.checked = false
+            }
+        })
+
+        checkboxes.change(function() {
+            val = $(this).data("value").toString()
+            if (this.checked && array.indexOf(val) < 0) {
+                array.push(val)
+                listElement.val(array.join('|'))
+            } else if (!this.checked && array.indexOf(val) >= 0) {
+                let index = array.indexOf(val)
+                array.splice(index, 1)
+                listElement.val(array.join('|'))
+             }
+        })
+    }
+
+    initList('lookingForGenderList')
+    initList('eventTypeList')
+    initList('eventSizeList')
+})
+
+// Google maps script
+function initMap() {
+    let options = {
+        types: ['(cities)']
+    }
+
+    let input = document.getElementById('id_cityName')
+    let autocomplete = new google.maps.places.Autocomplete(input, options)
+
+    google.maps.event.addListener(autocomplete, 'place_changed', function () {
+        let place = autocomplete.getPlace()
+        document.getElementById('id_cityNameShort').value = place.name
+        document.getElementById('id_cityLat').value = place.geometry.location.lat()
+        document.getElementById('id_cityLng').value = place.geometry.location.lng()
+    })
+}
+
+google.maps.event.addDomListener(window, 'load', initMap);
+
+
+
+
+</script>
 {% endblock %}

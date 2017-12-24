@@ -37,7 +37,8 @@ Do this once:
     1. Start the interactive Python shell: `python3 /usr/local/bokaru/manage.py shell`
     2. Import the required module: `from chat import test_data`
     3. Create test events by running commands `test_data.make_event_two_groups()` and `test_data.make_event_one_group()`
-    4. Run command `exit()` to exit the shell
+    4. Create a large number of test events: `test_data.make_events(40)`
+    5. Run command `exit()` to exit the shell
 11. **Optional:** Run the tests:
     1. Change directory `cd /usr/local/bokaru/`
     2. Run all tests `python3 ./manage.py test`
@@ -47,7 +48,7 @@ Done!
 Using the production setup locally
 ----------------------------------
 1. Navigate to the [website](http://localhost/) on the host machine, the servers should be running
-2. If error happens, check the logs in folder `/usr/local/bokaru/logs/`
+2. If an error happens, check the Nginx logs in `/var/log/nginx/` or Gunicorn logs in `/var/log/gunicorn.log`
 
 Starting the development server
 -------------------------------
@@ -102,6 +103,11 @@ Static files
 Do this after adding new static files:
 
 Run the following command to collect and process the static files: `python3 /usr/local/bokaru/manage.py collectstatic --noinput`
+
+Minify CSS
+----------
+`sudo -H pip3 install css-html-js-minify`
+`css-html-js-minify.py /usr/local/bokaru/web/static/web/css/`
 
 New python dependencies
 -----------------------
