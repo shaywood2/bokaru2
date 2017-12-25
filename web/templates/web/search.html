@@ -77,6 +77,14 @@
                         </span>
                     </div>
 
+                    {% if request.user.is_authenticated %}
+                    <!-- User parameters -->
+                    <h2 class="h5 text-uppercase g-color-gray-dark-v1 g-mt-30">I am a</h2>
+                    <hr class="g-brd-gray-light-v4 g-my-15">
+                    <span class="g-color-primary">{{ form.age.value }}</span> years old <span class="g-color-primary">{{ sexual_identity_display }}</span>
+                    {{ form.age }}
+                    {% render_field form.sexual_identity class="g-hidden-xs-up" %}
+                    {% else %}
                     <!-- User parameters -->
                     <h2 class="h5 text-uppercase g-color-gray-dark-v1 g-mt-30">I am a</h2>
                     <hr class="g-brd-gray-light-v4 g-my-15">
@@ -88,6 +96,7 @@
                         <div id="ageSlider" class="u-slider-v1" data-result-container="ageResult" data-default="{{ form.age.value }}" data-min="18" data-max="120"></div>
                     </div>
                     {% render_field form.sexual_identity class="form-control rounded-0 u-form-control0 u-select-v1" %}
+                    {% endif %}
 
                     <!-- Looking for -->
                     <h2 class="h5 text-uppercase g-color-gray-dark-v1 g-mt-30">Looking for</h2>
@@ -278,21 +287,22 @@
                         <h3 class="h6 text-uppercase g-mb-10 g-mb--lg">Found <span class="g-color-gray-dark-v1">{{ num_results }}</span> events</h3>
                         <ul class="list-inline">
                             <li class="list-inline-item g-mr-30">
-                                <a class="u-link-v5 {% if view_type == 'list' %}g-color-gray-dark-v1{% else %}g-color-gray-dark-v5 g-color-primary--hover{% endif %}"
+                                <a class="u-link-v5 {% if form.view_type.value == 'list' %}g-color-gray-dark-v1{% else %}g-color-gray-dark-v5 g-color-primary--hover{% endif %}"
                                    href="{% set_query_string_param 'view_type' 'list' %}">
                                     <i class="icon-list g-pos-rel g-top-1 g-mr-5"></i> List View
                                 </a>
                             </li>
                             <li class="list-inline-item">
-                                <a class="u-link-v5 {% if view_type == 'grid' %}g-color-gray-dark-v1{% else %}g-color-gray-dark-v5 g-color-primary--hover{% endif %}"
+                                <a class="u-link-v5 {% if form.view_type.value == 'grid' %}g-color-gray-dark-v1{% else %}g-color-gray-dark-v5 g-color-primary--hover{% endif %}"
                                    href="{% set_query_string_param 'view_type' 'grid' %}">
                                     <i class="icon-grid g-pos-rel g-top-1 g-mr-5"></i> Grid View
                                 </a>
                             </li>
                         </ul>
+                        {{ form.view_type }}
                     </div>
 
-                    {% if view_type == 'grid' %}
+                    {% if form.view_type.value == 'grid' %}
                     <div class="row">
                         {% for event in search_result %}
                         <div class="col-md-4 g-mb-40">

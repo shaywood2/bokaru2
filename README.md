@@ -137,7 +137,7 @@ The deployment procedure for AWS server:
   3. `cd /usr/local/bokaru/`
   4. `git clone https://github.com/dpyryesk/bokaru2.git .`
   5. `cp env.template.json env.json`
-  6. `nano env.json` and update the production keys
+  6. `nano env.json` and **update the production keys**
   7. `chmod +x server_setup.sh`
   8. `./server_setup.sh`
 
@@ -147,3 +147,7 @@ Create Postgis extension in the database
 
 Renew SSL certificate
 `sudo certbot --nginx`
+
+Restart servers
+`sudo supervisorctl restart gunicorn`
+`sudo systemctl restart nginx`

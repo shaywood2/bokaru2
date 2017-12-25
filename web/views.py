@@ -46,15 +46,38 @@ def my_matches(request):
 
 
 def search(request):
+    sexual_identity_display = ''
     if request.user.is_authenticated:
         # Get user's preferences
         preferences = UserPreference.objects.get(user=request.user)
+        search_params = model_to_dict(preferences)
+        # Get user's account
+        account = Account.objects.get(user=request.user)
+        search_params['sexual_identity'] = account.sexualIdentity
+        search_params['age'] = account.age
+        sexual_identity_display = account.sexualIdentityDisplay
     else:
-        # Create default preferences
         preferences = UserPreference()
+        # Create default search parameters
+        search_params = {
+            'sexual_identity': 'female',
+            'age': 25,
+            'cityName': 'Toronto, ON, Canada',
+            'cityNameShort': 'Toronto',
+            'cityLat': 43.653226,
+            'cityLng': -79.3831843,
+            'distance': 50,
+            'distanceUnits': 'km',
+            'lookingForGenderList': '',
+            'lookingForAgeMin': 18,
+            'lookingForAgeMax': 120
+        }
 
-    # Get default search parameters
-    search_params = model_to_dict(preferences)
+    # Figure out view type
+    view_type = request.GET.get('view_type') or 'list'
+    page_size = 5
+    if view_type == 'grid':
+        page_size = 12
 
     # Get from from request
     if request.GET.get('cityName'):
@@ -65,27 +88,21 @@ def search(request):
             # Update search parameters from the form
             search_params = form.cleaned_data
     else:
-        form = SearchForm(instance=preferences)
-
-    if request.user.is_authenticated:
-        # Get user's account
-        account = Account.objects.get(user=request.user)
-        search_params['sexual_identity'] = account.sexualIdentity
-        search_params['age'] = account.age
-
-    # logger.info('Search for: ' + str(search_params))
+        form_defaults = {
+            'view_type': view_type,
+            'sexual_identity': search_params['sexual_identity'],
+            'age': search_params.get('age'),
+            'cityName': search_params.get('cityName'),
+            'cityNameShort': search_params.get('cityNameShort'),
+            'cityLat': search_params.get('cityLat'),
+            'cityLng': search_params.get('cityLng')
+        }
+        form = SearchForm(initial=form_defaults, instance=preferences)
 
     # Perform search
+    # logger.info('search: ' + str(search_params))
     search_result = Event.objects.search(**search_params)
     num_results = len(search_result)
-
-    # Figure out view type
-    view_type = request.GET.get('view_type')
-    page_size = 5
-    if not view_type:
-        view_type = 'list'
-    if view_type == 'grid':
-        page_size = 12
 
     # Apply pagination
     paginator = Paginator(search_result, page_size)
@@ -97,48 +114,7 @@ def search(request):
         'search_result': search_result,
         'num_results': num_results,
         'page_range': range(1, paginator.num_pages + 1),
-        'form': form
-    }
-
-    return render(request, 'web/search.html', context)
-
-
-def search_results(request):
-    search_result = []
-    num_results = 0
-    page_size = 5
-
-    if request.user.is_authenticated:
-        # Get user's preferences
-        preferences = UserPreference.objects.get(user=request.user)
-        form = SearchForm(request.GET, instance=preferences)
-    else:
-        form = SearchForm(request.GET)
-
-    if form.is_valid():
-        # Save updated preferences
-        if request.user.is_authenticated:
-            form.save()
-            logger.info('prefs saved')
-
-        if form.cleaned_data.get('view_type') == 'grid':
-            page_size = 12
-
-        # Perform search
-        search_result = Event.objects.search(**form.cleaned_data)
-        num_results = len(search_result)
-    else:
-        logger.error(form.errors)
-
-    # Apply pagination
-    paginator = Paginator(search_result, page_size)
-    page = request.GET.get('page')
-    search_result = paginator.get_page(page)
-
-    context = {
-        'search_result': search_result,
-        'num_results': num_results,
-        'page_range': range(1, paginator.num_pages + 1),
+        'sexual_identity_display': sexual_identity_display,
         'form': form
     }
 

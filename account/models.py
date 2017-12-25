@@ -188,6 +188,16 @@ class Account(models.Model):
         return elapsed_years
 
     @property
+    def sexualIdentityDisplay(self):
+        if self.sexualIdentity != '':
+            if self.sexualIdentity == 'other':
+                return 'Other gender: ' + str(self.sexualIdentityOther)
+            else:
+                return get_value(self.IDENTITY, self.sexualIdentity)
+
+        return ''
+
+    @property
     def basicInfo(self):
         result = []
 

@@ -19,7 +19,6 @@ from django.utils.functional import cached_property
 from django.utils.translation import ugettext_lazy as _
 from imagekit.models import ImageSpecField
 from pilkit.processors import ResizeToFill
-from django.db.models import Q
 
 from account.models import Account
 from money.models import Product
@@ -68,7 +67,7 @@ class EventManager(models.Manager):
             lng = kwargs.get('cityLng')
             distance = kwargs.get('distance')
             distance_units = kwargs.get('distanceUnits')
-            logger.info('distance: ' + str(distance))
+            # logger.info('distance: ' + str(distance))
             point = Point(x=lng, y=lat, srid=4326)
             radius = Distance(km=distance)
             if distance_units == 'mi':
@@ -80,7 +79,7 @@ class EventManager(models.Manager):
         if 'search_term' in kwargs:
             search_term = kwargs.get('search_term')
             if search_term:
-                logger.info('term: ' + search_term)
+                # logger.info('term: ' + search_term)
                 vector = SearchVector('name', weight='A') + SearchVector('description', weight='B')
                 query = get_query(search_term)
                 filter_query = filter_query.annotate(rank=SearchRank(vector, query)) \
@@ -91,12 +90,12 @@ class EventManager(models.Manager):
         # Search by event types
         event_type_list = kwargs.get('eventTypeList').split('|') if kwargs.get('eventTypeList') else []
         if len(event_type_list):
-            logger.info('event_type_list: ' + str(event_type_list))
+            # logger.info('event_type_list: ' + str(event_type_list))
             filter_query = filter_query.filter(type__in=event_type_list)
             # logger.info('found ' + str(len(filter_query)))
         event_size_list = kwargs.get('eventSizeList').split('|') if kwargs.get('eventSizeList') else []
         if len(event_size_list):
-            logger.info('event_size_list: ' + str(event_size_list))
+            # logger.info('event_size_list: ' + str(event_size_list))
             filter_query = filter_query.filter(size__in=event_size_list)
             # logger.info('found ' + str(len(filter_query)))
 
@@ -111,7 +110,6 @@ class EventManager(models.Manager):
         result = []
         for event in filter_query:
             # Filter out full events
-            # TODO: search by filled percentage
             if 'show_full' not in kwargs or kwargs.get('show_full') is False:
                 if event.filledPercentage == 100:
                     continue
@@ -464,7 +462,9 @@ class EventGroup(models.Model):
             if self.ageMin <= looking_for.get('ageMax') and looking_for.get('ageMin') <= self.ageMax:
                 if self.sexualIdentity == EventGroup.ANY \
                         or self.sexualIdentity == EventGroup.OTHER \
-                        or self.sexualIdentity == looking_for.get('sexualIdentity'):
+                        or self.sexualIdentity == looking_for.get('sexualIdentity') \
+                        or looking_for.get('sexualIdentity') is None \
+                        or looking_for.get('sexualIdentity') == '':
                     return True
 
         return False
