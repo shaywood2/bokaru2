@@ -3,11 +3,12 @@ import logging
 from django.contrib.auth.decorators import login_required
 from django.core.paginator import Paginator
 from django.forms.models import model_to_dict
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 
 from account.models import Account, UserPreference
 from event.models import Event, Pick
 from .forms import SearchForm
+from .models import Place
 
 # Get an instance of a logger
 logger = logging.getLogger(__name__)
@@ -24,10 +25,12 @@ def index(request):
 def my_events(request):
     future_events = Event.objects.get_all_future_by_user(request.user)
     past_events = Event.objects.get_all_past_by_user(request.user)
+    created_events = Event.objects.get_all_created_by_user(request.user)
 
     context = {
         'future_events': future_events,
-        'past_events': past_events
+        'past_events': past_events,
+        'created_events': created_events
     }
 
     return render(request, 'web/my_events.html', context)
@@ -72,6 +75,14 @@ def search(request):
             'lookingForAgeMin': 18,
             'lookingForAgeMax': 120
         }
+
+    # Set search location from place
+    if 'place' in request.session:
+        place = request.session.pop('place')
+        search_params['cityName'] = place['name']
+        search_params['cityNameShort'] = place['shortName']
+        search_params['cityLat'] = place['lat']
+        search_params['cityLng'] = place['lng']
 
     # Figure out view type
     view_type = request.GET.get('view_type') or 'list'
@@ -119,6 +130,17 @@ def search(request):
     }
 
     return render(request, 'web/search.html', context)
+
+
+def search_by_place(request, place_name):
+    # Look up the place by name
+    try:
+        place = Place.objects.get(slug__iexact=place_name)
+        request.session['place'] = model_to_dict(place)
+    except Place.DoesNotExist:
+        pass
+
+    return redirect('web:search')
 
 
 def terms_of_use(request):

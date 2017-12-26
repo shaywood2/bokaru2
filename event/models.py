@@ -159,6 +159,10 @@ class EventManager(models.Manager):
         return self.filter(eventgroup__eventparticipant__user=user).filter(
             startDateTime__lt=timezone.now()).order_by('-startDateTime')
 
+    # Get all past events that belong to the given user
+    def get_all_created_by_user(self, user):
+        return self.filter(creator=user).order_by('-startDateTime')
+
     # Get next event that the user is registered for
     def get_next(self, user):
         now = timezone.now()

@@ -232,31 +232,41 @@
 
             <!-- Footer Content -->
             <div class="col-lg-2 g-mb-30 g-mb-0--lg">
-                <h2 class="h6 g-color-white text-uppercase g-font-weight-700 g-mb-20">Useful Links</h2>
+                <h2 class="h6 g-color-white text-uppercase g-font-weight-700 g-mb-20">Search events</h2>
                 <ul class="list-unstyled mb-0">
                     <li class="d-flex align-items-baseline g-mb-12">
                         <i class="fa fa-angle-double-right g-mr-8"></i>
-                        <a class="g-color-white-opacity-0_6 g-color-white--hover" href="#">Blog</a>
+                        <a class="g-color-white-opacity-0_6 g-color-white--hover" href="{% url 'web:search_by_place' place_name='toronto' %}">Toronto</a>
                     </li>
                     <li class="d-flex align-items-baseline g-mb-12">
                         <i class="fa fa-angle-double-right g-mr-8"></i>
-                        <a class="g-color-white-opacity-0_6 g-color-white--hover" href="#">Support</a>
+                        <a class="g-color-white-opacity-0_6 g-color-white--hover" href="{% url 'web:search_by_place' place_name='ottawa' %}">Ottawa</a>
                     </li>
                     <li class="d-flex align-items-baseline g-mb-12">
                         <i class="fa fa-angle-double-right g-mr-8"></i>
-                        <a class="g-color-white-opacity-0_6 g-color-white--hover" href="#">Community</a>
+                        <a class="g-color-white-opacity-0_6 g-color-white--hover" href="{% url 'web:search_by_place' place_name='montreal' %}">Montréal</a>
                     </li>
                     <li class="d-flex align-items-baseline g-mb-12">
                         <i class="fa fa-angle-double-right g-mr-8"></i>
-                        <a class="g-color-white-opacity-0_6 g-color-white--hover" href="#">Pricing/Plans</a>
+                        <a class="g-color-white-opacity-0_6 g-color-white--hover" href="{% url 'web:search_by_place' place_name='new_york' %}">New York</a>
+                    </li>
+                </ul>
+            </div>
+
+            <div class="col-lg-2 g-mb-30 g-mb-0--lg">
+                <h2 class="h6 g-color-white text-uppercase g-font-weight-700 g-mb-20">Useful links</h2>
+                <ul class="list-unstyled mb-0">
+                    <li class="d-flex align-items-baseline g-mb-12">
+                        <i class="fa fa-angle-double-right g-mr-8"></i>
+                        <a class="g-color-white-opacity-0_6 g-color-white--hover" href="{% url 'web:search_by_place' place_name='toronto' %}">About Us</a>
                     </li>
                     <li class="d-flex align-items-baseline g-mb-12">
                         <i class="fa fa-angle-double-right g-mr-8"></i>
-                        <a class="g-color-white-opacity-0_6 g-color-white--hover" href="#">UI Freebies</a>
+                        <a class="g-color-white-opacity-0_6 g-color-white--hover" href="{% url 'web:terms_of_use' %}">Terms of Use</a>
                     </li>
-                    <li class="d-flex align-items-baseline">
+                    <li class="d-flex align-items-baseline g-mb-12">
                         <i class="fa fa-angle-double-right g-mr-8"></i>
-                        <a class="g-color-white-opacity-0_6 g-color-white--hover" href="#">Careers</a>
+                        <a class="g-color-white-opacity-0_6 g-color-white--hover" href="{% url 'web:privacy_policy' %}">Privacy Policy</a>
                     </li>
                 </ul>
             </div>
