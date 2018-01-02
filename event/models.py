@@ -23,7 +23,7 @@ from pilkit.processors import ResizeToFill
 from account.models import Account
 from money.models import Product
 
-logger = logging.getLogger(__name__)
+LOGGER = logging.getLogger(__name__)
 
 
 # Return a value from a tuple list by key
@@ -174,7 +174,7 @@ class EventManager(models.Manager):
         now = timezone.now()
         hour_from_now = now + timedelta(hours=1)
         hour_ago = now - timedelta(hours=1)
-        events = self.get_all_future_by_user(user).order_by('-startDateTime')
+        events = self.filter(eventgroup__eventparticipant__user=user).order_by('-startDateTime')
 
         for event in events:
             if event.startDateTime <= hour_from_now and event.endDateTime >= hour_ago:
@@ -260,7 +260,7 @@ class Event(models.Model):
     # Calculate end time
     @cached_property
     def endDateTime(self):
-        return self.startDateTime.date() + timedelta(
+        return self.startDateTime + timedelta(
             seconds=self.maxParticipantsInGroup * (self.dateDuration + self.breakDuration))
 
     @cached_property
@@ -344,38 +344,47 @@ class Event(models.Model):
 
     # Get number of hours until event start time
     def get_hours_until_start(self):
+        num_seconds = self.get_seconds_until_start()
+        return int(round(num_seconds / 3600, 0))
+
+    # Get number of seconds until the event's start time
+    def get_seconds_until_start(self):
         now = timezone.now()
         num_seconds = (self.startDateTime - now).total_seconds()
-        return int(round(num_seconds / 3600, 0))
+        return num_seconds
+
+    # Get number of seconds since the event's start time
+    def get_seconds_since_start(self):
+        now = timezone.now()
+        num_seconds = (now - self.startDateTime).total_seconds()
+        return num_seconds
 
     # Return true if the event is happening right now
     def is_in_progress(self):
-        now = timezone.now()
-        return self.startDateTime <= now <= self.endDateTime
+        seconds_since_start = self.get_seconds_since_start()
+        duration_in_seconds = self.duration * 60
+        return 0 < seconds_since_start < duration_in_seconds + 3600
 
     # Return true if the event is starting in the future (more than 1 hour from now)
     def is_in_future(self):
-        now = timezone.now()
-        hour_from_now = now + timedelta(hours=1)
-        return self.startDateTime >= hour_from_now
+        seconds_until_start = self.get_seconds_until_start()
+        return seconds_until_start >= 3600
 
     # Return true if the event is starting within one hour
     def is_starting_soon(self):
-        now = timezone.now()
-        hour_from_now = now + timedelta(hours=1)
-        return now <= self.startDateTime <= hour_from_now
+        seconds_until_start = self.get_seconds_until_start()
+        return 0 < seconds_until_start < 3600
 
     # Return true if the event is starting within one hour
     def is_starting_within_a_day(self):
-        now = timezone.now()
-        day_from_now = now + timedelta(days=1)
-        return now <= self.startDateTime <= day_from_now
+        seconds_until_start = self.get_seconds_until_start()
+        return seconds_until_start < 3600 * 24
 
     # Return true if the event has ended at most one hour ago
     def is_ended_recently(self):
-        now = timezone.now()
-        hour_ago = now - timedelta(hours=1)
-        return now >= self.endDateTime >= hour_ago
+        seconds_since_start = self.get_seconds_since_start()
+        duration_in_seconds = self.duration * 60
+        return duration_in_seconds < seconds_since_start < duration_in_seconds + 3600
 
     # Add a photo from a byte stream
     def add_photo(self, byte_stream, size=800, x=None, y=None, w=None, h=None):
@@ -599,6 +608,15 @@ class PickManager(models.Manager):
             if len(self.filter(picker=users_pick.picked, picked=user, event=event, response=Pick.YES)) > 0:
                 all_matches.append(users_pick.picked)
         return all_matches
+
+    def get_response(self, user, picked, event):
+        try:
+            p = self.get(picker=user, picked=picked, event=event)
+        except Pick.DoesNotExist:
+            p = Pick(picker=user, picked=picked, event=event, response=2)
+            p.save()
+
+        return p.response
 
     def pick(self, user, picked, event, response):
         # Check if the pick exists

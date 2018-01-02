@@ -1,0 +1,37 @@
+{% extends 'web/base.html' %}
+{% load staticfiles %}
+
+{% block main %}
+<!-- Owl banner -->
+<section class="g-py-20 g-mb-20 owl-background-repeat"></section>
+<!-- End Owl banner -->
+
+<main>
+    {% block content %}
+    {% endblock %}
+</main>
+
+<!-- Go To -->
+<a class="js-go-to u-go-to-v2" href="#" data-type="fixed" data-position='{
+     "bottom": 15,
+     "right": 15
+   }' data-offset-top="400" data-compensation="#js-header" data-show-effect="zoomIn">
+    <i class="fa fa-chevron-up"></i>
+</a>
+<!-- End Go To -->
+
+{% if time_until_reload %}
+<!-- Auto reload script -->
+<script type="text/javascript">
+    function reloadPage() {
+	    location.reload()
+	}
+    let reload_timeout = {{ time_until_reload }}
+
+    if (!!reload_timeout && reload_timeout > 0) {
+        setTimeout(reloadPage, reload_timeout * 1000)
+    }
+</script>
+<!-- End reload script -->
+{% endif %}
+{% endblock %}

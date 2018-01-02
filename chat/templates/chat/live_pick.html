@@ -1,0 +1,168 @@
+{% extends 'web/base_chat.html' %}
+
+{% load staticfiles %}
+{% load account_tags %}
+
+{% block title %}Bokaru | Live chat{% endblock %}
+
+{% block content %}
+<section>
+    <div class="container">
+        <!-- Pick buttons -->
+        <div class="row">
+            <div class="col-12 text-center g-my-50">
+                <h1>Was it a match?</h1>
+                <p>Your contact information will be shared with this user in the event that they select you as a match as well.</p>
+            </div>
+            <!-- Yay -->
+            <div class="col-6">
+                <div id="select_yes" class="u-shadow-v22 rounded-0 g-px-30 g-pb-30 g-mb-30 custom-radio text-center">
+                    <span class="u-icon-v3 g-bg-secondary g-color-primary g-rounded-5 g-pull-50x-up g-mb-5">
+                        <i class="fa fa-thumbs-o-up"></i>
+                    </span>
+                    <h3>YES</h3>
+                    <h5>I'd like to talk more!</h5>
+                </div>
+            </div>
+
+            <!-- Nay -->
+            <div class="col-6">
+                <div id="select_no" class="u-shadow-v22 rounded-0 g-px-30 g-pb-30 g-mb-30 custom-radio text-center">
+                    <span class="u-icon-v3 g-bg-secondary g-color-primary g-rounded-5 g-pull-50x-up g-mb-5">
+                        <i class="fa fa-thumbs-o-down"></i>
+                    </span>
+                    <h3>NO</h3>
+                    <h5>I'm going to pass</h5>
+                </div>
+            </div>
+        </div>
+        <!-- End pick buttons -->
+    </div>
+</section>
+
+<section>
+    <div class="container">
+        <div class="row">
+            <div class="col-12">
+                <!-- Countdown -->
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="progress g-mb-20">
+                            <div id="timer" class="progress-bar progress-bar-striped progress-bar-animated"
+                                 role="progressbar" style="width: 0%" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100"></div>
+                        </div>
+                    </div>
+                </div>
+                <!-- End Countdown -->
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-12">
+                {% render_profile_large account memo %}
+            </div>
+        </div>
+    </div>
+</section>
+{% csrf_token %}
+{% endblock %}
+
+{% block javascript %}
+<script type="text/javascript">
+$(document).on('ready', function () {
+    let csrftoken = $('[name=csrfmiddlewaretoken]').val()
+
+    var breakDuration = {{ event.breakDuration }}
+    var timeUntilReload = {{ time_until_reload }}
+    var seconds = 0
+
+    function updateTimer() {
+        let timer = $('#timer')
+        let secondsElapsed = breakDuration - timeUntilReload + seconds++
+        let progress = secondsElapsed / breakDuration * 100
+
+        let secondsLeft = Math.round(timeUntilReload) - seconds
+        let minutesLeft = (secondsLeft - secondsLeft % 60) / 60
+        secondsLeft = secondsLeft - minutesLeft * 60
+
+        let timeString = (minutesLeft+'').padStart(2,'0') + ':' + (secondsLeft+'').padStart(2,'0')
+
+        timer.css("width", progress + '%')
+        timer.html(timeString)
+    }
+
+    setInterval(updateTimer, 1000)
+
+    // Handle memo button clicks
+    $('.save_memo_button').click(function() {
+        user_id = $(this).data('user-id')
+        console.log(user_id)
+        let memo = $('.memo[data-user-id=' + user_id +']')
+        let saving = $('.saving[data-user-id=' + user_id +']')
+        console.log(memo.val())
+        let text = memo.val()
+        $.ajaxSetup({
+            headers: {
+                'X-CSRFToken': csrftoken
+            }
+        })
+        saving.show()
+        $.post('/memo/about/'+ user_id + '/', text, function() {
+            saving.hide()
+        })
+    })
+
+    // Handle pick buttons
+    let selectYes = $('#select_yes')
+    let selectNo = $('#select_no')
+
+    selectYes.click(function() {
+        selectYes.removeClass('custom-radio')
+        selectYes.addClass('custom-radio-active')
+
+        selectNo.removeClass('custom-radio-active')
+        selectNo.addClass('custom-radio')
+
+        submitAnswer(1)
+    })
+
+    selectNo.click(function() {
+        selectNo.removeClass('custom-radio')
+        selectNo.addClass('custom-radio-active')
+
+        selectYes.removeClass('custom-radio-active')
+        selectYes.addClass('custom-radio')
+
+        submitAnswer(0)
+    })
+
+    function handleAjaxError(jqXHR, textStatus, errorThrown) {
+        alert('We failed to save your choice, please refresh the page and try again!')
+    }
+
+    function submitAnswer(answer) {
+        var eventID = '{{event.id}}'
+        var pickID = '{{user.id}}'
+        $.ajaxSetup({
+            headers: {
+                'X-CSRFToken': csrftoken
+            },
+            error: handleAjaxError
+        })
+	    var url = '/chat/pick/target_user/' + pickID + '/event/' + eventID + '/response/' + answer + '/'
+
+        $.post(url)
+	}
+
+	// Show the previously selected pick response
+	pick_response = {{ pick_response }}
+
+	if (pick_response === 1) {
+        selectYes.removeClass('custom-radio')
+        selectYes.addClass('custom-radio-active')
+	} else if (pick_response === 0) {
+	    selectNo.removeClass('custom-radio')
+        selectNo.addClass('custom-radio-active')
+	}
+})
+</script>
+{% endblock %}

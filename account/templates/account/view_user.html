@@ -66,8 +66,10 @@
                             <textarea id="memo" class="form-control form-control-md rounded-0" rows="5"
                                       placeholder="Memo">{{memo}}</textarea>
                         </div>
-                        <button id="save_memo_button" class="btn btn-lg btn-block u-btn-primary rounded-0 g-py-12">Save memo</button>
-                        <small id="saving" style="display: none">Saving...</small>
+                        <button id="save_memo_button" class="btn btn-lg btn-block u-btn-primary rounded-0 g-py-12">
+                            Save memo
+                            <i class="fa fa-hourglass saving" style="display: none"></i>
+                        </button>
                         {% endif %}
                     </div>
                     {% endif %}
@@ -170,7 +172,6 @@
 {% endblock %}
 
 {% block javascript %}
-
 <script>
 $(document).on('ready', function () {
     let csrftoken = $('[name=csrfmiddlewaretoken]').val()
@@ -192,5 +193,4 @@ $(document).on('ready', function () {
     })
 })
 </script>
-
 {% endblock %}

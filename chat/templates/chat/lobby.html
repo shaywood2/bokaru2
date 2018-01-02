@@ -1,104 +1,131 @@
-{% extends 'web/base.html' %}
-
+{% extends 'web/base_chat.html' %}
 
 {% load staticfiles %}
+{% load event_tags %}
+{% load account_tags %}
 
-
-
-{% block header %}
-
-<link rel="stylesheet" href="{% static 'web/css/search.css' %}">
-
-
-{% endblock %}
-
+{% block title %}Bokaru | Live chat{% endblock %}
 
 {% block content %}
+<section>
+    <div class="container">
+        <div class="row g-min-height-50vh">
+            <div class="col-md-12">
+                <!-- Countdown -->
+                <div class="text-uppercase g-bg-gray-dark-v1 g-color-white text-center g-py-30 g-my-30">
+                    <h5 class="g-font-size-42">Event <span class="g-color-primary">{{ event.name }}</span> is starting in</h5>
+                    <div class="js-countdown u-countdown-v3 g-line-height-1_2 g-font-weight-300 g-color-white"
+                         data-end-date="{{ event.startDateTime|date:'Y/m/d H:i:00' }}"
+                         data-month-format="%m" data-days-format="%D" data-hours-format="%H"
+                         data-minutes-format="%M" data-seconds-format="%S">
 
-<!--=== Container Part ===-->
-<div class="container">
-    <div class="content">
-            <h2 class="heading-md search_title">Event starting soon!</h2>
+                        <div class="d-inline-block text-center g-mx-15 mb-3">
+                            <div class="js-cd-hours g-font-weight-500 g-font-size-36">00</div>
+                            <span class="g-color-gray-dark-v4 g-font-size-24">Hours</span>
+                        </div>
 
-    </div>
-</div>
-<!--=== End Container Part ===-->
+                        <div class="hidden-down d-inline-block align-top g-font-size-36">:</div>
 
+                        <div class="d-inline-block text-center g-mx-15 mb-3">
+                            <div class="js-cd-minutes g-font-weight-500 g-font-size-36">00</div>
+                            <span class="g-color-gray-dark-v4 g-font-size-24">Minutes</span>
+                        </div>
 
+                        <div class="hidden-down d-inline-block align-top g-font-size-36">:</div>
 
-
-
-
-
-
-<div class="container content profile">
-    <div class="row">
-
-        <!-- Profile Content -->
-        <div class="col-md-12">
-            <div class="profile-body">
-                <h2>Here are your dates:</h2>
-
-                </ul>
-
-                <!--Timeline-->
-                <ul class="timeline-v2">
-                    <li>
-                        <div class="">
-
-                            <div class="row">
-                            {% for date in dates %}
-                                {% if date.break != Nil and date.break == 'true' %}
-                                <div class="col-sm-6 margin-top-20">
-                                    <div class="profile-blog">
-
-
-                                        <div class="name-location">
-                                            <strong>Break: No date scheduled</strong>
-
-                                        </div>
-                                        <div class="clearfix margin-bottom-20"></div>
-
-
-
-                                    </div>
+                        <div class="d-inline-block text-center g-mx-15 mb-3">
+                            <div class="js-cd-seconds g-font-weight-500 g-font-size-36">00</div>
+                            <span class="g-color-gray-dark-v4 g-font-size-24">Seconds</span>
+                        </div>
+                    </div>
+                </div>
+                <!-- Countdown End -->
+            </div>
+            <div class="col-md-12 text-center g-my-50">
+                <h1>Your dates:</h1>
+                <p>Take a look at your dates' profiles while you wait for the event to start.</p>
+            </div>
+            <div class="col-md-12">
+                <ul class="row u-timeline-v2-wrap list-unstyled">
+                    {% for date in dates %}
+                    <li class="col-md-12 g-mb-40">
+                        <div class="row">
+                            <div class="col-md-3 text-md-right g-pt-20--md g-pr-40--md g-mb-20">
+                                <!-- User Image -->
+                                <div class="u-shadow-v1-3">
+                                    {% if date.is_break %}
+                                    <img class="img-fluid w-100" src="{% static 'web/images/break_image.jpg' %}"/>
+                                    {% elif date.account.photo is None or date.account.photo.name == '' %}
+                                    <img class="img-fluid w-100" src="{% static 'web/images/user_default_image.jpg' %}"/>
+                                    {% else %}
+                                    <img class="img-fluid w-100" src="{{ date.account.photoMedium.url }}"/>
+                                    {% endif %}
                                 </div>
+                            </div>
 
-                                {% else %}
-                                <div class="col-sm-6 margin-top-20">
-                                    <div class="profile-blog">
-                                        <img class="rounded-x" src="{% static 'web/theme/img/testimonials/img1.jpg' %}"
-                                             alt="">
-
-                                        <div class="name-location">
-                                            <strong>{{ date.fullName }}</strong>
-                                            <span><i class="fa fa-map-marker"></i><a href="#">California,</a> <a
-                                                    href="#">US</a></span>
-                                        </div>
-                                        <div class="clearfix margin-bottom-20"></div>
-                                        <p>{{date.summary}}</p>
-
-
-                                    </div>
+                            <!-- Timeline Content -->
+                            <div class="col-md-9 g-orientation-left g-pl-40--md">
+                                <!-- Timeline Dot -->
+                                <div class="g-hidden-sm-down u-timeline-v2__icon g-top-35">
+                                    <i class="d-block g-width-18 g-height-18 g-bg-white g-brd-around g-brd-3 g-brd-gray-light-v5 rounded-circle"></i>
                                 </div>
+                                <!-- End Timeline Dot -->
 
-                                {% endif %}
+                                <div class="g-pos-rel">
+                                    <!-- Timeline Arrow -->
+                                    <div class="g-hidden-sm-down u-triangle-inclusive-v1--right g-top-30 g-z-index-2">
+                                        <div class="u-triangle-inclusive-v1--right__back g-brd-gray-light-v4-right"></div>
+                                    </div>
+                                    <div class="g-hidden-md-up u-triangle-inclusive-v1--top g-left-20 g-z-index-2">
+                                        <div class="u-triangle-inclusive-v1--top__back g-brd-gray-light-v4-bottom"></div>
+                                    </div>
 
-                            {% endfor %}
-
-
-
+                                    {% if date.is_break %}
+                                    <article class="g-rounded-4 g-pa-15 g-my-10 profile">
+                                        <div class="row g-ml-0">
+                                            <div class="col-12 g-mb-0--md g-py-70--md">
+                                                <h3>Break</h3>
+                                                <p>No date scheduled</p>
+                                            </div>
+                                        </div>
+                                    </article>
+                                    {% else %}
+                                    {% render_profile_large date.account date.memo %}
+                                    {% endif %}
+                                </div>
                             </div>
                         </div>
                     </li>
-
-
-
+                    {% endfor %}
                 </ul>
-                <!--End Timeline-->
             </div>
         </div>
-        <!-- End Profile Content -->
     </div>
-</div>
+</section>
+{% csrf_token %}
+{% endblock %}
+
+{% block javascript %}
+<script>
+$(document).on('ready', function () {
+    let csrftoken = $('[name=csrfmiddlewaretoken]').val()
+
+    // Handle memo button clicks
+    $('.save_memo_button').click(function() {
+        user_id = $(this).data('user-id')
+        let memo = $('.memo[data-user-id=' + user_id +']')
+        let saving = $('.saving_memo[data-user-id=' + user_id +']')
+        let text = memo.val()
+        $.ajaxSetup({
+            headers: {
+                'X-CSRFToken': csrftoken
+            }
+        })
+        saving.show()
+        $.post('/memo/about/'+ user_id + '/', text, function() {
+            saving.hide()
+        })
+    })
+})
+</script>
 {% endblock %}

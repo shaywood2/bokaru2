@@ -104,6 +104,26 @@
 <!-- End Owl banner -->
 
 <!-- Message Bar -->
+{% if request.current_event and not request.path == '/chat/'%}
+<section class="g-bg-primary g-color-white g-pa-30 g-mb-20 u-shadow-v1-5">
+    <div class="d-md-flex justify-content-md-center text-center">
+        <div class="align-self-md-center">
+            <p class="lead g-font-weight-400 g-mr-20--md g-mb-15 g-mb-0--md">
+                {% if request.current_event.is_starting_soon %}
+                An event {{ request.current_event.name }} is starting really soon!
+                {% elif request.current_event.is_ended_recently %}
+                An event {{ request.current_event.name }} just ended, don't forget to take a look at the results!
+                {% else %}
+                An event {{ request.current_event.name }} is in progress right now!
+                {% endif %}
+            </p>
+        </div>
+        <div class="align-self-md-center">
+            <a class="btn btn-md u-btn-white" href="{% url 'chat:live_event' %}">Join the event!</a>
+        </div>
+    </div>
+</section>
+{% endif %}
 {% if request.session.profile_incomplete and not request.path == '/profile/edit' %}
 <section class="g-bg-primary g-color-white g-pa-30 g-mb-20 u-shadow-v1-5">
     <div class="d-md-flex justify-content-md-center text-center">

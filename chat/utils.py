@@ -1,34 +1,60 @@
-import datetime
 import logging
 import math
 import random
+import sys
 
-from django.contrib.auth.models import User
-from django.core.cache import cache
-from django.utils.timezone import utc
+from django.conf import settings
+from django.utils import timezone
+from django.utils.crypto import get_random_string
+from opentok import OpenTok
 
 from account.models import Account
-from event.models import Event
 from account.models import Memo
+from .models import Conversation
+
+api_key = settings.TOKBOX_KEY
+api_secret = settings.TOKBOX_SECRET
 
 LOGGER = logging.getLogger(__name__)
+IS_TESTING = sys.argv[1:2] == ['test']
+
+
+# Function to generate conversations for all participants in the event
+def generate_conversations(event):
+    event_groups = list(event.eventgroup_set.all())
+    opentok_api = OpenTok(api_key, api_secret)
+
+    # Generate a date matrix for the event
+    if event.numGroups == 1:
+        # Get group participants
+        group = []
+        for participant in event_groups[0].get_registered_participants():
+            group.append(participant.user)
+
+        __generate_conversations_one_group(event, group, opentok_api)
+    elif event.numGroups == 2:
+        # Get group a participants
+        group_a = []
+        for participant in event_groups[0].get_registered_participants():
+            group_a.append(participant.user)
+
+        # Get group b participants
+        group_b = []
+        for participant in event_groups[1].get_registered_participants():
+            group_b.append(participant.user)
+
+        # Generate the matrix
+        __generate_conversations_two_groups(event, group_a, group_b, opentok_api)
 
 
 # Function to generate a matrix of dates based on two lists of participants
-def generate_date_matrix_two_groups(group_a, group_b):
+def __generate_conversations_two_groups(event, group_a, group_b, opentok_api):
     # Get the maximum number of participants
     size = max(len(group_a), len(group_b))
 
-    # Add all participants to the matrix
-    result = {}
-    for participant in group_a:
-        result[participant] = {}
-    for participant in group_b:
-        result[participant] = {}
-
     # Pad the groups to be the same size
-    group_a += [''] * (size - len(group_a))
-    group_b += [''] * (size - len(group_b))
+    group_a += [None] * (size - len(group_a))
+    group_b += [None] * (size - len(group_b))
 
     # Shuffle the groups to randomize empty spaces
     random.shuffle(group_a)
@@ -41,22 +67,17 @@ def generate_date_matrix_two_groups(group_a, group_b):
             participant_b_index = (participant_a_index + step_number) % size
             participant_b = group_b[participant_b_index]
 
-            # Add the pairings to the matrix
-            if participant_a != '':
-                result[participant_a][step_number] = participant_b
-            if participant_b != '':
-                result[participant_b][step_number] = participant_a
-
-    return result
+            # Create the conversations
+            __create_conversation_pair(event, participant_a, participant_b, step_number, opentok_api)
 
 
 # Function to generate a matrix of dates based on one list of participants
-def generate_date_matrix_one_group(group):
+def __generate_conversations_one_group(event, group, opentok_api):
     size = len(group)
     # Pad the group to have even number of participants
     if size % 2 == 1:
         size += 1
-        group += ['']
+        group += [None]
 
     # Shuffle the group to randomize empty space
     random.shuffle(group)
@@ -78,154 +99,138 @@ def generate_date_matrix_one_group(group):
 
         group.insert(1, group.pop())
 
-    # Add all participants to the result matrix
-    result = {}
-    for participant in group:
-        result[participant] = {}
-
     round_number = 0
-    for round_ in round_robin:
-        for match in round_:
-            # Add the pairings to the matrix
-            result[match[0]][round_number] = match[1]
-            result[match[1]][round_number] = match[0]
+    for rnd in round_robin:
+        for match in rnd:
+            # Create the conversations
+            __create_conversation_pair(event, match[0], match[1], round_number, opentok_api)
         round_number += 1
 
-    return result
 
-
-# Get the date matrix for the specified event
-def get_date_matrix(event_id):
-    result = cache.get(str(event_id))
-
-    # Check if the matrix was cached
-    if result is not None:
-        LOGGER.debug('Cache hit for event id ' + str(event_id))
-        return result
-
-    LOGGER.debug('Generating a date matrix for event ' + str(event_id))
-
-    # Get the event
-    event = Event.objects.get(pk=event_id)
-    event_groups = list(event.eventgroup_set.all())
-
-    if event.numGroups == 1:
-        # Get group participants
-        group = []
-        for participant in event_groups[0].get_registered_participants():
-            group.append(participant.user.id)
-
-        result = generate_date_matrix_one_group(group)
-    elif event.numGroups == 2:
-        # Get group a participants
-        group_a = []
-        for participant in event_groups[0].get_registered_participants():
-            group_a.append(participant.user.id)
-
-        # Get group b participants
-        group_b = []
-        for participant in event_groups[1].get_registered_participants():
-            group_b.append(participant.user.id)
-
-        # Generate the matrix
-        result = generate_date_matrix_two_groups(group_a, group_b)
-    else:
-        result = {}
-
-    # Store the matrix in cache for 2 hours
-    cache.set(str(event_id), result, 60 * 60 * 2)
-
-    return result
-
-
-def get_user_dates(user_id, event_id):
-    date_matrix = get_date_matrix(event_id)
-    if user_id in date_matrix:
-        result = {}
-        for date_num in date_matrix[user_id]:
-            date = date_matrix[user_id][date_num]
-            # Check if the date is a gap
-            if date == '':
-                result[date_num] = {'break': 'true', 'fullName': 'wait', 'username': 'wait', 'id': -1}
-            else:
-                # Get user
-                user = User.objects.get(pk=int(date))
-                account = Account.objects.get(user=user)
-                result[date_num] = {'fullName': account.fullName, 'username': user.username, 'id': user.id,
-                                    'summary': account.summary}
-
-        return result
-    else:
+# Create the session for the conversation
+def __create_session(opentok_api, user1, user2):
+    if user1 is None and user2 is None:
         return None
+
+    # Create the session for the conversation
+    if IS_TESTING:
+        return get_random_string(length=32)
+    else:
+        # Create a session that attempts to send streams directly between clients (falling back
+        # to use the OpenTok TURN server to relay streams if the clients cannot connect):
+        session = opentok_api.create_session()
+        # A session that uses the OpenTok Media Router, which is required for archiving
+        # session = opentok_api.create_session(media_mode=MediaModes.routed, archive_mode=ArchiveModes.always)
+        return session.session_id
+
+
+def __create_conversation_pair(event, user1, user2, order, opentok_api):
+    session_id = __create_session(opentok_api, user1, user2)
+
+    if user1:
+        account = None
+        memo = None
+        if user2:
+            account = Account.objects.get(user=user2)
+            memo = Memo.objects.get_or_create_memo(user1, user2)
+
+        conversation = Conversation(event=event, user=user1, order=order, sessionID=session_id,
+                                    interlocutorUser=user2, interlocutorAccount=account, interlocutorMemo=memo)
+        conversation.save()
+
+    if user2:
+        account = None
+        memo = None
+        if user1:
+            account = Account.objects.get(user=user1)
+            memo = Memo.objects.get_or_create_memo(user2, user1)
+
+        conversation = Conversation(event=event, user=user2, order=order, sessionID=session_id,
+                                    interlocutorUser=user1, interlocutorAccount=account, interlocutorMemo=memo)
+        conversation.save()
+
+
+# Get all dates for the given user in the given event
+def get_user_dates(user, event):
+    conversations = Conversation.objects.filter(event=event, user=user).order_by('order')
+    result = []
+    for conversation in conversations:
+        if conversation.interlocutorUser:
+            date = {
+                'is_break': False,
+                'order': conversation.order,
+                'user': conversation.interlocutorUser,
+                'account': conversation.interlocutorAccount,
+                'memo': conversation.interlocutorMemo,
+                'sessionID': conversation.sessionID
+            }
+        else:
+            date = {
+                'is_break': True,
+                'order': conversation.order,
+                'user': None,
+                'account': None,
+                'memo': None,
+                'sessionID': None
+            }
+
+        result.append(date)
+
+    logging.info('dates ' + str(result))
+
+    return result
 
 
 # Based on the timing of the event and the provided user, calculate the person they are supposed to talk to now
-def get_current_date(user_id, event_id):
-    try:
-        # Try to find the event
-        # TODO: cache the event object since it should be immutable during the date
-        event = Event.objects.get(pk=event_id)
-        # Get the time
-        now = datetime.datetime.utcnow().replace(tzinfo=utc)
-        # Check if the event is in progress
-        if event.startDateTime > now or event.endDateTime < now:
-            return None
-        # Get the date matrix
-        date_matrix = get_date_matrix(event_id)
-        # Get number of seconds since the event's start
-        time_diff = now - event.startDateTime
-        time_diff_seconds = time_diff.seconds
-        # Get the duration of a date
-        date_and_break_duration = event.dateDuration + event.breakDuration
-        # Get the number of the current date based on the time elapsed since event's start
-        date_num = math.floor(time_diff_seconds / date_and_break_duration)
-        # Get time passed since the date started
-        time_passed = time_diff_seconds % date_and_break_duration
-        # Is date active or on a break
-        is_active = time_passed < event.dateDuration
-        # Calculate the time until reload must happen
-        time_until_reload = (event.dateDuration - time_passed) * 1000
-        if not is_active:
-            time_until_reload = (date_and_break_duration - time_passed) * 1000
-
-        # Check if the date number is not in the matrix
-        if date_num not in date_matrix[user_id]:
-            return None
-
-        # Get the paired user based on the date matrix
-        date = date_matrix[user_id][date_num]
-        # Check if the date is a gap
-        if date == '':
-            return {'is_empty_slot': True, 'fullName': 'wait', 'username': 'wait', 'id': -1, 'time_passed': time_passed,
-                    'is_active': is_active, 'time_until_reload': time_until_reload}
-
-        # Get the user
-        user = User.objects.get(pk=int(date))
-        # Get the user's account
-        account = Account.objects.get(user=user)
-
-        memo = Memo.objects.get(owner=user_id, about=user.id)
-
-        return {'is_empty_slot': False, 'account': account, 'fullName': account.fullName, 'username': user.username, 'id': user.id,
-                'time_passed': time_passed, 'is_active': False, 'time_until_reload': time_until_reload, 'memo': memo.content}
-
-    except Event.DoesNotExist:
+def get_current_date(user, event):
+    # Get the time
+    now = timezone.now()
+    # Check if the event is in progress
+    if event.startDateTime > now or event.endDateTime < now:
         return None
+    # Get number of seconds since the event's start
+    time_diff = now - event.startDateTime
+    time_diff_seconds = time_diff.total_seconds()
+    # Get the duration of a date
+    date_and_break_duration = event.dateDuration + event.breakDuration
+    # Get the number of the current date based on the time elapsed since event's start
+    date_num = math.floor(time_diff_seconds / date_and_break_duration)
+    # Get time passed since the date started
+    time_passed = time_diff_seconds % date_and_break_duration
+    # Is date active or on a break
+    is_active = time_passed < event.dateDuration
+    # Calculate the time until reload must happen
+    time_until_reload = event.dateDuration - time_passed
+    if not is_active:
+        time_until_reload = date_and_break_duration - time_passed
 
+    # Find conversation object
+    try:
+        conversation = Conversation.objects.get(event=event, user=user, order=date_num)
 
-# Make a key for a message by combining user IDs
-def make_message_key(sender_id, receiver_id):
-    return str(sender_id) + ':' + str(receiver_id)
-
-
-# Send a message from sender to receiver user by storing it in the cache
-def send_message(sender_id, receiver_id, message):
-    key = make_message_key(sender_id, receiver_id)
-    cache.set(key, message, 60 * 15)
-
-
-# Get a message from a sender to the receiver by checking the cache
-def get_message(receiver_id, sender_id):
-    key = make_message_key(sender_id, receiver_id)
-    result = cache.get(key)
-    return result
+        if conversation.interlocutorUser:
+            return {
+                'is_break': False,
+                'is_active': is_active,
+                'user': conversation.interlocutorUser,
+                'account': conversation.interlocutorAccount,
+                'memo': conversation.interlocutorMemo,
+                'sessionID': conversation.sessionID,
+                'time_passed': time_passed,
+                'time_until_reload': time_until_reload,
+                'conversationID': conversation.id
+            }
+        else:
+            return {
+                'is_break': True,
+                'is_active': is_active,
+                'user': None,
+                'account': None,
+                'memo': None,
+                'sessionID': None,
+                'time_passed': time_passed,
+                'time_until_reload': date_and_break_duration - time_passed,
+                'conversationID': conversation.id
+            }
+    except Conversation.DoesNotExist:
+        return None

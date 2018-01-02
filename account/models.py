@@ -402,18 +402,27 @@ class MemoManager(models.Manager):
 
         return self.create_or_update_memo(owner, about, content)
 
+    def get_or_create_memo(self, owner, about):
+        try:
+            m = self.get(owner=owner, about=about)
+        except Memo.DoesNotExist:
+            m = Memo(owner=owner, about=about, content=None)
+            m.save()
+
+        return m
+
     def get_memo_content(self, owner, about):
         try:
             m = self.get(owner=owner, about=about)
             return str(m.content)
         except Memo.DoesNotExist:
-            return ''
+            return None
 
 
 class Memo(models.Model):
     owner = models.ForeignKey(settings.AUTH_USER_MODEL, related_name='owner', on_delete=models.PROTECT)
     about = models.ForeignKey(settings.AUTH_USER_MODEL, related_name='about', on_delete=models.PROTECT)
-    content = models.TextField(max_length=2000, blank=True)
+    content = models.TextField(max_length=2000, blank=True, null=True)
 
     # Automatic timestamps
     created = models.DateTimeField(auto_now_add=True)
@@ -423,4 +432,4 @@ class Memo(models.Model):
     objects = MemoManager()
 
     def __str__(self):
-        return str(self.owner) + ' (' + str(self.about) + '): ' + self.content
+        return str(self.owner) + ' (' + str(self.about) + '): ' + str(self.content)

@@ -1,133 +1,181 @@
-# from opentok import OpenTok, MediaModes, OutputModes
+import logging
 
 from django.conf import settings
 from django.contrib.auth.decorators import login_required
+from django.core.cache import cache
 from django.http import JsonResponse
 from django.shortcuts import render
+from django.utils import timezone
+from opentok import OpenTok
 
-from chat import utils
 from event.models import Event, Pick
+from .models import Conversation
+from .utils import generate_conversations, get_current_date, get_user_dates
 
 api_key = settings.TOKBOX_KEY
 api_secret = settings.TOKBOX_SECRET
 
+# Get an instance of a logger
+LOGGER = logging.getLogger(__name__)
 
-# Initialize API
-# opentok = OpenTok(api_key, api_secret)
-# Create a shared session
-# session = opentok.create_session(media_mode=MediaModes.routed)
+
+# TODO: Temp method, delete later
+def generate(request, event_id):
+    start = timezone.now()
+    event = Event.objects.get(pk=event_id)
+    generate_conversations(event)
+    runtime = timezone.now() - start
+    return JsonResponse({'ok': True, 'runtime': runtime.total_seconds()})
+
+
+# TODO: Temp method, delete later
+def get_dates(request, event_id):
+    event = Event.objects.get(pk=event_id)
+    dates = []
+    for date in get_user_dates(request.user, event):
+        dates.append({
+            'order': date.get('order'),
+            'user': str(date.get('user')),
+            'sessionID': date.get('sessionID')
+        })
+    return JsonResponse({'dates': dates})
+
 
 @login_required
 def live_event(request):
-
     # Get the current event
     event = Event.objects.get_current(request.user)
 
     if event is None:
-        event = Event.objects.get_next(request.user)
+        next_event = Event.objects.get_next(request.user)
 
-        return render(request, 'chat/no_live.html', {'event': event})
+        return render(request, 'chat/no_live.html', {'next_event': next_event})
 
     if event.is_in_progress():
-
         # Get current date
-        date = utils.get_current_date(request.user.id, event.id)
-
-        context = {
-            'event': event,
-            'date': date
-        }
+        date = get_current_date(request.user, event)
 
         if date is None:
             # No next date, the event should be over
-            # TODO: get results
-            picks = Pick.objects.get_all_matches_by_user_and_event(request.user, event)
+            matches = Pick.objects.get_all_matches_by_user_and_event(request.user, event)
 
             context = {
                 'event': event,
-                'picks': picks,
+                'matches': matches
             }
             return render(request, 'chat/post_live.html', context)
 
-        if date['is_active']:
-            return render(request, 'chat/live.html', context)
-        else:
+        if date.get('is_break'):
+            context = {
+                'event': event,
+                'is_break': True,
+                'time_passed': date.get('time_passed'),
+                'time_until_reload': date.get('time_until_reload')
+            }
+
             return render(request, 'chat/live_break.html', context)
 
-    if event.is_starting_soon():
-        dates = utils.get_user_dates(request.user.id, event.id)
-        date_list = []
+        if date.get('is_active'):
+            # Chat is in progress
+            # Create a token
+            opentok = OpenTok(api_key, api_secret)
+            connection_metadata = 'username=' + request.user.username + ',eventId=' + str(event.id)
+            token = opentok.generate_token(date.get('sessionID'), data=connection_metadata)
+            LOGGER.info('created token: ' + str(token))
 
-        for k, v in dates.items():
-            date_list.append(v)
+            # Mark conversation as token requested
+            Conversation.objects.mark_token_requested(date.get('conversationID'))
+
+            context = {
+                'event': event,
+                'is_break': False,
+                'is_active': True,
+                'user': date.get('user'),
+                'account': date.get('account'),
+                'memo': date.get('memo'),
+                'sessionID': date.get('sessionID'),
+                'token': token,
+                'tokbox_api_key': api_key,
+                'time_passed': date.get('time_passed'),
+                'time_until_reload': date.get('time_until_reload')
+            }
+
+            return render(request, 'chat/live.html', context)
+        else:
+            # Making a pick
+            # Look up the previous pick result for the same pair and event
+            pick_response = Pick.objects.get_response(request.user, date.get('user'), event)
+
+            context = {
+                'event': event,
+                'is_break': False,
+                'is_active': False,
+                'user': date.get('user'),
+                'account': date.get('account'),
+                'memo': date.get('memo'),
+                'time_passed': date.get('time_passed'),
+                'time_until_reload': date.get('time_until_reload'),
+                'pick_response': pick_response
+            }
+
+            return render(request, 'chat/live_pick.html', context)
+
+    if event.is_starting_soon():
+        dates = get_user_dates(request.user, event)
 
         context = {
             'event': event,
-            'dates': date_list
+            'dates': dates,
+            'time_until_reload': event.get_seconds_until_start()
         }
 
         return render(request, 'chat/lobby.html', context)
 
     if event.is_ended_recently():
-
-        # TODO: get results
-
-        picks = Pick.objects.get_all_matches_by_user_and_event(request.user, event)
+        matches = Pick.objects.get_all_matches_by_user_and_event(request.user, event)
 
         context = {
             'event': event,
-            'picks': picks,
+            'matches': matches,
         }
 
         return render(request, 'chat/post_live.html', context)
 
 
-@login_required
-def session_create(request):
-    data = {
-        'apiKey': api_key,
-        'sessionId': '123',  # session.session_id,
-        'token': '456'  # opentok.generate_token(session.session_id)
+def live_event_test(request, user1, user2):
+    LOGGER.info('user ' + user1 + ' calls user ' + user2)
+    opentok = OpenTok(api_key, api_secret)
+
+    # Look up the session ID
+    key = '1' + '|' + str(user1) + '|' + str(user2)
+    session_id = cache.get(key)
+    if session_id is None:
+        key = '1' + '|' + str(user2) + '|' + str(user1)
+        session_id = cache.get(key)
+
+    # Create a session if it is missing
+    if session_id is None:
+        # Create a session that attempts to send streams directly between clients (falling back
+        # to use the OpenTok TURN server to relay streams if the clients cannot connect):
+        session = opentok.create_session()
+        # A session that uses the OpenTok Media Router, which is required for archiving
+        # session = opentok.create_session(media_mode=MediaModes.routed, archive_mode=ArchiveModes.always)
+        session_id = session.session_id
+        key = '1' + '|' + str(user1) + '|' + str(user2)
+        cache.set(key, session_id, 60 * 60 * 5)
+
+    # Create a token
+    connection_metadata = 'username=' + user1 + ',eventId=4'
+    token = opentok.generate_token(session_id, data=connection_metadata)
+    LOGGER.info('created token: ' + str(token))
+
+    context = {
+        'tokbox_api_key': api_key,
+        'sessionID': session_id or 'wait',
+        'token': token
     }
-    return JsonResponse(data)
 
-
-@login_required
-def token_create(request, session_id):
-    data = {
-        'token': '456'  # opentok.generate_token(session_id)
-    }
-    return JsonResponse(data)
-
-
-@login_required
-def get_user_dates(request, event_id):
-    result = utils.get_user_dates(request.user.id, event_id)
-    if result is not None:
-        return JsonResponse(result)
-    else:
-        return JsonResponse({})
-
-
-@login_required
-def get_upcoming_event(request):
-    event = Event.objects.get_current(request.user.id)
-    result = {}
-    if event is not None:
-        result = {'id': event.id, 'name': event.name, 'locationName': event.locationName,
-                  'description': event.description, 'startDateTime': event.startDateTime,
-                  'endDateTime': event.endDateTime, 'dateDuration': event.dateDuration,
-                  'breakDuration': event.breakDuration}
-    return JsonResponse(result)
-
-
-@login_required
-def get_current_date(request, event_id):
-    result = utils.get_current_date(request.user.id, event_id)
-    if result is not None:
-        return JsonResponse(result)
-    else:
-        return JsonResponse({})
+    return render(request, 'chat/test.html', context)
 
 
 @login_required
