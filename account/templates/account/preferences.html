@@ -34,10 +34,10 @@
             <h5>Preferred units (metric or imperial)</h5>
         </div>
         <div class="col-lg-6">
-            <div class="form-group g-mb-20 {% if form.units.errors %}u-has-error-v1{% endif %}">
-                {% render_field form.units class="form-control rounded-0 u-form-control0 u-select-v1" %}
-                {% if form.units.errors %}
-                <small class="form-control-feedback">{{form.units.errors}}</small>
+            <div class="form-group g-mb-20 {% if form.distanceUnits.errors %}u-has-error-v1{% endif %}">
+                {% render_field form.distanceUnits class="form-control rounded-0 u-form-control0 u-select-v1" %}
+                {% if form.distanceUnits.errors %}
+                <small class="form-control-feedback">{{form.distanceUnits.errors}}</small>
                 {% endif %}
             </div>
         </div>

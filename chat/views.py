@@ -65,56 +65,55 @@ def live_event(request):
             }
             return render(request, 'chat/post_live.html', context)
 
-        if date.get('is_break'):
+        if date.is_break:
             context = {
                 'event': event,
                 'is_break': True,
-                'time_passed': date.get('time_passed'),
-                'time_until_reload': date.get('time_until_reload')
+                'time_passed': date.time_passed,
+                'time_until_reload': date.time_until_reload
             }
 
             return render(request, 'chat/live_break.html', context)
 
-        if date.get('is_active'):
+        if date.is_active:
             # Chat is in progress
             # Create a token
             opentok = OpenTok(api_key, api_secret)
             connection_metadata = 'username=' + request.user.username + ',eventId=' + str(event.id)
-            token = opentok.generate_token(date.get('sessionID'), data=connection_metadata)
-            LOGGER.info('created token: ' + str(token))
+            token = opentok.generate_token(date.session_id, data=connection_metadata)
 
             # Mark conversation as token requested
-            Conversation.objects.mark_token_requested(date.get('conversationID'))
+            Conversation.objects.mark_token_requested(date.conversation_id)
 
             context = {
                 'event': event,
                 'is_break': False,
                 'is_active': True,
-                'user': date.get('user'),
-                'account': date.get('account'),
-                'memo': date.get('memo'),
-                'sessionID': date.get('sessionID'),
+                'user': date.user,
+                'account': date.account,
+                'memo': date.memo,
+                'sessionID': date.session_id,
                 'token': token,
                 'tokbox_api_key': api_key,
-                'time_passed': date.get('time_passed'),
-                'time_until_reload': date.get('time_until_reload')
+                'time_passed': date.time_passed,
+                'time_until_reload': date.time_until_reload
             }
 
             return render(request, 'chat/live.html', context)
         else:
             # Making a pick
             # Look up the previous pick result for the same pair and event
-            pick_response = Pick.objects.get_response(request.user, date.get('user'), event)
+            pick_response = Pick.objects.get_response(request.user, date.user, event)
 
             context = {
                 'event': event,
                 'is_break': False,
                 'is_active': False,
-                'user': date.get('user'),
-                'account': date.get('account'),
-                'memo': date.get('memo'),
-                'time_passed': date.get('time_passed'),
-                'time_until_reload': date.get('time_until_reload'),
+                'user': date.user,
+                'account': date.account,
+                'memo': date.memo,
+                'time_passed': date.time_passed,
+                'time_until_reload': date.time_until_reload,
                 'pick_response': pick_response
             }
 

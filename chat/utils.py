@@ -207,30 +207,30 @@ def get_current_date(user, event):
     # Find conversation object
     try:
         conversation = Conversation.objects.get(event=event, user=user, order=date_num)
+        details = ConversationDetails()
+        details.is_active = is_active
+        details.time_passed = time_passed
+        details.conversation_id = conversation.id
 
         if conversation.interlocutorUser:
-            return {
-                'is_break': False,
-                'is_active': is_active,
-                'user': conversation.interlocutorUser,
-                'account': conversation.interlocutorAccount,
-                'memo': conversation.interlocutorMemo,
-                'sessionID': conversation.sessionID,
-                'time_passed': time_passed,
-                'time_until_reload': time_until_reload,
-                'conversationID': conversation.id
-            }
+            details.is_break = False
+            details.user = conversation.interlocutorUser
+            details.account = conversation.interlocutorAccount
+            details.memo = conversation.interlocutorMemo
+            details.session_id = conversation.sessionID
+            details.time_until_reload = time_until_reload
         else:
-            return {
-                'is_break': True,
-                'is_active': is_active,
-                'user': None,
-                'account': None,
-                'memo': None,
-                'sessionID': None,
-                'time_passed': time_passed,
-                'time_until_reload': date_and_break_duration - time_passed,
-                'conversationID': conversation.id
-            }
+            details.is_break = True
+            details.user = None
+            details.account = None
+            details.memo = None
+            details.session_id = None
+            details.time_until_reload = date_and_break_duration - time_passed
+
+        return details
     except Conversation.DoesNotExist:
         return None
+
+
+class ConversationDetails:
+    pass

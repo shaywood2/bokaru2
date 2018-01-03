@@ -169,15 +169,16 @@ class EventManager(models.Manager):
         event = self.get_all_future_by_user(user).filter(startDateTime__gte=now).order_by('-startDateTime').first()
         return event
 
-    # Get the event that belongs to the user and is either starting in one hour, running now or ended up to one hour ago
+    # Get the event that belongs to the user and is either starting in one hour,
+    # is in progress now or ended up to half an hour ago
     def get_current(self, user):
         now = timezone.now()
         hour_from_now = now + timedelta(hours=1)
-        hour_ago = now - timedelta(hours=1)
+        half_hour_ago = now - timedelta(minutes=30)
         events = self.filter(eventgroup__eventparticipant__user=user).order_by('-startDateTime')
 
         for event in events:
-            if event.startDateTime <= hour_from_now and event.endDateTime >= hour_ago:
+            if event.startDateTime <= hour_from_now and event.endDateTime >= half_hour_ago:
                 return event
 
         return None
@@ -380,11 +381,11 @@ class Event(models.Model):
         seconds_until_start = self.get_seconds_until_start()
         return seconds_until_start < 3600 * 24
 
-    # Return true if the event has ended at most one hour ago
+    # Return true if the event has ended at most half an hour ago
     def is_ended_recently(self):
         seconds_since_start = self.get_seconds_since_start()
         duration_in_seconds = self.duration * 60
-        return duration_in_seconds < seconds_since_start < duration_in_seconds + 3600
+        return duration_in_seconds < seconds_since_start < duration_in_seconds + 1800
 
     # Add a photo from a byte stream
     def add_photo(self, byte_stream, size=800, x=None, y=None, w=None, h=None):

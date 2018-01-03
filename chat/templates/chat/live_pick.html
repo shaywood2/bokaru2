@@ -95,10 +95,8 @@ $(document).on('ready', function () {
     // Handle memo button clicks
     $('.save_memo_button').click(function() {
         user_id = $(this).data('user-id')
-        console.log(user_id)
         let memo = $('.memo[data-user-id=' + user_id +']')
-        let saving = $('.saving[data-user-id=' + user_id +']')
-        console.log(memo.val())
+        let saving = $('.saving_memo[data-user-id=' + user_id +']')
         let text = memo.val()
         $.ajaxSetup({
             headers: {
