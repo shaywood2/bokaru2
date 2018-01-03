@@ -638,7 +638,14 @@ class PickManager(models.Manager):
 
         return self.pick(user, picked, event, response)
 
-    def is_a_match(self, user, picked):
+    def is_familiar(self, user, picked):
+        # Check if the pick exists in one direction
+        if self.filter(picker=user, picked=picked).count() > 0:
+            return True
+
+        return False
+
+    def is_match(self, user, picked):
         # Check if the pick exists in both directions
         for users_pick in self.filter(picker=user, picked=picked, response=Pick.YES):
             try:

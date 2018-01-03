@@ -1,4 +1,5 @@
 {% load staticfiles %}
+{% load account_tags %}
 
 <article class="g-rounded-4 g-pa-15 g-my-10 g-min-height-200 profile" style="cursor: pointer;"
          onclick="window.location.href = '{% url 'account:view_user' username=profile.user.username %}'">
@@ -17,10 +18,7 @@
             <div class="g-mb-10">
                 <h4 class="h5 g-mb-0">
                     {{ profile.fullName }}
-                    <!--<span class="u-label g-rounded-3 g-bg-primary g-mr-10 g-mb-15">-->
-                        <!--<i class="fa fa-heart g-mr-3"></i>-->
-                        <!--Match-->
-                    <!--</span>-->
+                    {% account_labels profile.user %}
                 </h4>
                 <em class="d-block g-color-primary g-font-style-normal g-font-size-default">{{ profile.age }} | {{ profile.locationName }}</em>
             </div>

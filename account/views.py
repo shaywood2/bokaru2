@@ -83,7 +83,7 @@ def view_user(request, username):
     memo = None
 
     if current_user.is_authenticated:
-        can_contact = Pick.objects.is_a_match(current_user, user)
+        can_contact = Pick.objects.is_match(current_user, user)
         show_memo = True
 
         # Get memo text

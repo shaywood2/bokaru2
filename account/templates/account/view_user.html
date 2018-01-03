@@ -1,6 +1,7 @@
 {% extends 'web/base_nav.html' %}
 
 {% load staticfiles %}
+{% load account_tags %}
 
 {% block title %}Bokaru | {{ user.username }}{% endblock %}
 
@@ -33,7 +34,10 @@
                     {% else %}
                     <div class="col-lg-6 g-mt-25--md">
                         <!-- Name -->
-                        <h2 class="g-font-weight-300 g-mr-10">{{ account.fullName }}</h2>
+                        <h2 class="g-font-weight-300 g-mr-10">
+                            {{ account.fullName }}
+                            {% account_labels user %}
+                        </h2>
 
                         <!-- Age and location -->
                         <h4 class="h6 g-font-weight-300 g-mb-10">
