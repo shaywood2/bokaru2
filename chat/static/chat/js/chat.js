@@ -1,9 +1,10 @@
 initializeSession()
+infoElement = document.getElementById('video_info')
 
 // Handling all of our errors here by alerting them
 function handleError(error) {
     if (error) {
-        alert('Oops, seems like something went wrong: ' + error.message)
+        infoElement.innerHTML = 'Oops, seems like something went wrong:<br/>' + error.message
     }
 }
 
@@ -21,26 +22,26 @@ function initializeSession() {
     })
 
     session.on({
+        streamCreated: function (event) {
+            console.log("Stream created.")
+            infoElement.innerHTML = ''
+        },
         streamDestroyed: function (event) {
             console.log("Stream stopped. Reason: " + event.reason)
             if (event.reason === 'networkDisconnected') {
-                event.preventDefault()
                 var subscribers = session.getSubscribersForStream(event.stream)
                 if (subscribers.length > 0) {
                     var subscriber = document.getElementById(subscribers[0].id)
-                    // Display error message inside the Subscriber
-                    subscriber.innerHTML = 'Lost connection. This could be due to your internet connection '
-                    + 'or because the other party lost their connection.'
-                    event.preventDefault()   // Prevent the Subscriber from being removed
+                    // Display error message
+                    infoElement.innerHTML = 'Lost connection. This could be due to your internet connection '
+                    + 'or because your date lost their connection.'
                 }
             } else if (event.reason === 'clientDisconnected') {
-                event.preventDefault()
                 var subscribers = session.getSubscribersForStream(event.stream)
                 if (subscribers.length > 0) {
                     var subscriber = document.getElementById(subscribers[0].id)
-                    // Display error message inside the Subscriber
-                    //subscriber.innerHTML = 'k thx bye'
-                    event.preventDefault()   // Prevent the Subscriber from being removed
+                    // Display error message
+                    infoElement.innerHTML = 'Oops, your date has disconnected!'
                 }
             }
         }
@@ -53,10 +54,6 @@ function initializeSession() {
         width: '100%',
         height: '100%'
     }, handleError)
-
-    publisher.on("streamDestroyed", function (event) {
-        console.log("Stream stopped. Reason: " + event.reason)
-    })
 
     // Connect to the session
     session.connect(window.token, function(error) {

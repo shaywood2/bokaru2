@@ -1,8 +1,8 @@
 {% load staticfiles %}
 {% load account_tags %}
 
-<article class="g-rounded-4 g-pa-15 g-my-10 g-min-height-200 profile" style="cursor: pointer;"
-         onclick="window.location.href = '{% url 'account:view_user' username=profile.user.username %}'">
+<article class="g-rounded-4 g-pa-15 g-my-10 g-min-height-200 profile g-pos-rel">
+    <a href="{% url 'account:view_user' username=profile.user.username %}" class="overlay"></a>
     <div class="row g-ml-0">
         <div class="col-md-4 g-mb-0--md" style="padding: 0;">
             <!-- User Image -->

@@ -38,7 +38,11 @@ def render_profile_large(profile, memo):
 def account_labels(context, user):
     current_user = context.request.user
 
-    is_match = Pick.objects.is_match(current_user, user)
-    is_familiar = Pick.objects.is_familiar(current_user, user)
+    if current_user.is_authenticated:
+        is_match = Pick.objects.is_match(current_user, user)
+        is_familiar = Pick.objects.is_familiar(current_user, user)
+    else:
+        is_match = False
+        is_familiar = False
 
     return {'is_match': is_match, 'is_familiar': is_familiar}

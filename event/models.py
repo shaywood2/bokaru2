@@ -59,7 +59,8 @@ class EventManager(models.Manager):
     def search(self, **kwargs):
         # Initial search by date
         hour_from_now = timezone.now() + timedelta(hours=1)
-        filter_query = self.filter(startDateTime__gte=hour_from_now)
+        filter_query = self.filter(
+            startDateTime__gte=hour_from_now, hidden=False, deleted=False, stage=Event.REGISTRATION_OPEN)
 
         # Search by distance
         if 'cityLat' in kwargs and 'cityLng' in kwargs and 'distance' in kwargs and 'distanceUnits' in kwargs:
@@ -191,10 +192,24 @@ class Event(models.Model):
     DEFAULT_DATE_DURATION = 300
     # Date is 1 minute long by default
     DEFAULT_BREAK_DURATION = 60
+
     # Event sizes
     SMALL = 10
     MEDIUM = 20
     LARGE = 30
+
+    # Event types
+    SERIOUS = 1
+    CASUAL = 2
+    HOOKUP = 3
+    FRIENDSHIP = 4
+    MARRIAGE = 5
+
+    # Event stages
+    REGISTRATION_OPEN = 1
+    IN_PROGRESS = 2
+    CANCELLED = 3
+    COMPLETED = 4
 
     SIZES = [
         (SMALL, 'Small'),
@@ -208,13 +223,6 @@ class Event(models.Model):
         (2, 'Two groups (talk to all members of the opposite group)')
     ]
 
-    # Event types
-    SERIOUS = 1
-    CASUAL = 2
-    HOOKUP = 3
-    FRIENDSHIP = 4
-    MARRIAGE = 5
-
     TYPES = [
         (MARRIAGE, 'Marriage'),
         (SERIOUS, 'Serious relationship'),
@@ -222,10 +230,19 @@ class Event(models.Model):
         (HOOKUP, 'Casual hookup'),
         (FRIENDSHIP, 'Friendship')
     ]
+
+    STAGES = [
+        (REGISTRATION_OPEN, 'Registration open'),
+        (IN_PROGRESS, 'In progress'),
+        (CANCELLED, 'Cancelled'),
+        (COMPLETED, 'Completed')
+    ]
+
     # General info
     creator = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.PROTECT)
     name = models.CharField(max_length=150)
     type = models.PositiveSmallIntegerField(choices=TYPES, default=SERIOUS)
+    stage = models.PositiveSmallIntegerField(choices=STAGES, default=REGISTRATION_OPEN)
     size = models.PositiveSmallIntegerField(choices=SIZES, default=MEDIUM)
     startDateTime = models.DateTimeField()
     locationName = models.CharField(max_length=150)
@@ -252,6 +269,8 @@ class Event(models.Model):
 
     # Deleted flag
     deleted = models.BooleanField(default=False)
+    # Hidden flag
+    hidden = models.BooleanField(default=False)
 
     # Automatic timestamps
     created = models.DateTimeField(auto_now_add=True)
@@ -379,7 +398,7 @@ class Event(models.Model):
     # Return true if the event is starting within one hour
     def is_starting_within_a_day(self):
         seconds_until_start = self.get_seconds_until_start()
-        return seconds_until_start < 3600 * 24
+        return 0 < seconds_until_start < 3600 * 24
 
     # Return true if the event has ended at most half an hour ago
     def is_ended_recently(self):

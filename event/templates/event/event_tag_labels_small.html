@@ -1,0 +1,27 @@
+{% if is_cancelled %}
+    <span class="u-label g-rounded-3 g-bg-primary over-overlay" data-toggle="tooltip" data-placement="top" title="Event is cancelled, not enough participants">
+        <i class="icon-ban g-mr-3"></i>
+    </span>
+{% else %}
+    {% if is_starting_within_a_day %}
+    <span class="u-label g-rounded-3 g-bg-primary over-overlay" data-toggle="tooltip" data-placement="top" title="Event is starting in {{ hours_until_start }} hours!">
+        <i class="icon-fire g-mr-3"></i>
+    </span>
+    {% elif is_starting_soon %}
+    <span class="u-label g-rounded-3 g-bg-primary over-overlay" data-toggle="tooltip" data-placement="top" title="Event is starting shortly!">
+        <i class="icon-fire g-mr-3"></i>
+    </span>
+    {% endif %}
+
+    {% if is_hidden %}
+    <span class="u-label g-rounded-3 g-bg-black over-overlay" data-toggle="tooltip" data-placement="top" title="Private event">
+        <i class="icon-lock g-mr-3"></i>
+    </span>
+    {% endif %}
+
+    {% if is_registered %}
+    <span class="u-label g-rounded-3 g-bg-black over-overlay" data-toggle="tooltip" data-placement="top" title="You are registered for this event">
+        <i class="icon-star g-mr-3"></i>
+    </span>
+    {% endif %}
+{% endif %}

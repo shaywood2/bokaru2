@@ -1,4 +1,7 @@
 from django import template
+
+from ..models import Event
+
 register = template.Library()
 
 
@@ -41,3 +44,53 @@ def render_event_small(event):
     }
 
     return context
+
+
+@register.inclusion_tag('event/event_tag_labels.html', takes_context=True)
+def event_labels(context, event):
+    current_user = context.request.user
+
+    if current_user.is_authenticated:
+        is_registered = event.is_user_registered(current_user)
+    else:
+        is_registered = False
+
+    is_starting_within_a_day = event.is_starting_within_a_day()
+    is_starting_soon = event.is_starting_soon()
+    hours_until_start = event.get_hours_until_start()
+    is_cancelled = event.stage == Event.CANCELLED
+    is_hidden = event.hidden
+
+    return {
+        'is_registered': is_registered,
+        'is_starting_within_a_day': is_starting_within_a_day,
+        'is_starting_soon': is_starting_soon,
+        'hours_until_start': hours_until_start,
+        'is_cancelled': is_cancelled,
+        'is_hidden': is_hidden
+    }
+
+
+@register.inclusion_tag('event/event_tag_labels_small.html', takes_context=True)
+def event_labels_small(context, event):
+    current_user = context.request.user
+
+    if current_user.is_authenticated:
+        is_registered = event.is_user_registered(current_user)
+    else:
+        is_registered = False
+
+    is_starting_within_a_day = event.is_starting_within_a_day()
+    is_starting_soon = event.is_starting_soon()
+    hours_until_start = event.get_hours_until_start()
+    is_cancelled = event.stage == Event.CANCELLED
+    is_hidden = event.hidden
+
+    return {
+        'is_registered': is_registered,
+        'is_starting_within_a_day': is_starting_within_a_day,
+        'is_starting_soon': is_starting_soon,
+        'hours_until_start': hours_until_start,
+        'is_cancelled': is_cancelled,
+        'is_hidden': is_hidden
+    }
