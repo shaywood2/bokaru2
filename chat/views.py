@@ -141,6 +141,7 @@ def live_event(request):
         return render(request, 'chat/post_live.html', context)
 
 
+# TODO: Temp method, delete later
 def live_event_test(request, user1, user2):
     LOGGER.info('user ' + user1 + ' calls user ' + user2)
     opentok = OpenTok(api_key, api_secret)

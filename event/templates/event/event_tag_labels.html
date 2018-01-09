@@ -4,15 +4,15 @@
         Cancelled
     </span>
 {% else %}
-    {% if is_starting_within_a_day %}
+    {% if is_starting_soon %}
+    <span class="u-label g-rounded-3 g-bg-primary over-overlay" data-toggle="tooltip" data-placement="top" title="Go join the event now!">
+        <i class="icon-fire g-mr-3"></i>
+        Starting shortly!
+    </span>
+    {% elif is_starting_within_a_day %}
     <span class="u-label g-rounded-3 g-bg-primary over-overlay" data-toggle="tooltip" data-placement="top" title="Event starting in {{ hours_until_start }} hours!">
         <i class="icon-fire g-mr-3"></i>
         Upcoming
-    </span>
-    {% elif is_starting_soon %}
-    <span class="u-label g-rounded-3 g-bg-primary over-overlay" data-toggle="tooltip" data-placement="top" title="Event is starting shortly!">
-        <i class="icon-fire g-mr-3"></i>
-        Starting shortly!
     </span>
     {% endif %}
 

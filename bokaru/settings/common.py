@@ -139,6 +139,9 @@ DATABASES = {
 # Session storage
 SESSION_ENGINE = 'django.contrib.sessions.backends.cached_db'
 
+# Event settings
+EVENT_MINIMUM_FILL_PERCENTAGE = 80
+
 # ===========
 # Secret keys
 # ===========

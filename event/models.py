@@ -59,8 +59,8 @@ class EventManager(models.Manager):
     def search(self, **kwargs):
         # Initial search by date
         hour_from_now = timezone.now() + timedelta(hours=1)
-        filter_query = self.filter(
-            startDateTime__gte=hour_from_now, hidden=False, deleted=False, stage=Event.REGISTRATION_OPEN)
+        filter_query = self.filter(startDateTime__gte=hour_from_now, hidden=False, deleted=False,
+                                   stage__in=[Event.REGISTRATION_OPEN, Event.CONFIRMED])
 
         # Search by distance
         if 'cityLat' in kwargs and 'cityLng' in kwargs and 'distance' in kwargs and 'distanceUnits' in kwargs:
@@ -186,8 +186,6 @@ class EventManager(models.Manager):
 
 
 class Event(models.Model):
-    # The event must be at least 70% full to be confirmed
-    CONFIRMED_MIN_PARTICIPANTS = 0.7
     # Date is 5 minutes long by default
     DEFAULT_DATE_DURATION = 300
     # Date is 1 minute long by default
@@ -207,9 +205,10 @@ class Event(models.Model):
 
     # Event stages
     REGISTRATION_OPEN = 1
-    IN_PROGRESS = 2
-    CANCELLED = 3
-    COMPLETED = 4
+    CONFIRMED = 2
+    IN_PROGRESS = 3
+    CANCELLED = 4
+    COMPLETED = 5
 
     SIZES = [
         (SMALL, 'Small'),
@@ -233,6 +232,7 @@ class Event(models.Model):
 
     STAGES = [
         (REGISTRATION_OPEN, 'Registration open'),
+        (CONFIRMED, 'Confirmed'),
         (IN_PROGRESS, 'In progress'),
         (CANCELLED, 'Cancelled'),
         (COMPLETED, 'Completed')
@@ -313,20 +313,6 @@ class Event(models.Model):
         num_participants = self.numberOfParticipants
         max_participants = self.numGroups * self.maxParticipantsInGroup
         return round(float(num_participants) / max_participants * 100)
-
-    # Return True if the event is going to be held
-    @property
-    def isConfirmed(self):
-        # The event must start within a day
-        now = timezone.now()
-        time_diff = self.event.startDateTime - now
-        if time_diff.days < 1:
-            # Check if there are enough participants
-            num_participants = self.numberOfParticipants
-            if num_participants / (self.maxParticipantsInGroup * self.numGroups) >= self.CONFIRMED_MIN_PARTICIPANTS:
-                return True
-
-        return False
 
     objects = EventManager()
 
