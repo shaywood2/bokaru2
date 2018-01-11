@@ -3,9 +3,6 @@ import logging
 import stripe
 from django.conf import settings
 
-from event.models import EventParticipant
-from money.models import UserPaymentInfo
-
 STRIPE_KEY = settings.STRIPE_KEY
 
 LOGGER = logging.getLogger(__name__)
@@ -76,56 +73,6 @@ def create_charge(amount, currency, user_id, event_id, stripe_id):
     )
     LOGGER.info("Stripe charge created: {}".format(charge.id))
     pass
-
-
-def pay_for_event(participant, event):
-    user = participant.user
-    product = event.product
-
-    try:
-        payment_info = UserPaymentInfo.objects.get(user=user)
-        stripe_id = payment_info.stripe_customer_id
-    except UserPaymentInfo.DoesNotExist:
-        participant.status = EventParticipant.PAYMENT_FAILURE
-        participant.save()
-        LOGGER.error('UserPaymentInfo not specified')
-        raise Exception('UserPaymentInfo not specified')
-
-    if not stripe_id:
-        participant.status = EventParticipant.PAYMENT_FAILURE
-        participant.save()
-        LOGGER.error('Stripe ID not specified')
-        raise Exception('Stripe ID not specified')
-
-    # Create a charge
-    try:
-        create_charge(product.amount, 'cad', user.id, event.id, stripe_id)
-
-        participant.status = EventParticipant.PAYMENT_SUCCESS
-        participant.save()
-    except stripe.error.CardError as e:
-        participant.status = EventParticipant.PAYMENT_FAILURE
-        participant.save()
-
-        # In case of a decline, stripe.error.CardError will be caught
-        body = e.json_body
-        err = body['error']
-
-        LOGGER.error('Failed to create a charge')
-        LOGGER.error('Status is: {}'.format(e.http_status))
-        LOGGER.error('Type is: {}'.format(err['type']))
-        LOGGER.error('Code is: {}'.format(err['code']))
-        LOGGER.error('Param is: {}'.format(err['param']))
-        LOGGER.error('Message is: {}'.format(err['message']))
-
-        raise CardDeclinedException(e.http_status, err['type'], err['code'], err['param'], err['message'])
-    except stripe.error.StripeError as e:
-        participant.status = EventParticipant.PAYMENT_FAILURE
-        participant.save()
-
-        # Display a very generic error to the user, and maybe send yourself an email
-        LOGGER.error('Failed to create a charge')
-        raise Exception('Failed to create a charge: {!s}'.format(e))
 
 
 class CardDeclinedException(Exception):

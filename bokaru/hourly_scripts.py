@@ -5,7 +5,8 @@ from django.utils import timezone
 
 from chat.utils import generate_conversations
 from event.models import Event, EventParticipant
-from money.payment_service import pay_for_event, CardDeclinedException
+from money.billing_logic import pay_for_event
+from money.payment_service import CardDeclinedException
 
 EVENT_MINIMUM_FILL_PERCENTAGE = settings.EVENT_MINIMUM_FILL_PERCENTAGE
 
@@ -14,8 +15,10 @@ LOGGER = logging.getLogger(__name__)
 
 def activate_events():
     # Select all events that start within 1 hour
+    now = timezone.now()
     end_time = timezone.now() + timezone.timedelta(hours=1)
-    events = Event.objects.filter(startDateTime__lte=end_time, stage=Event.CONFIRMED, deleted=False)
+    events = Event.objects.filter(startDateTime__gte=now, startDateTime__lte=end_time,
+                                  stage=Event.CONFIRMED, deleted=False)
 
     result = []
 
@@ -57,8 +60,10 @@ def activate_events():
 
 def process_payments():
     # Select all events that start within 24 hours
+    now = timezone.now()
     end_time = timezone.now() + timezone.timedelta(hours=24)
-    events = Event.objects.filter(startDateTime__lte=end_time, stage=Event.REGISTRATION_OPEN, deleted=False)
+    events = Event.objects.filter(startDateTime__gte=now, startDateTime__lte=end_time,
+                                  stage=Event.REGISTRATION_OPEN, deleted=False)
 
     result = []
 

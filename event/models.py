@@ -436,7 +436,9 @@ class Event(models.Model):
 
     # To string
     def __str__(self):
-        return str(self.id) + ' | ' + self.name + ' @ ' + self.locationName + ' [' + str(self.startDateTime) + ']'
+        stage = get_value(Event.STAGES, self.stage)
+        return str(self.id) + ' | ' + self.name + ' @ ' + self.locationName + ', ' + stage + \
+            ' [' + str(self.startDateTime) + ']'
 
 
 class EventGroup(models.Model):
