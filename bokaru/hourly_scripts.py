@@ -5,8 +5,7 @@ from django.utils import timezone
 
 from chat.utils import generate_conversations
 from event.models import Event, EventParticipant
-from money.models import UserPaymentInfo
-from money.payment_service import create_charge
+from money.payment_service import pay_for_event, CardDeclinedException
 
 EVENT_MINIMUM_FILL_PERCENTAGE = settings.EVENT_MINIMUM_FILL_PERCENTAGE
 
@@ -21,22 +20,37 @@ def activate_events():
     result = []
 
     for event in events:
-        LOGGER.info('Generating conversations for event: {}'.format(str(event)))
-        generate_conversations(event)
-        event.stage = Event.IN_PROGRESS
-        event.save()
+        try:
+            LOGGER.info('Generating conversations for event {:d}.'.format(event.id))
+            generate_conversations(event)
+            event.stage = Event.IN_PROGRESS
+            event.save()
 
-        result.append(
-            {
-                'id': event.id,
-                'name': event.name,
-                'startTime': event.startDateTime,
-                'stage': event.stage,
-                'numberOfParticipants': event.numberOfParticipants
-            }
-        )
+            result.append(
+                {
+                    'id': event.id,
+                    'name': event.name,
+                    'startTime': event.startDateTime,
+                    'stage': event.stage,
+                    'numberOfParticipants': event.numberOfParticipants,
+                    'success': True
+                }
+            )
 
-        # TODO: send email reminders
+            # TODO: send email reminders
+        except Exception as e:
+            LOGGER.error('Failed to generate conversations for event {:d}. Error message: {!s}'.format(event.id, e))
+
+            result.append(
+                {
+                    'id': event.id,
+                    'name': event.name,
+                    'startTime': event.startDateTime,
+                    'stage': event.stage,
+                    'numberOfParticipants': event.numberOfParticipants,
+                    'success': False
+                }
+            )
 
     return result
 
@@ -46,43 +60,90 @@ def process_payments():
     end_time = timezone.now() + timezone.timedelta(hours=24)
     events = Event.objects.filter(startDateTime__lte=end_time, stage=Event.REGISTRATION_OPEN, deleted=False)
 
+    result = []
+
     for event in events:
-        LOGGER.info('Collecting payments for event: {}'.format(str(event)))
-        # Check if there are enough participants (over 80%)
-        if event.filledPercentage >= EVENT_MINIMUM_FILL_PERCENTAGE:
-            # Get event product
-            product = event.product
-            if not product:
-                # TODO: no product, record error
-                pass
+        try:
+            LOGGER.info('Processing payments for event: {:d}'.format(event.id))
 
-            # Get all participants
-            participants = EventParticipant.objects.filter(group__in=event.eventgroup_set.all(),
-                                                           status=EventParticipant.REGISTERED)
+            # Check if there are enough participants (over 80%)
+            if event.filledPercentage >= EVENT_MINIMUM_FILL_PERCENTAGE:
+                # Make sure that product exists
+                product = event.product
+                if not product:
+                    raise Exception('Product not specified')
 
-            for participant in participants:
-                try:
-                    payment_info = UserPaymentInfo.objects.get(user=participant.user)
-                    stripe_id = payment_info.stripe_customer_id
-                    if not stripe_id:
-                        # TODO: missing stripe id, record error
+                # Get all participants
+                participants = EventParticipant.objects.filter(group__in=event.eventgroup_set.all(),
+                                                               status=EventParticipant.REGISTERED)
+
+                for participant in participants:
+                    try:
+                        pay_for_event(participant, event)
+                        # TODO: send payment successful email
+                    except CardDeclinedException as cde:
+                        # https://stripe.com/docs/declines/codes
+                        # TODO: send card declined email
+                        pass
+                    except Exception as e:
+                        # TODO: send payment failed email
                         pass
 
-                    # Create a charge
-                    # TODO: record success or failure
-                    create_charge(product.amount, 'CAD', str(event), stripe_id)
-                    participant.status = EventParticipant.PAYMENT_SUCCESS
-                    participant.save()
-                    # TODO: send confirmation email
-                except UserPaymentInfo.DoesNotExist:
-                    # TODO: missing payment info, record error
+                event.stage = Event.CONFIRMED
+                event.save()
+
+                result.append(
+                    {
+                        'id': event.id,
+                        'name': event.name,
+                        'startTime': event.startDateTime,
+                        'stage': event.stage,
+                        'numberOfParticipants': event.numberOfParticipants,
+                        'success': True
+                    }
+                )
+            else:
+                # Not enough participants, cancel the event
+
+                # Get all participants
+                participants = EventParticipant.objects.filter(group__in=event.eventgroup_set.all(),
+                                                               status=EventParticipant.REGISTERED)
+                for participant in participants:
+                    # TODO: send cancellation emails
                     pass
-        else:
-            # Not enough participants, cancel the event
+
+                event.stage = Event.CANCELLED
+                event.save()
+
+                result.append(
+                    {
+                        'id': event.id,
+                        'name': event.name,
+                        'startTime': event.startDateTime,
+                        'stage': event.stage,
+                        'numberOfParticipants': event.numberOfParticipants,
+                        'success': True
+                    }
+                )
+        except Exception as e:
+            LOGGER.error('Failed to process payments for event {:d}. Error message: {!s}'.format(event.id, e))
 
             # Get all participants
             participants = EventParticipant.objects.filter(group__in=event.eventgroup_set.all(),
                                                            status=EventParticipant.REGISTERED)
             for participant in participants:
-                # TODO: send cancellation emails
+                # TODO: send error emails
                 pass
+
+        result.append(
+            {
+                'id': event.id,
+                'name': event.name,
+                'startTime': event.startDateTime,
+                'stage': event.stage,
+                'numberOfParticipants': event.numberOfParticipants,
+                'success': False
+            }
+        )
+
+    return result

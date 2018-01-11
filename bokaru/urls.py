@@ -15,6 +15,7 @@ urlpatterns = [
     url(r'^chat/', include('chat.urls')),
     url(r'^admin/', admin.site.urls),
     url(r'^script/activate_events', views.activate_events),
+    url(r'^script/process_payments', views.process_payments),
     # Registration and authentication views
     url(r'^register/$',
         RegistrationView.as_view(
