@@ -61,32 +61,24 @@ def delete_card(stripe_id, stripe_card_id):
 
 # Charge a customer by Stripe ID.
 # Amount is in cents
-def create_charge(amount, currency, description, stripe_id):
+def create_charge(amount, currency, user_id, event_id, stripe_id):
     stripe.api_key = STRIPE_KEY
 
-    try:
-        charge = stripe.Charge.create(
-            amount=amount,
-            currency=currency,
-            description=description,
-            customer=stripe_id,
-        )
-        LOGGER.info("Stripe charge created: {}".format(charge.id))
-        pass
-    except stripe.error.CardError as e:
-        # Since it's a decline, stripe.error.CardError will be caught
-        body = e.json_body
-        err = body['error']
+    charge = stripe.Charge.create(
+        amount=amount,
+        currency=currency,
+        description='Charge for event ' + str(event_id),
+        metadata={'user_id': user_id, 'event_id': event_id},
+        customer=stripe_id
+    )
+    LOGGER.info("Stripe charge created: {}".format(charge.id))
+    pass
 
-        LOGGER.error("Status is: {}".format(e.http_status))
-        LOGGER.error("Type is: {}".format(err['type']))
-        LOGGER.error("Code is: {}".format(err['code']))
-        LOGGER.error("Param is: {}".format(err['param']))
-        LOGGER.error("Message is: {}".format(err['message']))
-    except stripe.error.StripeError as e:
-        # Display a very generic error to the user, and maybe send
-        # yourself an email
-        pass
-    except Exception as e:
-        # Something else happened, completely unrelated to Stripe
-        pass
+
+class CardDeclinedException(Exception):
+    def __init__(self, status, ex_type, code, param, message):
+        self.status = status
+        self.ex_type = ex_type
+        self.code = code
+        self.param = param
+        self.message = message

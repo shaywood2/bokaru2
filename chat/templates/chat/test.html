@@ -1,0 +1,43 @@
+{% extends 'web/base_chat.html' %}
+
+{% load staticfiles %}
+{% load account_tags %}
+
+{% block title %}Bokaru | Live chat{% endblock %}
+
+{% block content %}
+<section>
+    <div class="container g-height-600 g-pos-rel g-pa-0">
+        <!-- Videos -->
+        <div id="local_video" class="g-pos-abs" style="bottom: 5px; right: 5px; height: 150px; width: 200px; border: 1px solid #fff; z-index: 1000; background: rgba(0, 0, 0, 0.5);"></div>
+        <div id="remote_video" class="g-height-600" style="background: rgba(0, 0, 0, 0.5);"></div>
+        <!-- End Videos -->
+        <div id="video_info" class="h1 g-pos-abs text-center" style="top: 45%; left: 0; z-index: 1; width: 100%;">
+            Waiting for your date&hellip;
+        </div>
+    </div>
+</section>
+
+
+<section>
+    <div class="container">
+        <div class="row">
+            <div class="col-12">
+                ACCOUNT HERE
+            </div>
+        </div>
+    </div>
+</section>
+
+{% endblock %}
+
+{% block javascript %}
+<script src="https://static.opentok.com/v2/js/opentok.min.js"></script>
+<script>
+    var sessionId = '{{ sessionID }}'
+    var token = '{{ token }}'
+    var apiKey = '{{ tokbox_api_key }}'
+
+</script>
+<script src="{% static 'chat/js/chat.js' %}"></script>
+{% endblock %}

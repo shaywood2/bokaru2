@@ -1,6 +1,7 @@
 {% extends 'web/base_nav.html' %}
 
 {% load staticfiles %}
+{% load account_tags %}
 
 {% block title %}Bokaru | {{ user.username }}{% endblock %}
 
@@ -33,7 +34,10 @@
                     {% else %}
                     <div class="col-lg-6 g-mt-25--md">
                         <!-- Name -->
-                        <h2 class="g-font-weight-300 g-mr-10">{{ account.fullName }}</h2>
+                        <h2 class="g-font-weight-300 g-mr-10">
+                            {{ account.fullName }}
+                            {% account_labels user %}
+                        </h2>
 
                         <!-- Age and location -->
                         <h4 class="h6 g-font-weight-300 g-mb-10">
@@ -66,8 +70,10 @@
                             <textarea id="memo" class="form-control form-control-md rounded-0" rows="5"
                                       placeholder="Memo">{{memo}}</textarea>
                         </div>
-                        <button id="save_memo_button" class="btn btn-lg btn-block u-btn-primary rounded-0 g-py-12">Save memo</button>
-                        <small id="saving" style="display: none">Saving...</small>
+                        <button id="save_memo_button" class="btn btn-lg btn-block u-btn-primary rounded-0 g-py-12">
+                            Save memo
+                            <i class="fa fa-hourglass saving" style="display: none"></i>
+                        </button>
                         {% endif %}
                     </div>
                     {% endif %}
@@ -170,7 +176,6 @@
 {% endblock %}
 
 {% block javascript %}
-
 <script>
 $(document).on('ready', function () {
     let csrftoken = $('[name=csrfmiddlewaretoken]').val()
@@ -192,5 +197,4 @@ $(document).on('ready', function () {
     })
 })
 </script>
-
 {% endblock %}

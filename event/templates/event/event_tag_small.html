@@ -1,10 +1,14 @@
 {% load staticfiles %}
+{% load event_tags %}
 
-<article class="g-bg-white text-center rounded g-mb-5 event"
-         style="cursor: pointer;" onclick="window.location.href = '{% url 'event:view' event_id=event.id %}'">
+<article class="g-bg-white text-center rounded g-mb-5 event g-pos-rel">
+    <a href="{% url 'event:view' event_id=event.id %}" class="overlay"></a>
     <!-- Event Header -->
     <header class="g-py-20 g-height-100">
-        <h1 class="h5 g-mb-5">{{ event.name }}</h1>
+        <h1 class="h5 g-mb-5">
+            {{ event.name }}
+            {% event_labels_small event %}
+        </h1>
         <div class="d-block g-color-black g-font-weight-600 g-letter-spacing-1 text-uppercase g-mb-0">
             <h2 class="g-font-weight-300 g-font-size-10 mb-0">{{ event.startDateTime|date:'l, N d, Y @ P' }}</h2>
             <h3 class="g-color-dark g-font-weight-400 g-font-size-10 mb-0">{{ event.locationName }}</h3>
@@ -42,34 +46,23 @@
                 </span>
             </div>
         </div>
-
-        {% if event.get_hours_until_start <= 24 and event.get_hours_until_start > 1 %}
-        <span class="u-badge-v1--xl g-color-white g-bg-primary g-rounded-50x g-font-size-24 g-brd-around g-brd-white g-brd-2">
-            <i class="icon-fire" data-toggle="tooltip" data-placement="right" title="Event starting in {{ event.get_hours_until_start }} hours!"></i>
-        </span>
-        {% endif %}
-        {% if event.get_hours_until_start <= 1 and event.get_hours_until_start >= 0 %}
-        <span class="u-badge-v1--xl g-color-white g-bg-primary g-rounded-50x g-font-size-24 g-brd-around g-brd-white g-brd-2">
-            <i class="icon-fire" data-toggle="tooltip" data-placement="right" title="Event starting shortly!"></i>
-        </span>
-        {% endif %}
     </div>
 
     <footer class="w-100">
         <!-- Event Info -->
         <div class="g-overflow-hidden">
             <ul class="list-inline g-brd-top g-brd-bottom g-brd-gray-light-v3 g-font-size-12 text-center g-mx-minus-25 g-mb-0">
-                <li class="list-inline-item g-width-30x g-pa-12-5-7 mx-0 g-my-5"
+                <li class="list-inline-item g-width-30x g-pa-12-5-7 mx-0 g-my-5 over-overlay"
                     data-toggle="tooltip" title="Number of people you meet">
                     <i class="align-middle icon-people g-color-gray-dark-v4 g-font-size-18 g-mr-5"></i>
                     {{ event.numPeopleYouMeet }}
                 </li>
-                <li class="list-inline-item g-width-30x g-brd-left g-brd-gray-light-v3 g-pa-12-5-7 mx-0 g-my-5"
+                <li class="list-inline-item g-width-30x g-brd-left g-brd-gray-light-v3 g-pa-12-5-7 mx-0 g-my-5 over-overlay"
                     data-toggle="tooltip" title="Total even duration">
                     <i class="align-middle icon-clock g-color-gray-dark-v4 g-font-size-18 g-mr-5"></i>
                     {{ event.duration }} min.
                 </li>
-                <li class="list-inline-item g-width-30x g-brd-left g-brd-gray-light-v3 g-pa-12-5-7 mx-0 g-my-5"
+                <li class="list-inline-item g-width-30x g-brd-left g-brd-gray-light-v3 g-pa-12-5-7 mx-0 g-my-5 over-overlay"
                     data-toggle="tooltip" title="Filled percentage">
                     <i class="align-middle icon-speedometer g-color-gray-dark-v4 g-font-size-18 g-mr-5"></i>
                     {{ event.filledPercentage | floatformat:"0" }}%

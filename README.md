@@ -58,17 +58,12 @@ Starting the development server
 
 Vagrant Commands
 ----------------
-`vagrant up`: Start up an existing Vagrant machine or provision a new one in the current directory.
-
-`vagrant ssh`: Login to a Vagrant machine
-
-`vagrant halt`: Shut down a Vagrant machine for use later
-
-`vagrant provision`: Re-provision an existing Vagrant machine.
-
-`vagrant destroy`: Delete a Vagrant machine.
-
-`vagrant global-status`: See the status and installation directory of all Vagrant machines on your computer.
+  * `vagrant up`: Start up an existing Vagrant machine or provision a new one in the current directory.
+  * `vagrant ssh`: Login to a Vagrant machine
+  * `vagrant halt`: Shut down a Vagrant machine for use later
+  * `vagrant provision`: Re-provision an existing Vagrant machine.
+  * `vagrant destroy`: Delete a Vagrant machine.
+  * `vagrant global-status`: See the status and installation directory of all Vagrant machines on your computer.
 
 Using Postgres in VM
 --------------------
@@ -136,11 +131,27 @@ The deployment procedure for AWS server:
   2. `sudo chown -R ubuntu /usr/local/bokaru/`
   3. `cd /usr/local/bokaru/`
   4. `git clone https://github.com/dpyryesk/bokaru2.git .`
-  5. `nano configs/prod/env.json` and update the production keys
-  6. `chmod +x server_setup.sh`
-  7. `./server_setup.sh`
+  5. `cp env.template.json env.json`
+  6. `nano env.json` and **update the production keys**
+  7. `chmod +x server_setup.sh`
+  8. `./server_setup.sh`
 
+Update codebase on the server
+-----------------------------
+  1. `cp /usr/local/bokaru/server_update.sh ~`
+  2. `chmod +x ~/server_update.sh`
+  3. `./server_update.sh`
 
 Create Postgis extension in the database
-`psql -h bokaru-db.ccmerekzzbun.ca-central-1.rds.amazonaws.com -p 5432 -U bokaru`
-`CREATE EXTENSION postgis; CREATE EXTENSION postgis_topology;`
+----------------------------------------
+  1. `psql -h bokaru-db.ccmerekzzbun.ca-central-1.rds.amazonaws.com -p 5432 -U bokaru`
+  2. `CREATE EXTENSION postgis; CREATE EXTENSION postgis_topology;`
+
+Renew SSL certificate
+---------------------
+  * `sudo certbot --nginx`
+
+Restart servers
+---------------
+  * `sudo supervisorctl restart gunicorn`
+  * `sudo systemctl restart nginx`

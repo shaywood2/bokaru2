@@ -185,3 +185,21 @@
     color: #fff !important;
     background-color: #e74c3c !important;
 }
+
+.overlay {
+    display: block;
+    height: 100%;
+    width: 100%;
+    opacity: 0;
+    top: 0;
+    left: 0;
+    position: absolute;
+    padding: 0;
+    z-index: 100;
+}
+
+.over-overlay {
+    position: relative;
+    cursor: default;
+    z-index: 110;
+}

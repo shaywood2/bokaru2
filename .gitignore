@@ -71,6 +71,10 @@ target/
 
 # Production keys
 bokaru.txt
+bokaru.pem
+bokaru.ppk
+env.json
+env.prod.json
 
 # Static files
 /www/

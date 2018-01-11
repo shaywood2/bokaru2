@@ -19,12 +19,11 @@ from django.utils.functional import cached_property
 from django.utils.translation import ugettext_lazy as _
 from imagekit.models import ImageSpecField
 from pilkit.processors import ResizeToFill
-from django.db.models import Q
 
 from account.models import Account
 from money.models import Product
 
-logger = logging.getLogger(__name__)
+LOGGER = logging.getLogger(__name__)
 
 
 # Return a value from a tuple list by key
@@ -60,7 +59,8 @@ class EventManager(models.Manager):
     def search(self, **kwargs):
         # Initial search by date
         hour_from_now = timezone.now() + timedelta(hours=1)
-        filter_query = self.filter(startDateTime__gte=hour_from_now)
+        filter_query = self.filter(startDateTime__gte=hour_from_now, hidden=False, deleted=False,
+                                   stage__in=[Event.REGISTRATION_OPEN, Event.CONFIRMED])
 
         # Search by distance
         if 'cityLat' in kwargs and 'cityLng' in kwargs and 'distance' in kwargs and 'distanceUnits' in kwargs:
@@ -68,7 +68,7 @@ class EventManager(models.Manager):
             lng = kwargs.get('cityLng')
             distance = kwargs.get('distance')
             distance_units = kwargs.get('distanceUnits')
-            logger.info('distance: ' + str(distance))
+            # logger.info('distance: ' + str(distance))
             point = Point(x=lng, y=lat, srid=4326)
             radius = Distance(km=distance)
             if distance_units == 'mi':
@@ -80,7 +80,7 @@ class EventManager(models.Manager):
         if 'search_term' in kwargs:
             search_term = kwargs.get('search_term')
             if search_term:
-                logger.info('term: ' + search_term)
+                # logger.info('term: ' + search_term)
                 vector = SearchVector('name', weight='A') + SearchVector('description', weight='B')
                 query = get_query(search_term)
                 filter_query = filter_query.annotate(rank=SearchRank(vector, query)) \
@@ -91,12 +91,12 @@ class EventManager(models.Manager):
         # Search by event types
         event_type_list = kwargs.get('eventTypeList').split('|') if kwargs.get('eventTypeList') else []
         if len(event_type_list):
-            logger.info('event_type_list: ' + str(event_type_list))
+            # logger.info('event_type_list: ' + str(event_type_list))
             filter_query = filter_query.filter(type__in=event_type_list)
             # logger.info('found ' + str(len(filter_query)))
         event_size_list = kwargs.get('eventSizeList').split('|') if kwargs.get('eventSizeList') else []
         if len(event_size_list):
-            logger.info('event_size_list: ' + str(event_size_list))
+            # logger.info('event_size_list: ' + str(event_size_list))
             filter_query = filter_query.filter(size__in=event_size_list)
             # logger.info('found ' + str(len(filter_query)))
 
@@ -111,7 +111,6 @@ class EventManager(models.Manager):
         result = []
         for event in filter_query:
             # Filter out full events
-            # TODO: search by filled percentage
             if 'show_full' not in kwargs or kwargs.get('show_full') is False:
                 if event.filledPercentage == 100:
                     continue
@@ -161,37 +160,55 @@ class EventManager(models.Manager):
         return self.filter(eventgroup__eventparticipant__user=user).filter(
             startDateTime__lt=timezone.now()).order_by('-startDateTime')
 
+    # Get all past events that belong to the given user
+    def get_all_created_by_user(self, user):
+        return self.filter(creator=user).order_by('-startDateTime')
+
     # Get next event that the user is registered for
     def get_next(self, user):
         now = timezone.now()
         event = self.get_all_future_by_user(user).filter(startDateTime__gte=now).order_by('-startDateTime').first()
         return event
 
-    # Get the event that belongs to the user and is either starting in one hour, running now or ended up to one hour ago
+    # Get the event that belongs to the user and is either starting in one hour,
+    # is in progress now or ended up to half an hour ago
     def get_current(self, user):
         now = timezone.now()
         hour_from_now = now + timedelta(hours=1)
-        hour_ago = now - timedelta(hours=1)
-        events = self.get_all_future_by_user(user).order_by('-startDateTime')
+        half_hour_ago = now - timedelta(minutes=30)
+        events = self.filter(eventgroup__eventparticipant__user=user).order_by('-startDateTime')
 
         for event in events:
-            if event.startDateTime <= hour_from_now and event.endDateTime >= hour_ago:
+            if event.startDateTime <= hour_from_now and event.endDateTime >= half_hour_ago:
                 return event
 
         return None
 
 
 class Event(models.Model):
-    # The event must be at least 70% full to be confirmed
-    CONFIRMED_MIN_PARTICIPANTS = 0.7
     # Date is 5 minutes long by default
     DEFAULT_DATE_DURATION = 300
     # Date is 1 minute long by default
     DEFAULT_BREAK_DURATION = 60
+
     # Event sizes
     SMALL = 10
     MEDIUM = 20
     LARGE = 30
+
+    # Event types
+    SERIOUS = 1
+    CASUAL = 2
+    HOOKUP = 3
+    FRIENDSHIP = 4
+    MARRIAGE = 5
+
+    # Event stages
+    REGISTRATION_OPEN = 1
+    CONFIRMED = 2
+    IN_PROGRESS = 3
+    CANCELLED = 4
+    COMPLETED = 5
 
     SIZES = [
         (SMALL, 'Small'),
@@ -205,13 +222,6 @@ class Event(models.Model):
         (2, 'Two groups (talk to all members of the opposite group)')
     ]
 
-    # Event types
-    SERIOUS = 1
-    CASUAL = 2
-    HOOKUP = 3
-    FRIENDSHIP = 4
-    MARRIAGE = 5
-
     TYPES = [
         (MARRIAGE, 'Marriage'),
         (SERIOUS, 'Serious relationship'),
@@ -219,10 +229,20 @@ class Event(models.Model):
         (HOOKUP, 'Casual hookup'),
         (FRIENDSHIP, 'Friendship')
     ]
+
+    STAGES = [
+        (REGISTRATION_OPEN, 'Registration open'),
+        (CONFIRMED, 'Confirmed'),
+        (IN_PROGRESS, 'In progress'),
+        (CANCELLED, 'Cancelled'),
+        (COMPLETED, 'Completed')
+    ]
+
     # General info
     creator = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.PROTECT)
     name = models.CharField(max_length=150)
     type = models.PositiveSmallIntegerField(choices=TYPES, default=SERIOUS)
+    stage = models.PositiveSmallIntegerField(choices=STAGES, default=REGISTRATION_OPEN)
     size = models.PositiveSmallIntegerField(choices=SIZES, default=MEDIUM)
     startDateTime = models.DateTimeField()
     locationName = models.CharField(max_length=150)
@@ -249,6 +269,8 @@ class Event(models.Model):
 
     # Deleted flag
     deleted = models.BooleanField(default=False)
+    # Hidden flag
+    hidden = models.BooleanField(default=False)
 
     # Automatic timestamps
     created = models.DateTimeField(auto_now_add=True)
@@ -258,7 +280,7 @@ class Event(models.Model):
     # Calculate end time
     @cached_property
     def endDateTime(self):
-        return self.startDateTime.date() + timedelta(
+        return self.startDateTime + timedelta(
             seconds=self.maxParticipantsInGroup * (self.dateDuration + self.breakDuration))
 
     @cached_property
@@ -291,20 +313,6 @@ class Event(models.Model):
         num_participants = self.numberOfParticipants
         max_participants = self.numGroups * self.maxParticipantsInGroup
         return round(float(num_participants) / max_participants * 100)
-
-    # Return True if the event is going to be held
-    @property
-    def isConfirmed(self):
-        # The event must start within a day
-        now = timezone.now()
-        time_diff = self.event.startDateTime - now
-        if time_diff.days < 1:
-            # Check if there are enough participants
-            num_participants = self.numberOfParticipants
-            if num_participants / (self.maxParticipantsInGroup * self.numGroups) >= self.CONFIRMED_MIN_PARTICIPANTS:
-                return True
-
-        return False
 
     objects = EventManager()
 
@@ -342,38 +350,47 @@ class Event(models.Model):
 
     # Get number of hours until event start time
     def get_hours_until_start(self):
+        num_seconds = self.get_seconds_until_start()
+        return int(round(num_seconds / 3600, 0))
+
+    # Get number of seconds until the event's start time
+    def get_seconds_until_start(self):
         now = timezone.now()
         num_seconds = (self.startDateTime - now).total_seconds()
-        return int(round(num_seconds / 3600, 0))
+        return num_seconds
+
+    # Get number of seconds since the event's start time
+    def get_seconds_since_start(self):
+        now = timezone.now()
+        num_seconds = (now - self.startDateTime).total_seconds()
+        return num_seconds
 
     # Return true if the event is happening right now
     def is_in_progress(self):
-        now = timezone.now()
-        return self.startDateTime <= now <= self.endDateTime
+        seconds_since_start = self.get_seconds_since_start()
+        duration_in_seconds = self.duration * 60
+        return 0 < seconds_since_start < duration_in_seconds + 3600
 
     # Return true if the event is starting in the future (more than 1 hour from now)
     def is_in_future(self):
-        now = timezone.now()
-        hour_from_now = now + timedelta(hours=1)
-        return self.startDateTime >= hour_from_now
+        seconds_until_start = self.get_seconds_until_start()
+        return seconds_until_start >= 3600
 
     # Return true if the event is starting within one hour
     def is_starting_soon(self):
-        now = timezone.now()
-        hour_from_now = now + timedelta(hours=1)
-        return now <= self.startDateTime <= hour_from_now
+        seconds_until_start = self.get_seconds_until_start()
+        return 0 < seconds_until_start < 3600
 
     # Return true if the event is starting within one hour
     def is_starting_within_a_day(self):
-        now = timezone.now()
-        day_from_now = now + timedelta(days=1)
-        return now <= self.startDateTime <= day_from_now
+        seconds_until_start = self.get_seconds_until_start()
+        return 0 < seconds_until_start < 3600 * 24
 
-    # Return true if the event has ended at most one hour ago
+    # Return true if the event has ended at most half an hour ago
     def is_ended_recently(self):
-        now = timezone.now()
-        hour_ago = now - timedelta(hours=1)
-        return now >= self.endDateTime >= hour_ago
+        seconds_since_start = self.get_seconds_since_start()
+        duration_in_seconds = self.duration * 60
+        return duration_in_seconds < seconds_since_start < duration_in_seconds + 1800
 
     # Add a photo from a byte stream
     def add_photo(self, byte_stream, size=800, x=None, y=None, w=None, h=None):
@@ -419,7 +436,9 @@ class Event(models.Model):
 
     # To string
     def __str__(self):
-        return str(self.id) + ' | ' + self.name + ' @ ' + self.locationName + ' [' + str(self.startDateTime) + ']'
+        stage = get_value(Event.STAGES, self.stage)
+        return str(self.id) + ' | ' + self.name + ' @ ' + self.locationName + ', ' + stage + \
+            ' [' + str(self.startDateTime) + ']'
 
 
 class EventGroup(models.Model):
@@ -464,7 +483,9 @@ class EventGroup(models.Model):
             if self.ageMin <= looking_for.get('ageMax') and looking_for.get('ageMin') <= self.ageMax:
                 if self.sexualIdentity == EventGroup.ANY \
                         or self.sexualIdentity == EventGroup.OTHER \
-                        or self.sexualIdentity == looking_for.get('sexualIdentity'):
+                        or self.sexualIdentity == looking_for.get('sexualIdentity') \
+                        or looking_for.get('sexualIdentity') is None \
+                        or looking_for.get('sexualIdentity') == '':
                     return True
 
         return False
@@ -596,6 +617,15 @@ class PickManager(models.Manager):
                 all_matches.append(users_pick.picked)
         return all_matches
 
+    def get_response(self, user, picked, event):
+        try:
+            p = self.get(picker=user, picked=picked, event=event)
+        except Pick.DoesNotExist:
+            p = Pick(picker=user, picked=picked, event=event, response=2)
+            p.save()
+
+        return p.response
+
     def pick(self, user, picked, event, response):
         # Check if the pick exists
         try:
@@ -615,7 +645,14 @@ class PickManager(models.Manager):
 
         return self.pick(user, picked, event, response)
 
-    def is_a_match(self, user, picked):
+    def is_familiar(self, user, picked):
+        # Check if the pick exists in one direction
+        if self.filter(picker=user, picked=picked).count() > 0:
+            return True
+
+        return False
+
+    def is_match(self, user, picked):
         # Check if the pick exists in both directions
         for users_pick in self.filter(picker=user, picked=picked, response=Pick.YES):
             try:

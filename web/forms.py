@@ -23,10 +23,14 @@ class SearchForm(ModelForm):
     ]
 
     IDENTITY_CHOICES = [
-        (None, '---------'),
         ('female', 'Woman'),
         ('male', 'Man'),
         ('other', 'Other')
+    ]
+
+    VIEW_CHOICES = [
+        ('list', 'list'),
+        ('grid', 'grid')
     ]
 
     class Meta:
@@ -46,5 +50,6 @@ class SearchForm(ModelForm):
     search_term = forms.CharField(required=False)
     sexual_identity = forms.ChoiceField(choices=IDENTITY_CHOICES, required=False)
     age = forms.IntegerField(min_value=18, widget=forms.HiddenInput(), initial=25, required=False)
-    start_date = forms.DateField(widget=forms.HiddenInput(), required=False)
+    # start_date = forms.DateField(widget=forms.HiddenInput(), required=False)
     show_full = forms.BooleanField(initial=False, required=False)
+    view_type = forms.ChoiceField(widget=forms.HiddenInput(), choices=VIEW_CHOICES, initial='list')

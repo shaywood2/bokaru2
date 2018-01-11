@@ -1,0 +1,110 @@
+{% load staticfiles %}
+
+<article class="g-rounded-4 g-pa-15 g-my-10 profile">
+    <div class="row g-ml-0">
+        <!-- User Info -->
+        <div class="col-md-7">
+            <h4 class="h5 g-mb-0">{{ profile.fullName }}</h4>
+            <em class="d-block g-color-primary g-font-style-normal g-font-size-default">{{ profile.age }} | {{ profile.locationName }}</em>
+            {% if profile.summary %}
+            <!-- Summary -->
+            <h3>Self-summary</h3>
+            <span class="lead g-line-height-1_8">{{ profile.summary | linebreaks }}</span>
+            {% endif %}
+
+            {% if profile.icebreaker %}
+            <!-- Icebreaker -->
+            <h3>Ask me about&hellip;</h3>
+            <span class="lead g-line-height-1_8">{{ profile.icebreaker | linebreaks }}</span>
+            {% endif %}
+        </div>
+
+        <div class="col-md-5">
+            <!-- Basic info -->
+            {% if profile.basicInfo %}
+            <div class="g-mb-30">
+                <div class="media">
+                    <div class="d-flex align-self-center mr-3">
+                        <span class="u-icon-v3 g-bg-primary g-color-white g-rounded-5">
+                            <i class="icon-heart"></i>
+                        </span>
+                    </div>
+                    <div class="media-body align-self-center">
+                        <p class="mb-0 g-font-weight-600">
+                            {{ profile.basicInfo | join:", " }}
+                        </p>
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+
+            <!-- Background -->
+            {% if profile.background %}
+            <div class="g-mb-30">
+                <div class="media">
+                    <div class="d-flex align-self-center mr-3">
+                        <span class="u-icon-v3 g-bg-primary g-color-white g-rounded-5">
+                            <i class="icon-globe"></i>
+                        </span>
+                    </div>
+                    <div class="media-body align-self-center">
+                        <p class="mb-0 g-font-weight-600">
+                            {{ profile.background | join:", " }}
+                        </p>
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+
+            <!-- Details -->
+            {% if profile.details %}
+            <div class="g-mb-30">
+                <div class="media">
+                    <div class="d-flex align-self-center mr-3">
+                        <span class="u-icon-v3 g-bg-primary g-color-white g-rounded-5">
+                            <i class="icon-info"></i>
+                        </span>
+                    </div>
+                    <div class="media-body align-self-center">
+                        <p class="mb-0 g-font-weight-600">
+                            {{ profile.details | join:", " }}
+                        </p>
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+
+            <!-- Looking for -->
+            {% if profile.lookingFor %}
+            <div class="g-mb-30">
+                <div class="media">
+                    <div class="d-flex align-self-center mr-3">
+                        <span class="u-icon-v3 g-bg-primary g-color-white g-rounded-5">
+                            <i class="icon-eyeglass"></i>
+                        </span>
+                    </div>
+                    <div class="media-body align-self-center">
+                        <p class="mb-0 g-font-weight-600">
+                            <strong>Looking for: </strong>{{ profile.lookingFor | join:", " }}
+                        </p>
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+    <div class="row g-ml-0">
+        <div class="col-12">
+            <hr class="g-brd-gray-light-v4 g-my-20">
+            <h4 class="g-mt-15">Your Memo</h4>
+            <p><i>This section is only visible to you.</i></p>
+            <div class="form-group g-mb-20">
+                <textarea class="form-control form-control-md rounded-0 memo" rows="5" placeholder="Memo" data-user-id="{{ profile.user.id }}">{{ memo }}</textarea>
+            </div>
+            <button class="btn btn-lg btn-block u-btn-primary rounded-0 g-py-12 save_memo_button" data-user-id="{{ profile.user.id }}">
+                Save memo
+                <i class="fa fa-hourglass saving_memo" style="display: none" data-user-id="{{ profile.user.id }}"></i>
+            </button>
+        </div>
+    </div>
+</article>

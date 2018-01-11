@@ -11,11 +11,13 @@
 <section>
     <div class="container">
         <div class="row g-min-height-50vh">
-            <div class="col-md-12 g-mt-50--md">
+            <div class="col-12 g-mt-50--md g-mb-20 text-center">
                 <h1>My matches</h1>
                 {% if match_map|length == 0 %}
                 <h3>Nothing here yet, let's keep trying!</h3>
                 {% endif %}
+            </div>
+            <div class="col-12">
                 <ul class="row u-timeline-v2-wrap list-unstyled">
                     {% for event, picks in match_map %}
                     <li class="col-md-12 g-mb-40">
@@ -24,7 +26,7 @@
                             <div class="col-md-3 text-md-right g-pt-20--md g-pr-40--md g-mb-20">
                                 <h2 class="g-font-size-22 mb-0">{{ event.name }}</h2>
                                 <h3 class="g-color-primary g-font-weight-400 g-font-size-20 mb-0">{{ event.startDateTime|date:'l, N d, Y' }}</h3>
-                                <h4>{{event.startDateTime|date:'P'}}</h4>
+                                <h4>{{ event.startDateTime|date:'P' }}</h4>
                             </div>
 
                             <!-- Timeline Content -->
@@ -45,13 +47,13 @@
                                     </div>
 
                                     <article class="g-brd-around g-brd-gray-light-v4 g-rounded-4 g-pa-15 g-mb-10">
-                                         <div class="row">
+                                        <div class="row">
                                             {% for pick in picks %}
-                                             <div class="col-sm-6">
-                                                 {% render_profile_by_user pick %}
-                                             </div>
+                                            <div class="col-sm-12">
+                                                {% render_profile_medium_by_user pick %}
+                                            </div>
                                             {% endfor %}
-                                         </div>
+                                        </div>
                                     </article>
                                 </div>
                             </div>

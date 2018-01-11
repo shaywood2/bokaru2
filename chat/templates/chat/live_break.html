@@ -1,168 +1,54 @@
-{% extends 'web/base.html' %}
-
+{% extends 'web/base_chat.html' %}
 
 {% load staticfiles %}
+{% load account_tags %}
 
-
-{% block header %}
-
-<link rel="stylesheet" href="{% static 'web/css/search.css' %}">
-
-
-{% endblock %}
-
+{% block title %}Bokaru | Live chat{% endblock %}
 
 {% block content %}
-
-
-<!--=== Container Part ===-->
-<div class="container">
-    <div class="content">
-        <h1 id="countDownDiv" class="heading-md count_down"></h1>
-        <script>
-   // $("#countDownDiv")[0].innerHTML = parseInt({{date.time_until_reload}}/1000);
-    document.getElementById("countDownDiv").innerHTML = parseInt({{date.time_until_reload}}/1000);
-
-        </script>
-        <h1 class="heading-md count_down_description margin-bottom-80">seconds to decide</h1>
-
-        <h1 class="heading-md search_title margin-bottom-20">Was it a match?</h1>
-        <div class="col-md-12 margin-bottom-80" style="text-align: center">
-            Your contact information will be shared with this user in the event that they select you as a match as well.
+<section>
+    <div class="container">
+        <div class="row">
+            <div class="col-md-12 text-center g-my-50">
+                <h1>Next date is coming up soon, hang on!</h1>
+            </div>
         </div>
-        <div class="row md-margin-bottom-80">
-            <div class="col-md-12 margin-bottom-80" style="text-align: center">
-
-                <input id="button_yes" type="submit" class="btn-u btn-u-lg white-button"
-                       style="width: 150px; margin-right: 40px;" value="Yes">
-                <!--<input id="button_maybe" type="submit" class="btn-u btn-u-lg white-button" style="width: 150px; margin-right: 40px;"  value="Maybe">-->
-                <input id="button_no" type="submit" class="btn-u btn-u-lg white-button" style="width: 150px;"
-                       value="No">
-
-
+        <div class="row">
+            <div class="col-md-12">
+                <div class="progress g-my-50">
+                    <div id="timer" class="progress-bar progress-bar-striped progress-bar-animated"
+                         role="progressbar" style="width: 0%" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100"></div>
+                </div>
             </div>
-            <div class="col-md-12 margin-bottom-80" style="text-align: center">
-                 <div class="headline margin-top-20"><h2>Notes</h2></div>
-
-                <textarea onchange="changeNote(true)" oninput="changeNote()" cols="80" id="memo" maxlength="2000"
-                          name="summary" rows="11">{{memo}}</textarea>
-                <div id="saved_text" class="hidden"><h5>Saved as you type</h5></div>
-
-            </div>
-
-
-
         </div>
     </div>
-</div>
-<!--=== End Container Part ===-->
-
-
+</section>
 {% endblock %}
 
 {% block javascript %}
+<script>
+$(document).on('ready', function () {
+    var dateDuration = {{ event.dateDuration }}
+    var breakDuration = {{ event.breakDuration }}
+    var timeUntilReload = {{ time_until_reload }}
+    var seconds = 0
 
+    function updateTimer() {
+        let timer = $('#timer')
+        let secondsElapsed = dateDuration + breakDuration - timeUntilReload + seconds++
+        let progress = secondsElapsed / (dateDuration + breakDuration) * 100
 
-<script type="text/javascript">
-	var countDown = parseInt({{date.time_until_reload}})/1000;
-    var changeCount = 0;
+        let secondsLeft = Math.round(timeUntilReload) - seconds
+        let minutesLeft = (secondsLeft - secondsLeft % 60) / 60
+        secondsLeft = secondsLeft - minutesLeft * 60
 
-	function reloadPage(){
-	    location.reload();
-	}
+        let timeString = (minutesLeft+'').padStart(2,'0') + ':' + (secondsLeft+'').padStart(2,'0')
 
-	function changeCountdown() {
-	    countDown = countDown - 1;
-
-	    $("#countDownDiv")[0].innerHTML = countDown;
-	    if (countDown > 0) {
-	        setTimeout(changeCountdown, 1000);
-	    }
-	    else {
-	        submitAnswer(2);
-	    }
-	}
-
-	function submitAnswer(answer) {
-        var eventID = "{{event.id}}";
-        var pickID = "{{date.id}}";
-	    var url = "/chat/pick/target_user/" + pickID + "/event/" + eventID + "/response/" + answer + "/";
-	    console.log(url);
-	    changeNote(true);
-
-
-
-	    $.ajax({url: url, success: answerSubmitted, error: answerFailed});
-	}
-
-
-    function setInitialNote() {
-
-    $("#memo")[0].value = "{{date.memo}}";
+        timer.css("width", progress + '%')
+        timer.html(timeString)
     }
 
-
-	function changeNote(changeNow) {
-
-        var url = "/memo/about/{{date.id}}/";
-	    changeCount = changeCount + 1;
-
-	    if (changeCount == 5 || changeNow == true) {
-	        console.log("Note Saved");
-	        $("#saved_text").removeClass("hidden");
-	        changeCount = 0;
-	        var noteText = $("#memo")[0].value;
-	        $.post(url, noteText);
-	    }
-	}
-
-
-	function answerSubmitted() {
-	    console.log("match recorded");
-	}
-
-	function answerFailed() {
-	    console.log("match NOT recorded");
-	}
-
-	$("#button_yes").click(function(){
-	    submitAnswer(1);
-	    $("#button_no").removeClass("red-button");
-	    //$("#button_maybe").removeClass("red-button");
-	    $("#button_yes").addClass("red-button");
-    });
-
-    $("#button_maybe").click(function(){
-	    submitAnswer(2);
-	    $("#button_yes").removeClass("red-button");
-	    $("#button_no").removeClass("red-button");
-	   // $("#button_maybe").addClass("red-button");
-    });
-
-    $("#button_no").click(function(){
-	    submitAnswer(0);
-	    $("#button_yes").removeClass("red-button");
-	   // $("#button_maybe").removeClass("red-button");
-	    $("#button_no").addClass("red-button");
-
-    });
-
-
-//TODO: Set default answer to 2 when you come to page
-//TODO: Take time_until_reload/1000 as inital value
-//TODO: Set the styling for selected button with Maybe selected by default
-//TODO: Save notes using API
-//TODO: Change pick set to Post
-// $.post( "/memo/about/2/", "lorem ipsum dolor sit amet");
-//TODO: Retrieve existing note
-//TODO: Make it choose  the current pick status when you load the page
-
-//TODO: Maps API to event create
-
-    setTimeout(reloadPage, {{date.time_until_reload}});
-    setTimeout(changeCountdown, 1000);
-    setInitialNote();
-    submitAnswer(2);
-
+    setInterval(updateTimer, 1000)
+})
 </script>
 {% endblock %}

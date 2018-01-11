@@ -11,11 +11,13 @@
 <section>
     <div class="container">
         <div class="row g-min-height-50vh">
-            <div class="col-md-12 g-mt-50--md">
+            <div class="col-12 g-mt-50--md g-mb-20 text-center">
                 <h1>Future Events</h1>
                 {% if future_events|length == 0 %}
                 <h3>Nothing here yet. Why not register for something?</h3>
                 {% endif %}
+            </div>
+            <div class="col-12">
                 <ul class="row u-timeline-v2-wrap list-unstyled">
                     {% for event in future_events %}
                     <li class="col-md-12 g-mb-40">
@@ -57,6 +59,19 @@
                 <h1>Past Events</h1>
                 <div class="row">
                 {% for event in past_events %}
+                    <div class="col-md-6 col-lg-3 g-mb-30">
+                        <!-- Event -->
+                        {% render_event_small event %}
+                        <!-- End Event -->
+                    </div>
+                {% endfor %}
+                </div>
+                {% endif %}
+
+                {% if created_events|length > 0 %}
+                <h1>Events created by you</h1>
+                <div class="row">
+                {% for event in created_events %}
                     <div class="col-md-6 col-lg-3 g-mb-30">
                         <!-- Event -->
                         {% render_event_small event %}

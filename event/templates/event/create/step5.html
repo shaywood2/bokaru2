@@ -96,7 +96,11 @@
                     {% endif %}
 
                     <div>
-                        <img src="{{ wizard.form.image_data.value|default_if_none:'/static/web/images/event_default_image.jpg' }}" id="image" class="img-fluid w-100">
+                        {% if wizard.form.image_data.value %}
+                        <img src="{{ wizard.form.image_data.value }}" id="image" class="img-fluid w-100">
+                        {% else %}
+                        <img src="{% static 'web/images/event_default_image.jpg' %}" id="image" class="img-fluid w-100">
+                        {% endif %}
                     </div>
                     <div class="form-group">
                         <div class="input-group u-file-attach-v1 g-brd-gray-light-v2">
