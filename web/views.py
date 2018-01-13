@@ -143,8 +143,8 @@ def search_by_place(request, place_name):
     return redirect('web:search')
 
 
-def privacy_policy(request):
-    return render(request, 'web/privacy_policy.html')
+def privacy_statement(request):
+    return render(request, 'web/privacy_statement.html')
 
 
 def terms_of_service(request):
