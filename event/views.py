@@ -308,11 +308,7 @@ def join(request, group_id):
 
         # Attempt to add the user to the group
         try:
-            participant = EventParticipant(
-                group=selected_group,
-                user=current_user,
-                status=EventParticipant.REGISTERED)
-            participant.save()
+            participant = selected_group.add_participant(current_user)
 
             if site_credit > 0:
                 # Subtract amount from the credit

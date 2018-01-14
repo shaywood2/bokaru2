@@ -94,7 +94,7 @@ class CreateEventStep1(forms.Form):
 
         start_time = parse_time(start_time)
         start_date = datetime.combine(start_date, start_time)
-        tomorrow = datetime.now() + timedelta(days=1, hours=1)
+        tomorrow = datetime.now() + timedelta(hours=24)
 
         if start_date < tomorrow:
             raise forms.ValidationError(

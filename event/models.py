@@ -438,7 +438,7 @@ class Event(models.Model):
     def __str__(self):
         stage = get_value(Event.STAGES, self.stage)
         return str(self.id) + ' | ' + self.name + ' @ ' + self.locationName + ', ' + stage + \
-            ' [' + str(self.startDateTime) + ']'
+               ' [' + str(self.startDateTime) + ']'
 
 
 class EventGroup(models.Model):
@@ -538,8 +538,8 @@ class EventGroup(models.Model):
         return True
 
     def get_registered_participants(self):
-        participants = EventParticipant.objects\
-            .filter(group=self, status__in=[EventParticipant.REGISTERED, EventParticipant.PAYMENT_SUCCESS])\
+        participants = EventParticipant.objects \
+            .filter(group=self, status__in=[EventParticipant.REGISTERED, EventParticipant.PAYMENT_SUCCESS]) \
             .order_by('created')
         return participants
 
@@ -550,7 +550,7 @@ class EventGroup(models.Model):
         return Account.objects.filter(user__in=users)
 
     def count_registered_participants(self):
-        participants = EventParticipant.objects.\
+        participants = EventParticipant.objects. \
             filter(group=self, status__in=[EventParticipant.REGISTERED, EventParticipant.PAYMENT_SUCCESS])
         return participants.count()
 
@@ -562,6 +562,17 @@ class EventGroup(models.Model):
     def count_waiting_list_participants(self):
         participants = EventParticipant.objects.filter(group=self, status=EventParticipant.WAITING_LIST)
         return participants.count()
+
+    def add_participant(self, user):
+        # Check if user can register
+        self.can_user_register(user)
+
+        participant = EventParticipant(
+            group=self,
+            user=user,
+            status=EventParticipant.REGISTERED)
+        participant.save()
+        return participant
 
     def add_participant_to_waiting_list(self, user):
         raise Exception('Function not implemented: add_participant_to_waiting_list')
