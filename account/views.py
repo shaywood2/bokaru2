@@ -10,6 +10,7 @@ from django.urls import reverse
 from registration.backends.hmac.views import RegistrationView as BaseRegistrationView
 
 from money.models import UserPaymentInfo
+from money.model_transaction import Transaction
 from event.models import Pick
 from .forms import RegistrationForm, AccountForm, UserPreferenceForm, PhotoForm
 from .models import Account, UserPreference, Memo
@@ -189,6 +190,20 @@ def preferences_payment(request):
         return render(request, 'account/preferences_payment.html', {
             'credit_card': credit_card
         })
+
+
+@login_required
+def preferences_payment_history(request):
+    current_user = request.user
+
+    # Retrieve the payment history for the user
+    transactions = Transaction.objects.get_history_for_user(current_user)
+    remaining_credit = Transaction.objects.get_credit_for_user(current_user)
+
+    return render(request, 'account/preferences_payment_history.html', {
+        'transactions': transactions,
+        'remaining_credit': float(remaining_credit) / 100
+    })
 
 
 @login_required

@@ -1,0 +1,59 @@
+{% extends 'account/base_preferences.html' %}
+
+{% load staticfiles %}
+{% load widget_tweaks %}
+
+{% block title %}Bokaru | Preferences {% endblock %}
+
+{% block sub_nav_location %}sub-nav-payment-history{% endblock %}
+
+{% block profile_content %}
+
+<div class="row">
+    <div class="col-12">
+        <h2>Review your payment history</h2>
+        <h4>Remaining site credit: CAD ${{ remaining_credit|floatformat:"2" }}</h4>
+        <div class="table-responsive">
+            <table class="table">
+                <thead>
+                <tr>
+                    <th>Date</th>
+                    <th>Transaction</th>
+                    <th>Amount</th>
+                </tr>
+                </thead>
+
+                <tbody>
+
+                {% for transaction in transactions %}
+
+                <tr>
+                    <td>{{ transaction.created }}</td>
+                    <td>
+                        {{ transaction.description }}
+
+                        {% if transaction.event %}
+                        <a href="{% url 'event:view' event_id=transaction.event.id %}" target="_blank">{{ transaction.event.name }}</a>
+                        {% endif %}
+                    </td>
+                    <td>
+                        <span class="u-label u-label-success g-color-white">
+                            {% if transaction.transactionType == transaction.CREDIT_CARD %}
+                            <i class="icon-credit-card g-mr-8" data-toggle="tooltip" title="Paid using a credit card"></i>
+                            {% else %}
+                            <i class="icon-present g-mr-8" data-toggle="tooltip" title="Paid using site credit"></i>
+                            {% endif %}
+                            CAD ${{ transaction.displayAmount|floatformat:"2" }}
+                        </span>
+                    </td>
+                </tr>
+
+                {% endfor %}
+
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+{% endblock %}

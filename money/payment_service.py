@@ -39,10 +39,12 @@ def create_card(stripe_id, stripe_token):
     stripe.api_key = STRIPE_KEY
 
     try:
+        LOGGER.info("Stripe creating card for customer with id {}".format(stripe_id))
         customer = stripe.Customer.retrieve(stripe_id)
         card = customer.sources.create(source=stripe_token)
         return card
-    except stripe.error.InvalidRequestError:
+    except stripe.error.InvalidRequestError as e:
+        LOGGER.error(e)
         return None
 
 
@@ -56,6 +58,7 @@ def delete_card(stripe_id, stripe_card_id):
         response = customer.sources.retrieve(stripe_card_id).delete()
         return response.deleted
     except stripe.error.InvalidRequestError:
+        LOGGER.error(e)
         return False
 
 

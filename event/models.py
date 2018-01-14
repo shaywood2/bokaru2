@@ -492,6 +492,16 @@ class EventGroup(models.Model):
 
     # Check if the user is able to register and raise an appropriate exception if not
     def can_user_register(self, user):
+        # Check event stage
+        if self.event.stage == Event.CANCELLED:
+            raise Exception(_('The event is cancelled'))
+
+        if self.event.stage == Event.IN_PROGRESS:
+            raise Exception(_('The event is already in progress'))
+
+        if self.event.stage == Event.COMPLETED:
+            raise Exception(_('The event is already completed'))
+
         # Check if the event is in the future
         if not self.event.is_in_future:
             raise Exception(_('Registration is closed'))
@@ -515,10 +525,21 @@ class EventGroup(models.Model):
         if self.ageMin > account.age or self.ageMax < account.age:
             raise Exception(_('This group does not match your age'))
 
+        # Check user profile status
+        if account.status == Account.CREATED:
+            raise Exception(_('Profile is not completed yet'))
+
+        if account.status == Account.SUSPENDED:
+            raise Exception(_('Account is suspended'))
+
+        if account.status == Account.DELETED:
+            raise Exception(_('Account is deleted'))
+
         return True
 
     def get_registered_participants(self):
-        participants = EventParticipant.objects.filter(group=self, status=EventParticipant.REGISTERED) \
+        participants = EventParticipant.objects\
+            .filter(group=self, status__in=[EventParticipant.REGISTERED, EventParticipant.PAYMENT_SUCCESS])\
             .order_by('created')
         return participants
 
@@ -529,7 +550,8 @@ class EventGroup(models.Model):
         return Account.objects.filter(user__in=users)
 
     def count_registered_participants(self):
-        participants = EventParticipant.objects.filter(group=self, status=EventParticipant.REGISTERED)
+        participants = EventParticipant.objects.\
+            filter(group=self, status__in=[EventParticipant.REGISTERED, EventParticipant.PAYMENT_SUCCESS])
         return participants.count()
 
     def get_waiting_list_participants(self):
@@ -540,22 +562,6 @@ class EventGroup(models.Model):
     def count_waiting_list_participants(self):
         participants = EventParticipant.objects.filter(group=self, status=EventParticipant.WAITING_LIST)
         return participants.count()
-
-    def add_participant(self, user):
-        # Check if user can register
-        self.can_user_register(user)
-
-        # Check if the user is on the waiting list
-        if self.event.is_user_on_waiting_list(user):
-            raise Exception(_('You are already on a waiting list'))
-        else:
-            participant = EventParticipant(group=self, user=user, status=EventParticipant.REGISTERED)
-            participant.save()
-
-        # Check if the event is starting within 24 hours and process payment
-        if self.event.is_starting_within_a_day():
-            # TODO: process payment right away
-            raise Exception(_('Pay first'))
 
     def add_participant_to_waiting_list(self, user):
         raise Exception('Function not implemented: add_participant_to_waiting_list')

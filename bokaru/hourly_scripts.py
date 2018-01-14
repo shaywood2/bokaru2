@@ -7,6 +7,7 @@ from chat.utils import generate_conversations
 from event.models import Event, EventParticipant
 from money.billing_logic import pay_for_event
 from money.payment_service import CardDeclinedException
+from money.model_transaction import Transaction
 
 EVENT_MINIMUM_FILL_PERCENTAGE = settings.EVENT_MINIMUM_FILL_PERCENTAGE
 
@@ -114,6 +115,8 @@ def process_payments():
                 participants = EventParticipant.objects.filter(group__in=event.eventgroup_set.all(),
                                                                status=EventParticipant.REGISTERED)
                 for participant in participants:
+                    # Refund credit if used for event
+                    Transaction.objects.refund_credit_used_for_event(participant.user, event)
                     # TODO: send cancellation emails
                     pass
 
@@ -140,15 +143,15 @@ def process_payments():
                 # TODO: send error emails
                 pass
 
-        result.append(
-            {
-                'id': event.id,
-                'name': event.name,
-                'startTime': event.startDateTime,
-                'stage': event.stage,
-                'numberOfParticipants': event.numberOfParticipants,
-                'success': False
-            }
-        )
+            result.append(
+                {
+                    'id': event.id,
+                    'name': event.name,
+                    'startTime': event.startDateTime,
+                    'stage': event.stage,
+                    'numberOfParticipants': event.numberOfParticipants,
+                    'success': False
+                }
+            )
 
     return result
