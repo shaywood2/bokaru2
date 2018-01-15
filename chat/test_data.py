@@ -11,7 +11,8 @@ from money.models import Product
 
 def make_user(name, gender, birth_date):
     user = User.objects.create_user(username=name, email='bob1@alice.com', password='top_secret')
-    user_profile = Account(user=user, fullName=name, sexualIdentity=gender, birthDate=birth_date)
+    user_profile = Account(user=user, fullName=name, sexualIdentity=gender, birthDate=birth_date,
+                           status=Account.COMPLETED)
     user_profile.save()
     return user
 

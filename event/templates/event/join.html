@@ -34,12 +34,63 @@
                 <div class="u-heading-v1-1 g-bg-secondary g-brd-primary g-my-30">
                     <h1 class="u-heading-v1__title">Payment Info</h1>
                 </div>
-                <h4>
-                    Your card will be charged
-                    <span class="u-label u-label--lg g-rounded-3 g-bg-primary g-mb-15">${{display_price|floatformat:"2"}}</span>
-                </h4>
-                <h5>24 hours before the event starts</h5>
-                <p>If the event is less than 70% full, it will be cancelled and you will not be charged.</p>
+
+                {% if is_creator %}
+
+                <h4>You are the creator of this event and can participate for free!</h4>
+
+                {% else %}
+
+                <div class="row">
+                    <div class="col-6 text-right">
+                        <span class="g-font-size-20">Event price</span>
+                    </div>
+                    <div class="col-6 text-left">
+                        <span class="g-color-primary g-font-size-20">CAD ${{event_price|floatformat:"2"}}</span>
+                    </div>
+                </div>
+                {% if site_credit > 0 %}
+                <div class="row">
+                    <div class="col-6 text-right">
+                        <span class="g-font-size-20">Credit used</span>
+                    </div>
+                    <div class="col-6 text-left">
+                        <span class="g-color-primary g-font-size-20">CAD ${{site_credit|floatformat:"2"}}</span>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-6 text-right">
+                        <span class="g-font-size-20">Credit remaining</span>
+                    </div>
+                    <div class="col-6 text-left">
+                        <span class="g-font-size-20">CAD ${{site_credit_remaining|floatformat:"2"}}</span>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-6 text-right">
+                        <strong class="g-font-size-20">Total</strong>
+                    </div>
+                    <div class="col-6 text-left">
+                        <strong class="g-color-primary g-font-size-20">CAD ${{total_price|floatformat:"2"}}</strong>
+                    </div>
+                </div>
+                {% endif %}
+
+                {% endif %}
+
+                {% if is_free %}
+
+                <form method="post">
+                    {% csrf_token %}
+                    <button class="btn btn-lg btn-block u-btn-primary g-mt-20 g-mb-50 rounded-0">
+                        Confirm!
+                    </button>
+                </form>
+
+                {% else %}
+
+                <h5 class="g-mt-20">Your card will be charged 24 hours before the event starts.</h5>
+                <p>If the event is less than <span class="g-color-primary">80% full</span>, it will be cancelled and you will not be charged.</p>
 
                 {% if credit_card %}
                 <p>Please confirm your payment information</p>
@@ -78,6 +129,8 @@
                         Confirm!
                     </button>
                 </form>
+                {% endif %}
+
                 {% endif %}
             </div>
         </div>
@@ -150,7 +203,5 @@ function stripeTokenHandler(token) {
   // Submit the form
   form.submit()
 }
-
-
 </script>
 {% endblock %}

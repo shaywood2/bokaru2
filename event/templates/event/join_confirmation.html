@@ -1,0 +1,45 @@
+{% extends 'web/base_nav.html' %}
+
+{% load staticfiles %}
+
+{% block title %}Bokaru | Joined event {{ event.name }}{% endblock %}
+
+{% block content %}
+<section>
+    <div class="container">
+        <div class="row">
+            <div class="col-md-6 g-offset-md-3 g-my-100 text-center u-zigzag-top u-zigzag-bottom">
+                <!-- Event Info -->
+                <div class="u-heading-v1-1 g-bg-secondary g-brd-primary g-my-50">
+                    <h1 class="u-heading-v1__title">You have successfully joined the event!</h1>
+                </div>
+                <h1 class="g-color-dark g-font-weight-300 g-font-size-45 g-line-height-1 mb-4">
+                    <a href="{% url 'event:view' event_id=event.id %}">{{ event.name }}</a>
+                </h1>
+                <h2 class="g-font-weight-300 g-font-size-30 mb-0">{{ event.startDateTime|date:'l, N d, Y @ P' }}</h2>
+                <h3 class="g-color-primary g-font-weight-400 g-font-size-30 mb-0">{{ event.locationName }}</h3>
+
+                <!-- Group Info -->
+                <div class="u-heading-v1-1 g-bg-secondary g-brd-primary g-my-30">
+                    <h1 class="u-heading-v1__title">Group Info</h1>
+                </div>
+                <h1 class="g-color-primary g-font-weight-600">
+                    {{ group.displaySexualIdentity }}
+                </h1>
+                <h2 class="g-mb-100">
+                    Ages: <span class="u-label u-label--lg g-rounded-3 g-bg-primary g-mr-10 g-mb-15">{{ group.ageMin }} &mdash; {{ group.ageMax }}</span>
+                </h2>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}
+
+{% block javascript %}
+<script>
+    gtag('event', 'event_join', {
+      'event_id': '{{ event.id }}',
+      'expected_revenue': '{{ expected_revenue }}'
+    });
+</script>
+{% endblock %}

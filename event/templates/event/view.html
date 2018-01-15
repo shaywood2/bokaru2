@@ -95,9 +95,16 @@
                     <h2 class="g-font-weight-300 g-font-size-30 mb-0">{{ event.startDateTime|date:'l, N d, Y @ P' }}</h2>
                     <h3 class="g-color-primary g-font-weight-400 g-font-size-30 mb-0">{{ event.locationName }}</h3>
                     <p class="lead">{{ event.description | linebreaks }}</p>
-                    {% if event.is_in_future %}
+
+                    {% if can_join %}
                     <a href="#" class="btn btn-lg btn-block u-btn-primary g-mb-30 rounded-0 js-go-to" data-target="#join_event">
                         Sounds good? Let's go!
+                    </a>
+                    {% endif %}
+
+                    {% if can_leave %}
+                    <a href="{% url 'event:leave' event_id=event.id %}" class="btn btn-lg btn-block u-btn-black g-mb-30 rounded-0">
+                        Leave event
                     </a>
                     {% endif %}
                 </div>
@@ -159,7 +166,7 @@
             </div>
         </div>
 
-        {% if event.is_in_future %}
+        {% if event.stage == 1 or event.stage == 2 %}
         <div class="row" id="join_event">
             <div class="col-md-12">
                 <!-- Countdown -->
@@ -199,7 +206,7 @@
                 <!-- Countdown End -->
             </div>
         </div>
-        {% elif event.is_starting_soon %}
+        {% elif event.stage == 3 %}
         <div class="row">
             <div class="col-md-12 g-bg-gray-dark-v1 g-color-white text-center g-py-30 g-my-30">
                 <div class="text-uppercase">

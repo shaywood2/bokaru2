@@ -10,15 +10,17 @@ from django.http import HttpResponseRedirect
 from django.shortcuts import render, reverse, get_object_or_404
 from django.utils.dateparse import parse_time
 from formtools.wizard.views import SessionWizardView
+from stripe import CardError
 
-from money.billing_logic import get_product_by_participant_number
+from money.billing_logic import get_product_by_event_size, get_price_by_user, pay_for_event
 from money.models import UserPaymentInfo
+from money.model_transaction import Transaction
 from .forms import CreateEventStep1, CreateEventStep2, CreateEventStep3, CreateEventStep4a, \
     CreateEventStep4b, CreateEventStep5, CreateEventStep6
-from .models import Event, EventGroup
+from .models import Event, EventGroup, EventParticipant
 
 # Get an instance of a logger
-logger = logging.getLogger(__name__)
+LOGGER = logging.getLogger(__name__)
 
 
 # Return a value from a tuple list by key
@@ -33,8 +35,10 @@ def get_value(tuples, key):
 def view(request, event_id):
     # Fetch the event by ID
     selected_event = get_object_or_404(Event, pk=event_id)
-    # TODO: Get price for user
-    display_price = float(selected_event.product.amount) / 100
+
+    display_price = float(get_price_by_user(request.user, selected_event)) / 100
+    can_leave = False
+    can_join = False
 
     # Get group info
     event_groups = list(selected_event.eventgroup_set.all())
@@ -59,15 +63,23 @@ def view(request, event_id):
         group2_filled_count = group2_participants.count()
         group2_filled_percentage = round(float(group2_filled_count) / selected_event.maxParticipantsInGroup * 100)
 
-    # Check if user can join each group
+    # Check if user can join each group and leave event
     if request.user.is_authenticated and request.user is not None:
         try:
+            can_leave = selected_event.can_user_leave(request.user)
+        except Exception:
+            can_leave = False
+
+        try:
             group1_can_join = group1.can_user_register(request.user)
+            can_join = True
         except Exception:
             group1_can_join = False
+
         if selected_event.numGroups == 2:
             try:
                 group2_can_join = group2.can_user_register(request.user)
+                can_join = True
             except Exception:
                 group2_can_join = False
 
@@ -83,7 +95,9 @@ def view(request, event_id):
         'group2_participants': group2_participants,
         'group1_can_join': group1_can_join,
         'group2_can_join': group2_can_join,
-        'display_price': display_price
+        'display_price': display_price,
+        'can_join': can_join,
+        'can_leave': can_leave
     }
 
     return render(request, 'event/view.html', context)
@@ -176,7 +190,7 @@ class CreateEventWizard(SessionWizardView):
         start_time = parse_time(start_time)
         start_date_time = datetime.combine(start_date, start_time)
         # TODO: figure out the timezone
-        logger.info('startDateTime ' + str(start_date_time))
+        LOGGER.info('startDateTime ' + str(start_date_time))
 
         lat = all_data.get('cityLat')
         lng = all_data.get('cityLng')
@@ -192,7 +206,7 @@ class CreateEventWizard(SessionWizardView):
         elif all_data.get('numGroups') == 2:
             num_participants = int(all_data.get('eventSize')) / 2
 
-        product = get_product_by_participant_number(int(all_data.get('eventSize')))
+        product = get_product_by_event_size(int(all_data.get('eventSize')))
 
         event = Event(
             creator=self.request.user,
@@ -255,31 +269,78 @@ def join(request, group_id):
     current_user = request.user
     selected_group = get_object_or_404(EventGroup, pk=group_id)
     selected_event = selected_group.event
+
     # Retrieve the payment information for the user
     credit_card = UserPaymentInfo.objects.find_credit_card_by_user(current_user)
-    # TODO: figure out the price for user
-    display_price = float(selected_event.product.amount) / 100
-    # TODO: figure out if event is free for the user
-    is_free = False
+
+    event_price = get_price_by_user(current_user, selected_event)
+
+    # Get credit for the user
+    site_credit = Transaction.objects.get_credit_for_user(current_user)
+    site_credit_remaining = 0
+    if site_credit > event_price:
+        site_credit_remaining = site_credit - event_price
+        site_credit = event_price
+
+    total_price = event_price - site_credit
+    if total_price < 0:
+        total_price = 0
+
+    is_free = total_price == 0
+
+    is_creator = current_user == selected_event.creator
 
     if request.method == 'POST':
         # Check if Stripe token is present and update the saved card
         if 'stripeToken' in request.POST:
             token = request.POST['stripeToken']
-            credit_card = UserPaymentInfo.objects.create_or_update_credit_card(current_user, token)
+            try:
+                credit_card = UserPaymentInfo.objects.create_or_update_credit_card(current_user, token)
+            except CardError as ce:
+                body = ce.json_body
+                err = body.get('error', {})
+
+                LOGGER.error(err.get('message'))
+                # Refund credit if applicable
+                Transaction.objects.refund_credit_used_for_event(current_user, selected_event)
+                messages.add_message(request, messages.ERROR, 'Yor card was declined for the following reason: '
+                                     + str(err.get('message')))
+                return HttpResponseRedirect(reverse('event:join', kwargs={'group_id': group_id}))
+            except Exception as e:
+                LOGGER.error(e)
+                # Refund credit if applicable
+                Transaction.objects.refund_credit_used_for_event(current_user, selected_event)
+                messages.add_message(request, messages.ERROR, str(e.message))
+                return HttpResponseRedirect(reverse('event:join', kwargs={'group_id': group_id}))
 
         # Check that credit card exists
         if not credit_card and not is_free:
             messages.add_message(request, messages.ERROR, 'You do not have a credit card on file')
             return HttpResponseRedirect(reverse('event:join', kwargs={'group_id': group_id}))
 
-        # Attempt to add user to the group
+        # Attempt to add the user to the group
         try:
-            selected_group.add_participant(current_user)
-            messages.add_message(request, messages.SUCCESS,
-                                 'Congratulations, you are registered! Don\'t forget to add event to your calendar')
-            return HttpResponseRedirect(reverse('event:view', kwargs={'event_id': selected_event.id}))
+            participant = selected_group.add_participant(current_user)
+
+            if site_credit > 0:
+                # Subtract amount from the credit
+                transaction = Transaction(
+                    transactionType=Transaction.SITE_CREDIT,
+                    user=current_user,
+                    amount=0 - site_credit,
+                    description='Credit used for event registration',
+                    event=selected_event)
+                transaction.save()
+
+            # When joining a confirmed event, make a payment
+            if selected_event.stage == Event.CONFIRMED:
+                pay_for_event(participant, selected_event)
+
+            request.session['joined_group'] = group_id
+            return HttpResponseRedirect(reverse('event:join_confirmation'))
         except Exception as e:
+            # Refund credit if applicable
+            Transaction.objects.refund_credit_used_for_event(current_user, selected_event)
             messages.add_message(request, messages.ERROR, str(e))
             return HttpResponseRedirect(reverse('event:join', kwargs={'group_id': group_id}))
 
@@ -287,8 +348,12 @@ def join(request, group_id):
         'event': selected_event,
         'group': selected_group,
         'credit_card': credit_card,
-        'display_price': display_price,
-        'is_free': is_free
+        'is_free': is_free,
+        'is_creator': is_creator,
+        'event_price': float(event_price) / 100,
+        'site_credit': float(site_credit) / 100,
+        'site_credit_remaining': float(site_credit_remaining) / 100,
+        'total_price': float(total_price) / 100
     }
 
     # Check if user is able to join the group
@@ -300,3 +365,81 @@ def join(request, group_id):
         return HttpResponseRedirect(reverse('event:view', kwargs={'event_id': selected_event.id}))
 
     return render(request, 'event/join.html', context)
+
+
+@login_required
+def join_confirmation(request):
+    group_id = request.session.get('joined_group', None)
+
+    if group_id is None:
+        messages.add_message(request, messages.ERROR, 'We encountered an error, please try again.')
+        return render(request, 'event/join_confirmation.html')
+
+    current_user = request.user
+    selected_group = get_object_or_404(EventGroup, pk=group_id)
+    selected_event = selected_group.event
+
+    event_price = get_price_by_user(current_user, selected_event)
+
+    # Get credit for the user
+    site_credit = Transaction.objects.get_credit_used_for_event(current_user, selected_event)
+    expected_revenue = event_price + site_credit
+
+    context = {
+        'group': selected_group,
+        'event': selected_event,
+        'expected_revenue': float(expected_revenue) / 100
+    }
+    return render(request, 'event/join_confirmation.html', context)
+
+
+@login_required
+def leave(request, event_id):
+    current_user = request.user
+    selected_event = get_object_or_404(Event, pk=event_id)
+
+    # Can user leave the event?
+    try:
+        selected_event.can_user_leave(current_user)
+
+        if request.method == 'POST':
+            # Mark the participant as left
+            participant = EventParticipant.objects.get(user=current_user, group__in=selected_event.eventgroup_set.all(),
+                                                       status=EventParticipant.REGISTERED)
+            participant.status = EventParticipant.LEFT
+            participant.save()
+
+            # Refund the credit if applicable
+            refund = Transaction.objects.refund_credit_used_for_event(current_user, selected_event)
+
+            request.session['left_event'] = event_id
+            request.session['refund'] = refund
+            return HttpResponseRedirect(reverse('event:leave_confirmation'))
+    except Exception as e:
+        messages.add_message(request, messages.ERROR, str(e))
+        return HttpResponseRedirect(reverse('event:view', kwargs={'event_id': event_id}))
+
+    context = {
+        'event': selected_event
+    }
+
+    return render(request, 'event/leave.html', context)
+
+
+@login_required
+def leave_confirmation(request):
+    event_id = request.session.get('left_event', None)
+    refund = request.session.get('refund', None)
+
+    if event_id is None or refund is None:
+        messages.add_message(request, messages.ERROR, 'We encountered an error, please try again.')
+        return render(request, 'event/leave_confirmation.html')
+
+    selected_event = get_object_or_404(Event, pk=event_id)
+
+    context = {
+        'event': selected_event,
+        'refund': float(refund) / 100
+    }
+
+    return render(request, 'event/leave_confirmation.html', context)

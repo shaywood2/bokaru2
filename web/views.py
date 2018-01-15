@@ -143,13 +143,21 @@ def search_by_place(request, place_name):
     return redirect('web:search')
 
 
-def terms_of_use(request):
-    return render(request, 'web/terms_of_use.html')
+def privacy_statement(request):
+    return render(request, 'web/privacy_statement.html')
+
+
+def terms_of_service(request):
+    return render(request, 'web/terms_of_service.html')
+
+
+def refund_policy(request):
+    return render(request, 'web/refund_policy.html')
 
 
 def how_it_works(request):
     return render(request, 'web/how_it_works.html')
 
 
-def privacy_policy(request):
-    return render(request, 'web/privacypolicy.html')
+def about_us(request):
+    return render(request, 'web/about_us.html')

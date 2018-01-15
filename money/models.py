@@ -1,12 +1,7 @@
 from django.conf import settings
-from django.contrib.auth import get_user_model
 from django.db import models
 
 from .payment_service import create_customer, delete_card, create_card
-
-
-def get_sentinel_user():
-    return get_user_model().objects.get_or_create(username='deleted')[0]
 
 
 class PaymentInfoManager(models.Manager):
@@ -82,7 +77,7 @@ class PaymentInfoManager(models.Manager):
 
 
 class UserPaymentInfo(models.Model):
-    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET(get_sentinel_user))
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.PROTECT)
     stripe_customer_id = models.CharField(max_length=150, blank=True)
     credit_card_id = models.CharField(max_length=150, blank=True)
     credit_card_brand = models.CharField(max_length=20, blank=True)

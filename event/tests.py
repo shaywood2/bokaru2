@@ -60,19 +60,19 @@ class EventModelTestCase(TestCase):
         self.group2 = EventGroup(event=self.event, sexualIdentity='male', ageMin=20, ageMax=99)
         self.group2.save()
 
-        ep1 = EventParticipant(group=self.group1, user=self.user1, status='registered')
+        ep1 = EventParticipant(group=self.group1, user=self.user1, status=EventParticipant.REGISTERED)
         ep1.save()
 
-        ep2 = EventParticipant(group=self.group1, user=self.user2, status='registered')
+        ep2 = EventParticipant(group=self.group1, user=self.user2, status=EventParticipant.REGISTERED)
         ep2.save()
 
-        ep3 = EventParticipant(group=self.group2, user=self.user3, status='registered')
+        ep3 = EventParticipant(group=self.group2, user=self.user3, status=EventParticipant.REGISTERED)
         ep3.save()
 
-        ep4 = EventParticipant(group=self.group2, user=self.user4, status='registered')
+        ep4 = EventParticipant(group=self.group2, user=self.user4, status=EventParticipant.REGISTERED)
         ep4.save()
 
-        ep5 = EventParticipant(group=self.group2, user=self.user5, status='waiting_list')
+        ep5 = EventParticipant(group=self.group2, user=self.user5, status=EventParticipant.WAITING_LIST)
         ep5.save()
 
     def test_is_registered(self):
@@ -120,16 +120,16 @@ class EventGroupModelTestCase(TestCase):
         self.group2 = EventGroup(event=self.event, sexualIdentity='male', ageMin=20, ageMax=99)
         self.group2.save()
 
-        self.ep1 = EventParticipant(group=self.group1, user=self.user1, status='registered')
+        self.ep1 = EventParticipant(group=self.group1, user=self.user1, status=EventParticipant.REGISTERED)
         self.ep1.save()
 
-        self.ep2 = EventParticipant(group=self.group1, user=self.user2, status='registered')
+        self.ep2 = EventParticipant(group=self.group1, user=self.user2, status=EventParticipant.REGISTERED)
         self.ep2.save()
 
-        self.ep3 = EventParticipant(group=self.group2, user=self.user3, status='registered')
+        self.ep3 = EventParticipant(group=self.group2, user=self.user3, status=EventParticipant.REGISTERED)
         self.ep3.save()
 
-        self.ep4 = EventParticipant(group=self.group2, user=self.user4, status='registered')
+        self.ep4 = EventParticipant(group=self.group2, user=self.user4, status=EventParticipant.REGISTERED)
         self.ep4.save()
 
         self.ep5 = EventParticipant(group=self.group2, user=self.user5, status='waiting_list')
@@ -140,7 +140,7 @@ class EventGroupModelTestCase(TestCase):
         self.assertEqual(len(self.group1.get_registered_participants()), 2)
 
         # Add another participant
-        ep6 = EventParticipant(group=self.group1, user=self.user6, status='registered')
+        ep6 = EventParticipant(group=self.group1, user=self.user6, status=EventParticipant.REGISTERED)
         ep6.save()
 
         # Must be 3 participants in the group 1 now
@@ -155,7 +155,7 @@ class EventGroupModelTestCase(TestCase):
         self.assertEqual(len(self.group2.get_registered_participants()), 2)
 
         # Add a participant with payment_processed
-        ep7 = EventParticipant(group=self.group2, user=self.user7, status='registered')
+        ep7 = EventParticipant(group=self.group2, user=self.user7, status=EventParticipant.REGISTERED)
         ep7.save()
 
         # Must be 3 participants in the group 2 now
@@ -166,7 +166,7 @@ class EventGroupModelTestCase(TestCase):
         self.assertEqual(self.group1.count_registered_participants(), 2)
 
         # Add another participant
-        ep = EventParticipant(group=self.group1, user=self.user6, status='registered')
+        ep = EventParticipant(group=self.group1, user=self.user6, status=EventParticipant.REGISTERED)
         ep.save()
 
         # Must be 3 participants in the group 1
@@ -199,10 +199,6 @@ class EventGroupModelTestCase(TestCase):
         # Add one too many participants
         with self.assertRaises(Exception):
             self.group1.add_participant(self.user7)
-
-        # Add a user on the waiting list
-        with self.assertRaises(Exception):
-            self.group2.add_participant(self.user5)
 
 
 # Test model Pick
@@ -252,13 +248,13 @@ class PickModelCase(TestCase):
         group1 = EventGroup(event=self.event, sexualIdentity='male', ageMin=20, ageMax=99)
         group1.save()
 
-        ep1 = EventParticipant(group=group1, user=self.user1, status='registered')
+        ep1 = EventParticipant(group=group1, user=self.user1, status=EventParticipant.REGISTERED)
         ep1.save()
 
         group2 = EventGroup(event=self.event2, sexualIdentity='male', ageMin=20, ageMax=99)
         group2.save()
 
-        ep2 = EventParticipant(group=group2, user=self.user1, status='registered')
+        ep2 = EventParticipant(group=group2, user=self.user1, status=EventParticipant.REGISTERED)
         ep2.save()
 
         # Get all matches for user1

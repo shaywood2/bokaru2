@@ -3,7 +3,6 @@
 
 {% block main %}
 <!-- Header -->
-<!--<header id="js-header" class="u-header u-header&#45;&#45;absolute-top g-mb-25">-->
 <header id="js-header" class="u-header u-header--sticky-top u-header--change-logo u-header--change-appearance" data-header-fix-moment="100">
     <div class="u-header__section u-header__section--light g-bg-white-opacity-0_7 g-transition-0_3 g-py-10"
          data-header-fix-moment-exclude="u-header__section--light g-bg-white-opacity-0_7 g-py-10"
@@ -68,11 +67,11 @@
                             aria-labelledby="account-dropdown-invoker">
                             <li id="nav_profile" class="dropdown-item">
                                 <a class="nav-link g-px-0"
-                                   href="{% url 'account:view' %}">View Profile</a>
+                                   href="{% url 'account:view' %}">My Profile</a>
                             </li>
                             <li id="nav_account" class="dropdown-item">
                                 <a class="nav-link g-px-0"
-                                   href="{% url 'account:preferences' %}">Edit Account</a>
+                                   href="{% url 'account:preferences' %}">My Account</a>
                             </li>
                             <li class="dropdown-item">
                                 <a class="nav-link g-px-0"
@@ -278,15 +277,19 @@
                 <ul class="list-unstyled mb-0">
                     <li class="d-flex align-items-baseline g-mb-12">
                         <i class="fa fa-angle-double-right g-mr-8"></i>
-                        <a class="g-color-white-opacity-0_6 g-color-white--hover" href="{% url 'web:search_by_place' place_name='toronto' %}">About Us</a>
+                        <a class="g-color-white-opacity-0_6 g-color-white--hover" href="{% url 'web:about_us' %}">About Us</a>
                     </li>
                     <li class="d-flex align-items-baseline g-mb-12">
                         <i class="fa fa-angle-double-right g-mr-8"></i>
-                        <a class="g-color-white-opacity-0_6 g-color-white--hover" href="{% url 'web:terms_of_use' %}">Terms of Use</a>
+                        <a class="g-color-white-opacity-0_6 g-color-white--hover" href="{% url 'web:terms_of_service' %}">Terms of Service</a>
                     </li>
                     <li class="d-flex align-items-baseline g-mb-12">
                         <i class="fa fa-angle-double-right g-mr-8"></i>
-                        <a class="g-color-white-opacity-0_6 g-color-white--hover" href="{% url 'web:privacy_policy' %}">Privacy Policy</a>
+                        <a class="g-color-white-opacity-0_6 g-color-white--hover" href="{% url 'web:privacy_statement' %}">Privacy Statement</a>
+                    </li>
+                    <li class="d-flex align-items-baseline g-mb-12">
+                        <i class="fa fa-angle-double-right g-mr-8"></i>
+                        <a class="g-color-white-opacity-0_6 g-color-white--hover" href="{% url 'web:refund_policy' %}">Refund Policy</a>
                     </li>
                 </ul>
             </div>
