@@ -46,6 +46,8 @@ class TransactionManager(models.Manager):
                 event=event)
             transaction.save()
 
+        return 0 - credit_used
+
 
 class Transaction(models.Model):
     CREDIT_CARD = 1
@@ -68,10 +70,10 @@ class Transaction(models.Model):
 
     @property
     def displayAmount(self):
-        return (float(self.amount))/100
+        return (float(self.amount)) / 100
 
     objects = TransactionManager()
 
     def __str__(self):
-        return self.user.username + ' | ' + get_value(Transaction.TYPES, self.transactionType)\
+        return self.user.username + ' | ' + get_value(Transaction.TYPES, self.transactionType) \
                + ' ' + str(self.amount) + ' [' + self.description + ']'

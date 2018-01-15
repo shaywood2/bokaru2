@@ -392,6 +392,27 @@ class Event(models.Model):
         duration_in_seconds = self.duration * 60
         return duration_in_seconds < seconds_since_start < duration_in_seconds + 1800
 
+    # Check if the user is able to leave and raise an appropriate exception if not
+    def can_user_leave(self, user):
+        # Check event stage
+        if self.stage == Event.CANCELLED:
+            raise Exception(_('The event is cancelled'))
+
+        if self.stage == Event.IN_PROGRESS:
+            raise Exception(_('The event is already in progress'))
+
+        if self.stage == Event.COMPLETED:
+            raise Exception(_('The event is already completed'))
+
+        if self.stage == Event.CONFIRMED:
+            raise Exception(_('The event is starting soon and the deadline to leave has passed'))
+
+        # Check if registered
+        if not self.is_user_registered(user):
+            raise Exception(_('You are not registered for this event'))
+
+        return True
+
     # Add a photo from a byte stream
     def add_photo(self, byte_stream, size=800, x=None, y=None, w=None, h=None):
         image = Image.open(byte_stream)
@@ -596,15 +617,17 @@ class EventParticipant(models.Model):
     WAITING_LIST = 'waiting_list'
     PAYMENT_SUCCESS = 'payment_success'
     PAYMENT_FAILURE = 'payment_failure'
+    LEFT = 'left'
 
     group = models.ForeignKey(EventGroup, on_delete=models.PROTECT)
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.PROTECT)
-    STATUSES = (
-        (REGISTERED, 'registered'),
-        (WAITING_LIST, 'waiting_list'),
-        (PAYMENT_SUCCESS, 'payment_success'),
-        (PAYMENT_FAILURE, 'payment_failure'),
-    )
+    STATUSES = [
+        (REGISTERED, 'Registered'),
+        (WAITING_LIST, 'On waiting list'),
+        (PAYMENT_SUCCESS, 'Payment success'),
+        (PAYMENT_FAILURE, 'Payment failure'),
+        (LEFT, 'Left event'),
+    ]
     status = models.CharField(max_length=20, choices=STATUSES)
 
     # Automatic timestamps
@@ -612,7 +635,8 @@ class EventParticipant(models.Model):
     updated = models.DateTimeField(auto_now=True)
 
     def __str__(self):
-        return self.user.username + ' [' + str(self.user.id) + '] ' + ' in event: ' + self.group.event.name
+        str_status = get_value(EventParticipant.STATUSES, self.status)
+        return str(self.user) + ' | ' + str_status + ' in event: ' + self.group.event.name
 
 
 class PickManager(models.Manager):

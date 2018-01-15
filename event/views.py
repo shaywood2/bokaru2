@@ -37,6 +37,8 @@ def view(request, event_id):
     selected_event = get_object_or_404(Event, pk=event_id)
 
     display_price = float(get_price_by_user(request.user, selected_event)) / 100
+    can_leave = False
+    can_join = False
 
     # Get group info
     event_groups = list(selected_event.eventgroup_set.all())
@@ -61,15 +63,23 @@ def view(request, event_id):
         group2_filled_count = group2_participants.count()
         group2_filled_percentage = round(float(group2_filled_count) / selected_event.maxParticipantsInGroup * 100)
 
-    # Check if user can join each group
+    # Check if user can join each group and leave event
     if request.user.is_authenticated and request.user is not None:
         try:
+            can_leave = selected_event.can_user_leave(request.user)
+        except Exception:
+            can_leave = False
+
+        try:
             group1_can_join = group1.can_user_register(request.user)
+            can_join = True
         except Exception:
             group1_can_join = False
+
         if selected_event.numGroups == 2:
             try:
                 group2_can_join = group2.can_user_register(request.user)
+                can_join = True
             except Exception:
                 group2_can_join = False
 
@@ -85,7 +95,9 @@ def view(request, event_id):
         'group2_participants': group2_participants,
         'group1_can_join': group1_can_join,
         'group2_can_join': group2_can_join,
-        'display_price': display_price
+        'display_price': display_price,
+        'can_join': can_join,
+        'can_leave': can_leave
     }
 
     return render(request, 'event/view.html', context)
@@ -379,3 +391,55 @@ def join_confirmation(request):
         'expected_revenue': float(expected_revenue) / 100
     }
     return render(request, 'event/join_confirmation.html', context)
+
+
+@login_required
+def leave(request, event_id):
+    current_user = request.user
+    selected_event = get_object_or_404(Event, pk=event_id)
+
+    # Can user leave the event?
+    try:
+        selected_event.can_user_leave(current_user)
+
+        if request.method == 'POST':
+            # Mark the participant as left
+            participant = EventParticipant.objects.get(user=current_user, group__in=selected_event.eventgroup_set.all(),
+                                                       status=EventParticipant.REGISTERED)
+            participant.status = EventParticipant.LEFT
+            participant.save()
+
+            # Refund the credit if applicable
+            refund = Transaction.objects.refund_credit_used_for_event(current_user, selected_event)
+
+            request.session['left_event'] = event_id
+            request.session['refund'] = refund
+            return HttpResponseRedirect(reverse('event:leave_confirmation'))
+    except Exception as e:
+        messages.add_message(request, messages.ERROR, str(e))
+        return HttpResponseRedirect(reverse('event:view', kwargs={'event_id': event_id}))
+
+    context = {
+        'event': selected_event
+    }
+
+    return render(request, 'event/leave.html', context)
+
+
+@login_required
+def leave_confirmation(request):
+    event_id = request.session.get('left_event', None)
+    refund = request.session.get('refund', None)
+
+    if event_id is None or refund is None:
+        messages.add_message(request, messages.ERROR, 'We encountered an error, please try again.')
+        return render(request, 'event/leave_confirmation.html')
+
+    selected_event = get_object_or_404(Event, pk=event_id)
+
+    context = {
+        'event': selected_event,
+        'refund': float(refund) / 100
+    }
+
+    return render(request, 'event/leave_confirmation.html', context)

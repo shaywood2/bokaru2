@@ -1,0 +1,43 @@
+{% extends 'web/base_nav.html' %}
+
+{% load staticfiles %}
+
+{% block title %}Bokaru | Left event {{ event.name }}{% endblock %}
+
+{% block content %}
+<section>
+    <div class="container">
+        <div class="row">
+            <div class="col-md-6 g-offset-md-3 g-my-100 text-center u-zigzag-top u-zigzag-bottom">
+                <!-- Event Info -->
+                <div class="u-heading-v1-1 g-bg-secondary g-brd-primary g-my-50">
+                    <h1 class="u-heading-v1__title">Sorry to see you go!</h1>
+                </div>
+
+                <h4>Why not join another event?</h4>
+                <a href="{% url 'web:search' %}" class="btn btn-lg btn-block u-btn-black g-my-20 rounded-0">
+                    Search events
+                </a>
+
+                <h1 class="g-color-dark g-font-weight-300 g-font-size-45 g-line-height-1 g-mb-20">
+                    We refunded the credit used for this event:
+                </h1>
+                <h2 class="g-font-weight-300 g-font-size-30 g-mb-50 g-color-primary">
+                    CAD ${{refund|floatformat:"2"}}
+                </h2>
+
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}
+
+{% block javascript %}
+<script>
+    gtag('event', 'event_join', {
+      'event_id': '{{ event.id }}',
+      'expected_revenue': '{{ expected_revenue }}'
+    });
+
+</script>
+{% endblock %}
