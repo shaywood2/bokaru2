@@ -48,6 +48,15 @@ class TransactionManager(models.Manager):
 
         return 0 - credit_used
 
+    @staticmethod
+    def apply_welcome_credit(user, amount, description):
+        transaction = Transaction(
+            transactionType=Transaction.SITE_CREDIT,
+            user=user,
+            amount=amount,
+            description=description)
+        transaction.save()
+
 
 class Transaction(models.Model):
     CREDIT_CARD = 1

@@ -32,7 +32,7 @@
             <div class="g-width-60x--md mx-auto">
                 <div class="form-group g-mb-20">
                     <div class="input-group u-shadow-v21 rounded g-mb-15">
-                        {% render_field form.cityName class="form-control form-control-md g-brd-white g-font-size-16 border-right-0 pr-0 g-py-15" placeholder="Enter a location" required=True %}
+                        {% render_field form.cityName class="form-control form-control-md g-brd-white g-font-size-16 border-right-0 pr-0 g-py-15" placeholder="Enter a location" required=True autocomplete="nope" %}
                         {{ form.cityNameShort }}
                         {{ form.cityLat }}
                         {{ form.cityLng }}

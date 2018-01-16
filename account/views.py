@@ -1,5 +1,6 @@
 import logging
 
+from django.conf import settings
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 from django.contrib.auth.signals import user_logged_in
@@ -15,7 +16,7 @@ from event.models import Pick
 from .forms import RegistrationForm, AccountForm, UserPreferenceForm, PhotoForm
 from .models import Account, UserPreference, Memo
 
-logger = logging.getLogger(__name__)
+LOGGER = logging.getLogger(__name__)
 
 
 # Custom view for registration page
@@ -30,11 +31,20 @@ class RegistrationView(BaseRegistrationView):
         acc.user = new_user
         acc.status = Account.CREATED
         acc.save()
+
         # Create user preferences object
         pref = UserPreference()
         pref.user = new_user
         pref.receiveNewsletter = form.cleaned_data.get('newsletter')
         pref.save()
+
+        # Apply welcome credit
+        credit_amount = getattr(settings, 'WELCOME_CREDIT', 0)
+        credit_description = getattr(settings, 'WELCOME_CREDIT_TEXT', 'Bonus site credit')
+        if credit_amount > 0:
+            Transaction.objects.apply_welcome_credit(new_user, credit_amount, credit_description)
+
+        LOGGER.info('Registered a new user: {!s}. Bonus credit amount: {:d}'.format(new_user, credit_amount))
 
 
 # Listen to login signal and put account into session

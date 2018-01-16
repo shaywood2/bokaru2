@@ -37,9 +37,10 @@
 
 {% block javascript %}
 <script>
-    gtag('event', 'event_join', {
-      'event_id': '{{ event.id }}',
-      'expected_revenue': '{{ expected_revenue }}'
+    gtag('event', 'join_event', {
+      'event_category': 'join_event',
+      'event_label': 'join_event',
+      'eventValue': '{{ expected_revenue }}'
     });
 </script>
 {% endblock %}
