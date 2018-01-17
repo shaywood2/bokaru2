@@ -163,6 +163,10 @@
   box-shadow: 2px 2px 1px rgba(0, 0, 0, 0.05)
 }
 
+.promoted {
+  background-color: #e74b3c11 !important;
+}
+
 /* Profile tag */
 .profile {
   border: solid 1px #eee !important;

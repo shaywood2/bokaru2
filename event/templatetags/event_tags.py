@@ -59,7 +59,6 @@ def event_labels(context, event):
     is_starting_soon = event.is_starting_soon()
     hours_until_start = event.get_hours_until_start()
     is_cancelled = event.stage == Event.CANCELLED
-    is_hidden = event.hidden
 
     return {
         'is_registered': is_registered,
@@ -67,7 +66,8 @@ def event_labels(context, event):
         'is_starting_soon': is_starting_soon,
         'hours_until_start': hours_until_start,
         'is_cancelled': is_cancelled,
-        'is_hidden': is_hidden
+        'is_hidden': event.hidden,
+        'is_promoted': event.promoted
     }
 
 
@@ -84,7 +84,6 @@ def event_labels_small(context, event):
     is_starting_soon = event.is_starting_soon()
     hours_until_start = event.get_hours_until_start()
     is_cancelled = event.stage == Event.CANCELLED
-    is_hidden = event.hidden
 
     return {
         'is_registered': is_registered,
@@ -92,5 +91,6 @@ def event_labels_small(context, event):
         'is_starting_soon': is_starting_soon,
         'hours_until_start': hours_until_start,
         'is_cancelled': is_cancelled,
-        'is_hidden': is_hidden
+        'is_hidden': event.hidden,
+        'is_promoted': event.promoted
     }

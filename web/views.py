@@ -94,8 +94,9 @@ def search(request):
     if request.GET.get('cityName'):
         form = SearchForm(request.GET, instance=preferences)
         if form.is_valid():
-            # Save updated search parameters
-            form.save()
+            if request.user.is_authenticated:
+                # Save updated search parameters
+                form.save()
             # Update search parameters from the form
             search_params = form.cleaned_data
     else:

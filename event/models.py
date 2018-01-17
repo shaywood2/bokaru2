@@ -62,6 +62,9 @@ class EventManager(models.Manager):
         filter_query = self.filter(startDateTime__gte=hour_from_now, hidden=False, deleted=False,
                                    stage__in=[Event.REGISTRATION_OPEN, Event.CONFIRMED])
 
+        if 'promoted_only' in kwargs and kwargs.get('promoted_only') is True:
+            filter_query = filter_query.filter(promoted=True)
+
         # Search by distance
         if 'cityLat' in kwargs and 'cityLng' in kwargs and 'distance' in kwargs and 'distanceUnits' in kwargs:
             lat = kwargs.get('cityLat')
@@ -116,20 +119,27 @@ class EventManager(models.Manager):
                     continue
 
             # Advanced filtering by group genders
-            sexual_identity = kwargs.get('sexual_identity')
-            age = kwargs.get('age')
-            user = {'sexualIdentity': sexual_identity, 'age': age}
+            if 'sexual_identity' in kwargs and 'age' in kwargs and 'lookingForGenderList' in kwargs\
+                    and kwargs.get('sexual_identity') is not None \
+                    and kwargs.get('age') is not None \
+                    and kwargs.get('lookingForGenderList') is not None:
+                sexual_identity = kwargs.get('sexual_identity')
+                age = kwargs.get('age')
+                user = {'sexualIdentity': sexual_identity, 'age': age}
 
-            looking_for_gender_list = kwargs.get('lookingForGenderList').split('|') \
-                if 'lookingForGenderList' in kwargs else []
-            looking_for_age_min = kwargs.get('lookingForAgeMin') if 'lookingForAgeMin' in kwargs else 18
-            looking_for_age_max = kwargs.get('lookingForAgeMax') if 'lookingForAgeMax' in kwargs else 120
-            looking_for = []
-            for sexual_identity in looking_for_gender_list:
-                looking_for.append(
-                    {'sexualIdentity': sexual_identity, 'ageMin': looking_for_age_min, 'ageMax': looking_for_age_max})
-            if not event.groupsMatchCriteria(user, looking_for):
-                continue
+                looking_for_gender_list = kwargs.get('lookingForGenderList').split('|') \
+                    if 'lookingForGenderList' in kwargs else []
+                looking_for_age_min = kwargs.get('lookingForAgeMin') if 'lookingForAgeMin' in kwargs else 18
+                looking_for_age_max = kwargs.get('lookingForAgeMax') if 'lookingForAgeMax' in kwargs else 120
+                looking_for = []
+                for sexual_identity in looking_for_gender_list:
+                    looking_for.append(
+                        {'sexualIdentity': sexual_identity,
+                         'ageMin': looking_for_age_min,
+                         'ageMax': looking_for_age_max
+                         })
+                if not event.groupsMatchCriteria(user, looking_for):
+                    continue
 
             result.append(event)
 
@@ -271,6 +281,8 @@ class Event(models.Model):
     deleted = models.BooleanField(default=False)
     # Hidden flag
     hidden = models.BooleanField(default=False)
+    # Promoted flag
+    promoted = models.BooleanField(default=False)
 
     # Automatic timestamps
     created = models.DateTimeField(auto_now_add=True)

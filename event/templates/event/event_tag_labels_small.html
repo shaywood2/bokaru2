@@ -1,3 +1,8 @@
+{% if is_promoted %}
+    <span class="u-label g-rounded-3 g-bg-primary over-overlay" data-toggle="tooltip" data-placement="top" title="Official Bokaru event!">
+        <i class="icon-trophy g-mr-3"></i>
+    </span>
+{% endif %}
 {% if is_cancelled %}
     <span class="u-label g-rounded-3 g-bg-primary over-overlay" data-toggle="tooltip" data-placement="top" title="Event is cancelled, not enough participants">
         <i class="icon-ban g-mr-3"></i>

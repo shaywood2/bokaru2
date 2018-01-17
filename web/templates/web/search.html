@@ -81,7 +81,7 @@
                     <!-- User parameters -->
                     <h2 class="h5 text-uppercase g-color-gray-dark-v1 g-mt-30">I am a</h2>
                     <hr class="g-brd-gray-light-v4 g-my-15">
-                    <span class="g-color-primary">{{ form.age.value }}</span> years old <span class="g-color-primary">{{ sexual_identity_display }}</span>
+                    <span class="g-color-primary">{{ form.age.value|default_if_none:"Unspecified" }}</span> years old <span class="g-color-primary">{{ sexual_identity_display }}</span>
                     {{ form.age }}
                     {% render_field form.sexual_identity class="g-hidden-xs-up" %}
                     {% else %}
@@ -243,6 +243,18 @@
                             <span>Show sold out events</span>
                             <span class="u-check">
                                 {% render_field form.show_full class="g-hidden-xs-up g-pos-abs g-top-0 g-right-0" %}
+                                <span class="u-check-icon-radio-v7">
+                                    <i class="d-inline-block"></i>
+                                </span>
+                            </span>
+                        </label>
+                    </div>
+
+                    <div class="form-group g-mt-30">
+                        <label class="d-flex align-items-center justify-content-between">
+                            <span>Search only official events</span>
+                            <span class="u-check">
+                                {% render_field form.promoted_only class="g-hidden-xs-up g-pos-abs g-top-0 g-right-0" %}
                                 <span class="u-check-icon-radio-v7">
                                     <i class="d-inline-block"></i>
                                 </span>

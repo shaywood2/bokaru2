@@ -16,7 +16,7 @@ logger = logging.getLogger(__name__)
 # Basic info
 class CreateEventStep1(forms.Form):
     error_messages = {
-        'too_soon': _('The event must start at least 24 hours from now.'),
+        'too_soon': _('The event must start at least 48 hours from now.'),
         'location_not_found': _('Location was not found, please update it to something that Google knows.')
     }
 
@@ -94,7 +94,7 @@ class CreateEventStep1(forms.Form):
 
         start_time = parse_time(start_time)
         start_date = datetime.combine(start_date, start_time)
-        tomorrow = datetime.now() + timedelta(hours=24)
+        tomorrow = datetime.now() + timedelta(hours=48)
 
         if start_date < tomorrow:
             raise forms.ValidationError(

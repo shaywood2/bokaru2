@@ -36,6 +36,11 @@ class RegistrationView(BaseRegistrationView):
         pref = UserPreference()
         pref.user = new_user
         pref.receiveNewsletter = form.cleaned_data.get('newsletter')
+        # Set Toronto as default search location
+        pref.cityName = 'Toronto, ON, Canada'
+        pref.cityNameShort = 'Toronto'
+        pref.cityLat = 43.653226
+        pref.cityLng = -79.3831843
         pref.save()
 
         # Apply welcome credit

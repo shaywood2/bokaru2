@@ -1,12 +1,12 @@
 {% load staticfiles %}
 {% load event_tags %}
 
-<article class="g-bg-white text-center rounded g-mb-5 event g-pos-rel">
+<article class="g-bg-white text-center rounded g-mb-5 event g-pos-rel {% if event.promoted %}promoted{% endif %}">
     <a href="{% url 'event:view' event_id=event.id %}" class="overlay"></a>
     <!-- Event Header -->
-    <header class="g-py-20 g-height-100">
+    <header class="g-py-10 g-height-100">
         <h1 class="h5 g-mb-5">
-            {{ event.name }}
+            {{ event.name|truncatechars:30 }}
             {% event_labels_small event %}
         </h1>
         <div class="d-block g-color-black g-font-weight-600 g-letter-spacing-1 text-uppercase g-mb-0">
