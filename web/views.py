@@ -7,6 +7,7 @@ from django.shortcuts import render, redirect
 
 from account.models import Account, UserPreference
 from event.models import Event, Pick
+from money.model_transaction import Transaction
 from .forms import SearchForm
 from .models import Place
 
@@ -16,7 +17,20 @@ logger = logging.getLogger(__name__)
 
 def index(request):
     if request.user.is_authenticated:
-        return render(request, 'web/index.html', {'user': request.user})
+        current_user = request.user
+        account = Account.objects.get(user=current_user)
+        future_events = Event.objects.get_3_upcoming_events_by_user(current_user)
+        latest_matches = Pick.objects.get_3_latest_matches_by_user(current_user)
+        remaining_credit = Transaction.objects.get_credit_for_user(current_user)
+
+        context = {
+            'account': account,
+            'future_events': future_events,
+            'latest_matches': latest_matches,
+            'remaining_credit': remaining_credit
+        }
+
+        return render(request, 'web/index.html', context)
     else:
         return render(request, 'web/index_landing.html')
 

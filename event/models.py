@@ -165,6 +165,11 @@ class EventManager(models.Manager):
         return self.filter(eventgroup__eventparticipant__user=user).filter(
             startDateTime__gte=timezone.now()).order_by('startDateTime')
 
+    # Get 3 future events that belong to the given user
+    def get_3_upcoming_events_by_user(self, user):
+        return self.filter(eventgroup__eventparticipant__user=user).filter(
+            startDateTime__gte=timezone.now()).order_by('startDateTime')[:3]
+
     # Get all past events that belong to the given user
     def get_all_past_by_user(self, user):
         return self.filter(eventgroup__eventparticipant__user=user).filter(
@@ -659,6 +664,19 @@ class PickManager(models.Manager):
             matches = self.get_all_matches_by_user_and_event(user, event)
             if len(matches) > 0:
                 result[event] = matches
+
+        return result
+
+    def get_3_latest_matches_by_user(self, user):
+        events = Event.objects.get_all_past_by_user(user)
+        result = []
+        for event in reversed(events):
+            matches = self.get_all_matches_by_user_and_event(user, event)
+            for match in matches:
+                if match not in result:
+                    result.append(match)
+                    if len(result) == 3:
+                        return result
 
         return result
 

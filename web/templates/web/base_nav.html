@@ -3,10 +3,10 @@
 
 {% block main %}
 <!-- Header -->
-<header id="js-header" class="u-header u-header--sticky-top u-header--change-logo u-header--change-appearance" data-header-fix-moment="100">
-    <div class="u-header__section u-header__section--light g-bg-white-opacity-0_7 g-transition-0_3 g-py-10"
-         data-header-fix-moment-exclude="u-header__section--light g-bg-white-opacity-0_7 g-py-10"
-         data-header-fix-moment-classes="u-header__section--light g-bg-white u-shadow-v18 g-py-0">
+<header id="js-header" class="u-header u-header--sticky-top u-header--change-logo u-header--change-appearance" data-header-fix-moment="80">
+    <div class="u-header__section u-header__section--light g-bg-transparent g-color-white g-transition-0_3 g-py-10"
+         data-header-fix-moment-exclude="u-header__section--light g-bg-transparent g-color-white g-py-10"
+         data-header-fix-moment-classes="u-header__section--light g-bg-white g-color-gray-dark-v2 u-shadow-v18 g-py-0">
         <!--<div class="u-header__section u-header__section&#45;&#45;light g-bg-white u-shadow-v18">-->
         <nav class="js-mega-menu navbar navbar-expand-lg">
             <!-- Responsive Toggle Button -->
@@ -84,7 +84,7 @@
                     <!-- Guest links -->
                     {% else %}
                     <li class="nav-item g-mx-20--lg">
-                        <a href="{% url 'auth_register' %}" class="nav-link">Register</a>
+                        <a href="{% url 'auth_register' %}" class="btn btn-header">Register</a>
                     </li>
 
                     <li class="nav-item g-mx-20--lg">
