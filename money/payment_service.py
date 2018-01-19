@@ -57,7 +57,7 @@ def delete_card(stripe_id, stripe_card_id):
         customer = stripe.Customer.retrieve(stripe_id)
         response = customer.sources.retrieve(stripe_card_id).delete()
         return response.deleted
-    except stripe.error.InvalidRequestError:
+    except stripe.error.InvalidRequestError as e:
         LOGGER.error(e)
         return False
 
