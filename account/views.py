@@ -165,6 +165,7 @@ def update_photo(request):
             account.add_photo(image_file, x, y, w, h, 400)
 
             # Update image in session
+            request.session['photo_url'] = account.photo.url
             request.session['thumbnail_url'] = account.photoThumbnail.url
 
     # Redirect to edit profile page

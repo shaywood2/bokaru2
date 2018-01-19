@@ -119,7 +119,7 @@ class EventManager(models.Manager):
                     continue
 
             # Advanced filtering by group genders
-            if 'sexual_identity' in kwargs and 'age' in kwargs and 'lookingForGenderList' in kwargs\
+            if 'sexual_identity' in kwargs and 'age' in kwargs and 'lookingForGenderList' in kwargs \
                     and kwargs.get('sexual_identity') is not None \
                     and kwargs.get('age') is not None \
                     and kwargs.get('lookingForGenderList') is not None:
@@ -162,12 +162,14 @@ class EventManager(models.Manager):
 
     # Get all future events that belong to the given user
     def get_all_future_by_user(self, user):
-        return self.filter(eventgroup__eventparticipant__user=user).filter(
+        return self.filter(eventgroup__eventparticipant__user=user,
+                           eventgroup__eventparticipant__status=EventParticipant.REGISTERED).filter(
             startDateTime__gte=timezone.now()).order_by('startDateTime')
 
     # Get 3 future events that belong to the given user
     def get_3_upcoming_events_by_user(self, user):
-        return self.filter(eventgroup__eventparticipant__user=user).filter(
+        return self.filter(eventgroup__eventparticipant__user=user,
+                           eventgroup__eventparticipant__status=EventParticipant.REGISTERED).filter(
             startDateTime__gte=timezone.now()).order_by('startDateTime')[:3]
 
     # Get all past events that belong to the given user
