@@ -311,7 +311,7 @@ def join(request, group_id):
                 LOGGER.error(e)
                 # Refund credit if applicable
                 Transaction.objects.refund_credit_used_for_event(current_user, selected_event)
-                messages.add_message(request, messages.ERROR, str(e.message))
+                messages.add_message(request, messages.ERROR, str(e))
                 return HttpResponseRedirect(reverse('event:join', kwargs={'group_id': group_id}))
 
         # Check that credit card exists
