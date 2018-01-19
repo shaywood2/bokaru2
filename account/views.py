@@ -203,7 +203,8 @@ def preferences_payment(request):
         credit_card = UserPaymentInfo.objects.find_credit_card_by_user(current_user)
 
         return render(request, 'account/preferences_payment.html', {
-            'credit_card': credit_card
+            'credit_card': credit_card,
+            'stripe_secret': settings.STRIPE_SECRET
         })
 
 

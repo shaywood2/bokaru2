@@ -3,6 +3,7 @@ import io
 import logging
 from datetime import datetime
 
+from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.contrib.gis.geos import Point
@@ -13,8 +14,8 @@ from formtools.wizard.views import SessionWizardView
 from stripe import CardError
 
 from money.billing_logic import get_product_by_event_size, get_price_by_user, pay_for_event
-from money.models import UserPaymentInfo
 from money.model_transaction import Transaction
+from money.models import UserPaymentInfo
 from .forms import CreateEventStep1, CreateEventStep2, CreateEventStep3, CreateEventStep4a, \
     CreateEventStep4b, CreateEventStep5, CreateEventStep6
 from .models import Event, EventGroup, EventParticipant
@@ -348,6 +349,7 @@ def join(request, group_id):
         'event': selected_event,
         'group': selected_group,
         'credit_card': credit_card,
+        'stripe_secret': settings.STRIPE_SECRET,
         'is_free': is_free,
         'is_creator': is_creator,
         'event_price': float(event_price) / 100,

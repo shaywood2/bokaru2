@@ -155,6 +155,7 @@ TOKBOX_SECRET = get_env_var('TOKBOX_SECRET')
 
 # Stripe
 STRIPE_KEY = get_env_var('STRIPE_KEY')
+STRIPE_SECRET = get_env_var('STRIPE_SECRET')
 
 # Registration
 REGISTRATION_SALT = get_env_var('REGISTRATION_SALT')

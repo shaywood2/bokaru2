@@ -27,7 +27,7 @@ def index(request):
             'account': account,
             'future_events': future_events,
             'latest_matches': latest_matches,
-            'remaining_credit': remaining_credit
+            'remaining_credit': float(remaining_credit) / 100
         }
 
         return render(request, 'web/index.html', context)
