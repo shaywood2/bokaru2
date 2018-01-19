@@ -17,6 +17,7 @@ class PaymentInfoManager(models.Manager):
 
             # Create a card for an existing Customer
             credit_card = create_card(payment_info.stripe_customer_id, stripe_token)
+            # TODO: handle card creation errors
             # Store the payment info
             payment_info.credit_card_id = credit_card.id
             payment_info.credit_card_brand = credit_card.brand

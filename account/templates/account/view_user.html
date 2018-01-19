@@ -8,7 +8,7 @@
 {% block content %}
 
 <!-- User Block -->
-<section class="g-mb-100">
+<section class="g-mb-100 g-min-height-50vh">
     <div class="container">
         <div class="row">
             <div class="col-lg-8">
@@ -41,7 +41,7 @@
 
                         <!-- Age and location -->
                         <h4 class="h6 g-font-weight-300 g-mb-10">
-                            {{ account.age }} | {{ account.locationName }}
+                            {{ account.age }} | {{ account.locationName|default:"Earth" }}
                         </h4>
 
                         <!-- User Contact Button -->
@@ -57,7 +57,7 @@
                             </button>
                             <h4 class="g-mb-20">You are a match!</h4>
                             <p>Please do not forget to be excellent to each other!</p>
-                            <p>Email: <a href="mailto:{{user.email}}" target="_blank">{{user.email}}</a></p>
+                            <p>Email: <a href="mailto:{{user.email}}" target="_blank">{{ user.email }}</a></p>
                             {{ account.contactInfo | linebreaks }}
                         </div>
                         {% endif %}
@@ -68,7 +68,7 @@
                         <p><i>This section is only visible to you.</i></p>
                         <div class="form-group g-mb-20">
                             <textarea id="memo" class="form-control form-control-md rounded-0" rows="5"
-                                      placeholder="Memo">{{memo}}</textarea>
+                                      placeholder="Memo">{{ memo|default_if_none:"" }}</textarea>
                         </div>
                         <button id="save_memo_button" class="btn btn-lg btn-block u-btn-primary rounded-0 g-py-12">
                             Save memo

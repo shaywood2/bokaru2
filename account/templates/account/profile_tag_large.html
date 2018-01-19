@@ -5,7 +5,7 @@
         <!-- User Info -->
         <div class="col-md-7">
             <h4 class="h5 g-mb-0">{{ profile.fullName }}</h4>
-            <em class="d-block g-color-primary g-font-style-normal g-font-size-default">{{ profile.age }} | {{ profile.locationName }}</em>
+            <em class="d-block g-color-primary g-font-style-normal g-font-size-default">{{ profile.age }} | {{ profile.locationName|default:"Earth" }}</em>
             {% if profile.summary %}
             <!-- Summary -->
             <h3>Self-summary</h3>
