@@ -76,6 +76,15 @@ class PaymentInfoManager(models.Manager):
         except UserPaymentInfo.DoesNotExist:
             return None
 
+    # Find credit card info by user
+    def find_stripe_id_by_user(self, user):
+        try:
+            payment_info = self.get(user=user)
+
+            return payment_info.stripe_customer_id
+        except UserPaymentInfo.DoesNotExist:
+            return None
+
 
 class UserPaymentInfo(models.Model):
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.PROTECT)

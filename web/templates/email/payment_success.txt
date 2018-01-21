@@ -1,0 +1,17 @@
+Receipt from Bokaru
+
+============
+CAD ${{ charge_to_card|floatformat:"2" }} Paid
+============
+
+Event: {{ event_name }}
+{{ invoice_id }}
+{{ date }}
+
+Event Price	CAD ${{ event_price|floatformat:"2" }}
+Discount	CAD ${{ event_price|floatformat:"2" }}
+------------
+Total	CAD ${{ charge_to_card|floatformat:"2" }}
+
+
+Thanks from your friends at Bokaru!

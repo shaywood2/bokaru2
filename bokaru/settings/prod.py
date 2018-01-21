@@ -29,9 +29,11 @@ CACHES = {
 }
 
 # Mailgun backend
-EMAIL_BACKEND = 'django_mailgun.MailgunBackend'
-MAILGUN_ACCESS_KEY = get_env_var('MAILGUN_KEY')
-MAILGUN_SERVER_NAME = get_env_var('MAILGUN_SERVER')
+ANYMAIL = {
+    'MAILGUN_API_KEY': get_env_var('MAILGUN_KEY'),
+    'MAILGUN_SENDER_DOMAIN': get_env_var('MAILGUN_SERVER'),
+}
+EMAIL_BACKEND = 'anymail.backends.mailgun.EmailBackend'
 DEFAULT_FROM_EMAIL = 'Bokaru <admin@bokaru.com>'
 SERVER_EMAIL = 'admin@bokaru.com'
 

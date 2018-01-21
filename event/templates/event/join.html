@@ -140,6 +140,7 @@
 
 {% block javascript %}
 <script type="text/javascript">
+{% if is_free is False %}
 {% if credit_card %}
 let stripe_form = $('#stripe-form')
 let confirm_form = $('#confirm-form')
@@ -203,5 +204,6 @@ function stripeTokenHandler(token) {
   // Submit the form
   form.submit()
 }
+{% endif %}
 </script>
 {% endblock %}

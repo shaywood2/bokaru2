@@ -163,13 +163,15 @@ class EventManager(models.Manager):
     # Get all future events that belong to the given user
     def get_all_future_by_user(self, user):
         return self.filter(eventgroup__eventparticipant__user=user,
-                           eventgroup__eventparticipant__status=EventParticipant.REGISTERED).filter(
+                           eventgroup__eventparticipant__status__in=[
+                               EventParticipant.REGISTERED, EventParticipant.PAYMENT_SUCCESS]).filter(
             startDateTime__gte=timezone.now()).order_by('startDateTime')
 
     # Get 3 future events that belong to the given user
     def get_3_upcoming_events_by_user(self, user):
         return self.filter(eventgroup__eventparticipant__user=user,
-                           eventgroup__eventparticipant__status=EventParticipant.REGISTERED).filter(
+                           eventgroup__eventparticipant__status__in=[
+                               EventParticipant.REGISTERED, EventParticipant.PAYMENT_SUCCESS]).filter(
             startDateTime__gte=timezone.now()).order_by('startDateTime')[:3]
 
     # Get all past events that belong to the given user
@@ -278,7 +280,7 @@ class Event(models.Model):
     # Image
     photo = models.ImageField(blank=True)
     photoMedium = ImageSpecField(source='photo',
-                                 processors=[ResizeToFill(250, 250)],
+                                 processors=[ResizeToFill(300, 300)],
                                  format='JPEG',
                                  options={'quality': 80})
     # Associated product

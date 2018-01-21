@@ -72,6 +72,7 @@ class Transaction(models.Model):
     amount = models.IntegerField()  # Price in cents
     description = models.CharField(max_length=150, blank=True)
     event = models.ForeignKey(Event, blank=True, null=True, on_delete=models.PROTECT)
+    stripe_charge_id = models.CharField(max_length=150, blank=True)
 
     # Automatic timestamps
     created = models.DateTimeField(auto_now_add=True)

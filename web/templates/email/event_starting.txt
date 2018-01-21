@@ -1,0 +1,7 @@
+Event {{ event_name }} is starting really soon ({{ event_start_time|date:'l, N d, Y @ P' }})!
+
+Don't miss out on the fun, join the event as soon as possible!
+
+Follow this link: http://bokaru.com/chat/
+
+- Your friends at Bokaru

@@ -75,7 +75,7 @@ def create_charge(amount, currency, user_id, event_id, stripe_id):
         customer=stripe_id
     )
     LOGGER.info("Stripe charge created: {}".format(charge.id))
-    pass
+    return charge
 
 
 class CardDeclinedException(Exception):

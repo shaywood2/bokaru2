@@ -3,11 +3,12 @@ import logging
 from django.conf import settings
 from django.utils import timezone
 
+from bokaru.email import send_email
 from chat.utils import generate_conversations
 from event.models import Event, EventParticipant
 from money.billing_logic import pay_for_event
-from money.payment_service import CardDeclinedException
 from money.model_transaction import Transaction
+from money.payment_service import CardDeclinedException
 
 EVENT_MINIMUM_FILL_PERCENTAGE = settings.EVENT_MINIMUM_FILL_PERCENTAGE
 
@@ -41,7 +42,17 @@ def activate_events():
                 }
             )
 
-            # TODO: send email reminders
+            # Send email reminders
+            participants = EventParticipant.objects.filter(group__in=event.eventgroup_set.all(),
+                                                           status=EventParticipant.PAYMENT_SUCCESS)
+            for participant in participants:
+                merge_data = {
+                    'event_name': event.name,
+                    'event_start_time': event.startDateTime
+                }
+
+                send_email(participant.user.email, merge_data, 'event_starting')
+
         except Exception as e:
             LOGGER.error('Failed to generate conversations for event {:d}. Error message: {!s}'.format(event.id, e))
 
@@ -72,7 +83,8 @@ def process_payments():
         try:
             LOGGER.info('Processing payments for event: {:d}'.format(event.id))
 
-            # Check if there are enough participants (over 80%)
+            # Check if there are enough participants (over 50%)
+            # TODO: check filled percentage of every group
             if event.filledPercentage >= EVENT_MINIMUM_FILL_PERCENTAGE:
                 # Make sure that product exists
                 product = event.product
@@ -117,8 +129,16 @@ def process_payments():
                 for participant in participants:
                     # Refund credit if used for event
                     Transaction.objects.refund_credit_used_for_event(participant.user, event)
-                    # TODO: send cancellation emails
-                    pass
+                    # Send cancellation emails
+
+                    merge_data = {
+                        'username': participant.user.username,
+                        'event_name': event.name,
+                        'event_start_time': event.startDateTime,
+                        'event_id': event.id
+                    }
+
+                    send_email(participant.user.email, merge_data, 'event_cancelled')
 
                 event.stage = Event.CANCELLED
                 event.save()

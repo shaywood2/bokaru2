@@ -1,13 +1,11 @@
-import os
 import json
+import os
 
 from django.core.exceptions import ImproperlyConfigured
-
 
 # Build paths
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 PROJECT_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-
 
 # Read env file
 with open(BASE_DIR + '/env.json') as f:
@@ -42,6 +40,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
 
+    'anymail',
     'imagekit',
     'widget_tweaks',
     'formtools'
@@ -144,7 +143,7 @@ DATABASES = {
 SESSION_ENGINE = 'django.contrib.sessions.backends.cached_db'
 
 # Event settings
-EVENT_MINIMUM_FILL_PERCENTAGE = 80
+EVENT_MINIMUM_FILL_PERCENTAGE = 50
 
 # ===========
 # Secret keys
