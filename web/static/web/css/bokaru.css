@@ -159,6 +159,20 @@
   color: #fff;
 }
 
+.navbar.hs-mobile-state .u-main-nav-v5 .nav-link {
+  color: #333;
+}
+
+.navbar.hs-mobile-state .hamburger-inner,
+.navbar.hs-mobile-state .hamburger-inner:before,
+.navbar.hs-mobile-state .hamburger-inner:after {
+  /*background-color: #fff;*/
+}
+
+#navBar.hs-mobile-state {
+  background-color: #fff;
+}
+
 .js-header-change-moment .navbar .u-main-nav-v5 .nav-link {
   color: #333;
 }
