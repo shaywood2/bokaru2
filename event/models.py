@@ -195,7 +195,10 @@ class EventManager(models.Manager):
         now = timezone.now()
         hour_from_now = now + timedelta(hours=1)
         half_hour_ago = now - timedelta(minutes=30)
-        events = self.filter(eventgroup__eventparticipant__user=user).order_by('-startDateTime')
+        events = self.filter(eventgroup__eventparticipant__user=user,
+                             eventgroup__eventparticipant__status__in=[
+                                 EventParticipant.REGISTERED, EventParticipant.PAYMENT_SUCCESS
+                             ], stage=Event.IN_PROGRESS).order_by('-startDateTime')
 
         for event in events:
             if event.startDateTime <= hour_from_now and event.endDateTime >= half_hour_ago:

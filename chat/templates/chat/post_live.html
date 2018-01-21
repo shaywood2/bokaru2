@@ -10,10 +10,11 @@
     <div class="container g-min-height-50vh">
         <div class="row text-center g-my-50">
             <div class="col-12">
-                <h1>TADA!</h1>
                 {% if matches|length > 0 %}
+                <h1>TADA!</h1>
                 <h3>The event is over now. Check out your matches below!</h3>
                 {% else %}
+                <h1>Whoops!</h1>
                 <h3>You didn't match with anyone in this event.</h3>
                 {% endif %}
                 <h3>Please take a minute to fill out our
