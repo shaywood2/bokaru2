@@ -98,7 +98,6 @@ def process_payments():
                 for participant in participants:
                     try:
                         pay_for_event(participant, event)
-                        # TODO: send payment successful email
                     except CardDeclinedException as cde:
                         # https://stripe.com/docs/declines/codes
                         # TODO: send card declined email

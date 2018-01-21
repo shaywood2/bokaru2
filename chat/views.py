@@ -110,6 +110,7 @@ def live_event(request):
         matches = Pick.objects.get_all_matches_by_user_and_event(request.user, event)
 
         context = {
+            'user': request.user,
             'event': event,
             'matches': matches,
         }
