@@ -3,7 +3,6 @@ from datetime import datetime
 from datetime import timedelta
 
 from django import forms
-from django.db import models
 from django.utils.dateparse import parse_time
 from django.utils.translation import ugettext_lazy as _
 

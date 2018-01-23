@@ -44,7 +44,8 @@ def activate_events():
 
             # Send email reminders
             participants = EventParticipant.objects.filter(group__in=event.eventgroup_set.all(),
-                                                           status=EventParticipant.PAYMENT_SUCCESS)
+                                                           status__in=[EventParticipant.REGISTERED,
+                                                                       EventParticipant.PAYMENT_SUCCESS])
             for participant in participants:
                 merge_data = {
                     'event_name': event.name,

@@ -1,3 +1,5 @@
+import base64
+import io
 import logging
 
 from django.conf import settings
@@ -10,9 +12,9 @@ from django.shortcuts import get_object_or_404, render
 from django.urls import reverse
 from registration.backends.hmac.views import RegistrationView as BaseRegistrationView
 
-from money.models import UserPaymentInfo
-from money.model_transaction import Transaction
 from event.models import Pick
+from money.model_transaction import Transaction
+from money.models import UserPaymentInfo
 from .forms import RegistrationForm, AccountForm, UserPreferenceForm, PhotoForm
 from .models import Account, UserPreference, Memo
 
@@ -132,6 +134,17 @@ def edit(request):
         if form.is_valid():
             form.save()
 
+            image_data = form.cleaned_data['image_data']
+
+            # Add photo
+            if image_data and len(image_data) > 0:
+                img_format, img_data = image_data.split(';base64,')
+                byte_stream = io.BytesIO(base64.b64decode(img_data))
+                account.add_photo(byte_stream, 400)
+
+                request.session['photo_url'] = account.photo.url
+                request.session['thumbnail_url'] = account.photoThumbnail.url
+
             # Update session
             request.session['profile_incomplete'] = account.status == Account.CREATED
 
@@ -144,32 +157,6 @@ def edit(request):
         photo_url = account.photo.url
 
     return render(request, 'account/edit.html', {'form': form, 'photo_url': photo_url, 'email': current_user.email})
-
-
-@login_required()
-def update_photo(request):
-    current_user = request.user
-    account = Account.objects.get(user=current_user)
-
-    if request.method == 'POST':
-        form = PhotoForm(request.POST, request.FILES)
-        if form.is_valid():
-            image_file = request.FILES['upload_image'].read()
-
-            # Get cropping parameters
-            x = form.cleaned_data.get('crop_x')
-            y = form.cleaned_data.get('crop_y')
-            w = form.cleaned_data.get('crop_w')
-            h = form.cleaned_data.get('crop_h')
-
-            account.add_photo(image_file, x, y, w, h, 400)
-
-            # Update image in session
-            request.session['photo_url'] = account.photo.url
-            request.session['thumbnail_url'] = account.photoThumbnail.url
-
-    # Redirect to edit profile page
-    return HttpResponseRedirect(reverse('account:view'))
 
 
 @login_required

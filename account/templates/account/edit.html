@@ -9,7 +9,7 @@
 <script src="https://maps.googleapis.com/maps/api/js?libraries=places&key=AIzaSyBTwfHuVilarsPOOE4Opm4GaG9I2dfbyCw" type="text/javascript"></script>
 
 <!-- Datepicker -->
-<link  href="{% static 'web/vendor/datepicker/datepicker.min.css' %}" rel="stylesheet">
+<link href="{% static 'web/vendor/datepicker/datepicker.min.css' %}" rel="stylesheet">
 {% endblock %}
 
 {% block content %}
@@ -21,14 +21,30 @@
             <div class="row">
                 <div class="col-lg-4 g-mb-40 g-mb-0--lg">
                     <!-- User Image -->
-                    <div class="u-shadow-v2 g-brd-around g-brd-gray-light-v4 g-line-height-2 g-mb-20">
+                    <div class="u-shadow-v2 g-brd-around g-brd-bottom-none g-brd-gray-light-v4 g-line-height-2">
                         {% if photo_url == None %}
-                        <img class="img-fluid w-100" src="{% static 'web/images/user_default_image.jpg' %}"
-                             alt="Default picture" id="default_avatar"/>
+                        <img class="img-fluid w-100" src="{% static 'web/images/user_default_image.jpg' %}" alt="Default picture" id="image"/>
                         {% else %}
-                        <img class="img-fluid w-100" src="{{ photo_url }}" alt="Profile picture" id="avatar"/>
+                        <img class="img-fluid w-100" src="{{ photo_url }}" alt="Profile picture" id="image"/>
                         {% endif %}
                     </div>
+                    <div class="form-group">
+                        <div class="input-group u-file-attach-v1 g-brd-gray-light-v2">
+                            <input id="filename" class="form-control form-control-md rounded-0" type="text" placeholder="Filename" readonly=""
+                                   value="{{ wizard.form.image_name.value | default_if_none:'' }}">
+
+                            <div class="input-group-btn">
+                                <button class="btn btn-md u-btn-primary rounded-0" type="submit">Browse</button>
+                                <input type="file" id="upload_image">
+                            </div>
+                            <a id="clear_image" class="btn btn-md u-btn-black rounded-0">
+                                <i class="fa fa-trash g-color-white"></i>
+                            </a>
+                        </div>
+                    </div>
+                    {{ form.image_data }}
+                    {{ form.image_name }}
+                    <button type="submit" class="btn btn-lg btn-block u-btn-primary g-mb-10 rounded-0">Save changes</button>
                     <!-- End User Image -->
 
                     <!-- Contact info -->
@@ -70,12 +86,14 @@
 
                     <!-- Basic info -->
                     <h2>Basic Info</h2>
+                    <p>All of these fields are a part of your <span class="g-color-primary">public</span> account.
+                        Fields marked with <span class="g-color-primary">*</span> are required.</p>
 
                     <!-- Name -->
                     <div class="form-group g-mb-20 {% if form.fullName.errors %}u-has-error-v1{% endif %}">
                         <div class="u-input-group-v2">
                             {% render_field form.fullName class="form-control rounded-0 u-form-control0" %}
-                            <label for="id_fullName">Full name</label>
+                            <label for="id_fullName">Full name<span class="g-color-primary">*</span></label>
                         </div>
                         {% if form.fullName.errors %}
                         <small class="form-control-feedback">{{form.fullName.errors}}</small>
@@ -86,7 +104,7 @@
                     <div class="form-group g-mb-20 {% if form.birthDate.errors %}u-has-error-v1{% endif %}">
                         <div class="input-group u-input-group-v2 g-brd-primary--focus">
                             {% render_field form.birthDate class="form-control form-control-md u-datepicker-v1 g-brd-right-none rounded-0" data-toggle="datepicker" %}
-                            <label for="id_birthDate" style="z-index: 2;">Birth date</label>
+                            <label for="id_birthDate" style="z-index: 2;">Birth date<span class="g-color-primary">*</span></label>
                             <div class="input-group-addon d-flex align-items-center g-bg-white g-color-gray-dark-v5 rounded-0">
                                 <i class="icon-calendar"></i>
                             </div>
@@ -111,7 +129,7 @@
                     <!-- Identity and orientation -->
                     <div class="row">
                         <div class="col-lg-6">
-                            <h4>Sexual Orientation</h4>
+                            <h4>Sexual Orientation<span class="g-color-primary">*</span></h4>
                             <div class="form-group g-mb-20 {% if form.sexualOrientation.errors %}u-has-error-v1{% endif %}">
                                 {% render_field form.sexualOrientation class="form-control rounded-0 u-form-control0 u-select-v1" %}
                                 {% if form.sexualOrientation.errors %}
@@ -129,7 +147,7 @@
                             </div>
                         </div>
                         <div class="col-lg-6">
-                            <h4>Sexual Identity</h4>
+                            <h4>Sexual Identity<span class="g-color-primary">*</span></h4>
                             <div class="form-group g-mb-20 {% if form.sexualIdentity.errors %}u-has-error-v1{% endif %}">
                                 {% render_field form.sexualIdentity class="form-control rounded-0 u-form-control0 u-select-v1" %}
                                 {% if form.sexualIdentity.errors %}
@@ -477,7 +495,7 @@
                     <!-- Looking for -->
                     <h2>Looking for</h2>
                     <!-- Looking for genders list -->
-                    <h4>Gender(s)</h4>
+                    <h4>Gender(s)<span class="g-color-primary">*</span></h4>
                     <div class="form-group g-mb-20 {% if form.lookingForGenderList.errors %}u-has-error-v1{% endif %}">
                         <h4 id="lfgContainer" class="g-mt-15"></h4>
                         <select id="lfgInput" class="form-control rounded-0 u-form-control0 u-select-v1">
@@ -492,34 +510,23 @@
                         {{ form.lookingForGenderList }}
                     </div>
 
-                    <h4>Age range</h4>
+                    <h4>Age range<span class="g-color-primary">*</span></h4>
                     <div class="row">
-                        <div class="col-lg-6">
-                            <!-- Looking for age min -->
-                            <div class="form-group g-mb-20 {% if form.lookingForAgeMin.errors %}u-has-error-v1{% endif %}">
-                                <div class="input-group g-brd-primary--focus">
-                                    {% render_field form.lookingForAgeMin class="form-control rounded-0 u-form-control0" %}
-                                </div>
-                                {% if form.lookingForAgeMin.errors %}
-                                <small class="form-control-feedback">{{form.lookingForAgeMin.errors}}</small>
-                                {% endif %}
-                            </div>
-                        </div>
-                        <div class="col-lg-6">
-                            <!-- Looking for age max -->
-                            <div class="form-group g-mb-20 {% if form.lookingForAgeMax.errors %}u-has-error-v1{% endif %}">
-                                <div class="input-group g-brd-primary--focus">
-                                    {% render_field form.lookingForAgeMax class="form-control rounded-0 u-form-control0" %}
-                                </div>
-                                {% if form.lookingForAgeMax.errors %}
-                                <small class="form-control-feedback">{{form.lookingForAgeMax.errors}}</small>
-                                {% endif %}
+                        <div class="col-12">
+                            {{ form.lookingForAgeMin }}
+                            {{ form.lookingForAgeMax }}
+                            <div class="form-group g-mb-40">
+                                <label class="g-mb-10">
+                                    Between <span class="g-color-primary"><span id="ageRangeResult">{{ form.lookingForAgeMin.value }} - {{ form.lookingForAgeMax.value }}</span></span> years old
+                                </label>
+                                <div id="ageRangeSlider" class="u-slider-v1" data-result-container="ageRangeResult" data-range="1"
+                                     data-default="{{ form.lookingForAgeMin.value }}, {{ form.lookingForAgeMax.value }}" data-min="18" data-max="88"></div>
                             </div>
                         </div>
                     </div>
 
                     <!-- Looking for connections list -->
-                    <h4>Kinds of connections you are looking for</h4>
+                    <h4>Kinds of connections<span class="g-color-primary">*</span></h4>
                     <div class="form-group g-mb-20 {% if form.lookingForConnectionsList.errors %}u-has-error-v1{% endif %}">
                         <h4 id="lfcContainer" class="g-mt-15"></h4>
                         <select id="lfcInput" class="form-control rounded-0 u-form-control0 u-select-v1">
@@ -552,7 +559,25 @@
 
 {% block javascript %}
 <!-- Datepicker -->
-<script  src="{% static 'web/vendor/datepicker/datepicker.min.js' %}"></script>
+<script src="{% static 'web/vendor/datepicker/datepicker.min.js' %}"></script>
+
+<!-- jQuery UI Core -->
+<script src="{% static 'web/vendor/jquery-ui/ui/widget.js'%}"></script>
+<script src="{% static 'web/vendor/jquery-ui/ui/version.js'%}"></script>
+<script src="{% static 'web/vendor/jquery-ui/ui/keycode.js'%}"></script>
+<script src="{% static 'web/vendor/jquery-ui/ui/position.js'%}"></script>
+<script src="{% static 'web/vendor/jquery-ui/ui/unique-id.js'%}"></script>
+<script src="{% static 'web/vendor/jquery-ui/ui/safe-active-element.js'%}"></script>
+
+<!-- jQuery UI Helpers -->
+<script src="{% static 'web/vendor/jquery-ui/ui/widgets/menu.js'%}"></script>
+<script src="{% static 'web/vendor/jquery-ui/ui/widgets/mouse.js'%}"></script>
+
+<!-- jQuery UI Widgets -->
+<script src="{% static 'web/vendor/jquery-ui/ui/widgets/slider.js'%}"></script>
+
+<!-- JS Unify -->
+<script src="{% static 'web/js/components/hs.slider.js'%}"></script>
 
 <script>
 $(document).on('ready', function () {
@@ -569,6 +594,20 @@ $(document).on('ready', function () {
             $this.removeClass('g-state-not-empty');
         }
     });
+
+    // Init age slider
+    $.HSCore.components.HSSlider.init('#ageRangeSlider')
+
+    let ageMin = $('#id_lookingForAgeMin')
+    let ageMax = $('#id_lookingForAgeMax')
+
+    $('#ageRangeSlider').slider({change: function( event, ui ) {
+        if (ui.handleIndex === 0) {
+            ageMin.val(ui.value)
+        } else if (ui.handleIndex === 1) {
+            ageMax.val(ui.value)
+        }
+    }})
 
     // Listen to changes on orientation and identity selects
     let so = $('#id_sexualOrientation')
@@ -814,6 +853,55 @@ $(document).on('ready', function () {
     })
 
     updateKidsWant()
+
+    let cropper = null
+
+    $('#upload_image').change(function() {
+        if (this.files && this.files[0]) {
+            let reader = new FileReader()
+            reader.onload = function(e) {
+                $('#image').attr('src', e.target.result)
+                let img = document.getElementById('image')
+                if (!!cropper)
+                    cropper.destroy()
+                cropper = new Cropper(img, {
+                    viewMode: 1,
+                    aspectRatio: 1 / 1,
+                    minCropBoxWidth: 200,
+                    minCropBoxHeight: 200,
+                    crop: function(e) {
+                        let canvas = cropper.getCroppedCanvas({
+                            minWidth: 256,
+                            minHeight: 256,
+                            maxWidth: 800,
+                            maxHeight: 800,
+                            fillColor: '#fff',
+                            imageSmoothingEnabled: true,
+                            imageSmoothingQuality: 'high',
+                        })
+                        $('#id_image_data').val(canvas.toDataURL('image/jpeg'))
+                    }
+                })
+            }
+            reader.readAsDataURL(this.files[0])
+            $('#filename').val(this.files[0].name)
+            $('#id_image_name').val(this.files[0].name)
+        }
+    })
+
+    $('#clear_image').click(function() {
+        if (!!cropper)
+            cropper.destroy()
+        {% if photo_url == None %}
+        $('#image').attr('src', '{% static 'web/images/user_default_image.jpg' %}')
+        {% else %}
+        $('#image').attr('src', '{{ photo_url }}')
+        {% endif %}
+        $('#filename').val('')
+        $('#upload_image').val('')
+        $('#id_image_data').val('')
+        $('#id_image_name').val('')
+    })
 })
 
 // Google maps script
@@ -836,5 +924,4 @@ function initMap() {
 
 google.maps.event.addDomListener(window, 'load', initMap);
 </script>
-
 {% endblock %}

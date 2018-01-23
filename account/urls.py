@@ -7,8 +7,7 @@ urlpatterns = [
     path('profile/', include([
         path('', views.view, name='view'),
         path('view/<str:username>/', views.view_user, name='view_user'),
-        path('edit/', views.edit, name='edit'),
-        path('edit/photo/', views.update_photo, name='update_photo')
+        path('edit/', views.edit, name='edit')
     ])),
     path('account/', include([
         path('', views.preferences, name='preferences'),

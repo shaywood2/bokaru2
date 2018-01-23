@@ -166,8 +166,8 @@ class Account(models.Model):
     # Looking for
     # TODO: calculate max possible size
     lookingForGenderList = models.CharField(max_length=500, blank=True)
-    lookingForAgeMin = models.PositiveSmallIntegerField(validators=[MinValueValidator(18)], blank=True, null=True)
-    lookingForAgeMax = models.PositiveSmallIntegerField(validators=[MinValueValidator(18)], blank=True, null=True)
+    lookingForAgeMin = models.PositiveSmallIntegerField(validators=[MinValueValidator(18)], default=18)
+    lookingForAgeMax = models.PositiveSmallIntegerField(validators=[MinValueValidator(18)], default=88)
     # TODO: calculate max possible size
     lookingForConnectionsList = models.CharField(max_length=500, blank=True)
 
@@ -294,14 +294,17 @@ class Account(models.Model):
             return True
         return False
 
-    def add_photo(self, new_photo, x, y, w, h, size):
-        # Open the stream as an image
-        stream = io.BytesIO(new_photo)
-        image = Image.open(stream)
+    # Add a photo from a byte stream
+    def add_photo(self, byte_stream, size=400, x=None, y=None, w=None, h=None):
+        image = Image.open(byte_stream)
 
         # Crop and resize the image
-        cropped_image = image.crop((x, y, w + x, h + y))
-        final_image = cropped_image.resize((size, size), Image.ANTIALIAS)
+        if x and y and w and h:
+            # Crop and resize the image
+            cropped_image = image.crop((x, y, w + x, h + y))
+            final_image = cropped_image.resize((size, size), Image.ANTIALIAS)
+        else:
+            final_image = image.resize((size, size), Image.ANTIALIAS)
 
         # Save the image
         stream = io.BytesIO()
@@ -330,6 +333,12 @@ class Account(models.Model):
 
         self.photo = path
         self.save(update_fields=['photo'])
+
+    # Add a photo by reading a file
+    def add_photo_from_file(self, file, size, x, y, w, h):
+        # Open the stream as an image
+        stream = io.BytesIO(file)
+        self.add_photo(stream, size, x, y, w, h)
 
     def __str__(self):
         return self.user.username + ' (' + self.fullName + ')'
@@ -362,7 +371,7 @@ class UserPreference(models.Model):
     # Looking for preferences
     lookingForGenderList = models.CharField(max_length=100, blank=True)
     lookingForAgeMin = models.PositiveSmallIntegerField(validators=[MinValueValidator(18)], default=18)
-    lookingForAgeMax = models.PositiveSmallIntegerField(validators=[MinValueValidator(18)], default=120)
+    lookingForAgeMax = models.PositiveSmallIntegerField(validators=[MinValueValidator(18)], default=88)
 
     # Event preferences
     eventTypeList = models.CharField(max_length=100, blank=True, null=True)

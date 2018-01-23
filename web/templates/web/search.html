@@ -93,7 +93,7 @@
                         <label class="g-mb-10">
                             <span class="g-color-primary"><span id="ageResult">{{ form.age.value }}</span></span> years old
                         </label>
-                        <div id="ageSlider" class="u-slider-v1" data-result-container="ageResult" data-default="{{ form.age.value }}" data-min="18" data-max="120"></div>
+                        <div id="ageSlider" class="u-slider-v1" data-result-container="ageResult" data-default="{{ form.age.value }}" data-min="18" data-max="88"></div>
                     </div>
                     {% render_field form.sexual_identity class="form-control rounded-0 u-form-control0 u-select-v1" %}
                     {% endif %}
@@ -141,7 +141,7 @@
                             Between <span class="g-color-primary"><span id="ageRangeResult">{{ form.lookingForAgeMin.value }} - {{ form.lookingForAgeMax.value }}</span></span> years old
                         </label>
                         <div id="ageRangeSlider" class="u-slider-v1" data-result-container="ageRangeResult" data-range="1"
-                             data-default="{{ form.lookingForAgeMin.value }}, {{ form.lookingForAgeMax.value }}" data-min="18" data-max="120"></div>
+                             data-default="{{ form.lookingForAgeMin.value }}, {{ form.lookingForAgeMax.value }}" data-min="18" data-max="88"></div>
                     </div>
 
                     <button class="btn btn-md u-btn-primary rounded-0" type="submit"><i class="icon-magnifier g-pos-rel g-top-1"></i> Search</button>

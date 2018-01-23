@@ -130,7 +130,7 @@ class EventManager(models.Manager):
                 looking_for_gender_list = kwargs.get('lookingForGenderList').split('|') \
                     if 'lookingForGenderList' in kwargs else []
                 looking_for_age_min = kwargs.get('lookingForAgeMin') if 'lookingForAgeMin' in kwargs else 18
-                looking_for_age_max = kwargs.get('lookingForAgeMax') if 'lookingForAgeMax' in kwargs else 120
+                looking_for_age_max = kwargs.get('lookingForAgeMax') if 'lookingForAgeMax' in kwargs else 88
                 looking_for = []
                 for sexual_identity in looking_for_gender_list:
                     looking_for.append(
@@ -164,19 +164,24 @@ class EventManager(models.Manager):
     def get_all_future_by_user(self, user):
         return self.filter(eventgroup__eventparticipant__user=user,
                            eventgroup__eventparticipant__status__in=[
-                               EventParticipant.REGISTERED, EventParticipant.PAYMENT_SUCCESS]).filter(
+                               EventParticipant.REGISTERED,
+                               EventParticipant.PAYMENT_SUCCESS]).filter(
             startDateTime__gte=timezone.now()).order_by('startDateTime')
 
     # Get 3 future events that belong to the given user
     def get_3_upcoming_events_by_user(self, user):
         return self.filter(eventgroup__eventparticipant__user=user,
                            eventgroup__eventparticipant__status__in=[
-                               EventParticipant.REGISTERED, EventParticipant.PAYMENT_SUCCESS]).filter(
+                               EventParticipant.REGISTERED,
+                               EventParticipant.PAYMENT_SUCCESS]).filter(
             startDateTime__gte=timezone.now()).order_by('startDateTime')[:3]
 
     # Get all past events that belong to the given user
     def get_all_past_by_user(self, user):
-        return self.filter(eventgroup__eventparticipant__user=user).filter(
+        return self.filter(eventgroup__eventparticipant__user=user,
+                           eventgroup__eventparticipant__status__in=[
+                               EventParticipant.REGISTERED,
+                               EventParticipant.PAYMENT_SUCCESS]).filter(
             startDateTime__lt=timezone.now()).order_by('-startDateTime')
 
     # Get all past events that belong to the given user
@@ -197,7 +202,8 @@ class EventManager(models.Manager):
         half_hour_ago = now - timedelta(minutes=30)
         events = self.filter(eventgroup__eventparticipant__user=user,
                              eventgroup__eventparticipant__status__in=[
-                                 EventParticipant.REGISTERED, EventParticipant.PAYMENT_SUCCESS
+                                 EventParticipant.REGISTERED,
+                                 EventParticipant.PAYMENT_SUCCESS
                              ], stage=Event.IN_PROGRESS).order_by('-startDateTime')
 
         for event in events:
