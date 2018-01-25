@@ -53,33 +53,38 @@ class AccountForm(ModelForm):
     error_messages = {
         'details_required': _('Please provide more details.'),
         'age_range_error': _('Maximum age should be greater than the minimum age.'),
-        'at_least_one_required': _('Please select at least one.'),
-        'under_18': _('You must be older than 18 to register.')
+        'at_least_one_required': _('Please select at least one item.'),
+        'under_18': _('You must be older than 18 to register.'),
+        'location_not_found': _('Location was not found, please update it to something that Google knows.')
     }
 
     # Change widget type to TextArea
     contactInfo = forms.CharField(max_length=150, required=False, widget=forms.Textarea())
     summary = forms.CharField(max_length=2000, required=False, widget=forms.Textarea())
 
-    # Hide list fields
-    ethnicityList = forms.CharField(widget=forms.HiddenInput(), required=False)
-    languageList = forms.CharField(widget=forms.HiddenInput(), required=False)
-    petList = forms.CharField(widget=forms.HiddenInput(), required=False)
-    lookingForGenderList = forms.CharField(widget=forms.HiddenInput(), required=False)
-    lookingForConnectionsList = forms.CharField(widget=forms.HiddenInput(), required=False)
-
-    # Additional location fields
+    # Additional fields
     cityName = forms.CharField(widget=forms.HiddenInput(), required=False)
     cityLat = forms.FloatField(widget=forms.HiddenInput(), required=False)
     cityLng = forms.FloatField(widget=forms.HiddenInput(), required=False)
+    image_name = forms.CharField(widget=forms.HiddenInput(), required=False)
+    image_data = forms.CharField(widget=forms.HiddenInput(), required=False)
 
     def __init__(self, *args, **kwargs):
         super(AccountForm, self).__init__(*args, **kwargs)
         # Making fields required
         self.fields['fullName'].required = True
         self.fields['birthDate'].required = True
-        self.fields['lookingForAgeMin'].required = True
-        self.fields['lookingForAgeMax'].required = True
+        self.fields['sexualOrientation'].required = True
+        self.fields['sexualIdentity'].required = True
+
+        # Hide fields
+        self.fields['lookingForAgeMin'].widget = forms.HiddenInput()
+        self.fields['lookingForAgeMax'].widget = forms.HiddenInput()
+        self.fields['ethnicityList'].widget = forms.HiddenInput()
+        self.fields['languageList'].widget = forms.HiddenInput()
+        self.fields['petList'].widget = forms.HiddenInput()
+        self.fields['lookingForGenderList'].widget = forms.HiddenInput()
+        self.fields['lookingForConnectionsList'].widget = forms.HiddenInput()
 
     class Meta:
         model = Account
@@ -161,6 +166,20 @@ class AccountForm(ModelForm):
 
         return lfc_list
 
+    def clean(self):
+        cleaned_data = super(AccountForm, self).clean()
+
+        # Validate location
+        if 'locationName' in self.changed_data:
+            city_name = cleaned_data.get('cityName')
+            if not city_name or len(city_name) == 0:
+                raise forms.ValidationError(
+                    self.error_messages['location_not_found'],
+                    code='location_not_found'
+                )
+
+        return cleaned_data
+
     def save(self, commit=True):
         # Update status to completed
         if self.instance.status == Account.CREATED:
@@ -178,16 +197,8 @@ class AccountForm(ModelForm):
         super(AccountForm, self).save(commit=commit)
 
 
-class PhotoForm(forms.Form):
-    # Photo cropping fields
-    upload_image = forms.ImageField()
-    crop_x = forms.FloatField(widget=forms.HiddenInput())
-    crop_y = forms.FloatField(widget=forms.HiddenInput())
-    crop_w = forms.FloatField(widget=forms.HiddenInput())
-    crop_h = forms.FloatField(widget=forms.HiddenInput())
-
-
 class UserPreferenceForm(ModelForm):
     class Meta:
         model = UserPreference
-        exclude = ['user', 'ageMin', 'ageMax', 'numGroups', 'eventType', 'eventSize']
+        exclude = ['user', 'ageMin', 'ageMax', 'numGroups', 'eventType', 'eventSize',
+                   'lookingForAgeMin', 'lookingForAgeMax', 'distance']

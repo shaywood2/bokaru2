@@ -8,7 +8,7 @@
 
 {% block content %}
 <!-- User Block -->
-<section class="g-mb-100">
+<section class="g-mb-100 g-min-height-50vh">
     <div class="container">
         <div class="row">
             <div class="col-lg-8">
@@ -16,47 +16,15 @@
                     <div class="col-lg-6">
                         <!-- User Image -->
                         <div class="g-mb-20">
-                            <form id="image_form" method="post" enctype="multipart/form-data"
-                                  action="{% url 'account:update_photo' %}">
-                                {% csrf_token %}
-
-                                <div class="u-shadow-v2 g-brd-around g-brd-gray-light-v4 g-line-height-2 g-mb-20">
-                                    {% if account.photo is None or account.photo.name == '' %}
-                                    <img class="img-fluid w-100" src="{% static 'web/images/user_default_image.jpg' %}"
-                                         alt="Default picture" id="default_avatar"/>
-                                    {% else %}
-                                    <img class="img-fluid w-100" src="{{ account.photo.url }}" alt="Profile picture"
-                                         id="avatar"/>
-                                    {% endif %}
-                                </div>
-
-                                <!-- errors -->
-                                {% if form.errors %}
-                                <div class="alert fade show g-bg-red-opacity-0_1 g-color-lightred rounded-0"
-                                     role="alert">
-                                    <div class="media">
-                                        <div class="d-flex g-mr-10">
-                                            <i></i>
-                                        </div>
-                                        <div class="media-body">
-                                            <strong>Failed to upload image, please try again.</strong>
-                                        </div>
-                                    </div>
-                                </div>
+                            <div class="u-shadow-v2 g-brd-around g-brd-gray-light-v4 g-line-height-2 g-mb-20">
+                                {% if account.photo is None or account.photo.name == '' %}
+                                <img class="img-fluid w-100" src="{% static 'web/images/user_default_image.jpg' %}"
+                                     alt="Default picture" id="default_avatar"/>
+                                {% else %}
+                                <img class="img-fluid w-100" src="{{ account.photo.url }}" alt="Profile picture"
+                                     id="avatar"/>
                                 {% endif %}
-
-                                <div class="form-group mb-0">
-                                    <label class="u-file-attach-v2 g-color-gray-dark-v5 mb-0">
-                                        {{ photo_form.upload_image }}
-                                        <i class="icon-cloud-upload g-font-size-16 g-pos-rel g-top-2 g-mr-5"></i>
-                                        <span class="js-value">Upload new profile picture</span>
-                                    </label>
-                                    {{ photo_form.crop_x }}
-                                    {{ photo_form.crop_y }}
-                                    {{ photo_form.crop_w }}
-                                    {{ photo_form.crop_h }}
-                                </div>
-                            </form>
+                            </div>
                         </div>
                     </div>
                     {% if profile_incomplete %}
@@ -183,108 +151,4 @@
     </div>
 </section>
 <!-- End User Block -->
-
-<!-- Modal for cropper -->
-<div class="modal fade" id="modalCrop" aria-labelledby="modalLabel" role="dialog" tabindex="-1">
-    <div class="modal-dialog" role="document">
-        <div class="modal-content modal-lg">
-            <div class="modal-header">
-                <button type="button" class="close js-crop-dismiss" data-dismiss="modal"
-                        aria-label="Close">
-                    <span>&times;</span>
-                </button>
-                <h4 class="modal-title" id="modalLabel">Crop the image</h4>
-            </div>
-            <div class="modal-body">
-                <div>
-                    <img src="" id="image" style="max-width: 100%;">
-                </div>
-            </div>
-            <div class="modal-footer">
-                <div class="btn-group pull-left" role="group">
-                    <button type="button" class="btn btn-default js-zoom-in">
-                        <i class="icon-magnifier-add"></i>
-                    </button>
-                    <button type="button" class="btn btn-default js-zoom-out">
-                        <i class="icon-magnifier-remove"></i>
-                    </button>
-                </div>
-                <button type="button" class="btn btn-default js-crop-dismiss" data-dismiss="modal">
-                    Cancel
-                </button>
-                <button type="button" class="btn btn-primary js-crop">Save</button>
-            </div>
-        </div>
-    </div>
-</div>
-<!-- End Modal for cropper -->
-{% endblock %}
-
-{% block javascript %}
-<script>
-$(function() {
-
-    /* SCRIPT TO OPEN THE MODAL WITH THE PREVIEW */
-    $("#id_upload_image").change(function() {
-    console.log('id_upload_image');
-        if (this.files && this.files[0]) {
-            var reader = new FileReader();
-            reader.onload = function(e) {
-                $("#image").attr("src", e.target.result);
-                $("#modalCrop").modal("show");
-            }
-            reader.readAsDataURL(this.files[0]);
-        }
-    });
-
-    /* SCRIPTS TO HANDLE THE CROPPER BOX */
-    var image = document.getElementById('image');
-    var cropBoxData;
-    var canvasData;
-    var cropper;
-
-    $("#modalCrop").on("shown.bs.modal", function() {
-        cropper = new Cropper(image, {
-            viewMode: 1,
-            aspectRatio: 1 / 1,
-            minCropBoxWidth: 200,
-            minCropBoxHeight: 200,
-            ready: function() {
-                cropper.setCropBoxData(cropBoxData).setCanvasData(canvasData);
-            }
-        });
-    }).on("hidden.bs.modal", function() {
-        cropBoxData = cropper.getCropBoxData();
-        canvasData = cropper.getCanvasData();
-        cropper.destroy();
-    });
-
-    // Enable zoom in button
-    $(".js-zoom-in").click(function() {
-        cropper.zoom(0.1);
-    });
-
-    // Enable zoom out button
-    $(".js-zoom-out").click(function() {
-        cropper.zoom(-0.1);
-    });
-
-    /* SCRIPT TO COLLECT THE DATA AND POST TO THE SERVER */
-    $(".js-crop").click(function() {
-        var cropData = cropper.getData();
-        $("#id_crop_x").val(cropData["x"]);
-        $("#id_crop_y").val(cropData["y"]);
-        $("#id_crop_h").val(cropData["height"]);
-        $("#id_crop_w").val(cropData["width"]);
-        $("#modalCrop").modal("hide");
-        // Submit image form
-        $("#image_form").submit();
-    });
-
-    $(".js-crop-dismiss").click(function() {
-        $("#id_upload_image").val("");
-    });
-});
-</script>
-
 {% endblock %}

@@ -1,0 +1,7 @@
+Unfortunately we had to cancel an event you signed up for ({{event_name}}) because not enough people will be attending.
+
+It is our policy to cancel events with low attendance so that you don't get charged for a poor experience.
+
+We would love it if you checked out some other events that you might be interested in!
+
+- Your friends at Bokaru

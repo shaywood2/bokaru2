@@ -5,31 +5,37 @@
 {% block nav_location %}nav_home{% endblock %}
 
 {% block content %}
-<!-- Promo Block - Parallax -->
-<section class="g-pos-rel">
-    <div class="dzsparallaxer auto-init height-is-based-on-content use-loading mode-scroll loaded dzsprx-readyall"
-         data-options='{direction: "reverse", settings_mode_oneelement_max_offset: "150"}'
-         data-calc-target="#js-header">
-        <!-- Parallax image 1920x1080 -->
-        <div class="divimage dzsparallaxer--target w-100 g-bg-cover g-bg-pos-top-center g-bg-img-hero g-bg-bluegray-opacity-0_3--after"
-             style="height: 130%; background-image: url(http://via.placeholder.com/1920x800);"></div>
-
-        <div class="container text-center g-z-index-1 g-py-150">
-            <div class="g-mb-25" data-animation="fadeInUp" data-animation-delay="500" data-animation-duration="1500">
-                <h2 class="h4 d-inline-block g-brd-bottom g-brd-2 g-brd-white g-color-white g-font-weight-600 text-uppercase g-pb-5">
-                    Bokaru</h2>
-            </div>
-            <h3 class="g-color-white g-font-weight-700 g-font-size-40 g-font-size-55--md text-uppercase g-mb-40"
-                data-animation="fadeInUp" data-animation-delay="800" data-animation-duration="1500">
-                SPEED DATING. ONLINE.
-            </h3>
-            <div data-animation="fadeInUp" data-animation-delay="1100" data-animation-duration="1500">
-                <a class="btn btn-lg u-btn-outline-white g-color-white g-bg-white-opacity-0_2 g-color-black--hover g-bg-white--hover g-font-weight-600 g-font-size-13 text-uppercase g-rounded-50 mx-2 g-px-25 g-py-15"
-                   href="{% url 'auth_register' %}">Sign Up</a>
-                <a class="btn btn-lg u-btn-outline-white g-color-white g-bg-white-opacity-0_2 g-color-black--hover g-bg-white--hover g-font-weight-600 g-font-size-13 text-uppercase g-rounded-50 mx-2 g-px-25 g-py-15"
-                   href="{% url 'web:search' %}">Find Events</a>
-            </div>
+<!-- Promo Block -->
+<section class="g-pos-rel g-bg-black">
+    <div class="container text-center g-z-index-1 g-py-150">
+        <div class="g-mb-25" data-animation="fadeInUp" data-animation-delay="500" data-animation-duration="1500">
+            <h2 class="d-inline-block g-color-white g-pb-5 g-font-size-40 g-font-size-55--md" style="font-family: 'Comfortaa', cursive;">
+                bokaru
+            </h2>
         </div>
+        <h3 class="g-color-white g-font-weight-300 g-font-size-40 g-font-size-55--md text-uppercase g-mb-40"
+            data-animation="fadeInUp" data-animation-delay="800" data-animation-duration="1500">
+            Speed dating. Online.
+        </h3>
+
+        <h4 class="g-color-white g-font-size-34 g-font-size-40--md text-uppercase g-mb-40"
+            data-animation="fadeInUp" data-animation-delay="1000" data-animation-duration="1500">
+            Talk to singles you'll like.
+        </h4>
+
+        <div data-animation="fadeInUp" data-animation-delay="1200" data-animation-duration="1500">
+            <a class="btn btn-lg u-btn-outline-white g-color-white g-bg-white-opacity-0_2 g-color-black--hover g-bg-white--hover g-font-weight-600 g-font-size-13 text-uppercase g-rounded-5 mx-2 g-px-25 g-py-15"
+               href="{% url 'auth_register' %}">Sign Up</a>
+            <a class="btn btn-lg u-btn-outline-white g-color-white g-bg-white-opacity-0_2 g-color-black--hover g-bg-white--hover g-font-weight-600 g-font-size-13 text-uppercase g-rounded-5 mx-2 g-px-25 g-py-15"
+               href="{% url 'web:search' %}">Find Events</a>
+        </div>
+
+
+
+        <h4 class="g-color-white g-font-size-20 g-font-size-30--md g-mb-40"
+            data-animation="fadeInUp" data-animation-delay="1500" data-animation-duration="1500">
+            Talk to singles you'll like.
+        </h4>
     </div>
 </section>
 <!-- End Promo Block -->

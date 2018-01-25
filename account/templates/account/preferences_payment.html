@@ -70,7 +70,7 @@ stripe_form.show()
 {% endif %}
 
 // Stripe script
-let stripe = Stripe('pk_test_UiyVevDApASul2gRmo7TcDjF')
+let stripe = Stripe('{{ stripe_secret }}')
 let elements = stripe.elements()
 let card = elements.create('card')
 card.mount('#card-element')

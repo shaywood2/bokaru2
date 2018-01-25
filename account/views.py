@@ -1,5 +1,9 @@
+import base64
+import io
 import logging
 
+from django.conf import settings
+from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 from django.contrib.auth.signals import user_logged_in
@@ -9,13 +13,13 @@ from django.shortcuts import get_object_or_404, render
 from django.urls import reverse
 from registration.backends.hmac.views import RegistrationView as BaseRegistrationView
 
-from money.models import UserPaymentInfo
-from money.model_transaction import Transaction
 from event.models import Pick
-from .forms import RegistrationForm, AccountForm, UserPreferenceForm, PhotoForm
+from money.model_transaction import Transaction
+from money.models import UserPaymentInfo
+from .forms import RegistrationForm, AccountForm, UserPreferenceForm
 from .models import Account, UserPreference, Memo
 
-logger = logging.getLogger(__name__)
+LOGGER = logging.getLogger(__name__)
 
 
 # Custom view for registration page
@@ -30,11 +34,25 @@ class RegistrationView(BaseRegistrationView):
         acc.user = new_user
         acc.status = Account.CREATED
         acc.save()
+
         # Create user preferences object
         pref = UserPreference()
         pref.user = new_user
         pref.receiveNewsletter = form.cleaned_data.get('newsletter')
+        # Set Toronto as default search location
+        pref.cityName = 'Toronto, ON, Canada'
+        pref.cityNameShort = 'Toronto'
+        pref.cityLat = 43.653226
+        pref.cityLng = -79.3831843
         pref.save()
+
+        # Apply welcome credit
+        credit_amount = getattr(settings, 'WELCOME_CREDIT', 0)
+        credit_description = getattr(settings, 'WELCOME_CREDIT_TEXT', 'Bonus site credit')
+        if credit_amount > 0:
+            Transaction.objects.apply_welcome_credit(new_user, credit_amount, credit_description)
+
+        LOGGER.info('Registered a new user: {!s}. Bonus credit amount: {:d}'.format(new_user, credit_amount))
 
 
 # Listen to login signal and put account into session
@@ -60,14 +78,12 @@ def view(request):
     account = Account.objects.get(user=current_user)
     profile_incomplete = account.status == Account.CREATED
     profile_suspended = account.status == Account.SUSPENDED
-    photo_form = PhotoForm()
 
     context = {
         'user': current_user,
         'account': account,
         'profile_incomplete': profile_incomplete,
-        'profile_suspended': profile_suspended,
-        'photo_form': photo_form
+        'profile_suspended': profile_suspended
     }
 
     return render(request, 'account/view.html', context)
@@ -117,6 +133,17 @@ def edit(request):
         if form.is_valid():
             form.save()
 
+            image_data = form.cleaned_data['image_data']
+
+            # Add photo
+            if image_data and len(image_data) > 0:
+                img_format, img_data = image_data.split(';base64,')
+                byte_stream = io.BytesIO(base64.b64decode(img_data))
+                account.add_photo(byte_stream, 400)
+
+                request.session['photo_url'] = account.photo.url
+                request.session['thumbnail_url'] = account.photoThumbnail.url
+
             # Update session
             request.session['profile_incomplete'] = account.status == Account.CREATED
 
@@ -131,31 +158,6 @@ def edit(request):
     return render(request, 'account/edit.html', {'form': form, 'photo_url': photo_url, 'email': current_user.email})
 
 
-@login_required()
-def update_photo(request):
-    current_user = request.user
-    account = Account.objects.get(user=current_user)
-
-    if request.method == 'POST':
-        form = PhotoForm(request.POST, request.FILES)
-        if form.is_valid():
-            image_file = request.FILES['upload_image'].read()
-
-            # Get cropping parameters
-            x = form.cleaned_data.get('crop_x')
-            y = form.cleaned_data.get('crop_y')
-            w = form.cleaned_data.get('crop_w')
-            h = form.cleaned_data.get('crop_h')
-
-            account.add_photo(image_file, x, y, w, h, 400)
-
-            # Update image in session
-            request.session['thumbnail_url'] = account.photoThumbnail.url
-
-    # Redirect to edit profile page
-    return HttpResponseRedirect(reverse('account:view'))
-
-
 @login_required
 def preferences(request):
     current_user = request.user
@@ -165,8 +167,10 @@ def preferences(request):
         form = UserPreferenceForm(request.POST, instance=preference)
         if form.is_valid():
             form.save()
-            # Redirect to view profile page
-            return HttpResponseRedirect(reverse('account:view'))
+
+            messages.add_message(request, messages.SUCCESS, 'Changes saved!')
+
+            return HttpResponseRedirect(reverse('account:preferences'))
     else:
         form = UserPreferenceForm(instance=preference)
 
@@ -188,7 +192,8 @@ def preferences_payment(request):
         credit_card = UserPaymentInfo.objects.find_credit_card_by_user(current_user)
 
         return render(request, 'account/preferences_payment.html', {
-            'credit_card': credit_card
+            'credit_card': credit_card,
+            'stripe_secret': settings.STRIPE_SECRET
         })
 
 

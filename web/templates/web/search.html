@@ -32,7 +32,7 @@
             <div class="g-width-60x--md mx-auto">
                 <div class="form-group g-mb-20">
                     <div class="input-group u-shadow-v21 rounded g-mb-15">
-                        {% render_field form.cityName class="form-control form-control-md g-brd-white g-font-size-16 border-right-0 pr-0 g-py-15" placeholder="Enter a location" required=True %}
+                        {% render_field form.cityName class="form-control form-control-md g-brd-white g-font-size-16 border-right-0 pr-0 g-py-15" placeholder="Enter a location" required=True autocomplete="nope" %}
                         {{ form.cityNameShort }}
                         {{ form.cityLat }}
                         {{ form.cityLng }}
@@ -81,7 +81,7 @@
                     <!-- User parameters -->
                     <h2 class="h5 text-uppercase g-color-gray-dark-v1 g-mt-30">I am a</h2>
                     <hr class="g-brd-gray-light-v4 g-my-15">
-                    <span class="g-color-primary">{{ form.age.value }}</span> years old <span class="g-color-primary">{{ sexual_identity_display }}</span>
+                    <span class="g-color-primary">{{ form.age.value|default_if_none:"Unspecified" }}</span> years old <span class="g-color-primary">{{ sexual_identity_display }}</span>
                     {{ form.age }}
                     {% render_field form.sexual_identity class="g-hidden-xs-up" %}
                     {% else %}
@@ -93,7 +93,7 @@
                         <label class="g-mb-10">
                             <span class="g-color-primary"><span id="ageResult">{{ form.age.value }}</span></span> years old
                         </label>
-                        <div id="ageSlider" class="u-slider-v1" data-result-container="ageResult" data-default="{{ form.age.value }}" data-min="18" data-max="120"></div>
+                        <div id="ageSlider" class="u-slider-v1" data-result-container="ageResult" data-default="{{ form.age.value }}" data-min="18" data-max="88"></div>
                     </div>
                     {% render_field form.sexual_identity class="form-control rounded-0 u-form-control0 u-select-v1" %}
                     {% endif %}
@@ -141,7 +141,7 @@
                             Between <span class="g-color-primary"><span id="ageRangeResult">{{ form.lookingForAgeMin.value }} - {{ form.lookingForAgeMax.value }}</span></span> years old
                         </label>
                         <div id="ageRangeSlider" class="u-slider-v1" data-result-container="ageRangeResult" data-range="1"
-                             data-default="{{ form.lookingForAgeMin.value }}, {{ form.lookingForAgeMax.value }}" data-min="18" data-max="120"></div>
+                             data-default="{{ form.lookingForAgeMin.value }}, {{ form.lookingForAgeMax.value }}" data-min="18" data-max="88"></div>
                     </div>
 
                     <button class="btn btn-md u-btn-primary rounded-0" type="submit"><i class="icon-magnifier g-pos-rel g-top-1"></i> Search</button>
@@ -243,6 +243,18 @@
                             <span>Show sold out events</span>
                             <span class="u-check">
                                 {% render_field form.show_full class="g-hidden-xs-up g-pos-abs g-top-0 g-right-0" %}
+                                <span class="u-check-icon-radio-v7">
+                                    <i class="d-inline-block"></i>
+                                </span>
+                            </span>
+                        </label>
+                    </div>
+
+                    <div class="form-group g-mt-30">
+                        <label class="d-flex align-items-center justify-content-between">
+                            <span>Search only official events</span>
+                            <span class="u-check">
+                                {% render_field form.promoted_only class="g-hidden-xs-up g-pos-abs g-top-0 g-right-0" %}
                                 <span class="u-check-icon-radio-v7">
                                     <i class="d-inline-block"></i>
                                 </span>

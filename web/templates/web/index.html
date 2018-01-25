@@ -1,189 +1,81 @@
 {% extends 'web/base_nav.html' %}
 
 {% load staticfiles %}
+{% load event_tags %}
+{% load account_tags %}
 
 {% block nav_location %}nav_home{% endblock %}
 
 {% block content %}
-<div class="container content-md">
-    <h2 class="heading-md search_title">Find Events Near You</h2>
-    <form method="post" action="{% url 'web:search' %}">
-        <div class="row">
-            <div class="col-md-12 margin-bottom-40" style="text-align: center">
-                {% csrf_token %}
-                <input type="text" id="id_search_term" name="search_term" class="search_input"
-                       placeholder="{{search_placeholder}}"/>
-                <select id="id_distance" name="distance" class="distance_input">
-                    <option>Distance</option>
-                    <option>5</option>
-                    <option>10</option>
-                    <option>20</option>
-                    <option>50</option>
-                    <option>100</option>
-                </select>
+<section class="g-mb-100">
+    <div class="container">
+        <div class="row g-min-height-50vh">
+            <div class="col-lg-4">
+                <!-- User Image -->
+                <div class="g-mb-20">
+                    <div class="u-shadow-v2 g-brd-around g-brd-gray-light-v4 g-line-height-2">
+                        {% if account.photo is None or account.photo.name == '' %}
+                        <img class="img-fluid w-100" src="{% static 'web/images/user_default_image.jpg' %}"
+                             alt="Default picture" id="default_avatar"/>
+                        {% else %}
+                        <img class="img-fluid w-100" src="{{ account.photo.url }}" alt="Profile picture"
+                             id="avatar"/>
+                        {% endif %}
+                    </div>
+
+                    <div class="list-group list-group-border-0 g-mb-40">
+                        <a href="{% url 'account:view' %}" class="list-group-item list-group-item-action justify-content-between">
+                            <span><i class="icon-user g-pos-rel g-top-1 g-mr-8"></i> My Profile</span>
+                        </a>
+                        <a href="{% url 'account:preferences' %}" class="list-group-item list-group-item-action justify-content-between">
+                            <span><i class="icon-settings g-pos-rel g-top-1 g-mr-8"></i> My Account</span>
+                        </a>
+                        {% if remaining_credit > 0 %}
+                        <div class="list-group-item list-group-item-action justify-content-between">
+                            <span><i class="icon-present g-pos-rel g-top-1 g-mr-8"></i> Remaining site credit: CAD ${{ remaining_credit|floatformat:"2" }}</span>
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
             </div>
-        </div>
+            <div class="col-lg-8 g-mt-50--md">
+                <h1>Upcoming Events</h1>
+                {% if future_events|length == 0 %}
+                <h3>Nothing here yet. Why not register for something?</h3>
+                <a href="{% url 'web:search' %}" class="btn btn-lg btn-block u-btn-black g-my-20 rounded-0">
+                    Search events
+                </a>
 
-        <div class="row md-margin-bottom-80">
-            <div class="col-md-12 margin-bottom-80" style="text-align: center">
-                <input type="submit" class="btn-u btn-u-lg btn-u-red" value="Search"/>
-            </div>
-        </div>
-    </form>
+                {% else %}
 
-    <div class="heading heading-v4 margin-bottom-40">
-        <h2>My Events</h2>
-    </div>
+                {% for event in future_events %}
+                <!-- Event -->
+                <div class="g-mb-15">
+                    {% render_event_large event %}
+                </div>
+                <!-- End Event -->
+                {% endfor %}
+                {% endif %}
 
+                <hr/>
 
-    <div class="row news-v1 margin-bottom-40">
-        <div class="col-md-4 md-margin-bottom-40">
-            <div class="news-v1-in">
-                <a href="#"><img class="img-responsive" src="{% static 'web/theme/img/main/img11.jpg' %}" alt=""></a>
-
-                <h3><a href="#">Dog Lovers</a></h3>
-                <p>Event Description</p>
-                <ul class="list-inline news-v1-info">
-                    <li><a href="#">Toronto</a></li>
-                    <li>|</li>
-                    <li><i class="fa fa-clock-o"></i> July 11 @ 8PM</li>
-                    <li class="pull-right"><a href="#"><i class="fa fa-comments-o"></i> 14</a></li>
-                </ul>
-            </div>
-        </div>
-    </div>
-
-    <div class="heading heading-v4 margin-bottom-40">
-        <h2>Events Near You</h2>
-    </div>
-
-
-    <div class="row news-v1">
-        <div class="col-md-4 md-margin-bottom-40">
-            <div class="news-v1-in">
-                <a href="#"><img class="img-responsive" src="{% static 'web/theme/img/main/img11.jpg' %}" alt=""></a>
-
-                <h3><a href="#">Runners</a></h3>
-                <p>Event Description</p>
-                <ul class="list-inline news-v1-info">
-                    <li><a href="#">Toronto</a></li>
-                    <li>|</li>
-                    <li><i class="fa fa-clock-o"></i> July 11 @ 8PM</li>
-                    <li class="pull-right"><a href="#"><i class="fa fa-comments-o"></i> 14</a></li>
-                </ul>
+                <h1>Latest matches</h1>
+                {% if latest_matches|length == 0 %}
+                <h3>Nothing here yet, let's keep trying!</h3>
+                <a href="{% url 'web:search' %}" class="btn btn-lg btn-block u-btn-black g-my-20 rounded-0">
+                    Search events
+                </a>
+                {% else %}
+                {% for match in latest_matches %}
+                {% render_profile_medium_by_user match %}
+                {% endfor %}
+                {% endif %}
             </div>
         </div>
     </div>
-
-    <div class="row news-v1">
-        <div class="col-md-4 md-margin-bottom-40">
-            <div class="news-v1-in">
-                <a href="#"><img class="img-responsive" src="{% static 'web/theme/img/main/img11.jpg' %}" alt=""></a>
-
-                <h3><a href="#">Runners</a></h3>
-                <p>Event Description</p>
-                <ul class="list-inline news-v1-info">
-                    <li><a href="#">Toronto</a></li>
-                    <li>|</li>
-                    <li><i class="fa fa-clock-o"></i> July 11 @ 8PM</li>
-                    <li class="pull-right"><a href="#"><i class="fa fa-comments-o"></i> 14</a></li>
-                </ul>
-            </div>
-        </div>
-    </div>
-
-    <div class="row news-v1">
-        <div class="col-md-4 md-margin-bottom-40">
-            <div class="news-v1-in">
-                <a href="#"><img class="img-responsive" src="{% static 'web/theme/img/main/img11.jpg' %}" alt=""></a>
-
-                <h3><a href="#">Runners</a></h3>
-                <p>Event Description</p>
-                <ul class="list-inline news-v1-info">
-                    <li><a href="#">Toronto</a></li>
-                    <li>|</li>
-                    <li><i class="fa fa-clock-o"></i> July 11 @ 8PM</li>
-                    <li class="pull-right"><a href="#"><i class="fa fa-comments-o"></i> 14</a></li>
-                </ul>
-            </div>
-        </div>
-    </div>
-
-    <div class="row news-v1">
-        <div class="col-md-4 md-margin-bottom-40">
-            <div class="news-v1-in">
-                <a href="#"><img class="img-responsive" src="{% static 'web/theme/img/main/img11.jpg' %}" alt=""></a>
-
-                <h3><a href="#">Runners</a></h3>
-                <p>Event Description</p>
-                <ul class="list-inline news-v1-info">
-                    <li><a href="#">Toronto</a></li>
-                    <li>|</li>
-                    <li><i class="fa fa-clock-o"></i> July 11 @ 8PM</li>
-                    <li class="pull-right"><a href="#"><i class="fa fa-comments-o"></i> 14</a></li>
-                </ul>
-            </div>
-        </div>
-    </div>
-
-    <div class="row news-v1">
-        <div class="col-md-4 md-margin-bottom-40">
-            <div class="news-v1-in">
-                <a href="#"><img class="img-responsive" src="{% static 'web/theme/img/main/img11.jpg' %}" alt=""></a>
-
-                <h3><a href="#">Runners</a></h3>
-                <p>Event Description</p>
-                <ul class="list-inline news-v1-info">
-                    <li><a href="#">Toronto</a></li>
-                    <li>|</li>
-                    <li><i class="fa fa-clock-o"></i> July 11 @ 8PM</li>
-                    <li class="pull-right"><a href="#"><i class="fa fa-comments-o"></i> 14</a></li>
-                </ul>
-            </div>
-        </div>
-    </div>
-
-    <div class="row news-v1">
-        <div class="col-md-4 md-margin-bottom-40">
-            <div class="news-v1-in">
-                <a href="#"><img class="img-responsive" src="{% static 'web/theme/img/main/img11.jpg' %}" alt=""></a>
-
-                <h3><a href="#">Runners</a></h3>
-                <p>Event Description</p>
-                <ul class="list-inline news-v1-info">
-                    <li><a href="#">Toronto</a></li>
-                    <li>|</li>
-                    <li><i class="fa fa-clock-o"></i> July 11 @ 8PM</li>
-                    <li class="pull-right"><a href="#"><i class="fa fa-comments-o"></i> 14</a></li>
-                </ul>
-            </div>
-        </div>
-    </div>
-
-    <div class="row news-v1">
-        <div class="col-md-4 md-margin-bottom-40">
-            <div class="news-v1-in">
-                <a href="#"><img class="img-responsive" src="{% static 'web/theme/img/main/img11.jpg' %}" alt=""></a>
-
-                <h3><a href="#">Runners</a></h3>
-                <p>Event Description</p>
-                <ul class="list-inline news-v1-info">
-                    <li><a href="#">Toronto</a></li>
-                    <li>|</li>
-                    <li><i class="fa fa-clock-o"></i> July 11 @ 8PM</li>
-                    <li class="pull-right"><a href="#"><i class="fa fa-comments-o"></i> 14</a></li>
-                </ul>
-            </div>
-        </div>
-    </div>
-</div>
+</section>
 {% endblock %}
 
-
 {% block javascript %}
-
-<!--<script type="text/javascript"-->
-<!--src="{% static 'web/theme/plugins/cube-portfolio/cubeportfolio/js/jquery.cubeportfolio.min.js' %}"></script>-->
-<!--<script type="text/javascript" src="{% static 'web/theme/js/plugins/cube-portfolio/cube-portfolio-2.js' %}"></script>-->
 
 {% endblock %}

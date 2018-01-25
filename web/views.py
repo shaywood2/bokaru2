@@ -7,6 +7,7 @@ from django.shortcuts import render, redirect
 
 from account.models import Account, UserPreference
 from event.models import Event, Pick
+from money.model_transaction import Transaction
 from .forms import SearchForm
 from .models import Place
 
@@ -16,7 +17,20 @@ logger = logging.getLogger(__name__)
 
 def index(request):
     if request.user.is_authenticated:
-        return render(request, 'web/index.html', {'user': request.user})
+        current_user = request.user
+        account = Account.objects.get(user=current_user)
+        future_events = Event.objects.get_3_upcoming_events_by_user(current_user)
+        latest_matches = Pick.objects.get_3_latest_matches_by_user(current_user)
+        remaining_credit = Transaction.objects.get_credit_for_user(current_user)
+
+        context = {
+            'account': account,
+            'future_events': future_events,
+            'latest_matches': latest_matches,
+            'remaining_credit': float(remaining_credit) / 100
+        }
+
+        return render(request, 'web/index.html', context)
     else:
         return render(request, 'web/index_landing.html')
 
@@ -94,8 +108,9 @@ def search(request):
     if request.GET.get('cityName'):
         form = SearchForm(request.GET, instance=preferences)
         if form.is_valid():
-            # Save updated search parameters
-            form.save()
+            if request.user.is_authenticated:
+                # Save updated search parameters
+                form.save()
             # Update search parameters from the form
             search_params = form.cleaned_data
     else:
@@ -143,21 +158,44 @@ def search_by_place(request, place_name):
     return redirect('web:search')
 
 
-def privacy_statement(request):
-    return render(request, 'web/privacy_statement.html')
+# ============
+# Static pages
+# ============
+def about_us(request):
+    return render(request, 'web/about_us.html')
 
 
-def terms_of_service(request):
-    return render(request, 'web/terms_of_service.html')
+def browser_support(request):
+    return render(request, 'web/browser_support.html')
 
 
-def refund_policy(request):
-    return render(request, 'web/refund_policy.html')
+def community_guidelines(request):
+    return render(request, 'web/community_guidelines.html')
+
+
+def contact_us(request):
+    return render(request, 'web/contact_us.html')
 
 
 def how_it_works(request):
     return render(request, 'web/how_it_works.html')
 
 
-def about_us(request):
-    return render(request, 'web/about_us.html')
+def pricing(request):
+    return render(request, 'web/pricing.html')
+
+
+def privacy_statement(request):
+    return render(request, 'web/privacy_statement.html')
+
+
+def refund_policy(request):
+    return render(request, 'web/refund_policy.html')
+
+
+def safety_tips(request):
+    return render(request, 'web/safety_tips.html')
+
+
+def terms_of_service(request):
+    return render(request, 'web/terms_of_service.html')

@@ -1,13 +1,11 @@
-import os
 import json
+import os
 
 from django.core.exceptions import ImproperlyConfigured
-
 
 # Build paths
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 PROJECT_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-
 
 # Read env file
 with open(BASE_DIR + '/env.json') as f:
@@ -42,6 +40,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
 
+    'anymail',
     'imagekit',
     'widget_tweaks',
     'formtools'
@@ -56,7 +55,8 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 
-    'web.middleware.UpcomingEventMiddleware'
+    'web.middleware.UpcomingEventMiddleware',
+    'web.middleware.TimezoneMiddleware'
 ]
 
 ROOT_URLCONF = 'bokaru.urls'
@@ -115,6 +115,10 @@ PASSWORD_RESET_TIMEOUT_DAYS = 3
 ACCOUNT_ACTIVATION_DAYS = 7
 REGISTRATION_OPEN = True
 
+# Welcome credit
+WELCOME_CREDIT = get_env_var('WELCOME_CREDIT')
+WELCOME_CREDIT_TEXT = get_env_var('WELCOME_CREDIT_TEXT')
+
 # Internationalization
 # https://docs.djangoproject.com/en/1.9/topics/i18n/
 LANGUAGE_CODE = 'en-us'
@@ -140,7 +144,7 @@ DATABASES = {
 SESSION_ENGINE = 'django.contrib.sessions.backends.cached_db'
 
 # Event settings
-EVENT_MINIMUM_FILL_PERCENTAGE = 80
+EVENT_MINIMUM_FILL_PERCENTAGE = 50
 
 # ===========
 # Secret keys
@@ -151,6 +155,7 @@ TOKBOX_SECRET = get_env_var('TOKBOX_SECRET')
 
 # Stripe
 STRIPE_KEY = get_env_var('STRIPE_KEY')
+STRIPE_SECRET = get_env_var('STRIPE_SECRET')
 
 # Registration
 REGISTRATION_SALT = get_env_var('REGISTRATION_SALT')

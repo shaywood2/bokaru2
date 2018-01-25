@@ -11,7 +11,7 @@
 <script src="https://maps.googleapis.com/maps/api/js?libraries=places&key=AIzaSyBTwfHuVilarsPOOE4Opm4GaG9I2dfbyCw" type="text/javascript"></script>
 
 <!-- Datepicker -->
-<link  href="{% static 'web/vendor/datepicker/datepicker.min.css' %}" rel="stylesheet">
+<link href="{% static 'web/vendor/datepicker/datepicker.min.css' %}" rel="stylesheet">
 {% endblock %}
 
 {% block content %}
@@ -139,7 +139,9 @@
                         {% if wizard.form.time.errors %}
                         <small class="form-control-feedback">{{wizard.form.time.errors}}</small>
                         {% endif %}
+                        <small>To give people enough time to join the event, please schedule it at least 48 hours from now.</small>
                     </div>
+
 
                     <!-- Location -->
                     <div class="form-group g-mb-20 {% if wizard.form.locationName.errors %}u-has-error-v1{% endif %}">
@@ -151,7 +153,7 @@
                         <small class="form-control-feedback">{{wizard.form.locationName.errors}}</small>
                         {% endif %}
                         <small>Technically, the location of the event is right in your living room, but pick a location for the purposes of search anyway.</small>
-                        {{ wizard.form.cityName }}{{ wizard.form.cityLat }}{{ wizard.form.cityLng }}
+                        {{ wizard.form.cityName }}{{ wizard.form.division }}{{ wizard.form.country }}{{ wizard.form.cityLat }}{{ wizard.form.cityLng }}
                     </div>
                 </div>
 
@@ -170,7 +172,7 @@
 
 {% block javascript %}
 <!-- Datepicker -->
-<script  src="{% static 'web/vendor/datepicker/datepicker.min.js' %}"></script>
+<script src="{% static 'web/vendor/datepicker/datepicker.min.js' %}"></script>
 
 <script>
 $(document).on('ready', function () {
@@ -203,6 +205,15 @@ function initMap() {
         document.getElementById('id_step1-cityName').value = place.name
         document.getElementById('id_step1-cityLat').value = place.geometry.location.lat()
         document.getElementById('id_step1-cityLng').value = place.geometry.location.lng()
+        // place.utc_offset
+        for (i=0; i < place.address_components.length; i ++) {
+            component = place.address_components[i]
+            if (component.types && component.types.indexOf('country') >= 0) {
+                document.getElementById('id_step1-country').value = component.short_name
+            } else if (component.types && component.types.indexOf('administrative_area_level_1') >= 0) {
+                document.getElementById('id_step1-division').value = component.short_name
+            }
+        }
     })
 }
 

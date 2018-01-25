@@ -1,7 +1,9 @@
 import logging
 
 import stripe
+from django.utils import timezone
 
+from bokaru.email import send_email
 from event.models import Event, EventParticipant
 from money.payment_service import create_charge, CardDeclinedException
 from money.model_transaction import Transaction
@@ -65,14 +67,7 @@ def pay_for_event(participant, event):
         participant.status = EventParticipant.PAYMENT_SUCCESS
         participant.save()
     else:
-        try:
-            payment_info = UserPaymentInfo.objects.get(user=user)
-            stripe_id = payment_info.stripe_customer_id
-        except UserPaymentInfo.DoesNotExist:
-            participant.status = EventParticipant.PAYMENT_FAILURE
-            participant.save()
-            LOGGER.error('UserPaymentInfo not specified')
-            raise Exception('UserPaymentInfo not specified')
+        stripe_id = UserPaymentInfo.objects.find_stripe_id_by_user(user)
 
         if not stripe_id:
             participant.status = EventParticipant.PAYMENT_FAILURE
@@ -82,7 +77,7 @@ def pay_for_event(participant, event):
 
         # Create a charge
         try:
-            create_charge(charge_to_card, 'cad', user.id, event.id, stripe_id)
+            charge = create_charge(charge_to_card, 'cad', user.id, event.id, stripe_id)
 
             # Subtract amount from the credit
             transaction = Transaction(
@@ -91,12 +86,24 @@ def pay_for_event(participant, event):
                 amount=charge_to_card,
                 description='Payment for event registration',
                 event=event,
-                eventGroup=participant.group,
-                eventParticipant=participant)
+                stripe_charge_id=charge.id
+            )
             transaction.save()
 
             participant.status = EventParticipant.PAYMENT_SUCCESS
             participant.save()
+
+            merge_data = {
+                'event_price': float(event_price)/100,
+                'charge_to_card': float(charge_to_card)/100,
+                'event_price_discount': float(event_price_discount)/100,
+                'event_name': event.name,
+                'invoice_id': charge.id,
+                'date': timezone.now()
+            }
+
+            send_email(participant.user.email, merge_data, 'payment_success')
+
         except stripe.error.CardError as e:
             participant.status = EventParticipant.PAYMENT_FAILURE
             participant.save()

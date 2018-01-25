@@ -90,7 +90,7 @@
                 {% else %}
 
                 <h5 class="g-mt-20">Your card will be charged 24 hours before the event starts.</h5>
-                <p>If the event is less than <span class="g-color-primary">80% full</span>, it will be cancelled and you will not be charged.</p>
+                <p>If the event is less than <span class="g-color-primary">50% full</span>, it will be cancelled and you will not be charged.</p>
 
                 {% if credit_card %}
                 <p>Please confirm your payment information</p>
@@ -140,6 +140,7 @@
 
 {% block javascript %}
 <script type="text/javascript">
+{% if is_free is False %}
 {% if credit_card %}
 let stripe_form = $('#stripe-form')
 let confirm_form = $('#confirm-form')
@@ -156,7 +157,7 @@ stripe_form.show()
 {% endif %}
 
 // Stripe script
-let stripe = Stripe('pk_test_UiyVevDApASul2gRmo7TcDjF')
+let stripe = Stripe('{{ stripe_secret }}')
 let elements = stripe.elements()
 let card = elements.create('card')
 card.mount('#card-element')
@@ -203,5 +204,6 @@ function stripeTokenHandler(token) {
   // Submit the form
   form.submit()
 }
+{% endif %}
 </script>
 {% endblock %}

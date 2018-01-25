@@ -3,18 +3,20 @@ import io
 import logging
 from datetime import datetime
 
+from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.contrib.gis.geos import Point
 from django.http import HttpResponseRedirect
 from django.shortcuts import render, reverse, get_object_or_404
+from django.utils import timezone
 from django.utils.dateparse import parse_time
 from formtools.wizard.views import SessionWizardView
 from stripe import CardError
 
 from money.billing_logic import get_product_by_event_size, get_price_by_user, pay_for_event
-from money.models import UserPaymentInfo
 from money.model_transaction import Transaction
+from money.models import UserPaymentInfo
 from .forms import CreateEventStep1, CreateEventStep2, CreateEventStep3, CreateEventStep4a, \
     CreateEventStep4b, CreateEventStep5, CreateEventStep6
 from .models import Event, EventGroup, EventParticipant
@@ -150,8 +152,14 @@ class CreateEventWizard(SessionWizardView):
         if self.steps.current == 'step6':
             all_data = self.get_all_cleaned_data()
 
+            start_date = all_data.get('date')
+            start_time = all_data.get('time')
+            start_time = parse_time(start_time)
+            start_date_time = datetime.combine(start_date, start_time)
+            start_date_time = timezone.get_current_timezone().localize(start_date_time)
+            all_data.update({'start_date_time': start_date_time})
+
             # Convert certain values into display format
-            all_data.update({'displayTime': get_value(CreateEventStep1.TIME_CHOICES, all_data.get('time'))})
             all_data.update({'displayType': get_value(Event.TYPES, int(all_data.get('type')))})
 
             if all_data.get('numGroups') == 1:
@@ -189,8 +197,7 @@ class CreateEventWizard(SessionWizardView):
         start_time = all_data.get('time')
         start_time = parse_time(start_time)
         start_date_time = datetime.combine(start_date, start_time)
-        # TODO: figure out the timezone
-        LOGGER.info('startDateTime ' + str(start_date_time))
+        start_date_time = timezone.get_current_timezone().localize(start_date_time)
 
         lat = all_data.get('cityLat')
         lng = all_data.get('cityLng')
@@ -216,6 +223,8 @@ class CreateEventWizard(SessionWizardView):
             startDateTime=start_date_time,
             locationName=all_data.get('locationName'),
             locationCoordinates=point,
+            divisionCode=all_data.get('division'),
+            countryCode=all_data.get('country'),
             description=all_data.get('description'),
             numGroups=all_data.get('numGroups'),
             maxParticipantsInGroup=num_participants,
@@ -310,7 +319,7 @@ def join(request, group_id):
                 LOGGER.error(e)
                 # Refund credit if applicable
                 Transaction.objects.refund_credit_used_for_event(current_user, selected_event)
-                messages.add_message(request, messages.ERROR, str(e.message))
+                messages.add_message(request, messages.ERROR, str(e))
                 return HttpResponseRedirect(reverse('event:join', kwargs={'group_id': group_id}))
 
         # Check that credit card exists
@@ -348,6 +357,7 @@ def join(request, group_id):
         'event': selected_event,
         'group': selected_group,
         'credit_card': credit_card,
+        'stripe_secret': settings.STRIPE_SECRET,
         'is_free': is_free,
         'is_creator': is_creator,
         'event_price': float(event_price) / 100,

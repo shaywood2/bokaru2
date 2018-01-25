@@ -2,43 +2,19 @@ import logging
 
 from django.conf import settings
 from django.contrib.auth.decorators import login_required
-from django.core.cache import cache
 from django.http import JsonResponse
 from django.shortcuts import render
-from django.utils import timezone
 from opentok import OpenTok
 
 from event.models import Event, Pick
 from .models import Conversation
-from .utils import generate_conversations, get_current_date, get_user_dates
+from .utils import get_current_date, get_user_dates
 
 api_key = settings.TOKBOX_KEY
 api_secret = settings.TOKBOX_SECRET
 
 # Get an instance of a logger
 LOGGER = logging.getLogger(__name__)
-
-
-# TODO: Temp method, delete later
-def generate(request, event_id):
-    start = timezone.now()
-    event = Event.objects.get(pk=event_id)
-    generate_conversations(event)
-    runtime = timezone.now() - start
-    return JsonResponse({'ok': True, 'runtime': runtime.total_seconds()})
-
-
-# TODO: Temp method, delete later
-def get_dates(request, event_id):
-    event = Event.objects.get(pk=event_id)
-    dates = []
-    for date in get_user_dates(request.user, event):
-        dates.append({
-            'order': date.get('order'),
-            'user': str(date.get('user')),
-            'sessionID': date.get('sessionID')
-        })
-    return JsonResponse({'dates': dates})
 
 
 @login_required
@@ -134,6 +110,7 @@ def live_event(request):
         matches = Pick.objects.get_all_matches_by_user_and_event(request.user, event)
 
         context = {
+            'user': request.user,
             'event': event,
             'matches': matches,
         }
@@ -141,41 +118,41 @@ def live_event(request):
         return render(request, 'chat/post_live.html', context)
 
 
-# TODO: Temp method, delete later
-def live_event_test(request, user1, user2):
-    LOGGER.info('user ' + user1 + ' calls user ' + user2)
-    opentok = OpenTok(api_key, api_secret)
-
-    # Look up the session ID
-    key = '1' + '|' + str(user1) + '|' + str(user2)
-    session_id = cache.get(key)
-    if session_id is None:
-        key = '1' + '|' + str(user2) + '|' + str(user1)
-        session_id = cache.get(key)
-
-    # Create a session if it is missing
-    if session_id is None:
-        # Create a session that attempts to send streams directly between clients (falling back
-        # to use the OpenTok TURN server to relay streams if the clients cannot connect):
-        session = opentok.create_session()
-        # A session that uses the OpenTok Media Router, which is required for archiving
-        # session = opentok.create_session(media_mode=MediaModes.routed, archive_mode=ArchiveModes.always)
-        session_id = session.session_id
-        key = '1' + '|' + str(user1) + '|' + str(user2)
-        cache.set(key, session_id, 60 * 60 * 5)
-
-    # Create a token
-    connection_metadata = 'username=' + user1 + ',eventId=4'
-    token = opentok.generate_token(session_id, data=connection_metadata)
-    LOGGER.info('created token: ' + str(token))
-
-    context = {
-        'tokbox_api_key': api_key,
-        'sessionID': session_id or 'wait',
-        'token': token
-    }
-
-    return render(request, 'chat/test.html', context)
+# # TODO: Temp method, delete later
+# def live_event_test(request, user1, user2):
+#     LOGGER.info('user ' + user1 + ' calls user ' + user2)
+#     opentok = OpenTok(api_key, api_secret)
+#
+#     # Look up the session ID
+#     key = '1' + '|' + str(user1) + '|' + str(user2)
+#     session_id = cache.get(key)
+#     if session_id is None:
+#         key = '1' + '|' + str(user2) + '|' + str(user1)
+#         session_id = cache.get(key)
+#
+#     # Create a session if it is missing
+#     if session_id is None:
+#         # Create a session that attempts to send streams directly between clients (falling back
+#         # to use the OpenTok TURN server to relay streams if the clients cannot connect):
+#         session = opentok.create_session()
+#         # A session that uses the OpenTok Media Router, which is required for archiving
+#         # session = opentok.create_session(media_mode=MediaModes.routed, archive_mode=ArchiveModes.always)
+#         session_id = session.session_id
+#         key = '1' + '|' + str(user1) + '|' + str(user2)
+#         cache.set(key, session_id, 60 * 60 * 5)
+#
+#     # Create a token
+#     connection_metadata = 'username=' + user1 + ',eventId=4'
+#     token = opentok.generate_token(session_id, data=connection_metadata)
+#     LOGGER.info('created token: ' + str(token))
+#
+#     context = {
+#         'tokbox_api_key': api_key,
+#         'sessionID': session_id or 'wait',
+#         'token': token
+#     }
+#
+#     return render(request, 'chat/test.html', context)
 
 
 @login_required

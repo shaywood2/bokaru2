@@ -62,6 +62,9 @@ class EventManager(models.Manager):
         filter_query = self.filter(startDateTime__gte=hour_from_now, hidden=False, deleted=False,
                                    stage__in=[Event.REGISTRATION_OPEN, Event.CONFIRMED])
 
+        if 'promoted_only' in kwargs and kwargs.get('promoted_only') is True:
+            filter_query = filter_query.filter(promoted=True)
+
         # Search by distance
         if 'cityLat' in kwargs and 'cityLng' in kwargs and 'distance' in kwargs and 'distanceUnits' in kwargs:
             lat = kwargs.get('cityLat')
@@ -116,20 +119,27 @@ class EventManager(models.Manager):
                     continue
 
             # Advanced filtering by group genders
-            sexual_identity = kwargs.get('sexual_identity')
-            age = kwargs.get('age')
-            user = {'sexualIdentity': sexual_identity, 'age': age}
+            if 'sexual_identity' in kwargs and 'age' in kwargs and 'lookingForGenderList' in kwargs \
+                    and kwargs.get('sexual_identity') is not None \
+                    and kwargs.get('age') is not None \
+                    and kwargs.get('lookingForGenderList') is not None:
+                sexual_identity = kwargs.get('sexual_identity')
+                age = kwargs.get('age')
+                user = {'sexualIdentity': sexual_identity, 'age': age}
 
-            looking_for_gender_list = kwargs.get('lookingForGenderList').split('|') \
-                if 'lookingForGenderList' in kwargs else []
-            looking_for_age_min = kwargs.get('lookingForAgeMin') if 'lookingForAgeMin' in kwargs else 18
-            looking_for_age_max = kwargs.get('lookingForAgeMax') if 'lookingForAgeMax' in kwargs else 120
-            looking_for = []
-            for sexual_identity in looking_for_gender_list:
-                looking_for.append(
-                    {'sexualIdentity': sexual_identity, 'ageMin': looking_for_age_min, 'ageMax': looking_for_age_max})
-            if not event.groupsMatchCriteria(user, looking_for):
-                continue
+                looking_for_gender_list = kwargs.get('lookingForGenderList').split('|') \
+                    if 'lookingForGenderList' in kwargs else []
+                looking_for_age_min = kwargs.get('lookingForAgeMin') if 'lookingForAgeMin' in kwargs else 18
+                looking_for_age_max = kwargs.get('lookingForAgeMax') if 'lookingForAgeMax' in kwargs else 88
+                looking_for = []
+                for sexual_identity in looking_for_gender_list:
+                    looking_for.append(
+                        {'sexualIdentity': sexual_identity,
+                         'ageMin': looking_for_age_min,
+                         'ageMax': looking_for_age_max
+                         })
+                if not event.groupsMatchCriteria(user, looking_for):
+                    continue
 
             result.append(event)
 
@@ -152,12 +162,26 @@ class EventManager(models.Manager):
 
     # Get all future events that belong to the given user
     def get_all_future_by_user(self, user):
-        return self.filter(eventgroup__eventparticipant__user=user).filter(
+        return self.filter(eventgroup__eventparticipant__user=user,
+                           eventgroup__eventparticipant__status__in=[
+                               EventParticipant.REGISTERED,
+                               EventParticipant.PAYMENT_SUCCESS]).filter(
             startDateTime__gte=timezone.now()).order_by('startDateTime')
+
+    # Get 3 future events that belong to the given user
+    def get_3_upcoming_events_by_user(self, user):
+        return self.filter(eventgroup__eventparticipant__user=user,
+                           eventgroup__eventparticipant__status__in=[
+                               EventParticipant.REGISTERED,
+                               EventParticipant.PAYMENT_SUCCESS]).filter(
+            startDateTime__gte=timezone.now()).order_by('startDateTime')[:3]
 
     # Get all past events that belong to the given user
     def get_all_past_by_user(self, user):
-        return self.filter(eventgroup__eventparticipant__user=user).filter(
+        return self.filter(eventgroup__eventparticipant__user=user,
+                           eventgroup__eventparticipant__status__in=[
+                               EventParticipant.REGISTERED,
+                               EventParticipant.PAYMENT_SUCCESS]).filter(
             startDateTime__lt=timezone.now()).order_by('-startDateTime')
 
     # Get all past events that belong to the given user
@@ -176,7 +200,11 @@ class EventManager(models.Manager):
         now = timezone.now()
         hour_from_now = now + timedelta(hours=1)
         half_hour_ago = now - timedelta(minutes=30)
-        events = self.filter(eventgroup__eventparticipant__user=user).order_by('-startDateTime')
+        events = self.filter(eventgroup__eventparticipant__user=user,
+                             eventgroup__eventparticipant__status__in=[
+                                 EventParticipant.REGISTERED,
+                                 EventParticipant.PAYMENT_SUCCESS
+                             ], stage=Event.IN_PROGRESS).order_by('-startDateTime')
 
         for event in events:
             if event.startDateTime <= hour_from_now and event.endDateTime >= half_hour_ago:
@@ -247,6 +275,8 @@ class Event(models.Model):
     startDateTime = models.DateTimeField()
     locationName = models.CharField(max_length=150)
     locationCoordinates = gis_models.PointField(srid=4326, default=Point(0, 0))
+    divisionCode = models.CharField(max_length=10)
+    countryCode = models.CharField(max_length=10)
     # Description
     description = models.TextField(max_length=2000, blank=True)
     # Group settings
@@ -261,7 +291,7 @@ class Event(models.Model):
     # Image
     photo = models.ImageField(blank=True)
     photoMedium = ImageSpecField(source='photo',
-                                 processors=[ResizeToFill(250, 250)],
+                                 processors=[ResizeToFill(300, 300)],
                                  format='JPEG',
                                  options={'quality': 80})
     # Associated product
@@ -271,6 +301,8 @@ class Event(models.Model):
     deleted = models.BooleanField(default=False)
     # Hidden flag
     hidden = models.BooleanField(default=False)
+    # Promoted flag
+    promoted = models.BooleanField(default=False)
 
     # Automatic timestamps
     created = models.DateTimeField(auto_now_add=True)
@@ -647,6 +679,19 @@ class PickManager(models.Manager):
             matches = self.get_all_matches_by_user_and_event(user, event)
             if len(matches) > 0:
                 result[event] = matches
+
+        return result
+
+    def get_3_latest_matches_by_user(self, user):
+        events = Event.objects.get_all_past_by_user(user)
+        result = []
+        for event in reversed(events):
+            matches = self.get_all_matches_by_user_and_event(user, event)
+            for match in matches:
+                if match not in result:
+                    result.append(match)
+                    if len(result) == 3:
+                        return result
 
         return result
 

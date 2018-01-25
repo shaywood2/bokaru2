@@ -17,6 +17,7 @@ class PaymentInfoManager(models.Manager):
 
             # Create a card for an existing Customer
             credit_card = create_card(payment_info.stripe_customer_id, stripe_token)
+            # TODO: handle card creation errors
             # Store the payment info
             payment_info.credit_card_id = credit_card.id
             payment_info.credit_card_brand = credit_card.brand
@@ -72,6 +73,15 @@ class PaymentInfoManager(models.Manager):
                 }
             else:
                 return None
+        except UserPaymentInfo.DoesNotExist:
+            return None
+
+    # Find credit card info by user
+    def find_stripe_id_by_user(self, user):
+        try:
+            payment_info = self.get(user=user)
+
+            return payment_info.stripe_customer_id
         except UserPaymentInfo.DoesNotExist:
             return None
 

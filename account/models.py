@@ -1,6 +1,8 @@
 import io
 import logging
+from datetime import datetime
 
+import pytz
 from PIL import Image
 from django.conf import settings
 from django.contrib.auth import get_user_model
@@ -14,7 +16,7 @@ from django.utils.crypto import get_random_string
 from imagekit.models import ImageSpecField
 from imagekit.processors import ResizeToFill
 
-logger = logging.getLogger(__name__)
+LOGGER = logging.getLogger(__name__)
 
 
 # Return a value from a tuple list by key
@@ -166,8 +168,8 @@ class Account(models.Model):
     # Looking for
     # TODO: calculate max possible size
     lookingForGenderList = models.CharField(max_length=500, blank=True)
-    lookingForAgeMin = models.PositiveSmallIntegerField(validators=[MinValueValidator(18)], blank=True, null=True)
-    lookingForAgeMax = models.PositiveSmallIntegerField(validators=[MinValueValidator(18)], blank=True, null=True)
+    lookingForAgeMin = models.PositiveSmallIntegerField(validators=[MinValueValidator(18)], default=18)
+    lookingForAgeMax = models.PositiveSmallIntegerField(validators=[MinValueValidator(18)], default=88)
     # TODO: calculate max possible size
     lookingForConnectionsList = models.CharField(max_length=500, blank=True)
 
@@ -294,14 +296,17 @@ class Account(models.Model):
             return True
         return False
 
-    def add_photo(self, new_photo, x, y, w, h, size):
-        # Open the stream as an image
-        stream = io.BytesIO(new_photo)
-        image = Image.open(stream)
+    # Add a photo from a byte stream
+    def add_photo(self, byte_stream, size=400, x=None, y=None, w=None, h=None):
+        image = Image.open(byte_stream)
 
         # Crop and resize the image
-        cropped_image = image.crop((x, y, w + x, h + y))
-        final_image = cropped_image.resize((size, size), Image.ANTIALIAS)
+        if x and y and w and h:
+            # Crop and resize the image
+            cropped_image = image.crop((x, y, w + x, h + y))
+            final_image = cropped_image.resize((size, size), Image.ANTIALIAS)
+        else:
+            final_image = image.resize((size, size), Image.ANTIALIAS)
 
         # Save the image
         stream = io.BytesIO()
@@ -331,8 +336,25 @@ class Account(models.Model):
         self.photo = path
         self.save(update_fields=['photo'])
 
+    # Add a photo by reading a file
+    def add_photo_from_file(self, file, size, x, y, w, h):
+        # Open the stream as an image
+        stream = io.BytesIO(file)
+        self.add_photo(stream, size, x, y, w, h)
+
     def __str__(self):
-        return self.user.username + ' (' + self.fullName + ')'
+        return self.user.username + ' (' + self.fullName + ') ' \
+               + str(self.lookingForAgeMin) + ' - ' + str(self.lookingForAgeMax)
+
+
+class PreferencesManager(models.Manager):
+    def get_timezone_name(self, user):
+        # Check if the preferences exists
+        try:
+            p = self.get(user=user)
+            return p.timezoneName
+        except UserPreference.DoesNotExist:
+            return UserPreference.DEFAULT_TZ
 
 
 class UserPreference(models.Model):
@@ -349,6 +371,18 @@ class UserPreference(models.Model):
         (500, 500),
     ]
 
+    PRETTY_TIMEZONE_CHOICES = []
+
+    for tz in pytz.common_timezones:
+        now = datetime.now(pytz.timezone(tz))
+        ofs = now.strftime("%z")
+        PRETTY_TIMEZONE_CHOICES.append((int(ofs), tz, "(GMT%s) %s" % (ofs, tz)))
+    PRETTY_TIMEZONE_CHOICES.sort()
+    for i in range(len(PRETTY_TIMEZONE_CHOICES)):
+        PRETTY_TIMEZONE_CHOICES[i] = PRETTY_TIMEZONE_CHOICES[i][1:]
+
+    DEFAULT_TZ = getattr(settings, 'TIME_ZONE', 'America/Toronto')
+
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.PROTECT, blank=True, null=True)
 
     # Search preferences
@@ -362,7 +396,7 @@ class UserPreference(models.Model):
     # Looking for preferences
     lookingForGenderList = models.CharField(max_length=100, blank=True)
     lookingForAgeMin = models.PositiveSmallIntegerField(validators=[MinValueValidator(18)], default=18)
-    lookingForAgeMax = models.PositiveSmallIntegerField(validators=[MinValueValidator(18)], default=120)
+    lookingForAgeMax = models.PositiveSmallIntegerField(validators=[MinValueValidator(18)], default=88)
 
     # Event preferences
     eventTypeList = models.CharField(max_length=100, blank=True, null=True)
@@ -372,9 +406,15 @@ class UserPreference(models.Model):
     # Communication preferences
     receiveNewsletter = models.BooleanField(default=False)
 
+    # Timezone
+    timezoneName = models.CharField(max_length=100, choices=PRETTY_TIMEZONE_CHOICES, default=DEFAULT_TZ)
+
     # Automatic timestamps
     created = models.DateTimeField(auto_now_add=True)
     updated = models.DateTimeField(auto_now=True)
+
+    # Custom manager
+    objects = PreferencesManager()
 
     def __str__(self):
         username = 'guest'

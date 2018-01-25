@@ -57,7 +57,7 @@ def delete_card(stripe_id, stripe_card_id):
         customer = stripe.Customer.retrieve(stripe_id)
         response = customer.sources.retrieve(stripe_card_id).delete()
         return response.deleted
-    except stripe.error.InvalidRequestError:
+    except stripe.error.InvalidRequestError as e:
         LOGGER.error(e)
         return False
 
@@ -75,7 +75,7 @@ def create_charge(amount, currency, user_id, event_id, stripe_id):
         customer=stripe_id
     )
     LOGGER.info("Stripe charge created: {}".format(charge.id))
-    pass
+    return charge
 
 
 class CardDeclinedException(Exception):

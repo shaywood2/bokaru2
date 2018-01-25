@@ -3,11 +3,10 @@
 
 {% block main %}
 <!-- Header -->
-<header id="js-header" class="u-header u-header--sticky-top u-header--change-logo u-header--change-appearance" data-header-fix-moment="100">
-    <div class="u-header__section u-header__section--light g-bg-white-opacity-0_7 g-transition-0_3 g-py-10"
-         data-header-fix-moment-exclude="u-header__section--light g-bg-white-opacity-0_7 g-py-10"
-         data-header-fix-moment-classes="u-header__section--light g-bg-white u-shadow-v18 g-py-0">
-        <!--<div class="u-header__section u-header__section&#45;&#45;light g-bg-white u-shadow-v18">-->
+<header id="js-header" class="u-header u-header--sticky-top u-header--change-logo u-header--change-appearance" data-header-fix-moment="80">
+    <div class="u-header__section u-header__section--light g-bg-transparent g-color-white g-transition-0_3 g-py-10"
+         data-header-fix-moment-exclude="u-header__section--light g-bg-transparent g-color-white g-py-10"
+         data-header-fix-moment-classes="u-header__section--light g-bg-white g-color-gray-dark-v2 u-shadow-v18 g-py-0">
         <nav class="js-mega-menu navbar navbar-expand-lg">
             <!-- Responsive Toggle Button -->
             <button class="navbar-toggler navbar-toggler-right btn g-line-height-1 g-brd-none g-pa-0 g-pos-abs g-top-3 g-right-0"
@@ -22,8 +21,9 @@
             <!-- End Responsive Toggle Button -->
             <!-- Logo -->
             <a href="{% url 'web:index' %}" class="navbar-brand navbar-logo">
-                <img src="{% static 'web/images/outline-owl.jpg' %}" alt="Logo">
-                <span class="brand-text">bokaru</span>
+                <img class="u-header__logo-img u-header__logo-img--main" src="{% static 'web/images/bokaru-logo-white.png' %}" alt="Logo">
+
+                <img class="u-header__logo-img" src="{% static 'web/images/bokaru-logo.png' %}" alt="Logo">
             </a>
             <!-- End Logo -->
 
@@ -75,7 +75,7 @@
                             </li>
                             <li class="dropdown-item">
                                 <a class="nav-link g-px-0"
-                                   href="{% url 'auth_logout' %}">Logout</a>
+                                   href="{% url 'logout' %}">Logout</a>
                             </li>
                         </ul>
                         <!-- End Profile links -->
@@ -84,11 +84,11 @@
                     <!-- Guest links -->
                     {% else %}
                     <li class="nav-item g-mx-20--lg">
-                        <a href="{% url 'auth_register' %}" class="nav-link">Register</a>
+                        <a href="{% url 'auth_register' %}" class="btn btn-header">Register</a>
                     </li>
 
                     <li class="nav-item g-mx-20--lg">
-                        <a href="{% url 'auth_login' %}" class="nav-link">Log in</a>
+                        <a href="{% url 'login' %}" class="nav-link">Log in</a>
                     </li>
                     {% endif %}
                 </ul>
@@ -99,7 +99,7 @@
 </header>
 
 <!-- Owl banner -->
-<section class="g-py-80--md g-mb-minus-20--md g-py-50 g-mb-20 owl-background-repeat"></section>
+<section class="g-py-80--md g-mb-minus-20--md g-py-50 owl-background-repeat"></section>
 <!-- End Owl banner -->
 
 <!-- Message Bar -->
@@ -208,15 +208,14 @@
         <div class="row">
             <!-- Footer Content -->
             <div class="col-lg-4 g-mb-40 g-mb-0--lg">
-                <a class="d-block g-mb-20" href="/">
-                    <img class="img-fluid g-opacity-0_6 g-mb-5" src="{% static 'web/images/bokaru-logo.png' %}"
+                <a class="d-block g-mb-25" href="/">
+                    <img class="img-fluid g-opacity-0_6 g-bg-white" src="{% static 'web/images/bokaru-logo.png' %}"
                          alt="Logo">
                 </a>
 
                 <div class="g-mb-20">
-                    <p>About Bokaru dolor sit amet, consec tetur adipiscing elit. Maecenas eget nisl id libero
-                        tincidunt.</p>
-                    <small class="g-font-size-default mb-0">&copy; 2017 All right reserved. Bokaru Inc.
+                    <p>Talk to people you like.</p>
+                    <small class="g-font-size-default mb-0">&copy; 2018 All right reserved. Bokaru.
                     </small>
                 </div>
 
@@ -247,9 +246,7 @@
                     </li>
                 </ul>
             </div>
-            <!-- End Footer Content -->
 
-            <!-- Footer Content -->
             <div class="col-lg-2 g-mb-30 g-mb-0--lg">
                 <h2 class="h6 g-color-white text-uppercase g-font-weight-700 g-mb-20">Search events</h2>
                 <ul class="list-unstyled mb-0">
@@ -273,11 +270,37 @@
             </div>
 
             <div class="col-lg-2 g-mb-30 g-mb-0--lg">
+                <h2 class="h6 g-color-white text-uppercase g-font-weight-700 g-mb-20">About Bokaru</h2>
+                <ul class="list-unstyled mb-0">
+                    <li class="d-flex align-items-baseline g-mb-12">
+                        <i class="fa fa-angle-double-right g-mr-8"></i>
+                        <a class="g-color-white-opacity-0_6 g-color-white--hover" href="{% url 'web:contact_us' %}">Contact Us</a>
+                    </li>
+                    <li class="d-flex align-items-baseline g-mb-12">
+                        <i class="fa fa-angle-double-right g-mr-8"></i>
+                        <a class="g-color-white-opacity-0_6 g-color-white--hover" href="{% url 'web:how_it_works' %}">How It Works</a>
+                    </li>
+                    <li class="d-flex align-items-baseline g-mb-12">
+                        <i class="fa fa-angle-double-right g-mr-8"></i>
+                        <a class="g-color-white-opacity-0_6 g-color-white--hover" href="{% url 'web:browser_support' %}">Browser Support</a>
+                    </li>
+                    <li class="d-flex align-items-baseline g-mb-12">
+                        <i class="fa fa-angle-double-right g-mr-8"></i>
+                        <a class="g-color-white-opacity-0_6 g-color-white--hover" href="{% url 'web:pricing' %}">Pricing</a>
+                    </li>
+                    <li class="d-flex align-items-baseline g-mb-12">
+                        <i class="fa fa-angle-double-right g-mr-8"></i>
+                        <a class="g-color-white-opacity-0_6 g-color-white--hover" href="{% url 'web:safety_tips' %}">Safety Tips</a>
+                    </li>
+                </ul>
+            </div>
+
+            <div class="col-lg-2 g-mb-30 g-mb-0--lg">
                 <h2 class="h6 g-color-white text-uppercase g-font-weight-700 g-mb-20">Useful links</h2>
                 <ul class="list-unstyled mb-0">
                     <li class="d-flex align-items-baseline g-mb-12">
                         <i class="fa fa-angle-double-right g-mr-8"></i>
-                        <a class="g-color-white-opacity-0_6 g-color-white--hover" href="{% url 'web:about_us' %}">About Us</a>
+                        <a class="g-color-white-opacity-0_6 g-color-white--hover" href="{% url 'web:community_guidelines' %}">Community Guidelines</a>
                     </li>
                     <li class="d-flex align-items-baseline g-mb-12">
                         <i class="fa fa-angle-double-right g-mr-8"></i>

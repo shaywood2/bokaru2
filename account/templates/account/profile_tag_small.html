@@ -20,7 +20,7 @@
                     {{ profile.fullName }}
                     {% account_labels profile.user %}
                 </h4>
-                <em class="d-block g-color-primary g-font-style-normal g-font-size-default">{{ profile.age }} | {{ profile.locationName }}</em>
+                <em class="d-block g-color-primary g-font-style-normal g-font-size-default">{{ profile.age }} | {{ profile.locationName|default:"Earth" }}</em>
             </div>
             <em class="d-block g-color-gray-dark-v5 g-font-style-normal g-font-size-13 g-mb-2">{{ profile.basicInfo | join:", " }}</em>
             <em class="d-block g-color-gray-dark-v5 g-font-style-normal g-font-size-13"><strong>Looking for:</strong> {{ profile.lookingFor | join:", " }}</em>

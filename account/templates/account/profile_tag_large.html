@@ -5,7 +5,7 @@
         <!-- User Info -->
         <div class="col-md-7">
             <h4 class="h5 g-mb-0">{{ profile.fullName }}</h4>
-            <em class="d-block g-color-primary g-font-style-normal g-font-size-default">{{ profile.age }} | {{ profile.locationName }}</em>
+            <em class="d-block g-color-primary g-font-style-normal g-font-size-default">{{ profile.age }} | {{ profile.locationName|default:"Earth" }}</em>
             {% if profile.summary %}
             <!-- Summary -->
             <h3>Self-summary</h3>
@@ -99,7 +99,7 @@
             <h4 class="g-mt-15">Your Memo</h4>
             <p><i>This section is only visible to you.</i></p>
             <div class="form-group g-mb-20">
-                <textarea class="form-control form-control-md rounded-0 memo" rows="5" placeholder="Memo" data-user-id="{{ profile.user.id }}">{{ memo }}</textarea>
+                <textarea class="form-control form-control-md rounded-0 memo" rows="5" placeholder="Memo" data-user-id="{{ profile.user.id }}">{{ memo|default_if_none:"" }}</textarea>
             </div>
             <button class="btn btn-lg btn-block u-btn-primary rounded-0 g-py-12 save_memo_button" data-user-id="{{ profile.user.id }}">
                 Save memo

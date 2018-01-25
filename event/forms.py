@@ -2,21 +2,24 @@ import logging
 from datetime import datetime
 from datetime import timedelta
 
+import pytz
 from django import forms
-from django.db import models
+from django.utils import timezone
 from django.utils.dateparse import parse_time
 from django.utils.translation import ugettext_lazy as _
 
 from .models import Event, EventGroup
 
 # Get an instance of a logger
-logger = logging.getLogger(__name__)
+LOGGER = logging.getLogger(__name__)
 
 
 # Basic info
 class CreateEventStep1(forms.Form):
     error_messages = {
-        'too_soon': _('The event must start at least 24 hours from now.'),
+        'too_soon': _('The event must start at least 48 hours from now.'),
+        'too_late': _('The event must is too far in the future,'
+                      ' please make sure that it starts within the next 90 days.'),
         'location_not_found': _('Location was not found, please update it to something that Google knows.')
     }
 
@@ -79,6 +82,8 @@ class CreateEventStep1(forms.Form):
 
     # Additional location fields
     cityName = forms.CharField(widget=forms.HiddenInput(), required=False)
+    division = forms.CharField(widget=forms.HiddenInput(), required=False)
+    country = forms.CharField(widget=forms.HiddenInput(), required=False)
     cityLat = forms.FloatField(widget=forms.HiddenInput(), required=False)
     cityLng = forms.FloatField(widget=forms.HiddenInput(), required=False)
 
@@ -94,12 +99,20 @@ class CreateEventStep1(forms.Form):
 
         start_time = parse_time(start_time)
         start_date = datetime.combine(start_date, start_time)
-        tomorrow = datetime.now() + timedelta(hours=24)
+        start_date = timezone.get_current_timezone().localize(start_date)
+        tomorrow = timezone.now() + timedelta(hours=48)
+        latest_date = timezone.now() + timedelta(days=90)
 
         if start_date < tomorrow:
             raise forms.ValidationError(
                 self.error_messages['too_soon'],
                 code='too_soon'
+            )
+
+        if start_date > latest_date:
+            raise forms.ValidationError(
+                self.error_messages['too_late'],
+                code='too_late'
             )
 
         # Validate location
