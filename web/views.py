@@ -158,21 +158,44 @@ def search_by_place(request, place_name):
     return redirect('web:search')
 
 
-def privacy_statement(request):
-    return render(request, 'web/privacy_statement.html')
+# ============
+# Static pages
+# ============
+def about_us(request):
+    return render(request, 'web/about_us.html')
 
 
-def terms_of_service(request):
-    return render(request, 'web/terms_of_service.html')
+def browser_support(request):
+    return render(request, 'web/browser_support.html')
 
 
-def refund_policy(request):
-    return render(request, 'web/refund_policy.html')
+def community_guidelines(request):
+    return render(request, 'web/community_guidelines.html')
+
+
+def contact_us(request):
+    return render(request, 'web/contact_us.html')
 
 
 def how_it_works(request):
     return render(request, 'web/how_it_works.html')
 
 
-def about_us(request):
-    return render(request, 'web/about_us.html')
+def pricing(request):
+    return render(request, 'web/pricing.html')
+
+
+def privacy_statement(request):
+    return render(request, 'web/privacy_statement.html')
+
+
+def refund_policy(request):
+    return render(request, 'web/refund_policy.html')
+
+
+def safety_tips(request):
+    return render(request, 'web/safety_tips.html')
+
+
+def terms_of_service(request):
+    return render(request, 'web/terms_of_service.html')
