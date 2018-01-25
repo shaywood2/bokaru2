@@ -35,7 +35,7 @@ class SearchForm(ModelForm):
 
     class Meta:
         model = UserPreference
-        exclude = ['user', 'receiveNewsletter', 'created', 'updated']
+        exclude = ['user', 'receiveNewsletter', 'timezoneName', 'created', 'updated']
         widgets = {
             'lookingForGenderList': forms.HiddenInput(),
             'lookingForAgeMin': forms.HiddenInput(),

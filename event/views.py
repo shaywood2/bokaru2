@@ -9,6 +9,7 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.gis.geos import Point
 from django.http import HttpResponseRedirect
 from django.shortcuts import render, reverse, get_object_or_404
+from django.utils import timezone
 from django.utils.dateparse import parse_time
 from formtools.wizard.views import SessionWizardView
 from stripe import CardError
@@ -151,8 +152,14 @@ class CreateEventWizard(SessionWizardView):
         if self.steps.current == 'step6':
             all_data = self.get_all_cleaned_data()
 
+            start_date = all_data.get('date')
+            start_time = all_data.get('time')
+            start_time = parse_time(start_time)
+            start_date_time = datetime.combine(start_date, start_time)
+            start_date_time = timezone.get_current_timezone().localize(start_date_time)
+            all_data.update({'start_date_time': start_date_time})
+
             # Convert certain values into display format
-            all_data.update({'displayTime': get_value(CreateEventStep1.TIME_CHOICES, all_data.get('time'))})
             all_data.update({'displayType': get_value(Event.TYPES, int(all_data.get('type')))})
 
             if all_data.get('numGroups') == 1:
@@ -190,8 +197,7 @@ class CreateEventWizard(SessionWizardView):
         start_time = all_data.get('time')
         start_time = parse_time(start_time)
         start_date_time = datetime.combine(start_date, start_time)
-        # TODO: figure out the timezone
-        LOGGER.info('startDateTime ' + str(start_date_time))
+        start_date_time = timezone.get_current_timezone().localize(start_date_time)
 
         lat = all_data.get('cityLat')
         lng = all_data.get('cityLng')
@@ -217,6 +223,8 @@ class CreateEventWizard(SessionWizardView):
             startDateTime=start_date_time,
             locationName=all_data.get('locationName'),
             locationCoordinates=point,
+            divisionCode=all_data.get('division'),
+            countryCode=all_data.get('country'),
             description=all_data.get('description'),
             numGroups=all_data.get('numGroups'),
             maxParticipantsInGroup=num_participants,

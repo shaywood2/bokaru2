@@ -116,7 +116,7 @@
             <div class="col-lg-6 order-md-1">
                 <div>
                     <h1 class="g-color-dark g-font-weight-300 g-font-size-45 g-line-height-1 mb-4">{{ all_data.name }}</h1>
-                    <h2 class="g-font-weight-300 g-font-size-30 mb-0">{{ all_data.date|date:'Y/m/d' }} {{ all_data.displayTime }}</h2>
+                    <h2 class="g-font-weight-300 g-font-size-30 mb-0">{{ all_data.start_date_time|date:'Y/m/d' }} {{ all_data.start_date_time|time }}</h2>
                     <h3 class="g-color-primary g-font-weight-400 g-font-size-30 mb-0">{{ all_data.locationName }}</h3>
                     <p class="lead">{{ all_data.description | linebreaks }}</p>
                 </div>

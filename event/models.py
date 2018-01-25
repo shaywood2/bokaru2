@@ -275,6 +275,8 @@ class Event(models.Model):
     startDateTime = models.DateTimeField()
     locationName = models.CharField(max_length=150)
     locationCoordinates = gis_models.PointField(srid=4326, default=Point(0, 0))
+    divisionCode = models.CharField(max_length=10)
+    countryCode = models.CharField(max_length=10)
     # Description
     description = models.TextField(max_length=2000, blank=True)
     # Group settings

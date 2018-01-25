@@ -44,6 +44,19 @@
     </div>
 
     <div class="row">
+        <!-- Timezone -->
+        <div class="col-lg-6">
+            <h5>Select your timezone.</h5>
+            <p>We will automatically convert event timing to this timezone, so please make sure it is correct.</p>
+        </div>
+        <div class="col-lg-6">
+            <div class="form-group g-mb-20">
+                {% render_field form.timezoneName class="form-control rounded-0 u-form-control0 u-select-v1" %}
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
         <!-- Newsletter -->
         <div class="col-lg-6">
             <h5>Subscribe to our newsletter</h5>

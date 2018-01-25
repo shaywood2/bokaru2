@@ -264,3 +264,9 @@ a.btn-header:hover {
     cursor: default;
     z-index: 60;
 }
+
+a.over-overlay {
+    position: relative;
+    cursor: pointer;
+    z-index: 60;
+}

@@ -3,6 +3,7 @@ import io
 import logging
 
 from django.conf import settings
+from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 from django.contrib.auth.signals import user_logged_in
@@ -15,7 +16,7 @@ from registration.backends.hmac.views import RegistrationView as BaseRegistratio
 from event.models import Pick
 from money.model_transaction import Transaction
 from money.models import UserPaymentInfo
-from .forms import RegistrationForm, AccountForm, UserPreferenceForm, PhotoForm
+from .forms import RegistrationForm, AccountForm, UserPreferenceForm
 from .models import Account, UserPreference, Memo
 
 LOGGER = logging.getLogger(__name__)
@@ -77,14 +78,12 @@ def view(request):
     account = Account.objects.get(user=current_user)
     profile_incomplete = account.status == Account.CREATED
     profile_suspended = account.status == Account.SUSPENDED
-    photo_form = PhotoForm()
 
     context = {
         'user': current_user,
         'account': account,
         'profile_incomplete': profile_incomplete,
-        'profile_suspended': profile_suspended,
-        'photo_form': photo_form
+        'profile_suspended': profile_suspended
     }
 
     return render(request, 'account/view.html', context)
@@ -168,8 +167,10 @@ def preferences(request):
         form = UserPreferenceForm(request.POST, instance=preference)
         if form.is_valid():
             form.save()
-            # Redirect to view profile page
-            return HttpResponseRedirect(reverse('account:view'))
+
+            messages.add_message(request, messages.SUCCESS, 'Changes saved!')
+
+            return HttpResponseRedirect(reverse('account:preferences'))
     else:
         form = UserPreferenceForm(instance=preference)
 

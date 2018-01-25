@@ -55,7 +55,8 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 
-    'web.middleware.UpcomingEventMiddleware'
+    'web.middleware.UpcomingEventMiddleware',
+    'web.middleware.TimezoneMiddleware'
 ]
 
 ROOT_URLCONF = 'bokaru.urls'

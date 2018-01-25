@@ -197,16 +197,8 @@ class AccountForm(ModelForm):
         super(AccountForm, self).save(commit=commit)
 
 
-class PhotoForm(forms.Form):
-    # Photo cropping fields
-    upload_image = forms.ImageField()
-    crop_x = forms.FloatField(widget=forms.HiddenInput())
-    crop_y = forms.FloatField(widget=forms.HiddenInput())
-    crop_w = forms.FloatField(widget=forms.HiddenInput())
-    crop_h = forms.FloatField(widget=forms.HiddenInput())
-
-
 class UserPreferenceForm(ModelForm):
     class Meta:
         model = UserPreference
-        exclude = ['user', 'ageMin', 'ageMax', 'numGroups', 'eventType', 'eventSize']
+        exclude = ['user', 'ageMin', 'ageMax', 'numGroups', 'eventType', 'eventSize',
+                   'lookingForAgeMin', 'lookingForAgeMax', 'distance']
