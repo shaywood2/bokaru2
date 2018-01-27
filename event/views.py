@@ -17,8 +17,8 @@ from stripe import CardError
 from money.billing_logic import get_product_by_event_size, get_price_by_user, pay_for_event
 from money.model_transaction import Transaction
 from money.models import UserPaymentInfo
-from .forms import CreateEventStep1, CreateEventStep2, CreateEventStep3, CreateEventStep4a, \
-    CreateEventStep4b, CreateEventStep5, CreateEventStep6
+from .forms import CreateEventStep1, CreateEventStep2, CreateEventStep3, CreateEventStep4, CreateEventStep5, \
+    CreateEventStep6
 from .models import Event, EventGroup, EventParticipant
 
 # Get an instance of a logger
@@ -110,8 +110,7 @@ class CreateEventWizard(SessionWizardView):
         ('step1', CreateEventStep1),
         ('step2', CreateEventStep2),
         ('step3', CreateEventStep3),
-        ('step4a', CreateEventStep4a),
-        ('step4b', CreateEventStep4b),
+        ('step4', CreateEventStep4),
         ('step5', CreateEventStep5),
         ('step6', CreateEventStep6)
     ]
@@ -120,8 +119,7 @@ class CreateEventWizard(SessionWizardView):
         'step1': 'event/create/step1.html',
         'step2': 'event/create/step2.html',
         'step3': 'event/create/step3.html',
-        'step4a': 'event/create/step4a.html',
-        'step4b': 'event/create/step4b.html',
+        'step4': 'event/create/step4.html',
         'step5': 'event/create/step5.html',
         'step6': 'event/create/step6.html'
     }
@@ -142,8 +140,6 @@ class CreateEventWizard(SessionWizardView):
         else:
             return False
 
-    condition_dict = {'step4a': showStep4a, 'step4b': showStep4b}
-
     def get_template_names(self):
         return [CreateEventWizard.TEMPLATES[self.steps.current]]
 
@@ -152,6 +148,7 @@ class CreateEventWizard(SessionWizardView):
         if self.steps.current == 'step6':
             all_data = self.get_all_cleaned_data()
 
+            # Calculate start datetime
             start_date = all_data.get('date')
             start_time = all_data.get('time')
             start_time = parse_time(start_time)
@@ -162,20 +159,17 @@ class CreateEventWizard(SessionWizardView):
             # Convert certain values into display format
             all_data.update({'displayType': get_value(Event.TYPES, int(all_data.get('type')))})
 
-            if all_data.get('numGroups') == 1:
-                all_data.update({'displayNumParticipants': int(all_data.get('eventSize')) / 2 + 1})
-                all_data.update({'displayDuration': int(all_data.get('eventSize')) * 3})
+            all_data.update({'displayNumDates': int(all_data.get('eventSize')) / 2})
+            all_data.update({'displayDuration': int(all_data.get('eventSize')) * 3})
+
+            if all_data.get('sexualIdentity2') == '':
                 all_data.update({'displayNumParticipantsPerGroup': int(all_data.get('eventSize')) / 2 + 1})
 
                 display_sexual_identity1 = get_value(EventGroup.IDENTITY_CHOICES, all_data.get('sexualIdentity'))
                 if all_data.get('sexualIdentity') == 'other':
                     display_sexual_identity1 = all_data.get('sexualIdentityOther')
                 all_data.update({'displaySexualIdentity1': display_sexual_identity1})
-                all_data.update({'ageMin1': all_data.get('ageMin')})
-                all_data.update({'ageMax1': all_data.get('ageMax')})
-            elif all_data.get('numGroups') == 2:
-                all_data.update({'displayNumParticipants': int(all_data.get('eventSize'))})
-                all_data.update({'displayDuration': int(all_data.get('eventSize')) * 3})
+            else:
                 all_data.update({'displayNumParticipantsPerGroup': int(all_data.get('eventSize')) / 2})
 
                 display_sexual_identity1 = get_value(EventGroup.IDENTITY_CHOICES, all_data.get('sexualIdentity1'))
@@ -193,12 +187,22 @@ class CreateEventWizard(SessionWizardView):
         # Save the event
         all_data = self.get_all_cleaned_data()
 
+        # Calculate start datetime
         start_date = all_data.get('date')
         start_time = all_data.get('time')
         start_time = parse_time(start_time)
         start_date_time = datetime.combine(start_date, start_time)
         start_date_time = timezone.get_current_timezone().localize(start_date_time)
 
+        # Get number of groups and participants
+        if all_data.get('sexualIdentity2') == '':
+            num_participants = int(all_data.get('eventSize')) / 2 + 1
+            num_groups = 1
+        else:
+            num_participants = int(all_data.get('eventSize')) / 2
+            num_groups = 2
+
+        # Create geo point
         lat = all_data.get('cityLat')
         lng = all_data.get('cityLng')
         point = Point(x=0, y=0, srid=4326)
@@ -207,12 +211,7 @@ class CreateEventWizard(SessionWizardView):
             point.x = lng
             point.y = lat
 
-        num_participants = 0
-        if all_data.get('numGroups') == 1:
-            num_participants = int(all_data.get('eventSize')) / 2 + 1
-        elif all_data.get('numGroups') == 2:
-            num_participants = int(all_data.get('eventSize')) / 2
-
+        # Get appropriate product
         product = get_product_by_event_size(int(all_data.get('eventSize')))
 
         event = Event(
@@ -226,7 +225,7 @@ class CreateEventWizard(SessionWizardView):
             divisionCode=all_data.get('division'),
             countryCode=all_data.get('country'),
             description=all_data.get('description'),
-            numGroups=all_data.get('numGroups'),
+            numGroups=num_groups,
             maxParticipantsInGroup=num_participants,
             product=product
         )
@@ -239,13 +238,13 @@ class CreateEventWizard(SessionWizardView):
             event.add_photo(byte_stream, 800)
 
         # Save event groups
-        if all_data.get('numGroups') == 1:
+        if num_groups == 1:
             group = EventGroup(
                 event=event,
-                sexualIdentity=all_data.get('sexualIdentity'),
-                sexualIdentityOther=all_data.get('sexualIdentityOther'),
-                ageMin=all_data.get('ageMin'),
-                ageMax=all_data.get('ageMax')
+                sexualIdentity=all_data.get('sexualIdentity1'),
+                sexualIdentityOther=all_data.get('sexualIdentityOther1'),
+                ageMin=all_data.get('ageMin1'),
+                ageMax=all_data.get('ageMax1')
             )
             group.save()
         else:

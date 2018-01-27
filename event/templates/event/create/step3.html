@@ -70,8 +70,7 @@
 
             <div class="row g-mb-25">
                 <div class="col-lg-12 text-center">
-                    <h3>How many groups will your event have?</h3>
-                    <h5>Select one option</h5>
+                    <h3>Size of the event</h3>
                 </div>
             </div>
 
@@ -93,37 +92,7 @@
                     </div>
                     {% endif %}
 
-                    <!-- Number of groups -->
-                    <div class="row">
-                        <!-- One group -->
-                        <div class="col-md-6">
-                            <div id="select_one_group" class="u-shadow-v22 rounded-0 g-px-30 g-pb-30 g-mb-30 custom-radio text-center">
-                                <span class="u-icon-v3 g-bg-secondary g-color-primary g-rounded-5 g-pull-50x-up g-mb-5">
-                                    <i class="fa fa-mars-double"></i>
-                                </span>
-                                <h3>One group</h3>
-                                <h5>Everyone talks to everyone else<br/>&nbsp;</h5>
-                            </div>
-                        </div>
-
-                        <!-- Two groups -->
-                        <div class="col-md-6">
-                            <div id="select_two_groups" class="u-shadow-v22 rounded-0 g-px-30 g-pb-30 g-mb-30 custom-radio text-center">
-                                <span class="u-icon-v3 g-bg-secondary g-color-primary g-rounded-5 g-pull-50x-up g-mb-5">
-                                    <i class="fa fa-venus-mars"></i>
-                                </span>
-                                <h3>Two groups</h3>
-                                <h5>Members of one group talk to all members of another group</h5>
-                            </div>
-                        </div>
-                    </div>
-                    {{ wizard.form.numGroups }}
-                    {% if wizard.form.numGroups.errors %}
-                    <small class="form-control-feedback" style="color: #f00;">{{wizard.form.numGroups.errors}}</small>
-                    {% endif %}
-
                     <!-- Event size -->
-                    <h3>Size of the event</h3>
                     <div class="form-group g-mb-20 {% if wizard.form.eventSize.errors %}u-has-error-v1{% endif %}">
                         {% render_field wizard.form.eventSize class="form-control rounded-0 u-form-control0 u-select-v1" %}
                         {% if wizard.form.eventSize.errors %}
@@ -132,20 +101,57 @@
                     </div>
 
                     <!-- Event Info -->
-                    <div class="g-brd-around g-brd-gray-light-v4 g-brd-left-4 g-brd-primary-left g-line-height-1_8 g-rounded-3 g-pa-20 g-mb-30" role="alert">
-                        <h3 class="g-color-primary g-font-weight-600">Event Info</h3>
-                        <p class="mb-0 g-font-size-16">
-                            <i class="icon-people"></i> Number of participants: <span id="num_participants" class="u-label g-rounded-3 g-bg-primary g-mr-10 g-mb-15">&hellip;</span>
-                        </p>
-                        <p class="mb-0 g-font-size-16">
-                            <i class="icon-clock"></i> Total duration: <span id="duration" class="u-label g-rounded-3 g-bg-primary g-mr-10 g-mb-15">&hellip;</span>
-                        </p>
-                        <p class="mb-0 g-font-size-16">
-                            <i class="icon-bubble"></i> Duration of each date: <span class="u-label g-rounded-3 g-bg-primary g-mr-10 g-mb-15">5 minutes</span>
-                        </p>
-                        <p class="mb-0 g-font-size-16">
-                            <i class="icon-cup"></i> Duration of a break: <span class="u-label g-rounded-3 g-bg-primary g-mr-10 g-mb-15">1 minute</span>
-                        </p>
+                    <div class="card card-inverse g-bg-secondary g-brd-secondary rounded-0 g-mb-25">
+                        <h3 class="card-header h5">
+                            <i class="fa fa-tasks g-font-size-default g-mr-5"></i>
+                            Event Info
+                        </h3>
+                        <div class="card-block g-pa-15">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <p class="mb-0 g-font-size-16">
+                                        <i class="icon-people"></i> Number of people you meet
+                                    </p>
+                                </div>
+                                <div class="col-md-6">
+                                <span class="u-label g-rounded-3 g-bg-primary g-mr-10 g-mb-15" id="num_dates">
+                                    &hellip;
+                                </span>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <p class="mb-0 g-font-size-16">
+                                        <i class="icon-clock"></i> Total duration
+                                    </p>
+                                </div>
+                                <div class="col-md-6">
+                                <span class="u-label g-rounded-3 g-bg-primary g-mr-10 g-mb-15" id="duration">
+                                    &hellip; minutes
+                                </span>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <p class="mb-0 g-font-size-16">
+                                        <i class="icon-bubble"></i> Duration of each date
+                                    </p>
+                                </div>
+                                <div class="col-md-6">
+                                    <span class="u-label g-rounded-3 g-bg-primary g-mr-10 g-mb-15">5 minutes</span>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <p class="mb-0 g-font-size-16">
+                                        <i class="icon-cup"></i> Duration of a break
+                                    </p>
+                                </div>
+                                <div class="col-md-6">
+                                    <span class="u-label g-rounded-3 g-bg-primary g-mr-10 g-mb-15">1 minute</span>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
 
@@ -169,71 +175,27 @@
 
 
 {% block javascript %}
-
 <script>
 $(document).on('ready', function () {
-    let numGroups = $('#id_step3-numGroups')
-    let selectOne = $('#select_one_group')
-    let selectTwo = $('#select_two_groups')
-
-    selectOne.click(function() {
-        selectOne.removeClass('custom-radio')
-        selectOne.addClass('custom-radio-active')
-
-        selectTwo.removeClass('custom-radio-active')
-        selectTwo.addClass('custom-radio')
-
-        numGroups.val('1')
-        showEventInfo()
-    })
-
-    selectTwo.click(function() {
-        selectTwo.removeClass('custom-radio')
-        selectTwo.addClass('custom-radio-active')
-
-        selectOne.removeClass('custom-radio-active')
-        selectOne.addClass('custom-radio')
-
-        numGroups.val('2')
-        showEventInfo()
-    })
-
-    if (numGroups.val() === '1' || numGroups.val() === 1) {
-        selectOne.removeClass('custom-radio')
-        selectOne.addClass('custom-radio-active')
-    } else if (numGroups.val() === '2' || numGroups.val() === 2) {
-        selectTwo.removeClass('custom-radio')
-        selectTwo.addClass('custom-radio-active')
-    }
-
     let eventSize = $('#id_step3-eventSize')
     eventSize.change(function() {
         showEventInfo()
     })
 
-    let numParticipants = $('#num_participants')
+    let numDates = $('#num_dates')
     let duration = $('#duration')
 
     function showEventInfo() {
-        let groups = numGroups.val()
         let size = eventSize.val()
 
-        if (groups === '2') {
-            numParticipants.text(size)
-            // Hardcoded duration of each date event to 6 minutes
-            duration.text(size * 3 + ' minutes')
-        } else if (groups === '1') {
-            numParticipants.text(size / 2 + 1)
-            // Hardcoded duration of each date event to 6 minutes
-            duration.text(size * 3 + ' minutes')
-        } else {
-            numParticipants.html('&hellip;')
-            duration.html('&hellip;')
-        }
+        numDates.text(size / 2)
+        // Hardcoded duration of each date event to 6 minutes
+        duration.text(size * 3 + ' minutes')
     }
 
     showEventInfo()
 })
+
 
 </script>
 {% endblock %}

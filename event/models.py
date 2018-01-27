@@ -352,10 +352,10 @@ class Event(models.Model):
     def groupsMatchCriteria(self, user, looking_for):
         groups = EventGroup.objects.filter(event=self.id)
 
-        if self.numGroups == 1:
+        if len(groups) == 1:
             if groups[0].user_matches(user) and groups[0].looking_for_matches(looking_for):
                 return True
-        elif self.numGroups == 2:
+        elif len(groups) == 2:
             if groups[0].user_matches(user) and groups[1].looking_for_matches(looking_for) or \
                     groups[1].user_matches(user) and groups[0].looking_for_matches(looking_for):
                 return True
@@ -500,16 +500,16 @@ class EventGroup(models.Model):
     OTHER = 'other'
     ANY = 'any'
 
-    IDENTITY_CHOICES = (
+    IDENTITY_CHOICES = [
         (FEMALE, 'Women'),
         (MALE, 'Men'),
         (OTHER, 'Other (please specify)'),
         (ANY, 'Anyone welcome')
-    )
+    ]
 
     event = models.ForeignKey(Event, on_delete=models.PROTECT)
     sexualIdentity = models.CharField(max_length=50, choices=IDENTITY_CHOICES, blank=True)
-    sexualIdentityOther = models.CharField(max_length=150, blank=True)
+    sexualIdentityOther = models.CharField(max_length=150, blank=True, null=True)
     ageMin = models.PositiveSmallIntegerField(validators=[MinValueValidator(18)])
     ageMax = models.PositiveSmallIntegerField(validators=[MinValueValidator(18)])
 
