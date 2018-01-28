@@ -34,7 +34,7 @@ ANYMAIL = {
     'MAILGUN_SENDER_DOMAIN': get_env_var('MAILGUN_SERVER'),
 }
 EMAIL_BACKEND = 'anymail.backends.mailgun.EmailBackend'
-DEFAULT_FROM_EMAIL = 'Bokaru <admin@bokaru.com>'
+DEFAULT_FROM_EMAIL = 'Bokaru <ano-reply@mg.bokaru.com>'
 SERVER_EMAIL = 'admin@bokaru.com'
 
 DEBUG = False

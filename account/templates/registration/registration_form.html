@@ -28,11 +28,9 @@
 
     <!-- username -->
     <div class="form-group g-mb-20 {% if form.username.errors %}u-has-error-v1{% endif %}">
-        <div class="input-group g-brd-primary--focus">
-            <div class="input-group-addon d-flex align-items-center g-color-gray-light-v1 rounded-0">
-                <i class="icon-user"></i>
-            </div>
-            {% render_field form.username class="form-control form-control-md border-left-0 rounded-0 pl-0" placeholder="Username" %}
+        <div class="u-input-group-v2">
+            {% render_field form.username class="form-control rounded-0 u-form-control0" %}
+            <label for="id_username">Username</label>
         </div>
         {% if form.username.errors %}
         <small class="form-control-feedback">{{form.username.errors}}</small>
@@ -41,11 +39,9 @@
 
     <!-- name -->
     <div class="form-group g-mb-20 {% if form.fullName.errors %}u-has-error-v1{% endif %}">
-        <div class="input-group g-brd-primary--focus">
-            <div class="input-group-addon d-flex align-items-center g-color-gray-light-v1 rounded-0">
-                <i class="icon-pencil"></i>
-            </div>
-            {% render_field form.fullName class="form-control form-control-md border-left-0 rounded-0 pl-0" placeholder="Full Name" %}
+        <div class="u-input-group-v2">
+            {% render_field form.fullName class="form-control rounded-0 u-form-control0" %}
+            <label for="id_fullName">Full Name</label>
         </div>
         {% if form.fullName.errors %}
         <small class="form-control-feedback">{{form.fullName.errors}}</small>
@@ -54,11 +50,9 @@
 
     <!-- email -->
     <div class="form-group g-mb-20 {% if form.email.errors %}u-has-error-v1{% endif %}">
-        <div class="input-group g-brd-primary--focus">
-            <div class="input-group-addon d-flex align-items-center g-color-gray-light-v1 rounded-0">
-                <i class="icon-envelope-open"></i>
-            </div>
-            {% render_field form.email class="form-control form-control-md border-left-0 rounded-0 pl-0" placeholder="Email" %}
+        <div class="u-input-group-v2">
+            {% render_field form.email class="form-control rounded-0 u-form-control0" %}
+            <label for="id_email">Email</label>
         </div>
         {% if form.email.errors %}
         <small class="form-control-feedback">{{form.email.errors}}</small>
@@ -67,11 +61,9 @@
 
     <!-- password 1 -->
     <div class="form-group g-mb-20 {% if form.password1.errors %}u-has-error-v1{% endif %}">
-        <div class="input-group g-brd-primary--focus">
-            <div class="input-group-addon d-flex align-items-center g-color-gray-light-v1 rounded-0">
-                <i class="icon-lock"></i>
-            </div>
-            {% render_field form.password1 class="form-control form-control-md border-left-0 rounded-0 pl-0" placeholder="Password" %}
+        <div class="u-input-group-v2">
+            {% render_field form.password1 class="form-control rounded-0 u-form-control0" %}
+            <label for="id_password1">Password</label>
         </div>
         {% if form.password1.errors %}
         <small class="form-control-feedback">{{form.password1.errors}}</small>
@@ -80,15 +72,19 @@
 
     <!-- password 2 -->
     <div class="form-group g-mb-20 {% if form.password2.errors %}u-has-error-v1{% endif %}">
-        <div class="input-group g-brd-primary--focus">
-            <div class="input-group-addon d-flex align-items-center g-color-gray-light-v1 rounded-0">
-                <i class="icon-lock"></i>
-            </div>
-            {% render_field form.password2 class="form-control form-control-md border-left-0 rounded-0 pl-0" placeholder="Repeat Password" %}
+        <div class="u-input-group-v2">
+            {% render_field form.password2 class="form-control rounded-0 u-form-control0" %}
+            <label for="id_password1">Repeat Password</label>
         </div>
         {% if form.password2.errors %}
         <small class="form-control-feedback">{{form.password2.errors}}</small>
         {% endif %}
+    </div>
+
+    <!-- Timezone -->
+    <div class="form-group g-mb-20">
+        {% render_field form.timezoneName class="form-control rounded-0 u-form-control0 u-select-v1" %}
+        <small class="form-control-feedback">We will automatically convert event timing to this timezone, so please make sure it is correct.</small>
     </div>
 
     <!-- checkboxes -->
@@ -102,7 +98,7 @@
                     </div>
                     I agree to terms &amp; conditions
                 </label>
-                <br />
+                <br/>
                 {% if form.terms.errors %}
                 <small class="form-control-feedback">{{form.terms.errors}}</small>
                 {% endif %}

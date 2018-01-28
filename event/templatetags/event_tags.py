@@ -42,6 +42,9 @@ def render_event_large(context, event):
                 group2_can_join = group2.can_user_register(current_user)
             except Exception:
                 group2_can_join = False
+    else:
+        group1_can_join = True
+        group2_can_join = True
 
     context = {
         'event': event,

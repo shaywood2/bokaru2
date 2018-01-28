@@ -1,0 +1,6 @@
+Your adventure is about to begin!
+
+Follow the link below to activate your account:
+http://{{ site }}{% url 'account:registration_activate' activation_key=activation_key %}
+
+The activation link will expire in {{ expiration_days }} days.

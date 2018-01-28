@@ -28,11 +28,9 @@
     {% csrf_token %}
     <!-- username -->
     <div class="form-group g-mb-20 {% if form.username.errors %}u-has-error-v1{% endif %}">
-        <div class="input-group g-brd-primary--focus">
-            <div class="input-group-addon d-flex align-items-center g-color-gray-light-v1 rounded-0">
-                <i class="icon-user"></i>
-            </div>
-            {% render_field form.username class="form-control form-control-md border-left-0 rounded-0 pl-0" placeholder="Username" %}
+        <div class="u-input-group-v2">
+            {% render_field form.username class="form-control rounded-0 u-form-control0" %}
+            <label for="id_username">Username</label>
         </div>
         {% if form.username.errors %}
         <small class="form-control-feedback">{{form.username.errors}}</small>
@@ -41,22 +39,20 @@
 
     <!-- password -->
     <div class="form-group g-mb-20 {% if form.password.errors %}u-has-error-v1{% endif %}">
-        <div class="input-group g-brd-primary--focus">
-            <div class="input-group-addon d-flex align-items-center g-bg-white g-color-gray-light-v1 rounded-0">
-                <i class="icon-lock"></i>
-            </div>
-            {% render_field form.password class="form-control form-control-md border-left-0 rounded-0 pl-0" placeholder="Password" %}
+        <div class="u-input-group-v2">
+            {% render_field form.password class="form-control rounded-0 u-form-control0" %}
+            <label for="id_password">Password</label>
         </div>
         {% if form.password.errors %}
         <small class="form-control-feedback">{{form.password.errors}}</small>
         {% endif %}
     </div>
 
-    <p class="pull-right"><a href="{% url 'password_reset' %}">Forgot password?</a></p>
+    <p class="pull-right"><a href="{% url 'password_reset' %}">Forgot password or username?</a></p>
 
     <button type="submit" class="btn btn-lg btn-block u-btn-primary g-mb-10 rounded-0">Sign In</button>
 
-    <a href="{% url 'auth_register' %}" class="btn btn-lg btn-block u-btn-primary g-mb-10 rounded-0">Register</a>
+    <a href="{% url 'account:register' %}" class="btn btn-lg btn-block u-btn-primary g-mb-10 rounded-0">Register</a>
 </form>
 
 {% endblock %}

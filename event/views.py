@@ -84,6 +84,10 @@ def view(request, event_id):
                 can_join = True
             except Exception:
                 group2_can_join = False
+    else:
+        can_join = True
+        group1_can_join = True
+        group2_can_join = True
 
     context = {
         'event': selected_event,

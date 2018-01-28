@@ -94,12 +94,23 @@
                     <span class="g-color-black g-font-weight-700">{{ group1.displaySexualIdentity }}</span>
                     <em class="d-block g-font-style-normal">Ages: {{ group1.ageMin }} &mdash; {{ group1.ageMax }}</em>
                     {% if group1_can_join %}
-                    <a href="{% url 'event:join' group_id=group1.id %}" class="btn u-btn-primary u-btn-content g-font-weight-600 g-letter-spacing-0_5 text-uppercase g-brd-2 rounded-0 over-overlay">
+                    {% if request.user.is_authenticated %}
+                    <a href="{% url 'event:join' group_id=group1.id %}"
+                       class="btn u-btn-primary u-btn-content g-font-weight-600 g-letter-spacing-0_5 text-uppercase g-brd-2 rounded-0 over-overlay">
                         <i class="fa fa-heart pull-left"></i>
                         <span class="float-right text-left">
                             Join group
                         </span>
                     </a>
+                    {% else %}
+                    <a href="{% url 'account:register_and_join' group_id=group1.id %}"
+                       class="btn u-btn-primary u-btn-content g-font-weight-600 g-letter-spacing-0_5 text-uppercase g-brd-2 rounded-0 over-overlay">
+                        <i class="fa fa-heart pull-left"></i>
+                        <span class="float-right text-left">
+                            Join group
+                        </span>
+                    </a>
+                    {% endif %}
                     {% endif %}
                 </div>
                 {% if group2 %}
@@ -122,12 +133,23 @@
                     <span class="g-color-black g-font-weight-700">{{ group2.displaySexualIdentity }}</span>
                     <em class="d-block g-font-style-normal">Ages: {{ group2.ageMin }} &mdash; {{ group2.ageMax }}</em>
                     {% if group2_can_join %}
-                    <a href="{% url 'event:join' group_id=group2.id %}" class="btn u-btn-primary u-btn-content g-font-weight-600 g-letter-spacing-0_5 text-uppercase g-brd-2 rounded-0 over-overlay">
+                    {% if request.user.is_authenticated %}
+                    <a href="{% url 'event:join' group_id=group2.id %}"
+                       class="btn u-btn-primary u-btn-content g-font-weight-600 g-letter-spacing-0_5 text-uppercase g-brd-2 rounded-0 over-overlay">
                         <i class="fa fa-heart pull-left"></i>
                         <span class="float-right text-left">
                             Join group
                         </span>
                     </a>
+                    {% else %}
+                    <a href="{% url 'account:register_and_join' group_id=group2.id %}"
+                       class="btn u-btn-primary u-btn-content g-font-weight-600 g-letter-spacing-0_5 text-uppercase g-brd-2 rounded-0 over-overlay">
+                        <i class="fa fa-heart pull-left"></i>
+                        <span class="float-right text-left">
+                            Join group
+                        </span>
+                    </a>
+                    {% endif %}
                     {% endif %}
                 </div>
                 {% endif %}
