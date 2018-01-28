@@ -32,6 +32,7 @@ def render_event_large(context, event):
 
     # Check if user can join each group and leave event
     if current_user.is_authenticated and current_user is not None:
+        is_authenticated = True
         try:
             group1_can_join = group1.can_user_register(current_user)
         except Exception:
@@ -43,6 +44,7 @@ def render_event_large(context, event):
             except Exception:
                 group2_can_join = False
     else:
+        is_authenticated = False
         group1_can_join = True
         group2_can_join = True
 
@@ -53,7 +55,8 @@ def render_event_large(context, event):
         'group1_filled_percentage': group1_filled_percentage,
         'group2_filled_percentage': group2_filled_percentage,
         'group1_can_join': group1_can_join,
-        'group2_can_join': group2_can_join
+        'group2_can_join': group2_can_join,
+        'is_authenticated': is_authenticated
     }
 
     return context
