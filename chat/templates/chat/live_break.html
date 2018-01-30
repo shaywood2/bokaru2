@@ -21,13 +21,34 @@
                 </div>
             </div>
         </div>
+        {% if next_date %}
+        <div class="row g-mb-150">
+            <div class="col-12">
+                <h1>Coming up next</h1>
+                {% if next_date.is_break %}
+                <h2>A short break between dates.</h2>
+                {% else %}
+                {% render_profile_large next_date.account next_date.memo %}
+                {% endif %}
+            </div>
+        </div>
+        {% else %}
+        <div class="row g-mb-150">
+            <div class="col-12">
+                <h1>This was the last date</h1>
+                <h2>The results will soon be revealed!</h2>
+            </div>
+        </div>
+        {% endif %}
     </div>
 </section>
+{% csrf_token %}
 {% endblock %}
 
 {% block javascript %}
 <script>
 $(document).on('ready', function () {
+    let csrftoken = $('[name=csrfmiddlewaretoken]').val()
     var dateDuration = {{ event.dateDuration }}
     var breakDuration = {{ event.breakDuration }}
     var timeUntilReload = {{ time_until_reload }}
@@ -44,11 +65,30 @@ $(document).on('ready', function () {
 
         let timeString = (minutesLeft+'').padStart(2,'0') + ':' + (secondsLeft+'').padStart(2,'0')
 
+        document.title = 'Bokaru | ' + timeString
+
         timer.css("width", progress + '%')
         timer.html(timeString)
     }
 
     setInterval(updateTimer, 1000)
+
+    // Handle memo button clicks
+    $('.save_memo_button').click(function() {
+        user_id = $(this).data('user-id')
+        let memo = $('.memo[data-user-id=' + user_id +']')
+        let saving = $('.saving_memo[data-user-id=' + user_id +']')
+        let text = memo.val()
+        $.ajaxSetup({
+            headers: {
+                'X-CSRFToken': csrftoken
+            }
+        })
+        saving.show()
+        $.post('/memo/about/'+ user_id + '/', text, function() {
+            saving.hide()
+        })
+    })
 })
 </script>
 {% endblock %}

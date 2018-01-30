@@ -19,6 +19,8 @@
         <div id="video_info" class="h1 g-pos-abs text-center" style="top: 45%; left: 0; z-index: 1; width: 100%;">
             Waiting for your date&hellip;
         </div>
+        <div id="countdown" class="h1 g-pos-abs text-center g-color-primary g-font-size-180" style="top: 30%; left: 0; z-index: 1; width: 100%;">
+        </div>
     </div>
 </section>
 
@@ -39,7 +41,7 @@
                 <!-- End Countdown -->
             </div>
         </div>
-        <div class="row">
+        <div class="row g-mb-150">
             <div class="col-12">
                 {% render_profile_large account memo %}
             </div>
@@ -61,9 +63,10 @@ $(document).on('ready', function () {
     var dateDuration = {{ event.dateDuration }}
     var timeUntilReload = {{ time_until_reload }}
     var seconds = 0
+    let countdown = $('#countdown')
+    let timer = $('#timer')
 
     function updateTimer() {
-        let timer = $('#timer')
         let secondsElapsed = dateDuration - timeUntilReload + seconds++
         let progress = secondsElapsed / dateDuration * 100
 
@@ -75,6 +78,12 @@ $(document).on('ready', function () {
 
         timer.css("width", progress + '%')
         timer.html(timeString)
+
+        document.title = 'Bokaru | ' + timeString
+
+        if (minutesLeft === 0 && secondsLeft <= 10) {
+            countdown.html(secondsLeft)
+        }
     }
 
     setInterval(updateTimer, 1000)

@@ -46,7 +46,8 @@ def live_event(request):
                 'event': event,
                 'is_break': True,
                 'time_passed': date.time_passed,
-                'time_until_reload': date.time_until_reload
+                'time_until_reload': date.time_until_reload,
+                'next_date': date.next_date
             }
 
             return render(request, 'chat/live_break.html', context)
@@ -90,7 +91,8 @@ def live_event(request):
                 'memo': date.memo,
                 'time_passed': date.time_passed,
                 'time_until_reload': date.time_until_reload,
-                'pick_response': pick_response
+                'pick_response': pick_response,
+                'next_date': date.next_date
             }
 
             return render(request, 'chat/live_pick.html', context)
