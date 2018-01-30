@@ -2,6 +2,16 @@ Event {{ event_name }} is starting really soon ({{ event_start_time|date:'l, N d
 
 Don't miss out on the fun, join the event as soon as possible!
 
-Follow this link: http://bokaru.com/chat/
+Follow this link: https://bokaru.com/chat/
+
+First time attending an event? Let's do a quick system check to make sure everything goes smoothly!
+
+    - Is your camera connected and pointed at your face?
+    - Do you have a microphone or a headset?
+    - Turn the volume up to the required level.
+    - Is your internet connection fast and stable?
+    - Follow the link below to run an automatic test on your browser before the event.
+
+https://bokaru.com/chat/test/
 
 - Your friends at Bokaru
