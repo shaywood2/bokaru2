@@ -10,9 +10,10 @@ Do this once:
 2. Install [Vagrant](https://www.vagrantup.com/)
 3. Fork the [Git repository](https://github.com/metriclabs/bokaru2)
 4. Clone your fork to a directory on your computer
-5. Open a console window on your computer.
-6. Navigate to the directory where you cloned the Git repository.
-7. Run the command: `vagrant up`. Vagrant will do the following **automatically**:
+5. Copy file `env.dev.json` to `env.json`
+6. Open a console window on your computer.
+7. Navigate to the directory where you cloned the Git repository.
+8. Run the command: `vagrant up`. Vagrant will do the following **automatically**:
     1. Set up a virtual machine based on Ubuntu 16.4 (Xenial)
     2. Forward VM ports
         1. 80 (Nginx reverse proxy)
@@ -29,17 +30,17 @@ Do this once:
     10. Create 3 products required for event creation
     11. Set up Gunicorn application server
     12. Set up Nginx reverse proxy
-8. Once the vagrant provisioning is complete you can access your VM with this command: `vagrant ssh`
-9. **Optional:** Run the following command to bind the python command to version 3 of python:
+9. Once the vagrant provisioning is complete you can access your VM with this command: `vagrant ssh`
+10. **Optional:** Run the following command to bind the python command to version 3 of python:
     1. `echo "alias python=python3" >> ~/.bashrc`
     2. Exit VM using command `exit` and log in again with `vagrant ssh`
-10. **Optional:** Create test data:
+11. **Optional:** Create test data:
     1. Start the interactive Python shell: `python3 /usr/local/bokaru/manage.py shell`
     2. Import the required module: `from chat import test_data`
     3. Create test events by running commands `test_data.make_event_two_groups()` and `test_data.make_event_one_group()`
     4. Create a large number of test events: `test_data.make_events(40)`
     5. Run command `exit()` to exit the shell
-11. **Optional:** Run the tests:
+12. **Optional:** Run the tests:
     1. Change directory `cd /usr/local/bokaru/`
     2. Run all tests `python3 ./manage.py test`
 

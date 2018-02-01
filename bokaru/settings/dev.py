@@ -19,10 +19,16 @@ CACHES = {
     }
 }
 
+# Mailgun backend
+ANYMAIL = {
+    'MAILGUN_API_KEY': get_env_var('MAILGUN_KEY'),
+    'MAILGUN_SENDER_DOMAIN': get_env_var('MAILGUN_SERVER'),
+}
+# EMAIL_BACKEND = 'anymail.backends.mailgun.EmailBackend'
 # Console email backend
 EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
-DEFAULT_FROM_EMAIL = 'Bokaru <admin@dev.bokaru.com>'
-SERVER_EMAIL = 'server@dev.bokaru.com'
+DEFAULT_FROM_EMAIL = 'Bokaru <no-reply@mg.bokaru.com>'
+SERVER_EMAIL = 'admin@bokaru.com'
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True

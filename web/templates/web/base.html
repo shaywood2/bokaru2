@@ -36,7 +36,6 @@
     <link rel="stylesheet" href="{% static 'web/vendor/dzsparallaxer/dzsscroller/scroller.css' %}">
     <link rel="stylesheet" href="{% static 'web/vendor/dzsparallaxer/advancedscroller/plugin.css' %}">
     <link rel="stylesheet" href="{% static 'web/vendor/hs-megamenu/src/hs.megamenu.css' %}">
-    <link rel="stylesheet" href="{% static 'web/vendor/hs-megamenu/src/hs.megamenu.css' %}">
     <link rel="stylesheet" href="{% static 'web/vendor/cropper/cropper.min.css' %}">
     <link rel="stylesheet" href="{% static 'web/vendor/jquery-ui/themes/base/jquery-ui.min.css' %}">
     <link rel="stylesheet" href="{% static 'web/vendor/custombox/custombox.min.css' %}">
@@ -58,19 +57,7 @@
         function gtag(){dataLayer.push(arguments);}
         gtag('js', new Date());
 
-        {% if request.user.is_authenticated %}
-        // Set the user ID using signed-in user_id
-        gtag('config', 'UA-110522977-1', {
-            'user_id': '{{ request.user.id }}'
-        });
-        {% else %}
         gtag('config', 'UA-110522977-1');
-        {% endif %}
-
-        //gtag('event', 'play', {
-        //  'event_category': 'Videos',
-        //  'event_label': 'Fall Campaign'
-        //});
     </script>
 
     {% block header %}

@@ -7,7 +7,7 @@
 
 {% block content %}
 <section>
-    <div class="container">
+    <div class="container g-bg-secondary">
         <!-- Pick buttons -->
         <div class="row">
             <div class="col-12 text-center g-my-50">
@@ -42,7 +42,7 @@
 
 <section>
     <div class="container">
-        <div class="row">
+        <div class="row g-bg-secondary">
             <div class="col-12">
                 <!-- Countdown -->
                 <div class="row">
@@ -58,9 +58,29 @@
         </div>
         <div class="row">
             <div class="col-12">
+                <h1>You just talked to</h1>
                 {% render_profile_large account memo %}
             </div>
         </div>
+        {% if next_date %}
+        <div class="row g-mb-150">
+            <div class="col-12">
+                <h1>Coming up next</h1>
+                {% if next_date.is_break %}
+                <h2>A short break between dates.</h2>
+                {% else %}
+                {% render_profile_large next_date.account next_date.memo %}
+                {% endif %}
+            </div>
+        </div>
+        {% else %}
+        <div class="row g-mb-150">
+            <div class="col-12">
+                <h1>This was the last date</h1>
+                <h2>The results will soon be revealed!</h2>
+            </div>
+        </div>
+        {% endif %}
     </div>
 </section>
 {% csrf_token %}
@@ -85,6 +105,8 @@ $(document).on('ready', function () {
         secondsLeft = secondsLeft - minutesLeft * 60
 
         let timeString = (minutesLeft+'').padStart(2,'0') + ':' + (secondsLeft+'').padStart(2,'0')
+
+        document.title = 'Bokaru | ' + timeString
 
         timer.css("width", progress + '%')
         timer.html(timeString)

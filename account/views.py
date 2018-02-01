@@ -11,48 +11,14 @@ from django.http import HttpResponseRedirect
 from django.http import JsonResponse
 from django.shortcuts import get_object_or_404, render
 from django.urls import reverse
-from registration.backends.hmac.views import RegistrationView as BaseRegistrationView
 
 from event.models import Pick
 from money.model_transaction import Transaction
 from money.models import UserPaymentInfo
-from .forms import RegistrationForm, AccountForm, UserPreferenceForm
+from .forms import AccountForm, UserPreferenceForm
 from .models import Account, UserPreference, Memo
 
 LOGGER = logging.getLogger(__name__)
-
-
-# Custom view for registration page
-class RegistrationView(BaseRegistrationView):
-    form_class = RegistrationForm
-
-    def register(self, form):
-        new_user = BaseRegistrationView.register(self, form)
-        # Create account object
-        acc = Account()
-        acc.fullName = form.cleaned_data['fullName']
-        acc.user = new_user
-        acc.status = Account.CREATED
-        acc.save()
-
-        # Create user preferences object
-        pref = UserPreference()
-        pref.user = new_user
-        pref.receiveNewsletter = form.cleaned_data.get('newsletter')
-        # Set Toronto as default search location
-        pref.cityName = 'Toronto, ON, Canada'
-        pref.cityNameShort = 'Toronto'
-        pref.cityLat = 43.653226
-        pref.cityLng = -79.3831843
-        pref.save()
-
-        # Apply welcome credit
-        credit_amount = getattr(settings, 'WELCOME_CREDIT', 0)
-        credit_description = getattr(settings, 'WELCOME_CREDIT_TEXT', 'Bonus site credit')
-        if credit_amount > 0:
-            Transaction.objects.apply_welcome_credit(new_user, credit_amount, credit_description)
-
-        LOGGER.info('Registered a new user: {!s}. Bonus credit amount: {:d}'.format(new_user, credit_amount))
 
 
 # Listen to login signal and put account into session

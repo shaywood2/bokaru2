@@ -2,7 +2,6 @@ import logging
 from datetime import datetime
 from datetime import timedelta
 
-import pytz
 from django import forms
 from django.utils import timezone
 from django.utils.dateparse import parse_time
@@ -138,29 +137,39 @@ class CreateEventStep3(forms.Form):
         (Event.MEDIUM, 'Medium'),
         (Event.LARGE, 'Large')
     ]
-    numGroups = forms.IntegerField(widget=forms.HiddenInput())
     eventSize = forms.ChoiceField(choices=SIZE_CHOICES, initial=Event.MEDIUM)
 
 
 # Group details
-class CreateEventStep4a(forms.Form):
-    sexualIdentity = forms.ChoiceField(choices=EventGroup.IDENTITY_CHOICES)
-    sexualIdentityOther = forms.CharField(max_length=150, required=False)
-    ageMin = forms.IntegerField(widget=forms.HiddenInput(), min_value=18, initial=22)
-    ageMax = forms.IntegerField(widget=forms.HiddenInput(), min_value=18, initial=99)
+class CreateEventStep4(forms.Form):
+    error_messages = {
+        'please_specify': _('Please specify sexual identity.')
+    }
 
-
-# Group details (2 groups)
-class CreateEventStep4b(forms.Form):
     sexualIdentity1 = forms.ChoiceField(choices=EventGroup.IDENTITY_CHOICES, initial='female')
     sexualIdentityOther1 = forms.CharField(max_length=150, required=False)
     ageMin1 = forms.IntegerField(widget=forms.HiddenInput(), min_value=18, initial=22)
-    ageMax1 = forms.IntegerField(widget=forms.HiddenInput(), min_value=18, initial=99)
+    ageMax1 = forms.IntegerField(widget=forms.HiddenInput(), min_value=18, initial=77)
 
-    sexualIdentity2 = forms.ChoiceField(choices=EventGroup.IDENTITY_CHOICES, initial='male')
+    sexualIdentity2 = forms.ChoiceField(choices=[('', 'No second group')] + EventGroup.IDENTITY_CHOICES,
+                                        initial='male', required=False)
     sexualIdentityOther2 = forms.CharField(max_length=150, required=False)
     ageMin2 = forms.IntegerField(widget=forms.HiddenInput(), min_value=18, initial=22)
-    ageMax2 = forms.IntegerField(widget=forms.HiddenInput(), min_value=18, initial=99)
+    ageMax2 = forms.IntegerField(widget=forms.HiddenInput(), min_value=18, initial=77)
+
+    def clean_sexualIdentityOther1(self):
+        sexual_identity1 = self.cleaned_data.get('sexualIdentity1')
+        sexual_identity_other1 = self.cleaned_data.get('sexualIdentityOther1')
+
+        if sexual_identity1 == EventGroup.OTHER and sexual_identity_other1 == '':
+            raise forms.ValidationError(self.error_messages['please_specify'], code='please_specify')
+
+    def clean_sexualIdentityOther2(self):
+        sexual_identity2 = self.cleaned_data.get('sexualIdentity2')
+        sexual_identity_other2 = self.cleaned_data.get('sexualIdentityOther2')
+
+        if sexual_identity2 == EventGroup.OTHER and sexual_identity_other2 == '':
+            raise forms.ValidationError(self.error_messages['please_specify'], code='please_specify')
 
 
 # Image

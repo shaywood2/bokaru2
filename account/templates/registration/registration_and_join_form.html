@@ -1,0 +1,633 @@
+{% extends 'web/base_nav.html' %}
+
+{% load staticfiles %}
+{% load widget_tweaks %}
+
+{% block title %}Bokaru | Register{% endblock %}
+
+{% block header %}
+<script src="https://maps.googleapis.com/maps/api/js?libraries=places&key=AIzaSyBTwfHuVilarsPOOE4Opm4GaG9I2dfbyCw" type="text/javascript"></script>
+
+<!-- Datepicker -->
+<link href="{% static 'web/vendor/datepicker/datepicker.min.css' %}" rel="stylesheet">
+{% endblock %}
+
+{% block content %}
+<section class="g-mb-100">
+    <form method="post">
+        {% csrf_token %}
+        <div class="container">
+            <div class="row g-mt-50--md">
+                <!-- errors -->
+                {% if form.non_field_errors %}
+                <div class="col-12">
+                    <div class="alert fade show g-bg-red-opacity-0_1 g-color-lightred rounded-0" role="alert">
+                        <div class="media">
+                            <div class="d-flex g-mr-10">
+                                <i></i>
+                            </div>
+                            <div class="media-body">
+                                {% for error in form.non_field_errors %}
+                                <strong>{{ error|escape }}</strong>
+                                {% endfor %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {% endif %}
+                <div class="col-md-6">
+                    <!-- Basic info -->
+                    <h2>Basic Info</h2>
+                    <p>These fields are the required part of your <span class="g-color-primary">public</span> account.</p>
+
+                    <!-- Name -->
+                    <div class="form-group g-mb-20 {% if form.fullName.errors %}u-has-error-v1{% endif %}">
+                        <div class="u-input-group-v2">
+                            {% render_field form.fullName class="form-control rounded-0 u-form-control0" autofocus=True %}
+                            <label for="id_fullName">Full Name</label>
+                        </div>
+                        {% if form.fullName.errors %}
+                        <small class="form-control-feedback">{{form.fullName.errors}}</small>
+                        {% endif %}
+                    </div>
+
+                    <!-- Birth Date -->
+                    <div class="form-group g-mb-20 {% if form.birthDate.errors %}u-has-error-v1{% endif %}">
+                        <div class="input-group u-input-group-v2 g-brd-primary--focus">
+                            {% render_field form.birthDate class="form-control form-control-md u-datepicker-v1 g-brd-right-none rounded-0" data-toggle="datepicker" %}
+                            <label for="id_birthDate" style="z-index: 2;">Birth date</label>
+                            <div class="input-group-addon d-flex align-items-center g-bg-white g-color-gray-dark-v5 rounded-0">
+                                <i class="icon-calendar"></i>
+                            </div>
+                        </div>
+                        {% if form.birthDate.errors %}
+                        <small class="form-control-feedback">{{form.birthDate.errors}}</small>
+                        {% endif %}
+                    </div>
+
+                    <!-- Location -->
+                    <div class="form-group g-mb-20 {% if form.locationName.errors %}u-has-error-v1{% endif %}">
+                        <div class="u-input-group-v2">
+                            {% render_field form.locationName class="form-control rounded-0 u-form-control0" %}
+                            <label for="id_locationName">Location</label>
+                        </div>
+                        {% if form.locationName.errors %}
+                        <small class="form-control-feedback">{{form.locationName.errors}}</small>
+                        {% endif %}
+                        {{ form.cityName }}{{ form.cityLat }}{{ form.cityLng }}
+                    </div>
+
+                    <!-- Identity and orientation -->
+                    <div class="row">
+                        <div class="col-lg-6">
+                            <h4>Sexual Orientation</h4>
+                            <div class="form-group g-mb-20 {% if form.sexualOrientation.errors %}u-has-error-v1{% endif %}">
+                                {% render_field form.sexualOrientation class="form-control rounded-0 u-form-control0 u-select-v1" %}
+                                {% if form.sexualOrientation.errors %}
+                                <small class="form-control-feedback">{{form.sexualOrientation.errors}}</small>
+                                {% endif %}
+                            </div>
+                            <div class="form-group g-mb-20 {% if form.sexualOrientationOther.errors %}u-has-error-v1{% endif %}" id="sexualOrientationOtherGroup">
+                                <div class="u-input-group-v2">
+                                    {% render_field form.sexualOrientationOther class="form-control rounded-0 u-form-control0" %}
+                                    <label for="id_sexualOrientationOther">Other sexual orientation</label>
+                                </div>
+                                {% if form.sexualOrientationOther.errors %}
+                                <small class="form-control-feedback">{{form.sexualOrientationOther.errors}}</small>
+                                {% endif %}
+                            </div>
+                        </div>
+                        <div class="col-lg-6">
+                            <h4>Sexual Identity</h4>
+                            <div class="form-group g-mb-20 {% if form.sexualIdentity.errors %}u-has-error-v1{% endif %}">
+                                {% render_field form.sexualIdentity class="form-control rounded-0 u-form-control0 u-select-v1" %}
+                                {% if form.sexualIdentity.errors %}
+                                <small class="form-control-feedback">{{form.sexualIdentity.errors}}</small>
+                                {% endif %}
+                            </div>
+                            <div class="form-group g-mb-20 {% if form.sexualIdentityOther.errors %}u-has-error-v1{% endif %}" id="sexualIdentityOtherGroup">
+                                <div class="u-input-group-v2">
+                                    {% render_field form.sexualIdentityOther class="form-control rounded-0 u-form-control0" %}
+                                    <label for="id_sexualIdentityOther">Other sexual identity</label>
+                                </div>
+                                {% if form.sexualIdentityOther.errors %}
+                                <small class="form-control-feedback">{{form.sexualIdentityOther.errors}}</small>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+
+                    <hr/>
+
+                    <!-- Looking for -->
+                    <h2>Looking for</h2>
+                    <!-- Looking for genders list -->
+                    <h4>Gender(s)</h4>
+                    <div class="form-group g-mb-20 {% if form.lookingForGenderList.errors %}u-has-error-v1{% endif %}">
+                        <h4 id="lfgContainer" class="g-mt-15"></h4>
+                        <select id="lfgInput" class="form-control rounded-0 u-form-control0 u-select-v1">
+                            <option value>---------</option>
+                            <option value="Man">Man</option>
+                            <option value="Woman">Woman</option>
+                            <option value="Other">Other</option>
+                        </select>
+                        {% if form.lookingForGenderList.errors %}
+                        <small class="form-control-feedback">{{form.lookingForGenderList.errors}}</small>
+                        {% endif %}
+                        {{ form.lookingForGenderList }}
+                    </div>
+
+                    <h4>Age range</h4>
+                    <div class="row">
+                        <div class="col-12">
+                            {{ form.lookingForAgeMin }}
+                            {{ form.lookingForAgeMax }}
+                            <div class="form-group g-mb-40">
+                                <label class="g-mb-10">
+                                    Between <span class="g-color-primary"><span id="ageRangeResult">{{ form.lookingForAgeMin.value }} - {{ form.lookingForAgeMax.value }}</span></span> years old
+                                </label>
+                                <div id="ageRangeSlider" class="u-slider-v1" data-result-container="ageRangeResult" data-range="1"
+                                     data-default="{{ form.lookingForAgeMin.value }}, {{ form.lookingForAgeMax.value }}" data-min="18" data-max="88"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Looking for connections list -->
+                    <h4>Kinds of connections</h4>
+                    <div class="form-group g-mb-20 {% if form.lookingForConnectionsList.errors %}u-has-error-v1{% endif %}">
+                        <h4 id="lfcContainer" class="g-mt-15"></h4>
+                        <select id="lfcInput" class="form-control rounded-0 u-form-control0 u-select-v1">
+                            <option value>---------</option>
+                            <option value="Hookup">Hookup</option>
+                            <option value="Friendship">Friendship</option>
+                            <option value="Short-term dating">Short-term dating</option>
+                            <option value="Long-term dating">Long-term dating</option>
+                            <option value="Marriage">Marriage</option>
+                        </select>
+                        {% if form.lookingForConnectionsList.errors %}
+                        <small class="form-control-feedback">{{form.lookingForConnectionsList.errors}}</small>
+                        {% endif %}
+                        {{ form.lookingForConnectionsList }}
+                    </div>
+                </div>
+
+                <div class="col-md-6">
+                    <h2>User Info</h2>
+                    <p>Please select a unique username.</p>
+
+                    <!-- Username -->
+                    <div class="form-group g-mb-20 {% if form.username.errors %}u-has-error-v1{% endif %}">
+                        <div class="u-input-group-v2">
+                            {% render_field form.username class="form-control rounded-0 u-form-control0" %}
+                            <label for="id_username">Username</label>
+                        </div>
+                        {% if form.username.errors %}
+                        <small class="form-control-feedback">{{form.username.errors}}</small>
+                        {% endif %}
+                    </div>
+
+                    <!-- email -->
+                    <div class="form-group g-mb-20 {% if form.email.errors %}u-has-error-v1{% endif %}">
+                        <div class="u-input-group-v2">
+                            {% render_field form.email class="form-control rounded-0 u-form-control0" %}
+                            <label for="id_email">Email</label>
+                        </div>
+                        {% if form.email.errors %}
+                        <small class="form-control-feedback">{{form.email.errors}}</small>
+                        {% endif %}
+                    </div>
+
+                    <!-- password 1 -->
+                    <div class="form-group g-mb-20 {% if form.password1.errors %}u-has-error-v1{% endif %}">
+                        <div class="u-input-group-v2">
+                            {% render_field form.password1 class="form-control rounded-0 u-form-control0" %}
+                            <label for="id_password1">Password</label>
+                        </div>
+                        {% if form.password1.errors %}
+                        <small class="form-control-feedback">{{form.password1.errors}}</small>
+                        {% endif %}
+                    </div>
+
+                    <!-- password 2 -->
+                    <div class="form-group g-mb-20 {% if form.password2.errors %}u-has-error-v1{% endif %}">
+                        <div class="u-input-group-v2">
+                            {% render_field form.password2 class="form-control rounded-0 u-form-control0" %}
+                            <label for="id_password1">Repeat Password</label>
+                        </div>
+                        {% if form.password2.errors %}
+                        <small class="form-control-feedback">{{form.password2.errors}}</small>
+                        {% endif %}
+                    </div>
+
+                    <!-- Timezone -->
+                    <div class="form-group g-mb-20">
+                        {% render_field form.timezoneName class="form-control rounded-0 u-form-control0 u-select-v1" %}
+                        <small class="form-control-feedback">We will automatically convert event timing to this timezone, so please make sure it is correct.</small>
+                    </div>
+
+                    <!-- checkboxes -->
+                    <div class="row g-mb-30">
+                        <div class="col-md-6">
+                            <div class="form-group g-mb-10 {% if form.terms.errors %}u-has-error-v1{% endif %}">
+                                <label class="u-check g-pl-25">
+                                    {% render_field form.terms class="g-hidden-xs-up g-pos-abs g-top-0 g-left-0" %}
+                                    <div class="u-check-icon-checkbox-v6 g-absolute-centered--y g-left-0">
+                                        <i class="fa" data-check-icon=""></i>
+                                    </div>
+                                    I agree to terms &amp; conditions
+                                </label>
+                                <br/>
+                                {% if form.terms.errors %}
+                                <small class="form-control-feedback">{{form.terms.errors}}</small>
+                                {% endif %}
+                            </div>
+
+                            <div class="form-group g-mb-10">
+                                <label class="u-check g-pl-25">
+                                    {% render_field form.newsletter class="g-hidden-xs-up g-pos-abs g-top-0 g-left-0" %}
+                                    <div class="u-check-icon-checkbox-v6 g-absolute-centered--y g-left-0">
+                                        <i class="fa" data-check-icon=""></i>
+                                    </div>
+                                    Subscribe to our newsletter
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <button type="submit" class="btn btn-lg btn-block u-btn-primary g-mb-10 rounded-0">Register</button>
+                    <a href="{% url 'event:join' group_id=group_id %}" class="btn btn-lg btn-block u-btn-bluegray g-mb-10 rounded-0">I already have an account!</a>
+                </div>
+            </div>
+        </div>
+    </form>
+</section>
+{% endblock %}
+
+{% block javascript %}
+<!-- Datepicker -->
+<script src="{% static 'web/vendor/datepicker/datepicker.min.js' %}"></script>
+
+<!-- jQuery UI Core -->
+<script src="{% static 'web/vendor/jquery-ui/ui/widget.js'%}"></script>
+<script src="{% static 'web/vendor/jquery-ui/ui/version.js'%}"></script>
+<script src="{% static 'web/vendor/jquery-ui/ui/keycode.js'%}"></script>
+<script src="{% static 'web/vendor/jquery-ui/ui/position.js'%}"></script>
+<script src="{% static 'web/vendor/jquery-ui/ui/unique-id.js'%}"></script>
+<script src="{% static 'web/vendor/jquery-ui/ui/safe-active-element.js'%}"></script>
+
+<!-- jQuery UI Helpers -->
+<script src="{% static 'web/vendor/jquery-ui/ui/widgets/menu.js'%}"></script>
+<script src="{% static 'web/vendor/jquery-ui/ui/widgets/mouse.js'%}"></script>
+
+<!-- jQuery UI Widgets -->
+<script src="{% static 'web/vendor/jquery-ui/ui/widgets/slider.js'%}"></script>
+
+<!-- JS Unify -->
+<script src="{% static 'web/js/components/hs.slider.js'%}"></script>
+
+<script>
+$(document).on('ready', function () {
+    // Init datepicker
+    $('[data-toggle="datepicker"]').datepicker({format: 'yyyy-mm-dd', autoHide: true})
+
+    $('#id_birthDate').on('change', function () {
+        var $this = $(this),
+            thisVal = $this.val();
+
+        if (thisVal != 0) {
+            $this.addClass('g-state-not-empty');
+        } else {
+            $this.removeClass('g-state-not-empty');
+        }
+    });
+
+    // Init age slider
+    $.HSCore.components.HSSlider.init('#ageRangeSlider')
+
+    let ageMin = $('#id_lookingForAgeMin')
+    let ageMax = $('#id_lookingForAgeMax')
+
+    $('#ageRangeSlider').slider({change: function( event, ui ) {
+        if (ui.handleIndex === 0) {
+            ageMin.val(ui.value)
+        } else if (ui.handleIndex === 1) {
+            ageMax.val(ui.value)
+        }
+    }})
+
+    // Listen to changes on orientation and identity selects
+    let so = $('#id_sexualOrientation')
+    let soog = $('#sexualOrientationOtherGroup')
+
+    if (so.val() === 'other') {
+        soog.show()
+    } else {
+        soog.hide()
+    }
+
+    so.change(function() {
+        if (so.val() === 'other') {
+            soog.show()
+        } else {
+            soog.hide()
+        }
+    })
+
+    let si = $('#id_sexualIdentity')
+    let siog = $('#sexualIdentityOtherGroup')
+
+    if (si.val() === 'other') {
+        siog.show()
+    } else {
+        siog.hide()
+    }
+
+    si.change(function() {
+        if (si.val() === 'other') {
+            siog.show()
+        } else {
+            siog.hide()
+        }
+    })
+
+    // Connect height inputs
+    let h_cm = $('#id_height')
+    let h_ft = $('#id_height_ft')
+    let h_in = $('#id_height_in')
+
+    function setHeightByCm() {
+        let cm = h_cm.val()
+        let inches = (cm*0.393700787).toFixed(0)
+        let feet = Math.floor(inches / 12)
+        inches %= 12
+
+        h_ft.val(feet)
+        h_in.val(inches)
+    }
+
+    function setHeightByFtIn() {
+        let feet = h_ft.val()
+        let inches = h_in.val()
+        let cm = (inches * 2.54 + feet * 30.48).toFixed(0)
+
+        h_cm.val(cm)
+    }
+
+    setHeightByCm()
+
+    h_cm.change(function() {
+        setHeightByCm()
+    })
+
+    h_in.change(function() {
+        setHeightByFtIn()
+    })
+
+    h_ft.change(function() {
+        setHeightByFtIn()
+    })
+
+    // Tag list functions
+    // Create all existing tags
+    function initTags(containerElement, outputElement) {
+        let val = outputElement.val()
+        if (val === undefined || val === '') {
+            return []
+        }
+        let array = val.split('|')
+        for (let i = 0; i < array.length; i++) {
+            value = array[i]
+            containerElement.append(getTagElement(value));
+        }
+
+        return array
+    }
+
+    function addTag(inputElement, containerElement, outputElement, storageArray) {
+        let value = inputElement.val().trim()
+        if (value === undefined || value === '') {
+            return
+        }
+        if (storageArray.indexOf(value) >= 0) {
+            return
+        }
+        inputElement.val('')
+        storageArray.push(value)
+        containerElement.append(getTagElement(value))
+        outputElement.val(storageArray.join('|'))
+    }
+
+    function getTagElement(value) {
+        return '<span class="tag u-label g-bg-primary u-label--lg g-px-15 g-py-8 g-mr-10"><span>' + value +
+         '</span><a><i class="remove icon-close"></i></a></span>'
+    }
+
+    // Ethnicity tags
+    let ethnicityInput = $('#ethnicityInput')
+    let ethnicityListContainer = $('#ethnicityListContainer')
+    let ethnicityList = $('#id_ethnicityList')
+    let ethnicityArray = []
+
+    ethnicityArray = initTags(ethnicityListContainer, ethnicityList)
+
+    ethnicityInput.change(function() {
+        addTag(ethnicityInput, ethnicityListContainer, ethnicityList, ethnicityArray)
+    })
+
+    // Handle clicks on delete buttons
+    ethnicityListContainer.on("click", "span a", function() {
+        value = $(this).closest('span').text()
+        $(this).closest('span').remove();
+        let index = ethnicityArray.indexOf(value)
+        ethnicityArray.splice(index, 1)
+        ethnicityList.val(ethnicityArray.join('|'))
+    });
+
+    // Language tags
+    let languageInput = $('#languageInput')
+    let languageListContainer = $('#languageListContainer')
+    let languageList = $('#id_languageList')
+    let languageArray = []
+
+    languageArray = initTags(languageListContainer, languageList)
+
+    languageInput.change(function() {
+        addTag(languageInput, languageListContainer, languageList, languageArray)
+    })
+
+    // Handle clicks on delete buttons
+    languageListContainer.on("click", "span a", function() {
+        value = $(this).closest('span').text()
+        $(this).closest('span').remove();
+        let index = languageArray.indexOf(value)
+        languageArray.splice(index, 1)
+        languageList.val(languageArray.join('|'))
+    })
+
+    // Pet tags
+    let petInput = $('#petInput')
+    let petListContainer = $('#petListContainer')
+    let petList = $('#id_petList')
+    let petArray = []
+
+    petArray = initTags(petListContainer, petList)
+
+    petInput.change(function() {
+        addTag(petInput, petListContainer, petList, petArray)
+    })
+
+    // Handle clicks on delete buttons
+    petListContainer.on("click", "span a", function() {
+        value = $(this).closest('span').text()
+        $(this).closest('span').remove();
+        let index = petArray.indexOf(value)
+        petArray.splice(index, 1)
+        petList.val(petArray.join('|'))
+    })
+
+    // Looking for gender tags
+    let lfgInput = $('#lfgInput')
+    let lfgContainer = $('#lfgContainer')
+    let lfgList = $('#id_lookingForGenderList')
+    let lfgArray = []
+
+    lfgArray = initTags(lfgContainer, lfgList)
+
+    lfgInput.change(function() {
+        addTag(lfgInput, lfgContainer, lfgList, lfgArray)
+    })
+
+    // Handle clicks on delete buttons
+    lfgContainer.on("click", "span a", function() {
+        value = $(this).closest('span').text()
+        $(this).closest('span').remove();
+        let index = lfgArray.indexOf(value)
+        lfgArray.splice(index, 1)
+        lfgList.val(lfgArray.join('|'))
+    })
+
+    // Looking for connections tags
+    let lfcInput = $('#lfcInput')
+    let lfcContainer = $('#lfcContainer')
+    let lfcList = $('#id_lookingForConnectionsList')
+    let lfcArray = []
+
+    lfcArray = initTags(lfcContainer, lfcList)
+
+    lfcInput.change(function() {
+        addTag(lfcInput, lfcContainer, lfcList, lfcArray)
+    })
+
+    // Handle clicks on delete buttons
+    lfcContainer.on("click", "span a", function() {
+        value = $(this).closest('span').text()
+        $(this).closest('span').remove();
+        let index = lfcArray.indexOf(value)
+        lfcArray.splice(index, 1)
+        lfcList.val(lfcArray.join('|'))
+    })
+
+    // Update kids want select
+    let kidsHave = $("#id_kidsHave")
+    let kidsWant = $("#id_kidsWant")
+
+    function updateKidsWant() {
+        let val = kidsHave.val()
+        kidsWant.children('option').show()
+
+        if (val === 'has') {
+            kidsWant.children('option[value=might_want]').hide()
+            kidsWant.children('option[value=wants]').hide()
+            kidsWant.children('option[value=doesnt_want]').hide()
+        } else if (val === 'doesnt_have') {
+            kidsWant.children('option[value=might_want2]').hide()
+            kidsWant.children('option[value=wants2]').hide()
+            kidsWant.children('option[value=doesnt_want2]').hide()
+        } else if (val === '') {
+        kidsWant.children('option[value=might_want]').hide()
+            kidsWant.children('option[value=wants]').hide()
+            kidsWant.children('option[value=doesnt_want]').hide()
+            kidsWant.children('option[value=might_want2]').hide()
+            kidsWant.children('option[value=wants2]').hide()
+            kidsWant.children('option[value=doesnt_want2]').hide()
+        }
+    }
+
+    kidsHave.change(function () {
+        kidsWant.val('')
+        updateKidsWant()
+    })
+
+    updateKidsWant()
+
+    let cropper = null
+
+    $('#upload_image').change(function() {
+        if (this.files && this.files[0]) {
+            let reader = new FileReader()
+            reader.onload = function(e) {
+                $('#image').attr('src', e.target.result)
+                let img = document.getElementById('image')
+                if (!!cropper)
+                    cropper.destroy()
+                cropper = new Cropper(img, {
+                    viewMode: 1,
+                    aspectRatio: 1 / 1,
+                    minCropBoxWidth: 200,
+                    minCropBoxHeight: 200,
+                    crop: function(e) {
+                        let canvas = cropper.getCroppedCanvas({
+                            minWidth: 256,
+                            minHeight: 256,
+                            maxWidth: 800,
+                            maxHeight: 800,
+                            fillColor: '#fff',
+                            imageSmoothingEnabled: true,
+                            imageSmoothingQuality: 'high',
+                        })
+                        $('#id_image_data').val(canvas.toDataURL('image/jpeg'))
+                    }
+                })
+            }
+            reader.readAsDataURL(this.files[0])
+            $('#filename').val(this.files[0].name)
+            $('#id_image_name').val(this.files[0].name)
+        }
+    })
+
+    $('#clear_image').click(function() {
+        if (!!cropper)
+            cropper.destroy()
+        {% if photo_url == None %}
+        $('#image').attr('src', '{% static 'web/images/user_default_image.jpg' %}')
+        {% else %}
+        $('#image').attr('src', '{{ photo_url }}')
+        {% endif %}
+        $('#filename').val('')
+        $('#upload_image').val('')
+        $('#id_image_data').val('')
+        $('#id_image_name').val('')
+    })
+})
+
+// Google maps script
+
+function initMap() {
+    let options = {
+        types: ['(cities)']
+    }
+
+    let input = document.getElementById('id_locationName')
+    let autocomplete = new google.maps.places.Autocomplete(input, options)
+
+    google.maps.event.addListener(autocomplete, 'place_changed', function () {
+        let place = autocomplete.getPlace()
+        document.getElementById('id_cityName').value = place.name
+        document.getElementById('id_cityLat').value = place.geometry.location.lat()
+        document.getElementById('id_cityLng').value = place.geometry.location.lng()
+    })
+}
+
+google.maps.event.addDomListener(window, 'load', initMap);
+</script>
+{% endblock %}

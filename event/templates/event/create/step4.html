@@ -70,7 +70,7 @@
 
             <div class="row g-mb-25">
                 <div class="col-lg-12 text-center">
-                    <h3>Group details</h3>
+                    <h3>Event gender(s)</h3>
                 </div>
             </div>
 
@@ -91,36 +91,73 @@
                         </div>
                     </div>
                     {% endif %}
+                </div>
 
+                <div class="col-md-6">
                     <!-- Identity -->
-                    <h5>This group is for:</h5>
-                    <div class="form-group g-mb-20 {% if wizard.form.sexualIdentity.errors %}u-has-error-v1{% endif %}">
-                        {% render_field wizard.form.sexualIdentity class="form-control rounded-0 u-form-control0 u-select-v1" %}
-                        {% if wizard.form.sexualIdentity.errors %}
-                        <small class="form-control-feedback">{{wizard.form.sexualIdentity.errors}}</small>
+                    <div class="form-group g-mb-20 {% if wizard.form.sexualIdentity1.errors %}u-has-error-v1{% endif %}">
+                        {% render_field wizard.form.sexualIdentity1 class="form-control rounded-0 u-form-control0 u-select-v1" %}
+                        {% if wizard.form.sexualIdentity1.errors %}
+                        <small class="form-control-feedback">{{wizard.form.sexualIdentity1.errors}}</small>
                         {% endif %}
                     </div>
-                    <div class="form-group g-mb-20 {% if wizard.form.sexualIdentityOther.errors %}u-has-error-v1{% endif %}" style="display: none;" id="sexualIdentityOtherGroup">
+                    <div class="form-group g-mb-20 {% if wizard.form.sexualIdentityOther1.errors %}u-has-error-v1{% endif %}" style="display: none;" id="sexualIdentityOtherGroup1">
                         <div class="u-input-group-v2">
-                            {% render_field wizard.form.sexualIdentityOther class="form-control rounded-0 u-form-control0" %}
-                            <label for="id_step4a-sexualIdentityOther">Other sexual identity</label>
+                            {% render_field wizard.form.sexualIdentityOther1 class="form-control rounded-0 u-form-control0" %}
+                            <label for="id_step4-sexualIdentityOther1">Other sexual identity</label>
                         </div>
-                        {% if wizard.form.sexualIdentityOther.errors %}
-                        <small class="form-control-feedback">{{wizard.form.sexualIdentityOther.errors}}</small>
+                        {% if wizard.form.sexualIdentityOther1.errors %}
+                        <small class="form-control-feedback">{{wizard.form.sexualIdentityOther1.errors}}</small>
                         {% endif %}
                     </div>
 
                     <!-- Age range -->
-                    <h5>Ages: <span id="ageRangeSliderAmount" class="u-label u-label--lg g-bg-primary g-rounded-3 g-mr-10 g-mb-15">
-                        {{wizard.form.ageMin.value}} - {{wizard.form.ageMax.value}}
+                    <h5>Ages: <span id="ageRangeSliderAmount1" class="u-label u-label--lg g-bg-primary g-rounded-3 g-mr-10 g-mb-15">
+                        {{wizard.form.ageMin1.value}} - {{wizard.form.ageMax1.value}}
                     </span></h5>
                     <div class="form-group g-mb-40">
-                        <div id="ageRangeSlider" class="u-slider-v1-2"
-                             data-result-container="ageRangeSliderAmount" data-range="1"
-                             data-default="{{wizard.form.ageMin.value}}, {{wizard.form.ageMax.value}}" data-min="18" data-max="120"></div>
+                        <div id="ageRangeSlider1" class="u-slider-v1"
+                             data-result-container="ageRangeSliderAmount1" data-range="1"
+                             data-default="{{wizard.form.ageMin1.value}}, {{wizard.form.ageMax1.value}}" data-min="18" data-max="88"></div>
                     </div>
-                    {{wizard.form.ageMin}}
-                    {{wizard.form.ageMax}}
+                    {{wizard.form.ageMin1}}
+                    {{wizard.form.ageMax1}}
+                </div>
+
+                <div class="col-md-6">
+                    <!-- Identity -->
+                    <div class="form-group g-mb-20 {% if wizard.form.sexualIdentity2.errors %}u-has-error-v1{% endif %}">
+                        {% render_field wizard.form.sexualIdentity2 class="form-control rounded-0 u-form-control0 u-select-v1" %}
+                        {% if wizard.form.sexualIdentity2.errors %}
+                        <small class="form-control-feedback">{{wizard.form.sexualIdentity2.errors}}</small>
+                        {% endif %}
+                    </div>
+                    <div class="form-group g-mb-20 {% if wizard.form.sexualIdentityOther2.errors %}u-has-error-v1{% endif %}" style="display: none;" id="sexualIdentityOtherGroup2">
+                        <div class="u-input-group-v2">
+                            {% render_field wizard.form.sexualIdentityOther2 class="form-control rounded-0 u-form-control0" %}
+                            <label for="id_step4-sexualIdentityOther2">Other sexual identity</label>
+                        </div>
+                        {% if wizard.form.sexualIdentityOther2.errors %}
+                        <small class="form-control-feedback">{{wizard.form.sexualIdentityOther2.errors}}</small>
+                        {% endif %}
+                    </div>
+
+                    <!-- Age range -->
+                    <div id="ageRangeContainer2">
+                        <h5>Ages: <span id="ageRangeSliderAmount2" class="u-label u-label--lg g-bg-primary g-rounded-3 g-mr-10 g-mb-15">
+                            {{wizard.form.ageMin2.value}} - {{wizard.form.ageMax2.value}}
+                        </span></h5>
+                        <div class="form-group g-mb-40">
+                            <div id="ageRangeSlider2" class="u-slider-v1"
+                                 data-result-container="ageRangeSliderAmount2" data-range="1"
+                                 data-default="{{wizard.form.ageMin2.value}}, {{wizard.form.ageMax2.value}}" data-min="18" data-max="88"></div>
+                        </div>
+                        {{wizard.form.ageMin2}}
+                        {{wizard.form.ageMax2}}
+                    </div>
+                    <div id="oneGenderInfo" style="display: none;">
+                        <p>When you select one gender, then every person will talk to all everyone else, there will be no splitting into groups!</p>
+                    </div>
                 </div>
 
                 <div class="col-md-6 g-offset-md-3">
@@ -162,10 +199,10 @@
 
 <script>
 $(document).on('ready', function () {
-    $.HSCore.components.HSSlider.init('#ageRangeSlider')
+    $.HSCore.components.HSSlider.init('#ageRangeSlider1, #ageRangeSlider2')
 
-    let si = $('#id_step4a-sexualIdentity')
-    let siog = $('#sexualIdentityOtherGroup')
+    let si = $('#id_step4-sexualIdentity1')
+    let siog = $('#sexualIdentityOtherGroup1')
 
     if (si.val() === 'other') {
         siog.show()
@@ -178,17 +215,73 @@ $(document).on('ready', function () {
             siog.show()
         } else {
             siog.hide()
+
+            if (si.val() === si2.val()) {
+                si2.get(0).selectedIndex = 0;
+                ageRangeContainer2.hide()
+                oneGenderInfo.show()
+            }
         }
     })
 
-    let ageMin = $('#id_step4a-ageMin')
-    let ageMax = $('#id_step4a-ageMax')
+    let ageMin = $('#id_step4-ageMin1')
+    let ageMax = $('#id_step4-ageMax1')
 
-    $('#ageRangeSlider').slider({change: function( event, ui ) {
+    $('#ageRangeSlider1').slider({change: function( event, ui ) {
         if (ui.handleIndex === 0) {
             ageMin.val(ui.value)
         } else if (ui.handleIndex === 1) {
             ageMax.val(ui.value)
+        }
+    }})
+
+    let si2 = $('#id_step4-sexualIdentity2')
+    let siog2 = $('#sexualIdentityOtherGroup2')
+    let ageRangeContainer2 = $('#ageRangeContainer2')
+    let oneGenderInfo = $('#oneGenderInfo')
+
+    if (si2.val() === 'other') {
+        siog2.show()
+    } else {
+        siog2.hide()
+    }
+
+    if (si2.val() === '') {
+        ageRangeContainer2.hide()
+        oneGenderInfo.show()
+    } else {
+        ageRangeContainer2.show()
+        oneGenderInfo.hide()
+    }
+
+    si2.change(function() {
+        if (si2.val() === 'other') {
+            siog2.show()
+        } else {
+            siog2.hide()
+
+            if (si.val() === si2.val()) {
+                si2.get(0).selectedIndex = 0;
+            }
+        }
+
+        if (si2.val() === '') {
+            ageRangeContainer2.hide()
+            oneGenderInfo.show()
+        } else {
+            ageRangeContainer2.show()
+            oneGenderInfo.hide()
+        }
+    })
+
+    let ageMin2 = $('#id_step4-ageMin2')
+    let ageMax2 = $('#id_step4-ageMax2')
+
+    $('#ageRangeSlider2').slider({change: function( event, ui ) {
+        if (ui.handleIndex === 0) {
+            ageMin2.val(ui.value)
+        } else if (ui.handleIndex === 1) {
+            ageMax2.val(ui.value)
         }
     }})
 })

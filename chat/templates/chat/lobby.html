@@ -6,13 +6,17 @@
 
 {% block title %}Bokaru | Live chat{% endblock %}
 
+{% block header %}
+<script src="https://static.opentok.com/v2/js/opentok.min.js"></script>
+{% endblock %}
+
 {% block content %}
 <section>
     <div class="container">
         <div class="row g-min-height-50vh">
-            <div class="col-md-12">
+            <div class="col-md-12 g-bg-gray-dark-v1">
                 <!-- Countdown -->
-                <div class="text-uppercase g-bg-gray-dark-v1 g-color-white text-center g-py-30 g-my-30">
+                <div class="text-uppercase g-color-white text-center g-py-30">
                     <h5 class="g-font-size-42">Event <span class="g-color-primary">{{ event.name }}</span> is starting in</h5>
                     <div class="js-countdown u-countdown-v3 g-line-height-1_2 g-font-weight-300 g-color-white"
                          data-end-date="{{ event.startDateTime|date:'Y/m/d H:i:00' }}"
@@ -41,9 +45,62 @@
                 </div>
                 <!-- Countdown End -->
             </div>
+            <div class="col-md-12 g-mt-20 text-center g-bg-secondary">
+                <h1>System check</h1>
+                <h3>Before your first date starts, let's make sure that everything is set up properly.</h3>
+            </div>
+            <div class="col-md-6 g-bg-secondary">
+                <h2>Hardware checklist</h2>
+                <ul style="list-style: none;">
+                    <li>
+                        <i class="fa fa-video-camera g-color-primary"></i>
+                        Is your camera connected and pointed at your face?
+                    </li>
+                    <li>
+                        <i class="fa fa-headphones g-color-primary"></i>
+                        Do you have a microphone or a headset?
+                    </li>
+                    <li>
+                        <i class="fa fa-volume-up g-color-primary"></i>
+                        Turn the volume up to the required level.
+                    </li>
+                    <li>
+                        <i class="fa fa-signal g-color-primary"></i>
+                        Is your internet connection fast and stable?
+                    </li>
+                </ul>
+            </div>
+            <div class="col-md-6 g-bg-secondary">
+                <h2>Automatic connection test</h2>
+
+                <p id="welcome_text">
+                    Let's make sure that you computer, browser and internet connection are all up to the task of connecting you to all your dates!
+                </p>
+
+                <button id="start_button" class="btn u-btn-primary rounded-0 g-mb-20 g-relative-centered--x">
+                    <i class="fa fa-video-camera g-mr-15"></i>
+                    Start test
+                </button>
+
+                <div id="status_container" style="display:none;">
+                    <p class="lead">Acquiring camera</p>
+                    <span id="spinner" class="u-icon-v1 u-icon-size--lg g-mb-20 g-relative-centered--x">
+                        <i class="fa fa-spinner spin g-color-primary"></i>
+                    </span>
+                    <span id="result_ok" class="u-icon-v1 u-icon-size--lg g-mb-20 g-relative-centered--x" style="display:none;">
+                        <i class="fa fa-check-square-o g-color-primary"></i>
+                    </span>
+                    <span id="result_error" class="u-icon-v1 u-icon-size--lg g-mb-20 g-relative-centered--x" style="display:none;">
+                        <i class="fa fa-times-circle g-color-primary"></i>
+                    </span>
+                    <span id="result_warning" class="u-icon-v1 u-icon-size--lg g-mb-20 g-relative-centered--x" style="display:none;">
+                        <i class="fa fa-exclamation-triangle g-color-primary"></i>
+                    </span>
+                </div>
+            </div>
             <div class="col-md-12 text-center g-my-50">
                 <h1>Your dates:</h1>
-                <p>Take a look at your dates' profiles while you wait for the event to start.</p>
+                <p>Take a look at your dates' profiles while you are waiting for the event to start.</p>
             </div>
             <div class="col-md-12">
                 <ul class="row u-timeline-v2-wrap list-unstyled">
@@ -127,5 +184,10 @@ $(document).on('ready', function () {
         })
     })
 })
+
+var API_KEY = '{{ tokbox_api_key }}';
+var SESSION_ID = '{{ sessionID }}';
+var TOKEN = '{{ token }}';
 </script>
+<script src="{% static 'chat/js/network_test.js' %}"></script>
 {% endblock %}

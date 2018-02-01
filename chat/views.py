@@ -4,7 +4,7 @@ from django.conf import settings
 from django.contrib.auth.decorators import login_required
 from django.http import JsonResponse
 from django.shortcuts import render
-from opentok import OpenTok
+from opentok import OpenTok, MediaModes
 
 from event.models import Event, Pick
 from .models import Conversation
@@ -46,7 +46,8 @@ def live_event(request):
                 'event': event,
                 'is_break': True,
                 'time_passed': date.time_passed,
-                'time_until_reload': date.time_until_reload
+                'time_until_reload': date.time_until_reload,
+                'next_date': date.next_date
             }
 
             return render(request, 'chat/live_break.html', context)
@@ -90,18 +91,27 @@ def live_event(request):
                 'memo': date.memo,
                 'time_passed': date.time_passed,
                 'time_until_reload': date.time_until_reload,
-                'pick_response': pick_response
+                'pick_response': pick_response,
+                'next_date': date.next_date
             }
 
             return render(request, 'chat/live_pick.html', context)
 
     if event.is_starting_soon():
+        # Generate a new routed session and token
+        opentok = OpenTok(api_key, api_secret)
+        session = opentok.create_session(media_mode=MediaModes.routed)
+        token = opentok.generate_token(session.session_id)
+
         dates = get_user_dates(request.user, event)
 
         context = {
             'event': event,
             'dates': dates,
-            'time_until_reload': event.get_seconds_until_start()
+            'time_until_reload': event.get_seconds_until_start(),
+            'sessionID': session.session_id,
+            'token': token,
+            'tokbox_api_key': api_key
         }
 
         return render(request, 'chat/lobby.html', context)
@@ -116,6 +126,21 @@ def live_event(request):
         }
 
         return render(request, 'chat/post_live.html', context)
+
+
+def network_test(request):
+    # Generate a new routed session and token
+    opentok = OpenTok(api_key, api_secret)
+    session = opentok.create_session(media_mode=MediaModes.routed)
+    token = opentok.generate_token(session.session_id)
+
+    context = {
+        'sessionID': session.session_id,
+        'token': token,
+        'tokbox_api_key': api_key
+    }
+
+    return render(request, 'chat/network_test.html', context)
 
 
 # # TODO: Temp method, delete later

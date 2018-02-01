@@ -185,9 +185,6 @@ def get_user_dates(user, event):
 def get_current_date(user, event):
     # Get the time
     now = timezone.now()
-    # Check if the event is in progress
-    if event.startDateTime > now or event.endDateTime < now:
-        return None
     # Get number of seconds since the event's start
     time_diff = now - event.startDateTime
     time_diff_seconds = time_diff.total_seconds()
@@ -211,25 +208,41 @@ def get_current_date(user, event):
         details.is_active = is_active
         details.time_passed = time_passed
         details.conversation_id = conversation.id
-
-        if conversation.interlocutorUser:
-            details.is_break = False
-            details.user = conversation.interlocutorUser
-            details.account = conversation.interlocutorAccount
-            details.memo = conversation.interlocutorMemo
-            details.session_id = conversation.sessionID
-            details.time_until_reload = time_until_reload
-        else:
-            details.is_break = True
-            details.user = None
-            details.account = None
-            details.memo = None
-            details.session_id = None
-            details.time_until_reload = date_and_break_duration - time_passed
-
-        return details
     except Conversation.DoesNotExist:
         return None
+
+    # Try to get the next date
+    try:
+        next_conversation = Conversation.objects.get(event=event, user=user, order=(date_num + 1))
+        next_date = ConversationDetails()
+        if next_conversation.interlocutorUser:
+            next_date.is_break = False
+            next_date.user = next_conversation.interlocutorUser
+            next_date.account = next_conversation.interlocutorAccount
+            next_date.memo = next_conversation.interlocutorMemo
+        else:
+            next_date.is_break = True
+    except Conversation.DoesNotExist:
+        next_date = None
+
+    if conversation.interlocutorUser:
+        details.is_break = False
+        details.user = conversation.interlocutorUser
+        details.account = conversation.interlocutorAccount
+        details.memo = conversation.interlocutorMemo
+        details.session_id = conversation.sessionID
+        details.time_until_reload = time_until_reload
+        details.next_date = next_date
+    else:
+        details.is_break = True
+        details.user = None
+        details.account = None
+        details.memo = None
+        details.session_id = None
+        details.time_until_reload = date_and_break_duration - time_passed
+        details.next_date = next_date
+
+    return details
 
 
 class ConversationDetails:

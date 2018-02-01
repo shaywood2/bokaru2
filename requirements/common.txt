@@ -1,10 +1,10 @@
 argon2-cffi>=16.3
+confusable_homoglyphs>=3
 Django>=2
 django-anymail[mailgun]>=1.2
 django-appconf>=1.0.2
 django-formtools>=2.1
 django-imagekit>=4.0
-django-registration==2.2
 django-widget-tweaks>=1.4
 gunicorn>=19.7
 Pillow>=5

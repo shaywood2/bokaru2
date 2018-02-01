@@ -1,0 +1,21 @@
+{% extends 'web/base_nav.html' %}
+
+{% load staticfiles %}
+
+{% block content %}
+<section class="g-height-100x g-min-height-100vh g-flex-centered g-pa-15 g-bg-gray-dark-v1 g-color-white">
+    <div class="text-center g-flex-centered-item g-position-rel">
+        <div class="g-font-size-180 g-font-size-240--sm g-font-size-420--lg g-line-height-1 g-font-weight-600 g-color-gray-dark-v2">500</div>
+        <div class="g-absolute-centered">
+            <h1 class="g-font-weight-200 g-mb-20 g-mt-100">Server&nbsp;Error</h1>
+            <p class="g-color-white-opacity-0_6 g-font-size-18">
+                Hmm, seems like the server is borked.<br>
+                We'll take a look at the problem and will fix it ASAP!
+            </p>
+            <p class="g-color-white-opacity-0_6 g-font-size-18 mb-0">Try going back to the
+                <a href="{% url 'web:index' %}" class="g-color-white g-color-primary--hover g-text-no-underline--hover">front page</a> for now.
+            </p>
+        </div>
+    </div>
+</section>
+{% endblock %}
