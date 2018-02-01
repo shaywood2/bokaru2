@@ -4,12 +4,17 @@
 
 {% block content %}
 
-<section class="g-mb-100 g-min-height-50vh">
-    <div class="container">
+<section class="g-min-height-50vh">
+    <div class="container g-py-50 g-py-150--md">
+        <div class="row g-mb-50">
+            <div class="col-lg-6">
+                <div class="d-inline-block g-width-80 g-height-4 g-bg-black mb-3"></div>
+                <h2 class="g-color-black g-font-weight-700 g-font-size-50 g-line-height-1 mb-4">Terms &amp; Conditions</h2>
+            </div>
+        </div>
+
         <div class="row">
-            <div class="col-12 g-my-50">
-                <h1>Terms of Service</h1>
-                <hr>
+            <div class="col-12">
                 <h2>OVERVIEW</h2>
 
                 <p>This website is operated by Makishito. Throughout the site, the terms &ldquo;we&rdquo;, &ldquo;us&rdquo; and &ldquo;our&rdquo; refer to Makishito. Makishito offers this
@@ -32,7 +37,7 @@
                     changes.
                 </p>
 
-                <h3>Personal safety</h3>
+                <h3>PERSONAL SAFETY</h3>
                 <p class="c4">MAKISHITO STRONGLY ADVISES YOU TO USE EXTREME CAUTION BEFORE SHARING PERSONALLY IDENTIFIABLE INFORMATION WITH OTHER USERS OF THIS WEBSITE. MAKISHITO DOES NOT CONDUCT
                     CRIMINAL BACKGROUND CHECKS ON OR SCREENINGS OF ITS USERS. MAKISHITO ALSO DOES NOT INQUIRE INTO THE BACKGROUNDS OF ITS MEMBERS OR ATTEMPT TO VERIFY THE STATEMENTS OF ITS MEMBERS BUT
                     RESERVES THE RIGHT TO CONDUCT ANY CRIMINAL BACKGROUND CHECK OR OTHER SCREENINGS (SUCH AS SEX OFFENDER REGISTER SEARCHES), AT ANY TIME AND USING AVAILABLE PUBLIC RECORDS. YOU
@@ -42,8 +47,9 @@
                     does not assure that it is safe for you to have direct contact with other users of this Website. Current technological developments make it possible for users of the Internet to
                     obtain personal information about, and locate, other users, with very little other information. For example, it is possible to use certain widely available commercial Internet
                     search engines to locate a person&rsquo;s home solely using that person&rsquo;s correct name. If you believe that any user of this Website is harassing you or is otherwise using
-                    personal information about you for unlawful purposes, we encourage you to first inform local law enforcement authorities and then to contact us via admin@bokaru.com so that we may
-                    take appropriate action to block further use of the Website by any user who is using this Website and information obtained from it for improper purposes.
+                    personal information about you for unlawful purposes, we encourage you to first inform local law enforcement authorities and then to contact us via
+                    <a href="mailto:support@bokaru.com" target="_blank">support@bokaru.com</a> so that we may take appropriate action to block further use of the Website by any user who is using this
+                    Website and information obtained from it for improper purposes.
                 </p>
                 <p class="c4">IF YOU ARE UNDER 18 YEARS OF AGE BUT HAVE IMPROPERLY ACCESSED THIS WEBSITE BY PROVIDING FALSE INFORMATION TO US, NOT ONLY ARE YOU AN UNAUTHORIZED USER USING THIS WEBSITE
                     IN VIOLATION OF THESE TERMS OF USE, BUT YOU MAY ALSO BE PUTTING YOURSELF AND OTHERS IN DANGER. YOU AGREE THAT MAKISHITO IS NOT RESPONSIBLE FOR THE CONDUCT OF ANY USER OF THE
@@ -226,7 +232,8 @@
 
                 <p>You should appreciate that all information submitted on the Website might potentially be publicly accessible. Important and private information should be protected by
                     you. We are not responsible for protecting, nor are we liable for failing to protect, the privacy of electronic mail or other information transferred through the Internet or any
-                    other network that you may utilize. See Makishito&rsquo;s <a href="{% url 'web:privacy_statement' %}">privacy policy</a> for more information regarding privacy. The privacy policy is
+                    other network that you may utilize. See Makishito&rsquo;s <a href="{% url 'web:privacy_statement' %}">privacy policy</a> for more information regarding privacy. The privacy policy
+                    is
                     incorporated into and a part of these Terms of Use.</p>
 
                 <h2>SECTION 15 - ERRORS, INACCURACIES AND OMISSIONS</h2>
@@ -331,8 +338,7 @@
 
                 <h2>SECTION 24 - CONTACT INFORMATION</h2>
 
-                <p>Questions about the Terms of Service should be sent to us at <a href="mailto:admin@bokaru.com" target="_blank">admin@bokaru.com</a>.</p>
-                <hr>
+                <p>Questions about the Terms of Service should be sent to us at <a href="mailto:support@bokaru.com" target="_blank">support@bokaru.com</a>.</p>
             </div>
         </div>
     </div>

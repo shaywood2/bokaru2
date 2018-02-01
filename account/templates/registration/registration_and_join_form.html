@@ -255,7 +255,7 @@
                     </div>
 
                     <button type="submit" class="btn btn-lg btn-block u-btn-primary g-mb-10 rounded-0">Register</button>
-                    <a href="{% url 'login' %}" class="btn btn-lg btn-block u-btn-bluegray g-mb-10 rounded-0">I already have an account!</a>
+                    <a href="{% url 'event:join' group_id=group_id %}" class="btn btn-lg btn-block u-btn-bluegray g-mb-10 rounded-0">I already have an account!</a>
                 </div>
             </div>
         </div>
@@ -629,9 +629,5 @@ function initMap() {
 }
 
 google.maps.event.addDomListener(window, 'load', initMap);
-
-
-
-
 </script>
 {% endblock %}

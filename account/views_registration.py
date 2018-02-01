@@ -107,7 +107,7 @@ def register_and_join_group(request, group_id):
     else:
         form = RegistrationAndJoinForm()
 
-    return render(request, 'registration/registration_and_join_form.html', {'form': form})
+    return render(request, 'registration/registration_and_join_form.html', {'form': form, 'group_id': group_id})
 
 
 def __create_inactive_user(form, request, group_id=None):
