@@ -13,6 +13,7 @@ from django.utils import timezone
 from django.utils.dateparse import parse_time
 from formtools.wizard.views import SessionWizardView
 from stripe import CardError
+from bokaru.email import send_email
 
 from money.billing_logic import get_product_by_event_size, get_price_by_user, pay_for_event
 from money.model_transaction import Transaction
@@ -397,6 +398,16 @@ def join_confirmation(request):
     # Get credit for the user
     site_credit = Transaction.objects.get_credit_used_for_event(current_user, selected_event)
     expected_revenue = event_price + site_credit
+
+    # Send email
+    email_data = {
+        'username': current_user.username,
+        'event_name': selected_event.name,
+        'event_start_time': selected_event.startDateTime,
+        'event_id': selected_event.id
+    }
+
+    send_email(current_user.email, email_data, 'event_joined')
 
     context = {
         'group': selected_group,

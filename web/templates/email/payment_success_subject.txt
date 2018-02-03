@@ -1,1 +1,1 @@
-Payment process successfully!
+Payment processed successfully!
