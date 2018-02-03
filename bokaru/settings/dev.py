@@ -39,18 +39,25 @@ LOGGING = {
     'version': 1,
     'disable_existing_loggers': False,
     'formatters': {
-        'verbose': {
-            'format': '%(levelname)s %(asctime)s %(module)s %(message)s'
-        },
         'simple': {
             'format': '%(levelname)s %(message)s'
         },
+        'verbose': {
+            'format': '%(asctime)s BOKARU_DEV: %(levelname)s | %(module)s %(message)s',
+            'datefmt': '%Y-%m-%dT%H:%M:%S',
+        }
     },
     'handlers': {
         'console': {
             'level': 'INFO',
             'class': 'logging.StreamHandler',
             'formatter': 'verbose'
+        },
+        'SysLog': {
+            'level': 'INFO',
+            'class': 'logging.handlers.SysLogHandler',
+            'formatter': 'verbose',
+            'address': ('logs.papertrailapp.com', 37452)
         },
     },
     'loggers': {
