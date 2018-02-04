@@ -24,6 +24,7 @@ from account.models import Account
 from money.models import Product
 
 LOGGER = logging.getLogger(__name__)
+EVENT_MINIMUM_FILL_PERCENTAGE = settings.EVENT_MINIMUM_FILL_PERCENTAGE
 
 
 # Return a value from a tuple list by key
@@ -396,6 +397,16 @@ class Event(models.Model):
         now = timezone.now()
         num_seconds = (now - self.startDateTime).total_seconds()
         return num_seconds
+
+    def can_be_activated(self):
+        groups = EventGroup.objects.filter(event=self.id)
+
+        for group in groups:
+            if float(group.count_registered_participants()) / self.maxParticipantsInGroup * 100 \
+                    < EVENT_MINIMUM_FILL_PERCENTAGE:
+                return False
+
+        return True
 
     # Return true if the event is happening right now
     def is_in_progress(self):

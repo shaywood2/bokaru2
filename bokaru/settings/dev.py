@@ -52,13 +52,7 @@ LOGGING = {
             'level': 'INFO',
             'class': 'logging.StreamHandler',
             'formatter': 'verbose'
-        },
-        'SysLog': {
-            'level': 'INFO',
-            'class': 'logging.handlers.SysLogHandler',
-            'formatter': 'verbose',
-            'address': ('logs.papertrailapp.com', 37452)
-        },
+        }
     },
     'loggers': {
         'django': {
