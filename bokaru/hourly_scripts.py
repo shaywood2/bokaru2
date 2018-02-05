@@ -19,6 +19,8 @@ def activate_events():
     events = Event.objects.filter(startDateTime__gte=now, startDateTime__lte=end_time,
                                   stage=Event.CONFIRMED, deleted=False)
 
+    LOGGER.info('Activating events @ {}. Found {} events to process.'.format(str(now), str(len(events))))
+
     result = []
 
     for event in events:
@@ -151,8 +153,8 @@ def process_payments():
                 for participant in participants:
                     # Refund credit if used for event
                     Transaction.objects.refund_credit_used_for_event(participant.user, event)
-                    # Send cancellation emails
 
+                    # Send cancellation emails
                     email_data = {
                         'username': participant.user.username,
                         'event_name': event.name,

@@ -11,6 +11,7 @@ from django.http import HttpResponseRedirect
 from django.http import JsonResponse
 from django.shortcuts import get_object_or_404, render
 from django.urls import reverse
+from stripe import CardError
 
 from event.models import Pick
 from money.model_transaction import Transaction
@@ -150,7 +151,19 @@ def preferences_payment(request):
     if request.method == 'POST':
         token = request.POST['stripeToken']
 
-        UserPaymentInfo.objects.create_or_update_credit_card(current_user, token)
+        try:
+            UserPaymentInfo.objects.create_or_update_credit_card(current_user, token)
+        except CardError as ce:
+            body = ce.json_body
+            err = body.get('error', {})
+
+            LOGGER.error(err.get('message'))
+            messages.add_message(request, messages.ERROR, 'We could not register this card for the following reason: '
+                                 + str(err.get('message')))
+        except Exception as e:
+            LOGGER.error(str(e))
+            messages.add_message(request, messages.ERROR, 'We could not register this card!'
+                                                          ' Please try again or use a different card.')
 
         return HttpResponseRedirect(reverse('account:payment'))
     else:
