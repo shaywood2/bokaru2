@@ -78,12 +78,12 @@ def pay_for_event(participant, event):
         try:
             charge = create_charge(charge_to_card, 'cad', user.id, event.id, stripe_id)
 
-            # Subtract amount from the credit
+            # Record the transaction
             transaction = Transaction(
                 transactionType=Transaction.CREDIT_CARD,
+                transactionReason=Transaction.REASON_EVENT_REGISTRATION_CREDIT_CARD,
                 user=user,
                 amount=charge_to_card,
-                description='Payment for event registration',
                 event=event,
                 stripe_charge_id=charge.id
             )

@@ -7,6 +7,7 @@ from django.shortcuts import render
 from opentok import OpenTok, MediaModes
 
 from event.models import Event, Pick
+from money.model_transaction import Transaction
 from .models import Conversation
 from .utils import get_current_date, get_user_dates
 
@@ -35,10 +36,18 @@ def live_event(request):
             # No next date, the event should be over
             matches = Pick.objects.get_all_matches_by_user_and_event(request.user, event)
 
+            # Apply consolation credit
+            consolation_credit = 0
+            if len(matches) == 0:
+                consolation_credit = Transaction.objects.apply_consolation_credit(request.user, event)
+
             context = {
+                'user': request.user,
                 'event': event,
-                'matches': matches
+                'matches': matches,
+                'consolation_credit': float(consolation_credit) / 100
             }
+
             return render(request, 'chat/post_live.html', context)
 
         if date.is_break:
@@ -119,10 +128,16 @@ def live_event(request):
     if event.is_ended_recently():
         matches = Pick.objects.get_all_matches_by_user_and_event(request.user, event)
 
+        # Apply consolation credit
+        consolation_credit = 0
+        if len(matches) == 0:
+            consolation_credit = Transaction.objects.apply_consolation_credit(request.user, event)
+
         context = {
             'user': request.user,
             'event': event,
             'matches': matches,
+            'consolation_credit': float(consolation_credit) / 100
         }
 
         return render(request, 'chat/post_live.html', context)

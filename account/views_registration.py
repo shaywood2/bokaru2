@@ -132,11 +132,8 @@ def __create_inactive_user(form, request, group_id=None):
     pref.cityLng = -79.3831843
     pref.save()
 
-    # Apply welcome credit
-    credit_amount = getattr(settings, 'WELCOME_CREDIT', 0)
-    credit_description = getattr(settings, 'WELCOME_CREDIT_TEXT', 'Bonus site credit')
-    if credit_amount > 0:
-        Transaction.objects.apply_welcome_credit(new_user, credit_amount, credit_description)
+    # Apply welcome credit (if applicable)
+    credit_amount = Transaction.objects.apply_welcome_credit(new_user)
 
     LOGGER.info('Registered a new user: {!s}. Bonus credit amount: {:d}'.format(new_user, credit_amount))
 

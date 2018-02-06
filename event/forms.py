@@ -75,7 +75,7 @@ class CreateEventStep1(forms.Form):
 
     name = forms.CharField(max_length=150)
     type = forms.ChoiceField(choices=Event.TYPES, initial=Event.SERIOUS)
-    date = forms.DateField()
+    date = forms.DateField(input_formats=['%d/%m/%Y'])
     time = forms.ChoiceField(choices=TIME_CHOICES, initial='19:00')
     locationName = forms.CharField(max_length=150)
 
