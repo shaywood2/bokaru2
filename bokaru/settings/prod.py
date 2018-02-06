@@ -40,20 +40,59 @@ SERVER_EMAIL = 'admin@bokaru.com'
 DEBUG = False
 
 # Logging
-# Will output to console
-# TODO: set up proper logging
 LOGGING = {
     'version': 1,
     'disable_existing_loggers': False,
+    'formatters': {
+        'simple': {
+            'format': '%(levelname)s %(message)s'
+        },
+        'verbose': {
+            'format': '%(asctime)s BOKARU_PROD: %(levelname)s | %(module)s %(message)s',
+            'datefmt': '%Y-%m-%dT%H:%M:%S',
+        }
+    },
     'handlers': {
         'console': {
+            'level': 'DEBUG',
             'class': 'logging.StreamHandler',
+            'formatter': 'verbose'
+        },
+        'SysLog': {
+            'level': 'INFO',
+            'class': 'logging.handlers.SysLogHandler',
+            'formatter': 'verbose',
+            'address': ('logs.papertrailapp.com', 37452)
         },
     },
     'loggers': {
         'django': {
-            'handlers': ['console'],
-            'level': os.getenv('DJANGO_LOG_LEVEL', 'INFO'),
+            'handlers': ['console', 'SysLog'],
+            'level': 'DEBUG',
+        },
+        'bokaru': {
+            'handlers': ['console', 'SysLog'],
+            'level': 'DEBUG',
+        },
+        'event': {
+            'handlers': ['console', 'SysLog'],
+            'level': 'DEBUG',
+        },
+        'account': {
+            'handlers': ['console', 'SysLog'],
+            'level': 'DEBUG',
+        },
+        'money': {
+            'handlers': ['console', 'SysLog'],
+            'level': 'DEBUG',
+        },
+        'web': {
+            'handlers': ['console', 'SysLog'],
+            'level': 'DEBUG',
+        },
+        'chat': {
+            'handlers': ['console', 'SysLog'],
+            'level': 'DEBUG',
         },
     },
 }

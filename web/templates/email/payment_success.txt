@@ -9,7 +9,7 @@ Event: {{ event_name }}
 {{ date }}
 
 Event Price	CAD ${{ event_price|floatformat:"2" }}
-Discount	CAD ${{ event_price|floatformat:"2" }}
+Discount	CAD ${{ event_price_discount|floatformat:"2" }}
 ------------
 Total	CAD ${{ charge_to_card|floatformat:"2" }}
 

@@ -1,0 +1,19 @@
+You've Joined An Event!
+
+Thank you for signing up to event {{ event_name }}!
+We will charge your credit card 24 hours before the event begins.
+If there is not enough people signed up for the event within 24 hours of it starting we will send you a cancellation notice and you will not be charged.
+
+Follow this link: {% url 'event:view' event_id=event_id %}
+
+First time attending an event? Let's do a quick system check to make sure everything goes smoothly!
+
+    - Is your camera connected and pointed at your face?
+    - Do you have a microphone or a headset?
+    - Turn the volume up to the required level.
+    - Is your internet connection fast and stable?
+    - Follow the link below to run an automatic test on your browser before the event.
+
+https://bokaru.com/chat/test/
+
+- Your friends at Bokaru

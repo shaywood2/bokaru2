@@ -16,10 +16,13 @@
                 {% else %}
                 <h1>Whoops!</h1>
                 <h3>You didn't match with anyone in this event.</h3>
+                {% if consolation_credit > 0 %}
+                <h4 class="h1 g-mt-25">On the positive side, here's a credit for <span class="g-color-primary">CAD ${{consolation_credit|floatformat:"2"}}</span> to try again!</h4>
                 {% endif %}
-                <h3>Please take a minute to fill out our
+                {% endif %}
+                <h3 class="g-my-100">Please take a minute to fill out our
                 <a href="https://docs.google.com/forms/d/e/1FAIpQLSf-88TyVnrEIC-KjJHRALxUaG44EZXGG8R7qfVyKzDAIqgC5g/viewform?usp=pp_url&entry.1423063305={{user.username}}&entry.919213445={{event.id}}&entry.349499540&entry.543626436&entry.280677627"
-                   target="_blank" class="btn btn-lg btn-primary rounded-0">Questionnaire</a>
+                   target="_blank" class="btn btn-lg u-btn-primary rounded-0">Questionnaire</a>
                 </h3>
             </div>
         </div>

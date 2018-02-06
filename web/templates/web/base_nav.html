@@ -123,7 +123,7 @@
     </div>
 </section>
 {% endif %}
-{% if request.session.profile_incomplete and not request.path == '/profile/edit' %}
+{% if request.session.profile_incomplete and not request.path == '/profile/edit/' %}
 <section class="g-bg-primary g-color-white g-pa-30 u-shadow-v1-5">
     <div class="d-md-flex justify-content-md-center text-center">
         <div class="align-self-md-center">
@@ -142,7 +142,7 @@
     <div class="d-md-flex justify-content-md-center text-center">
         <div class="align-self-md-center">
             <p class="lead g-font-weight-400 g-mr-20--md g-mb-15 g-mb-0--md">
-                Your profile has been suspended for breaking rules.
+                Your profile has been suspended for breaking the site rules.
             </p>
         </div>
         <div class="align-self-md-center">

@@ -11,13 +11,18 @@ class PaymentInfoManager(models.Manager):
             # Retrieve the payment information for the user
             payment_info = self.get(user=owner_user)
 
-            # Delete existing credit card
-            if payment_info.credit_card_id != 0:
-                delete_card(payment_info.stripe_customer_id, payment_info.credit_card_id)
+            old_card_id = payment_info.credit_card_id
 
             # Create a card for an existing Customer
             credit_card = create_card(payment_info.stripe_customer_id, stripe_token)
-            # TODO: handle card creation errors
+            if credit_card is None:
+                # Handle card creation errors
+                raise Exception('Failed to register credit card')
+
+            # Delete the old credit card
+            if old_card_id is not None and old_card_id != 0:
+                delete_card(payment_info.stripe_customer_id, old_card_id)
+
             # Store the payment info
             payment_info.credit_card_id = credit_card.id
             payment_info.credit_card_brand = credit_card.brand

@@ -1,6 +1,5 @@
 import logging
 
-from django.conf import settings
 from django.utils import timezone
 
 from bokaru.email import send_email
@@ -9,8 +8,6 @@ from event.models import Event, EventParticipant
 from money.billing_logic import pay_for_event
 from money.model_transaction import Transaction
 from money.payment_service import CardDeclinedException
-
-EVENT_MINIMUM_FILL_PERCENTAGE = settings.EVENT_MINIMUM_FILL_PERCENTAGE
 
 LOGGER = logging.getLogger(__name__)
 
@@ -21,6 +18,8 @@ def activate_events():
     end_time = timezone.now() + timezone.timedelta(hours=1)
     events = Event.objects.filter(startDateTime__gte=now, startDateTime__lte=end_time,
                                   stage=Event.CONFIRMED, deleted=False)
+
+    LOGGER.info('Activating events @ {}. Found {} events to process.'.format(str(now), str(len(events))))
 
     result = []
 
@@ -47,15 +46,17 @@ def activate_events():
                                                            status__in=[EventParticipant.REGISTERED,
                                                                        EventParticipant.PAYMENT_SUCCESS])
             for participant in participants:
-                merge_data = {
+                email_data = {
                     'event_name': event.name,
                     'event_start_time': event.startDateTime
                 }
 
-                send_email(participant.user.email, merge_data, 'event_starting')
+                send_email(participant.user.email, email_data, 'event_starting')
 
         except Exception as e:
             LOGGER.error('Failed to generate conversations for event {:d}. Error message: {!s}'.format(event.id, e))
+
+            # TODO: cancel the event here? Users will have a bad time
 
             result.append(
                 {
@@ -78,15 +79,15 @@ def process_payments():
     events = Event.objects.filter(startDateTime__gte=now, startDateTime__lte=end_time,
                                   stage=Event.REGISTRATION_OPEN, deleted=False)
 
+    LOGGER.info('Processing payments @ {}. Found {} events to process.'.format(str(now), str(len(events))))
+
     result = []
 
     for event in events:
         try:
             LOGGER.info('Processing payments for event: {:d}'.format(event.id))
 
-            # Check if there are enough participants (over 50%)
-            # TODO: check filled percentage of every group
-            if event.filledPercentage >= EVENT_MINIMUM_FILL_PERCENTAGE:
+            if event.can_be_activated():
                 # Make sure that product exists
                 product = event.product
                 if not product:
@@ -99,13 +100,36 @@ def process_payments():
                 for participant in participants:
                     try:
                         pay_for_event(participant, event)
+                        # Send a reminder email
+                        email_data = {
+                            'username': participant.user.username,
+                            'event_name': event.name,
+                            'event_start_time': event.startDateTime,
+                            'event_id': event.id
+                        }
+
+                        send_email(participant.user.email, email_data, 'event_upcoming')
                     except CardDeclinedException as cde:
-                        # https://stripe.com/docs/declines/codes
-                        # TODO: send card declined email
-                        pass
+                        # TODO: send an error message https://stripe.com/docs/declines/codes
+                        # Send card declined email
+                        email_data = {
+                            'username': participant.user.username,
+                            'event_name': event.name,
+                            'event_start_time': event.startDateTime,
+                            'event_id': event.id
+                        }
+
+                        send_email(participant.user.email, email_data, 'payment_failure')
                     except Exception as e:
-                        # TODO: send payment failed email
-                        pass
+                        # Send payment failed email
+                        email_data = {
+                            'username': participant.user.username,
+                            'event_name': event.name,
+                            'event_start_time': event.startDateTime,
+                            'event_id': event.id
+                        }
+
+                        send_email(participant.user.email, email_data, 'payment_failure')
 
                 event.stage = Event.CONFIRMED
                 event.save()
@@ -129,16 +153,16 @@ def process_payments():
                 for participant in participants:
                     # Refund credit if used for event
                     Transaction.objects.refund_credit_used_for_event(participant.user, event)
-                    # Send cancellation emails
 
-                    merge_data = {
+                    # Send cancellation emails
+                    email_data = {
                         'username': participant.user.username,
                         'event_name': event.name,
                         'event_start_time': event.startDateTime,
                         'event_id': event.id
                     }
 
-                    send_email(participant.user.email, merge_data, 'event_cancelled')
+                    send_email(participant.user.email, email_data, 'event_cancelled')
 
                 event.stage = Event.CANCELLED
                 event.save()

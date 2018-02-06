@@ -30,21 +30,34 @@
                 <tr>
                     <td>{{ transaction.created }}</td>
                     <td>
-                        {{ transaction.description }}
+                        {{ transaction.displayReason }}
 
                         {% if transaction.event %}
-                        <a href="{% url 'event:view' event_id=transaction.event.id %}" target="_blank">{{ transaction.event.name }}</a>
+                        (<a href="{% url 'event:view' event_id=transaction.event.id %}" target="_blank">{{ transaction.event.name }}</a>)
                         {% endif %}
                     </td>
                     <td>
+                        {% if transaction.transactionType == transaction.CREDIT_CARD %}
                         <span class="u-label u-label-success g-color-white">
-                            {% if transaction.transactionType == transaction.CREDIT_CARD %}
-                            <i class="icon-credit-card g-mr-8" data-toggle="tooltip" title="Paid using a credit card"></i>
-                            {% else %}
-                            <i class="icon-present g-mr-8" data-toggle="tooltip" title="Paid using site credit"></i>
-                            {% endif %}
+                            <i class="icon-credit-card g-mr-8" data-toggle="tooltip" title="Credit card"></i>
                             CAD ${{ transaction.displayAmount|floatformat:"2" }}
                         </span>
+                        {% elif transaction.transactionType == transaction.SITE_CREDIT %}
+                        <span class="u-label u-label-success g-color-white">
+                            <i class="icon-present g-mr-8" data-toggle="tooltip" title="Site credit"></i>
+                            CAD ${{ transaction.displayAmount|floatformat:"2" }}
+                        </span>
+                        {% elif transaction.transactionType == transaction.REFUND %}
+                        <span class="u-label u-label-warning g-color-white">
+                            <i class="icon-credit-card g-mr-8" data-toggle="tooltip" title="Payment refunded"></i>
+                            CAD ${{ transaction.displayAmount|floatformat:"2" }}
+                        </span>
+                        {% elif transaction.transactionType == transaction.FAILED_CHARGE %}
+                        <span class="u-label u-label-danger g-color-white">
+                            <i class="icon-ban g-mr-8" data-toggle="tooltip" title="Payment failed"></i>
+                            CAD ${{ transaction.displayAmount|floatformat:"2" }}
+                        </span>
+                        {% endif %}
                     </td>
                 </tr>
 

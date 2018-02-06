@@ -92,11 +92,51 @@ class EventModelTestCase(TestCase):
         # Unrelated user
         self.assertFalse(self.event.is_user_on_waiting_list(self.user6))
 
+    def test_can_be_activated(self):
+        # 2 out of 10 participants in each group, cannot activate
+        self.assertFalse(self.event.can_be_activated())
+
+        user7 = test_data.make_user('bob7', 'male', '1980-01-01')
+        ep7 = EventParticipant(group=self.group1, user=user7, status=EventParticipant.REGISTERED)
+        ep7.save()
+        user8 = test_data.make_user('bob8', 'male', '1980-01-01')
+        ep8 = EventParticipant(group=self.group1, user=user8, status=EventParticipant.REGISTERED)
+        ep8.save()
+        user9 = test_data.make_user('bob9', 'male', '1980-01-01')
+        ep9 = EventParticipant(group=self.group1, user=user9, status=EventParticipant.REGISTERED)
+        ep9.save()
+
+        # 5 out of 10 participants in one group and 2 out of 10 in the other group, cannot activate
+        self.assertFalse(self.event.can_be_activated())
+
+        user10 = test_data.make_user('bob10', 'male', '1980-01-01')
+        ep10 = EventParticipant(group=self.group2, user=user10, status=EventParticipant.REGISTERED)
+        ep10.save()
+        user11 = test_data.make_user('bob11', 'male', '1980-01-01')
+        ep11 = EventParticipant(group=self.group2, user=user11, status=EventParticipant.REGISTERED)
+        ep11.save()
+
+        # 5 out of 10 participants in one group and 4 out of 10 in the other group, cannot activate
+        self.assertFalse(self.event.can_be_activated())
+
+        user12 = test_data.make_user('bob12', 'male', '1980-01-01')
+        ep12 = EventParticipant(group=self.group2, user=user12, status=EventParticipant.REGISTERED)
+        ep12.save()
+
+        # 5 out of 10 participants in one group and 5 out of 10 in the other group, can activate
+        self.assertTrue(self.event.can_be_activated())
+
+        user13 = test_data.make_user('bob13', 'male', '1980-01-01')
+        ep13 = EventParticipant(group=self.group1, user=user13, status=EventParticipant.REGISTERED)
+        ep13.save()
+
+        # 6 out of 10 participants in one group and 5 out of 10 in the other group, can activate
+        self.assertTrue(self.event.can_be_activated())
+
 
 # Test the model EventGroup
 class EventGroupModelTestCase(TestCase):
     def setUp(self):
-
         self.user1 = test_data.make_user('bob1', 'male', '1980-01-01')
         self.user2 = test_data.make_user('bob2', 'male', '1980-01-01')
         self.user3 = test_data.make_user('bob3', 'male', '1980-01-01')

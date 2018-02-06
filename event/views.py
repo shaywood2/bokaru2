@@ -14,9 +14,11 @@ from django.utils.dateparse import parse_time
 from formtools.wizard.views import SessionWizardView
 from stripe import CardError
 
+from bokaru.email import send_email
 from money.billing_logic import get_product_by_event_size, get_price_by_user, pay_for_event
 from money.model_transaction import Transaction
 from money.models import UserPaymentInfo
+from money.payment_service import CardDeclinedException
 from .forms import CreateEventStep1, CreateEventStep2, CreateEventStep3, CreateEventStep4, CreateEventStep5, \
     CreateEventStep6
 from .models import Event, EventGroup, EventParticipant
@@ -315,14 +317,15 @@ def join(request, group_id):
                 LOGGER.error(err.get('message'))
                 # Refund credit if applicable
                 Transaction.objects.refund_credit_used_for_event(current_user, selected_event)
-                messages.add_message(request, messages.ERROR, 'Yor card was declined for the following reason: '
+                messages.add_message(request, messages.ERROR, 'We could not charge this card for the following reason: '
                                      + str(err.get('message')))
                 return HttpResponseRedirect(reverse('event:join', kwargs={'group_id': group_id}))
             except Exception as e:
-                LOGGER.error(e)
+                LOGGER.error(str(e))
                 # Refund credit if applicable
                 Transaction.objects.refund_credit_used_for_event(current_user, selected_event)
-                messages.add_message(request, messages.ERROR, str(e))
+                messages.add_message(request, messages.ERROR, 'We could not charge this card!'
+                                                              ' Please try again or use a different card.')
                 return HttpResponseRedirect(reverse('event:join', kwargs={'group_id': group_id}))
 
         # Check that credit card exists
@@ -338,9 +341,9 @@ def join(request, group_id):
                 # Subtract amount from the credit
                 transaction = Transaction(
                     transactionType=Transaction.SITE_CREDIT,
+                    transactionReason=Transaction.REASON_EVENT_REGISTRATION_SITE_CREDIT,
                     user=current_user,
                     amount=0 - site_credit,
-                    description='Credit used for event registration',
                     event=selected_event)
                 transaction.save()
 
@@ -350,10 +353,19 @@ def join(request, group_id):
 
             request.session['joined_group'] = group_id
             return HttpResponseRedirect(reverse('event:join_confirmation'))
-        except Exception as e:
+        except CardDeclinedException as cde:
+            LOGGER.error(str(cde.message))
             # Refund credit if applicable
             Transaction.objects.refund_credit_used_for_event(current_user, selected_event)
-            messages.add_message(request, messages.ERROR, str(e))
+            messages.add_message(request, messages.ERROR,
+                                 'Yor card was declined for the following reason: ' + str(cde.message))
+            return HttpResponseRedirect(reverse('event:join', kwargs={'group_id': group_id}))
+        except Exception as e:
+            LOGGER.error(e)
+            # Refund credit if applicable
+            Transaction.objects.refund_credit_used_for_event(current_user, selected_event)
+            messages.add_message(request, messages.ERROR, 'We could not charge this card!'
+                                                          ' Please try again or use a different card.')
             return HttpResponseRedirect(reverse('event:join', kwargs={'group_id': group_id}))
 
     context = {
@@ -397,6 +409,16 @@ def join_confirmation(request):
     # Get credit for the user
     site_credit = Transaction.objects.get_credit_used_for_event(current_user, selected_event)
     expected_revenue = event_price + site_credit
+
+    # Send email
+    email_data = {
+        'username': current_user.username,
+        'event_name': selected_event.name,
+        'event_start_time': selected_event.startDateTime,
+        'event_id': selected_event.id
+    }
+
+    send_email(current_user.email, email_data, 'event_joined')
 
     context = {
         'group': selected_group,

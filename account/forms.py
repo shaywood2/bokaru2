@@ -8,6 +8,7 @@ from django.core.exceptions import ValidationError
 from django.forms import ModelForm
 from django.utils import timezone
 from django.utils.translation import ugettext_lazy as _
+from django.utils.dateparse import parse_date
 
 from . import validators
 from .models import Account, UserPreference
@@ -95,8 +96,9 @@ class RegistrationAndJoinForm(BaseRegistrationForm):
         'terms_required': _('You must agree to the terms to register.'),
         'details_required': _('Please provide more details.'),
         'at_least_one_required': _('Please select at least one item.'),
-        'under_18': _('You must be older than 18 to register.'),
-        'location_not_found': _('Location was not found, please update it to something that Google knows.')
+        'under_18': _('You must be older than 18 to join this site.'),
+        'location_not_found': _('Location was not found, please update it to something that Google knows.'),
+        'failed_to_parse_date': _('Bad date format.')
     }
 
     fullName = forms.CharField(max_length=150)
@@ -106,7 +108,10 @@ class RegistrationAndJoinForm(BaseRegistrationForm):
     cityName = forms.CharField(widget=forms.HiddenInput(), required=False)
     cityLat = forms.FloatField(widget=forms.HiddenInput(), required=False)
     cityLng = forms.FloatField(widget=forms.HiddenInput(), required=False)
-    birthDate = forms.DateField()
+    # Birthday fields
+    day = forms.CharField(max_length=2)
+    month = forms.CharField(max_length=2)
+    year = forms.CharField(max_length=4)
     sexualOrientation = forms.ChoiceField(choices=Account.ORIENTATION)
     sexualOrientationOther = forms.CharField(max_length=150, required=False)
     sexualIdentity = forms.ChoiceField(choices=Account.IDENTITY)
@@ -115,24 +120,6 @@ class RegistrationAndJoinForm(BaseRegistrationForm):
     lookingForAgeMin = forms.CharField(widget=forms.HiddenInput(), required=False, initial=22)
     lookingForAgeMax = forms.CharField(widget=forms.HiddenInput(), required=False, initial=77)
     lookingForConnectionsList = forms.CharField(widget=forms.HiddenInput(), required=False)
-
-    def clean_birthDate(self):
-        birth_date = self.cleaned_data.get('birthDate')
-
-        if birth_date is None:
-            return None
-
-        today = timezone.now()
-        years_difference = today.year - birth_date.year
-        is_before_birthday = (today.month, today.day) < (birth_date.month, birth_date.day)
-        elapsed_years = years_difference - int(is_before_birthday)
-        if elapsed_years < 18:
-            raise forms.ValidationError(
-                self.error_codes['under_18'],
-                code='under_18'
-            )
-
-        return birth_date
 
     def clean_sexualIdentityOther(self):
         si = self.cleaned_data.get('sexualIdentity')
@@ -195,6 +182,37 @@ class RegistrationAndJoinForm(BaseRegistrationForm):
     def clean(self):
         cleaned_data = super(BaseRegistrationForm, self).clean()
 
+        # Validate birthday
+        day = cleaned_data.get('day')
+        month = cleaned_data.get('month')
+        year = cleaned_data.get('year')
+
+        try:
+            birth_date = parse_date(year + '-' + month + '-' + day)
+        except ValueError as ve:
+            raise forms.ValidationError(
+                self.error_codes['failed_to_parse_date'],
+                code='failed_to_parse_date'
+            )
+
+        if birth_date is None:
+            raise forms.ValidationError(
+                self.error_codes['failed_to_parse_date'],
+                code='failed_to_parse_date'
+            )
+
+        today = timezone.now()
+        years_difference = today.year - birth_date.year
+        is_before_birthday = (today.month, today.day) < (birth_date.month, birth_date.day)
+        elapsed_years = years_difference - int(is_before_birthday)
+        if elapsed_years < 18:
+            raise forms.ValidationError(
+                self.error_codes['under_18'],
+                code='under_18'
+            )
+
+        cleaned_data.update({'birthDate': birth_date})
+
         # Validate location
         if 'locationName' in self.changed_data:
             city_name = cleaned_data.get('cityName')
@@ -218,8 +236,10 @@ class AccountForm(ModelForm):
         'details_required': _('Please provide more details.'),
         'age_range_error': _('Maximum age should be greater than the minimum age.'),
         'at_least_one_required': _('Please select at least one item.'),
-        'under_18': _('You must be older than 18 to register.'),
-        'location_not_found': _('Location was not found, please update it to something that Google knows.')
+        'under_18': _('You must be older than 18 to join this site.'),
+        'location_not_found': _('Location was not found, please update it to something that Google knows.'),
+        'failed_to_parse_date': _('Could not read your birthday.'
+                                  ' Please make sure that the date is in a correct format.')
     }
 
     # Change widget type to TextArea
@@ -233,11 +253,15 @@ class AccountForm(ModelForm):
     image_name = forms.CharField(widget=forms.HiddenInput(), required=False)
     image_data = forms.CharField(widget=forms.HiddenInput(), required=False)
 
+    # Birthday fields
+    day = forms.CharField(max_length=2)
+    month = forms.CharField(max_length=2)
+    year = forms.CharField(max_length=4)
+
     def __init__(self, *args, **kwargs):
         super(AccountForm, self).__init__(*args, **kwargs)
         # Making fields required
         self.fields['fullName'].required = True
-        self.fields['birthDate'].required = True
         self.fields['sexualOrientation'].required = True
         self.fields['sexualIdentity'].required = True
 
@@ -249,28 +273,17 @@ class AccountForm(ModelForm):
         self.fields['petList'].widget = forms.HiddenInput()
         self.fields['lookingForGenderList'].widget = forms.HiddenInput()
         self.fields['lookingForConnectionsList'].widget = forms.HiddenInput()
+        self.fields['birthDate'].widget = forms.HiddenInput()
+
+        if self.instance is not None and self.instance.birthDate is not None:
+            birth_date = self.instance.birthDate
+            self.fields['day'].initial = birth_date.day
+            self.fields['month'].initial = birth_date.month
+            self.fields['year'].initial = birth_date.year
 
     class Meta:
         model = Account
         exclude = ['user', 'status', 'locationCoordinates']
-
-    def clean_birthDate(self):
-        birth_date = self.cleaned_data.get('birthDate')
-
-        if birth_date is None:
-            return None
-
-        today = timezone.now()
-        years_difference = today.year - birth_date.year
-        is_before_birthday = (today.month, today.day) < (birth_date.month, birth_date.day)
-        elapsed_years = years_difference - int(is_before_birthday)
-        if elapsed_years < 18:
-            raise forms.ValidationError(
-                self.error_codes['under_18'],
-                code='under_18'
-            )
-
-        return birth_date
 
     def clean_sexualIdentityOther(self):
         si = self.cleaned_data.get('sexualIdentity')
@@ -332,6 +345,37 @@ class AccountForm(ModelForm):
 
     def clean(self):
         cleaned_data = super(AccountForm, self).clean()
+
+        # Validate birthday
+        day = cleaned_data.get('day')
+        month = cleaned_data.get('month')
+        year = cleaned_data.get('year')
+
+        try:
+            birth_date = parse_date(year + '-' + month + '-' + day)
+        except ValueError:
+            raise forms.ValidationError(
+                self.error_codes['failed_to_parse_date'],
+                code='failed_to_parse_date'
+            )
+
+        if birth_date is None:
+            raise forms.ValidationError(
+                self.error_codes['failed_to_parse_date'],
+                code='failed_to_parse_date'
+            )
+
+        today = timezone.now()
+        years_difference = today.year - birth_date.year
+        is_before_birthday = (today.month, today.day) < (birth_date.month, birth_date.day)
+        elapsed_years = years_difference - int(is_before_birthday)
+        if elapsed_years < 18:
+            raise forms.ValidationError(
+                self.error_codes['under_18'],
+                code='under_18'
+            )
+
+        cleaned_data.update({'birthDate': birth_date})
 
         # Validate location
         if 'locationName' in self.changed_data:

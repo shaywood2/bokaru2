@@ -5,8 +5,8 @@ from django.utils import timezone
 
 from bokaru.email import send_email
 from event.models import Event, EventParticipant
-from money.payment_service import create_charge, CardDeclinedException
 from money.model_transaction import Transaction
+from money.payment_service import create_charge, CardDeclinedException
 from .models import Product, UserPaymentInfo
 
 LOGGER = logging.getLogger(__name__)
@@ -57,9 +57,8 @@ def pay_for_event(participant, event):
 
     if charge_to_card < 0:
         LOGGER.error('Amount of credit used for event ({:d}) is greater than the event\'s price ({:d}).'
-                     .format(event_price_discount, event_price))
-        LOGGER.error('Event: ' + str(event))
-        LOGGER.error('Participant: ' + str(participant))
+                     ' Event: {!s}. Participant: {!s}'
+                     .format(event_price_discount, event_price, event, participant))
         charge_to_card = 0
 
     if charge_to_card == 0:
@@ -79,12 +78,12 @@ def pay_for_event(participant, event):
         try:
             charge = create_charge(charge_to_card, 'cad', user.id, event.id, stripe_id)
 
-            # Subtract amount from the credit
+            # Record the transaction
             transaction = Transaction(
                 transactionType=Transaction.CREDIT_CARD,
+                transactionReason=Transaction.REASON_EVENT_REGISTRATION_CREDIT_CARD,
                 user=user,
                 amount=charge_to_card,
-                description='Payment for event registration',
                 event=event,
                 stripe_charge_id=charge.id
             )
@@ -93,16 +92,17 @@ def pay_for_event(participant, event):
             participant.status = EventParticipant.PAYMENT_SUCCESS
             participant.save()
 
-            merge_data = {
-                'event_price': float(event_price)/100,
-                'charge_to_card': float(charge_to_card)/100,
-                'event_price_discount': float(event_price_discount)/100,
+            # Email the receipt
+            email_data = {
+                'event_price': float(event_price) / 100,
+                'charge_to_card': float(charge_to_card) / 100,
+                'event_price_discount': float(event_price_discount) / 100,
                 'event_name': event.name,
                 'invoice_id': charge.id,
                 'date': timezone.now()
             }
 
-            send_email(participant.user.email, merge_data, 'payment_success')
+            send_email(participant.user.email, email_data, 'payment_success')
 
         except stripe.error.CardError as e:
             participant.status = EventParticipant.PAYMENT_FAILURE
@@ -112,12 +112,9 @@ def pay_for_event(participant, event):
             body = e.json_body
             err = body['error']
 
-            LOGGER.error('Failed to create a charge')
-            LOGGER.error('Status is: {}'.format(e.http_status))
-            LOGGER.error('Type is: {}'.format(err['type']))
-            LOGGER.error('Code is: {}'.format(err['code']))
-            LOGGER.error('Param is: {}'.format(err['param']))
-            LOGGER.error('Message is: {}'.format(err['message']))
+            LOGGER.error('Failed to create a charge. '
+                         'Status is: {}. Type is: {}. Code is: {}. Param is: {}. Message is: {}.'
+                         .format(e.http_status, err['type'], err['code'], err['param'], err['message']))
 
             raise CardDeclinedException(e.http_status, err['type'], err['code'], err['param'], err['message'])
         except stripe.error.StripeError as e:
@@ -125,5 +122,5 @@ def pay_for_event(participant, event):
             participant.save()
 
             # Display a very generic error to the user, and maybe send yourself an email
-            LOGGER.error('Failed to create a charge')
+            LOGGER.error('Failed to create a charge: {!s}'.format(e))
             raise Exception('Failed to create a charge: {!s}'.format(e))

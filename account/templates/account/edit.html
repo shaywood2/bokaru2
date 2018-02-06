@@ -7,9 +7,6 @@
 
 {% block header %}
 <script src="https://maps.googleapis.com/maps/api/js?libraries=places&key=AIzaSyBTwfHuVilarsPOOE4Opm4GaG9I2dfbyCw" type="text/javascript"></script>
-
-<!-- Datepicker -->
-<link href="{% static 'web/vendor/datepicker/datepicker.min.css' %}" rel="stylesheet">
 {% endblock %}
 
 {% block content %}
@@ -102,16 +99,12 @@
 
                     <!-- Birth Date -->
                     <div class="form-group g-mb-20 {% if form.birthDate.errors %}u-has-error-v1{% endif %}">
-                        <div class="input-group u-input-group-v2 g-brd-primary--focus">
-                            {% render_field form.birthDate class="form-control form-control-md u-datepicker-v1 g-brd-right-none rounded-0" data-toggle="datepicker" %}
-                            <label for="id_birthDate" style="z-index: 2;">Birth date<span class="g-color-primary">*</span></label>
-                            <div class="input-group-addon d-flex align-items-center g-bg-white g-color-gray-dark-v5 rounded-0">
-                                <i class="icon-calendar"></i>
-                            </div>
+                        Birth date<span class="g-color-primary g-mr-20">*</span>
+                        <div id="birthday" class="datefield">
+                            {% render_field form.day placeholder="DD" data-autotab-format="number" %}/
+                            {% render_field form.month placeholder="MM" data-autotab-format="number" %}/
+                            {% render_field form.year class="year" placeholder="YYYY" data-autotab-format="number" %}
                         </div>
-                        {% if form.birthDate.errors %}
-                        <small class="form-control-feedback">{{form.birthDate.errors}}</small>
-                        {% endif %}
                     </div>
 
                     <!-- Location -->
@@ -558,8 +551,8 @@
 {% endblock %}
 
 {% block javascript %}
-<!-- Datepicker -->
-<script src="{% static 'web/vendor/datepicker/datepicker.min.js' %}"></script>
+<!-- Autotab -->
+<script src="{% static 'web/vendor/jquery.autotab.min.js' %}"></script>
 
 <!-- jQuery UI Core -->
 <script src="{% static 'web/vendor/jquery-ui/ui/widget.js'%}"></script>
@@ -581,8 +574,8 @@
 
 <script>
 $(document).on('ready', function () {
-    // Init datepicker
-    $('[data-toggle="datepicker"]').datepicker({format: 'yyyy-mm-dd', autoHide: true})
+    // Init birthday fields
+    $('#birthday input').autotab()
 
     $('#id_birthDate').on('change', function () {
         var $this = $(this),
@@ -712,7 +705,7 @@ $(document).on('ready', function () {
     }
 
     function getTagElement(value) {
-        return '<span class="tag u-label g-bg-primary u-label--lg g-px-15 g-py-8 g-mr-10"><span>' + value +
+        return '<span class="tag u-label g-bg-primary u-label--lg g-px-15 g-py-8 g-ma-5 g-rounded-5"><span>' + value +
          '</span><a><i class="remove icon-close"></i></a></span>'
     }
 

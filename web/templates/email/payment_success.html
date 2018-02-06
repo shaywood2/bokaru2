@@ -5,7 +5,6 @@
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
     <title>Receipt from Bokaru</title>
 
-
     <style type="text/css">
 img {
 max-width: 100%;
@@ -54,6 +53,8 @@ background-color: #f6f6f6;
     width: 100% !important;
   }
 }
+
+
 
     </style>
 </head>
@@ -104,7 +105,8 @@ background-color: #f6f6f6;
                                         <table class="invoice"
                                                style="font-family: 'Helvetica Neue',Helvetica,Arial,sans-serif; box-sizing: border-box; font-size: 14px; text-align: left; width: 80%; margin: 40px auto;">
                                             <tr style="font-family: 'Helvetica Neue',Helvetica,Arial,sans-serif; box-sizing: border-box; font-size: 14px; margin: 0;">
-                                                <td style="font-family: 'Helvetica Neue',Helvetica,Arial,sans-serif; box-sizing: border-box; font-size: 14px; vertical-align: top; margin: 0; padding: 5px 0;" valign="top">
+                                                <td style="font-family: 'Helvetica Neue',Helvetica,Arial,sans-serif; box-sizing: border-box; font-size: 14px; vertical-align: top; margin: 0; padding: 5px 0;"
+                                                    valign="top">
                                                     Event name: {{ event_name }}
                                                     <br style="font-family: 'Helvetica Neue',Helvetica,Arial,sans-serif; box-sizing: border-box; font-size: 14px; margin: 0;"/>
                                                     Invoice #: {{ invoice_id }}
@@ -132,7 +134,7 @@ background-color: #f6f6f6;
                                                             </td>
                                                             <td class="alignright"
                                                                 style="font-family: 'Helvetica Neue',Helvetica,Arial,sans-serif; box-sizing: border-box; font-size: 14px; vertical-align: top; text-align: right; border-top-width: 1px; border-top-color: #eee; border-top-style: solid; margin: 0; padding: 5px 0;"
-                                                                align="right" valign="top">CAD ${{ event_price|floatformat:"2" }}
+                                                                align="right" valign="top">CAD ${{ event_price_discount|floatformat:"2" }}
                                                             </td>
                                                         </tr>
                                                         <tr class="total" style="font-family: 'Helvetica Neue',Helvetica,Arial,sans-serif; box-sizing: border-box; font-size: 14px; margin: 0;">
@@ -160,8 +162,11 @@ background-color: #f6f6f6;
                         <tr style="font-family: 'Helvetica Neue',Helvetica,Arial,sans-serif; box-sizing: border-box; font-size: 14px; margin: 0;">
                             <td class="aligncenter content-block"
                                 style="font-family: 'Helvetica Neue',Helvetica,Arial,sans-serif; box-sizing: border-box; font-size: 12px; vertical-align: top; color: #999; text-align: center; margin: 0; padding: 0 0 20px;"
-                                align="center" valign="top">Questions? Email <a href="mailto:support@bokaru.com"
-                                                                                style="font-family: 'Helvetica Neue',Helvetica,Arial,sans-serif; box-sizing: border-box; font-size: 12px; color: #999; text-decoration: underline; margin: 0;">support@bokaru.com</a>
+                                align="center" valign="top">Questions? Email
+                                <a href="mailto:support@bokaru.com" target="_blank"
+                                   style="font-family: 'Helvetica Neue',Helvetica,Arial,sans-serif; box-sizing: border-box; font-size: 12px; color: #999; text-decoration: underline; margin: 0;">
+                                    support@bokaru.com
+                                </a>
                             </td>
                         </tr>
                     </table>

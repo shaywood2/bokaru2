@@ -15,7 +15,7 @@ LOGGER = logging.getLogger(__name__)
 
 # Basic info
 class CreateEventStep1(forms.Form):
-    error_messages = {
+    error_codes = {
         'too_soon': _('The event must start at least 48 hours from now.'),
         'too_late': _('The event must is too far in the future,'
                       ' please make sure that it starts within the next 90 days.'),
@@ -75,7 +75,7 @@ class CreateEventStep1(forms.Form):
 
     name = forms.CharField(max_length=150)
     type = forms.ChoiceField(choices=Event.TYPES, initial=Event.SERIOUS)
-    date = forms.DateField()
+    date = forms.DateField(input_formats=['%d/%m/%Y'])
     time = forms.ChoiceField(choices=TIME_CHOICES, initial='19:00')
     locationName = forms.CharField(max_length=150)
 
@@ -104,13 +104,13 @@ class CreateEventStep1(forms.Form):
 
         if start_date < tomorrow:
             raise forms.ValidationError(
-                self.error_messages['too_soon'],
+                self.error_codes['too_soon'],
                 code='too_soon'
             )
 
         if start_date > latest_date:
             raise forms.ValidationError(
-                self.error_messages['too_late'],
+                self.error_codes['too_late'],
                 code='too_late'
             )
 
@@ -118,7 +118,7 @@ class CreateEventStep1(forms.Form):
         city_name = cleaned_data.get('cityName')
         if not city_name or len(city_name) == 0:
             raise forms.ValidationError(
-                self.error_messages['location_not_found'],
+                self.error_codes['location_not_found'],
                 code='location_not_found'
             )
 
@@ -142,7 +142,7 @@ class CreateEventStep3(forms.Form):
 
 # Group details
 class CreateEventStep4(forms.Form):
-    error_messages = {
+    error_codes = {
         'please_specify': _('Please specify sexual identity.')
     }
 
@@ -162,14 +162,14 @@ class CreateEventStep4(forms.Form):
         sexual_identity_other1 = self.cleaned_data.get('sexualIdentityOther1')
 
         if sexual_identity1 == EventGroup.OTHER and sexual_identity_other1 == '':
-            raise forms.ValidationError(self.error_messages['please_specify'], code='please_specify')
+            raise forms.ValidationError(self.error_codes['please_specify'], code='please_specify')
 
     def clean_sexualIdentityOther2(self):
         sexual_identity2 = self.cleaned_data.get('sexualIdentity2')
         sexual_identity_other2 = self.cleaned_data.get('sexualIdentityOther2')
 
         if sexual_identity2 == EventGroup.OTHER and sexual_identity_other2 == '':
-            raise forms.ValidationError(self.error_messages['please_specify'], code='please_specify')
+            raise forms.ValidationError(self.error_codes['please_specify'], code='please_specify')
 
 
 # Image
@@ -180,4 +180,17 @@ class CreateEventStep5(forms.Form):
 
 # Preview
 class CreateEventStep6(forms.Form):
-    pass
+    error_codes = {
+        'terms_required': _('You have to accept the terms and conditions to create an event.')
+    }
+    
+    terms = forms.BooleanField(required=False)
+    
+    def clean_terms(self):
+        terms = self.cleaned_data.get('terms')
+        if not terms:
+            raise forms.ValidationError(
+                self.error_codes['terms_required'],
+                code='terms_required'
+            )
+        return terms

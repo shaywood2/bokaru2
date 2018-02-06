@@ -311,6 +311,22 @@
         <div class="container">
             <div class="row">
                 <div class="col-md-6 g-offset-md-3">
+                    <div class="form-group g-mb-10 {% if wizard.form.terms.errors %}u-has-error-v1{% endif %}">
+                        <label class="u-check g-pl-25">
+                            {% render_field wizard.form.terms class="g-hidden-xs-up g-pos-abs g-top-0 g-left-0" %}
+                            <div class="u-check-icon-checkbox-v6 g-absolute-centered--y g-left-0">
+                                <i class="fa" data-check-icon=""></i>
+                            </div>
+                            I agree to <a href="{% url 'web:terms_of_service' %}" target="_blank">terms &amp; conditions</a><br>
+                            and I confirm that this event follows <a href="{% url 'web:community_guidelines' %}" target="_blank">community guidelines</a>.
+                        </label>
+                        <br/>
+                        {% if wizard.form.terms.errors %}
+                        <small class="form-control-feedback">{{wizard.form.terms.errors}}</small>
+                        {% endif %}
+                    </div>
+                </div>
+                <div class="col-md-6 g-offset-md-3">
                     <button type="submit" class="btn btn-lg btn-block u-btn-primary g-mb-10 rounded-0">
                         Submit
                         <i class="icon-event g-mr-3"></i>
@@ -325,7 +341,6 @@
         </div>
     </form>
 </section>
-
 <!-- Event Block End -->
 {% endblock %}
 

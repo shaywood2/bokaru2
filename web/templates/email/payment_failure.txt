@@ -1,0 +1,9 @@
+Payment for event {{ event_name }} has failed!
+
+Unfortunately, there has been a problem with your payment for the event {{event_name}}.
+
+Please log in and register for the event, perhaps with a different credit card.
+
+{% url 'event:view' event_id=event_id %}
+
+— Your friends at Bokaru

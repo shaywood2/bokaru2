@@ -115,9 +115,11 @@ PASSWORD_RESET_TIMEOUT_DAYS = 3
 ACCOUNT_ACTIVATION_DAYS = 7
 REGISTRATION_OPEN = True
 
-# Welcome credit
+# Bonus credits
 WELCOME_CREDIT = get_env_var('WELCOME_CREDIT')
 WELCOME_CREDIT_TEXT = get_env_var('WELCOME_CREDIT_TEXT')
+CONSOLATION_CREDIT = get_env_var('CONSOLATION_CREDIT')
+CONSOLATION_CREDIT_TEXT = get_env_var('CONSOLATION_CREDIT_TEXT')
 
 # Internationalization
 # https://docs.djangoproject.com/en/1.9/topics/i18n/

@@ -96,7 +96,7 @@
                     <div class="u-check-icon-checkbox-v6 g-absolute-centered--y g-left-0">
                         <i class="fa" data-check-icon=""></i>
                     </div>
-                    I agree to terms &amp; conditions
+                    I agree to <a href="{% url 'web:terms_of_service' %}" target="_blank">terms &amp; conditions</a>
                 </label>
                 <br/>
                 {% if form.terms.errors %}

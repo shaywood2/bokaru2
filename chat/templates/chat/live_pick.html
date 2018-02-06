@@ -65,9 +65,10 @@
         {% if next_date %}
         <div class="row g-mb-150">
             <div class="col-12">
-                <h1>Coming up next</h1>
+                <h1>Coming up next:</h1>
                 {% if next_date.is_break %}
                 <h2>A short break between dates.</h2>
+                <p>There are fewer people in the other group, so we had to schedule a break between your dates.</p>
                 {% else %}
                 {% render_profile_large next_date.account next_date.memo %}
                 {% endif %}
