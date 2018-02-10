@@ -33,3 +33,12 @@
     </div>
 </section>
 {% endblock %}
+
+{% block javascript %}
+<script>
+    gtag('event', 'event_leave', {
+        'event_category': 'engagement',
+        'event_label': '{{ event.name }}',
+    });
+</script>
+{% endblock %}

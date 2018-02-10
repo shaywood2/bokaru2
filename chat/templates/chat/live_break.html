@@ -94,4 +94,11 @@ $(document).on('ready', function () {
     })
 })
 </script>
+
+<script>
+    gtag('event', 'chat_break', {
+        'event_category': 'chat',
+        'event_label': '{{ event.name }}'
+    });
+</script>
 {% endblock %}

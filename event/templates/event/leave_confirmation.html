@@ -35,10 +35,9 @@
 
 {% block javascript %}
 <script>
-    gtag('event', 'event_join', {
-      'event_id': '{{ event.id }}',
-      'expected_revenue': '{{ expected_revenue }}'
+    gtag('event', 'event_leave_confirm', {
+        'event_category': 'engagement',
+        'event_label': '{{ event.name }}',
     });
-
 </script>
 {% endblock %}

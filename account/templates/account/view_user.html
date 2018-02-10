@@ -197,4 +197,11 @@ $(document).on('ready', function () {
     })
 })
 </script>
+
+<script>
+    gtag('event', 'profile_view', {
+        'event_category': 'engagement',
+        'user_id','{{user.id}}'
+    });
+</script>
 {% endblock %}

@@ -8,3 +8,11 @@
 <p>We emailed you the activation code, you should receive it within the next few minutes!</p>
 <p>Please check your <span class="g-color-primary">SPAM</span> folder if you do not receive it soon.</p>
 {% endblock %}
+
+{% block javascript %}
+<script>
+    gtag('event', 'register_complete', {
+        'event_category': 'engagement',
+    });
+</script>
+{% endblock %}

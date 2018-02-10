@@ -357,17 +357,14 @@
 <section class="g-brd-top g-brd-bottom g-brd-gray-light-v4 g-bg-secondary">
     <div class="container text-center g-py-50--md g-py-20">
         <h3>Share this event</h3>
-        <a class="u-icon-v3 g-bg-facebook g-color-white g-color-white--hover g-mr-15 g-mb-20" href="#">
+        <a onclick="sendSocialEvent('facebook')" class="u-icon-v3 g-bg-facebook g-color-white g-color-white--hover g-mr-15 g-mb-20" href="#">
             <i class="fa fa-facebook"></i>
         </a>
-        <a class="u-icon-v3 g-bg-twitter g-color-white g-color-white--hover g-mr-15 g-mb-20" href="#">
+        <a onclick="sendSocialEvent('twitter')" class="u-icon-v3 g-bg-twitter g-color-white g-color-white--hover g-mr-15 g-mb-20" href="#">
             <i class="fa fa-twitter"></i>
         </a>
-        <a class="u-icon-v3 g-bg-google-plus g-color-white g-color-white--hover g-mr-15 g-mb-20" href="#">
+        <a onclick="sendSocialEvent('google')" class="u-icon-v3 g-bg-google-plus g-color-white g-color-white--hover g-mr-15 g-mb-20" href="#">
             <i class="fa fa-google-plus"></i>
-        </a>
-        <a class="u-icon-v3 g-bg-vk g-color-white g-color-white--hover g-mr-15 g-mb-20" href="#">
-            <i class="fa fa-vk"></i>
         </a>
     </div>
 </section>
@@ -387,5 +384,24 @@ $(document).on('ready', function () {
     // initialization of chart pies
     let items = $.HSCore.components.HSChartPie.init('.js-pie')
 })
+</script>
+
+
+<script>
+
+    function sendSocialEvent(platform)
+    {
+        gtag('event', 'event_share', {
+            'event_category': 'engagement',
+            'event_label':"{ event={{ event.name }}, platform=" + platform + "}"
+        });
+
+    }
+
+    gtag('event', 'event_view', {
+        'event_category': 'engagement',
+        'event_label':'{{ event.name }}'
+    });
+
 </script>
 {% endblock %}

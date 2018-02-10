@@ -36,3 +36,14 @@
     </div>
 </section>
 {% endblock %}
+
+
+
+{% block javascript %}
+<script>
+    gtag('event', 'chat_done', {
+        'event_category': 'chat',
+        'event_label': '{{ event.name }}'
+    });
+</script>
+{% endblock %}

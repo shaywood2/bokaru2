@@ -152,3 +152,12 @@
 </section>
 <!-- End User Block -->
 {% endblock %}
+
+
+{% block javascript %}
+<script>
+    gtag('event', 'profile_view', {
+        'event_category': 'engagement',
+    });
+</script>
+{% endblock %}

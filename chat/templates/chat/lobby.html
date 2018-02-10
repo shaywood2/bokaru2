@@ -190,4 +190,11 @@ var SESSION_ID = '{{ sessionID }}';
 var TOKEN = '{{ token }}';
 </script>
 <script src="{% static 'chat/js/network_test.js' %}"></script>
+
+<script>
+    gtag('event', 'chat_lobby', {
+        'event_category': 'chat',
+        'event_label': '{{ event.name }}'
+    });
+</script>
 {% endblock %}

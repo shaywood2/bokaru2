@@ -66,3 +66,11 @@
     </div>
 </section>
 {% endblock %}
+
+{% block javascript %}
+<script>
+    gtag('event', 'my_matches', {
+        'event_category': 'engagement'
+    });
+</script>
+{% endblock %}

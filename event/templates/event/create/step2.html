@@ -127,3 +127,11 @@
 </section>
 <!-- Event Block End -->
 {% endblock %}
+
+{% block javascript %}
+<script>
+    gtag('event', 'event_create_step_2', {
+        'event_category': 'create_event',
+    });
+</script>
+{% endblock %}

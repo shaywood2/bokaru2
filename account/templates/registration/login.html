@@ -56,3 +56,11 @@
 </form>
 
 {% endblock %}
+
+{% block javascript %}
+<script>
+    gtag('event', 'visit_login', {
+        'event_category': 'engagement',
+    });
+</script>
+{% endblock %}

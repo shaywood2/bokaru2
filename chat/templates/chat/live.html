@@ -107,4 +107,11 @@ $(document).on('ready', function () {
 })
 </script>
 <script src="{% static 'chat/js/chat.js' %}"></script>
+
+<script>
+    gtag('event', 'chat_date', {
+        'event_category': 'chat',
+        'event_label': '{{ event.name }}'
+    });
+</script>
 {% endblock %}

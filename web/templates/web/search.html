@@ -478,6 +478,10 @@ function initMap() {
         document.getElementById('id_cityNameShort').value = place.name
         document.getElementById('id_cityLat').value = place.geometry.location.lat()
         document.getElementById('id_cityLng').value = place.geometry.location.lng()
+        gtag('event', 'search_city', {
+            'event_category': 'engagement',
+            'event_label': input.value
+        });
     })
 }
 
@@ -486,5 +490,13 @@ google.maps.event.addDomListener(window, 'load', initMap);
 
 
 
+</script>
+
+
+<script>
+    gtag('event', 'search_view', {
+        'event_category': 'engagement',
+        'event_label': '{{cityName}}'
+    });
 </script>
 {% endblock %}

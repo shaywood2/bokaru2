@@ -12,3 +12,12 @@
     </div>
 </div>
 {% endblock %}
+
+{% block javascript %}
+<script>
+    gtag('event', 'register_activated', {
+        'event_category': 'engagement',
+    });
+</script>
+{% endblock %}
+

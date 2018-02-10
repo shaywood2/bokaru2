@@ -186,4 +186,11 @@ $(document).on('ready', function () {
 	}
 })
 </script>
+
+<script>
+    gtag('event', 'chat_pick', {
+        'event_category': 'chat',
+        'event_label': '{{ event.name }}'
+    });
+</script>
 {% endblock %}
